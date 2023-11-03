@@ -19,6 +19,6 @@ those as predictors. The rest of the columns in the data set are assumed to be c
 be used as the outcomes.
 }
 \examples{
-cyt_anova(data.df)
-
+data(iris)
+cyt_anova(iris)
 }

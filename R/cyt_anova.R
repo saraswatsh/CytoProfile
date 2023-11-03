@@ -15,58 +15,46 @@
 #' be used as the outcomes.
 #' @return Prints the p-values of comparisons conducted using the Tukey test of the ANOVA model.
 #' @examples
-#' cyt_anova(data.df)
-#'
+#' data(iris)
+#' cyt_anova(iris)
 #' @export
-
 cyt_anova = function(x.df) {
-
-  # Setting the rest of the variables as outcome
-  cont_vars = names(x.df)[3:ncol(x.df)]
-
+  # Take input and store it as it's own data frame
+  x1.df = x.df
+  # Convert any char variables to factors
+  cat_vars = sapply(x1.df, is.character)
+  if(any(cat_vars)){
+    x1.df[cat_vars] = lapply(x1.df[cat_vars], as.factor)
+  }
+  # Categorical Predictors
+  cat_preds = sapply(x1.df, is.factor)
+  # Create a list to store column names with numeric data
+  cont_vars <- sapply(x1.df, is.numeric)
   # Empty list to store ANOVA and Tukey results
   tukey_results = list()
 
-  # Getting variables from the first two columns
-  if(length(levels(as.factor(x.df[,1]))) > 1 & length(levels(as.factor(x.df[,2]))) > 1 ){
-    pred1 = names(x.df)[1]
-    pred2 = names(x.df)[2]
-    for(outcome in cont_vars){
-      # Perform ANOVA tests on each continuous variable
-      model = aov(as.formula(paste(outcome, "~", pred1, "+", pred2)), data = x.df)
-      # Tukey summary
-      tukey_result = TukeyHSD(model)
-      # Extract p-values and store them in the list
-      p_values_pred1 = tukey_result[[pred1]][, "p adj"]
-      p_values_pred2 = tukey_result[[pred2]][, "p adj"]
-      # Store the p-values in the results list
-      tukey_results[[outcome]] = list(p_values_pred1, p_values_pred2)
-    }
-  }
-  if(length(levels(as.factor(x.df[,1]))) == 1 & length(levels(as.factor(x.df[,2]))) > 1){
-    pred1 = names(x.df)[2]
-    for(outcome in cont_vars){
-      # Perform ANOVA tests on each continuous variable
-      model = aov(as.formula(paste(outcome, "~", pred1)), data = x.df)
-      # Tukey summary
-      tukey_result = TukeyHSD(model)
-      # Extract p-values and store them in the list
-      p_values_pred1 = tukey_result[[pred1]][, "p adj"]
-      # Store the p-values in the results list
-      tukey_results[[outcome]] = list(p_values_pred1)
-    }
-  }
-  if(length(levels(as.factor(x.df[,1]))) > 1 & length(levels(as.factor(x.df[,2]))) == 1){
-    pred1 = names(x.df)[1]
-    for(outcome in cont_vars){
-      # Perform ANOVA tests on each continuous variable
-      model = aov(as.formula(paste(outcome, "~", pred1)), data = x.df)
-      # Tukey summary
-      tukey_result = TukeyHSD(model)
-      # Extract p-values and store them in the list
-      p_values_pred1 = tukey_result[[pred1]][, "p adj"]
-      # Store the p-values in the results list
-      tukey_results[[outcome]] = list(p_values_pred1)
+  # ANOVA and TUkey Comparisons
+  for(cat_var in names(x1.df)[cat_preds]){
+    for(outcome in names(x1.df)[cont_vars]){
+      if(length(levels(cat_var)) == 1){
+        next
+      }
+      else if(length(levels(cat_var)) > 10){
+        next
+      }
+      else{
+        # Perform ANOVA tests on each continuous variable with the current categorical variable
+        model <- aov(as.formula(paste(outcome, "~", cat_var)), data = x1.df)
+        # Tukey summary
+        tukey_result = TukeyHSD(model)
+
+        # Extract p-values and store them in the list
+        p_values_cat_var <- tukey_result[[cat_var]][, "p adj"]
+
+        # Store the p-values in the results list
+        result_key <- paste(outcome, cat_var, sep = "_")
+        tukey_results[[result_key]] = p_values_cat_var
+      }
     }
   }
   return(tukey_results)

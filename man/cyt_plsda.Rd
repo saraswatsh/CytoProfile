@@ -31,6 +31,12 @@ A PDF file consisting of classification figures, component figures including Var
 classification of groups with VIP scores greater than 1.
 }
 \description{
+This function takes a matrix or data frame of variables where the first two columns must consist of "Group"
+and "Stimulation" or "Group" and "Treatment". The rest of columns will be cytokines that will be analyzed.
+The function also uses log2 transformation of the data, so the data that is inputed, must be raw data without
+any transformation.
+}
+\details{
 This function takes a data frame assuming that the first two columns consists
 of groups and stimulation of patients and using the rest of the columns as
 components for the PLS-DA analysis.
