@@ -11,7 +11,7 @@
 #################################################################################
 #' Generating a PDF file to show the measured value by column of the data frame.
 #'
-#' @param x.df A matrix or data frame
+#' @param x.df A matrix or data frame of raw data.
 #' @param Title Name for the PDF file.
 #' @param bin.size The number of box plots shown in a single plane.
 #' @param yLim A range for the y-axis to be plotted.

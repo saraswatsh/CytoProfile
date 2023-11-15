@@ -4,17 +4,16 @@
 
 #' Distribution of the data set
 #'
-#' @param x.df A matrix or data frame.
+#' @param x.df A matrix or data frame of raw data.
+#' @param Title Name for the PDF file.
 #' @description
 #' The function takes in a data frame and subsets the numeric columns from the data which is then
 #' used to calculate the skewed and kurtosis values. The values are then plotted using histograms
 #' to visualize the distribution of raw skewed values and log2 transformed values.
 #'
 #' @return Prints histograms of Skewness and Kurtosis of the continuous variables using raw data and log2 transformation.
-#' #' @examples
-#' data(iris)
-#' cyt.dist(iris)
-#'
+#' @examples
+#' cyt.dist(data.df, Title = "Skew and Kurtosis.pdf")
 #' @export
 #'
 cyt.dist = function(x.df, Title) {

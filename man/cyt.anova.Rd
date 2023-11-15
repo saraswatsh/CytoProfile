@@ -20,5 +20,5 @@ be used as the outcomes.
 }
 \examples{
 data(iris)
-cyt_anova(iris)
+cyt.anova(iris)
 }

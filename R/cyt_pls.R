@@ -15,7 +15,7 @@
 #' of groups and stimulation of patients and using the rest of the columns as
 #' components for the PLS-DA analysis.
 #'
-#' @param x.df A matrix or data frame of variables
+#' @param x.df A matrix or data frame of variables.
 #' @param colors Vector of colors to be set, list of colors to be set. Default set to NULL and will result in random colors.
 #' @param title Title of the PDF file to be saved.
 #' @param ellipse If ellipse should be drawn in the figures or not. Default set to FALSE.

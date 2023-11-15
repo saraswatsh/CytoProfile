@@ -7,7 +7,9 @@
 cyt.dist(x.df, Title)
 }
 \arguments{
-\item{x.df}{A matrix or data frame.}
+\item{x.df}{A matrix or data frame of raw data.}
+
+\item{Title}{Name for the PDF file.}
 }
 \value{
 Prints histograms of Skewness and Kurtosis of the continuous variables using raw data and log2 transformation.
@@ -16,4 +18,7 @@ Prints histograms of Skewness and Kurtosis of the continuous variables using raw
 The function takes in a data frame and subsets the numeric columns from the data which is then
 used to calculate the skewed and kurtosis values. The values are then plotted using histograms
 to visualize the distribution of raw skewed values and log2 transformed values.
+}
+\examples{
+cyt.dist(data.df, Title = "Skew and Kurtosis.pdf")
 }

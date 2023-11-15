@@ -7,7 +7,7 @@
 cyt.qc(x.df, Title, bin.size = 25, mfRow = c(1, 1), yLim = NULL)
 }
 \arguments{
-\item{x.df}{A matrix or data frame}
+\item{x.df}{A matrix or data frame of raw data.}
 
 \item{Title}{Name for the PDF file.}
 
