@@ -36,7 +36,7 @@
 #' cyt_plsda(data.df, ellipse = TRUE, title = "Example Analysis.pdf", conf.mat = TRUE)
 #' @export
 
-cyt_plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, conf.mat = FALSE){
+cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, conf.mat = FALSE){
 
   # Log2 transforming cytokines
   x.df = data.frame(x.df[,c(1:2)], log2(x.df[, -c(1:2)]))

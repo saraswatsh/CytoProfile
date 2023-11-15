@@ -18,7 +18,7 @@
 #' data(iris)
 #' cyt_anova(iris)
 #' @export
-cyt_anova = function(x.df) {
+cyt.anova = function(x.df) {
   # Take input and store it as it's own data frame
   x1.df = x.df
   # Convert any char variables to factors

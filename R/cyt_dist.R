@@ -13,7 +13,7 @@
 #' @return Prints histograms of Skewness and Kurtosis of the continuous variables using raw data and log2 transformation.
 #' @export
 #'
-cyt_dist = function(x.df, Title) {
+cyt.dist = function(x.df, Title) {
   pdf(file = Title)
   cytokine.mat = x.df[, -c(1:2)]
   cytokineNames = colnames(cytokine.mat)
