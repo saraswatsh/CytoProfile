@@ -11,13 +11,14 @@
 #################################################################################
 #' Generating a PDF file to show the measured value by column of the data frame.
 #'
-#' @param x.df A matrix or data frame of measured continuous value with row and column names.
+#' @param x.df A matrix or data frame
 #' @param Title Name for the PDF file.
 #' @param bin.size The number of box plots shown in a single plane.
 #' @param yLim A range for the y-axis to be plotted.
 #' @return A PDF file consisting of box plots of the continuous variables in the columns.
 #' @export
 cyt_qc = function(x.df, Title, bin.size=25, mfRow=c(1,1), yLim=NULL) {
+  x.df = x.df[, -c(1:2)]
   pdf(file=Title)
   par(mfrow=mfRow, cex.axis=0.75)
   nCol = ncol(x.df)
