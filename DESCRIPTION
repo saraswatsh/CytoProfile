@@ -1,17 +1,21 @@
 Package: CytProfile
 Title: Cytoking Profiling Analysis Tool.
 Version: 1.0
-Authors@R: 
-    person("Shubh", "Saraswat", , "shubh.saraswat00@gmail.com", role = "cre",
-           comment = c(ORCID = "0009-0009-2359-1484"))
+Authors@R: c(
+    person("Shubh", "Saraswat", email = "shubh.saraswat00@gmail.com", role = "cre",
+           comment = c(ORCID = "0009-0009-2359-1484")),
+    person("Xiaohua Douglas", "Zhang", email = "douglas.zhang@uky.edu", role = "aut"))
 Maintainer: Shubh Saraswat <shubh.saraswat00@gmail.com>
-Description: This package will help in conducting quality control using biological meaningful cutoff on raw measured values of cytokines. Test on distributional symmetry to suggest the adopt of transformation. Exploratory analysis including summary statistics, enriched boxplot, and barplots. Univariate analysis and Multivariate analysis options are further available to dive deeper into the cytokine profiling. 
-License: GPL-2
+Description: This tool will help in conducting quality control using biological
+    meaningful cutoff on raw measured values of cytokines. Test on distributional
+    symmetry to suggest the adopt of transformation. Exploratory analysis including
+    summary statistics, enriched boxplot, and barplots. Univariate analysis 
+    and Multivariate analysis options are further available to dive deeper
+    into the cytokine profiling.
+License: GPL (>= 2)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
-Depends: mixOmics, moments
+Depends: mixOmics, moments, R (>= 4.3.1)
 Imports: mixOmics, moments
 NeedsCompilation: no
-Packaged: 2023-11-03 00:59:36 UTC; shubh
-Author: Shubh Saraswat [cre] (<https://orcid.org/0009-0009-2359-1484>)
