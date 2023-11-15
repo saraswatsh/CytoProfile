@@ -1,5 +1,5 @@
 Package: CytProfile
-Title: Cytoking Profiling Analysis Tool.
+Title: Cytokine Profiling Analysis Tool
 Version: 1.0
 Authors@R: c(
     person("Shubh", "Saraswat", email = "shubh.saraswat00@gmail.com", role = "cre",
@@ -12,10 +12,9 @@ Description: This tool will help in conducting quality control using biological
     summary statistics, enriched boxplot, and barplots. Univariate analysis 
     and Multivariate analysis options are further available to dive deeper
     into the cytokine profiling.
-License: GPL (>= 2)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
-Depends: mixOmics, moments, R (>= 4.3.1)
-Imports: mixOmics, moments
+Depends: mixOmics, moments
 NeedsCompilation: no
+License: GPL-2
