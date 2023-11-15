@@ -16,7 +16,7 @@
 #' @return Prints the p-values of comparisons conducted using the Tukey test of the ANOVA model.
 #' @examples
 #' data(iris)
-#' cyt_anova(iris)
+#' cyt.anova(iris)
 #' @export
 cyt.anova = function(x.df) {
   # Take input and store it as it's own data frame

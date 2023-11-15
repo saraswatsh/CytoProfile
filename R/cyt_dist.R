@@ -11,6 +11,10 @@
 #' to visualize the distribution of raw skewed values and log2 transformed values.
 #'
 #' @return Prints histograms of Skewness and Kurtosis of the continuous variables using raw data and log2 transformation.
+#' #' @examples
+#' data(iris)
+#' cyt.dist(iris)
+#'
 #' @export
 #'
 cyt.dist = function(x.df, Title) {
