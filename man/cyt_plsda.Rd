@@ -45,5 +45,5 @@ components for the PLS-DA analysis.
 cyt_plsda(data.df, colors = c("black", "purple"), title = "Example Analysis.pdf", bg = TRUE, conf.mat = TRUE)
 cyt_plsda(data.df, colors = c("black", "purple"), title = "Example Analysis.pdf", ellipse = TRUE, conf.mat = TRUE)
 cyt_plsda(data.df, colors = c("black", "purple"), title = "Example Analysis.pdf", conf.mat = FALSE)
-cyt_plsda(data.df,ellipse = TRUE, title = "Example Analysis.pdf", conf.mat = TRUE)
+cyt_plsda(data.df, ellipse = TRUE, title = "Example Analysis.pdf", conf.mat = TRUE)
 }
