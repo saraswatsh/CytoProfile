@@ -36,10 +36,10 @@ cyt.anova = function(x.df) {
   # ANOVA and TUkey Comparisons
   for(cat_var in names(x1.df)[cat_preds]){
     for(outcome in names(x1.df)[cont_vars]){
-      if(length(levels(cat_var)) == 1){
+      if(length(levels(x1.df[[cat_var]])) == 1){
         next
       }
-      else if(length(levels(cat_var)) > 10){
+      else if(length(levels(x1.df[[cat_var]])) > 10){
         next
       }
       else{
