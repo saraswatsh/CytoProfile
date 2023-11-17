@@ -17,7 +17,7 @@
 #' @param yLim A range for the y-axis to be plotted.
 #' @return A PDF file consisting of box plots of the continuous variables in the columns.
 #' @export
-cyt.qc = function(x.df, Title, bin.size=25, mfRow=c(1,1), yLim=NULL) {
+cyt.bp = function(x.df, Title, bin.size=25, mfRow=c(1,1), yLim=NULL) {
   x.df = x.df[, -c(1:2)]
   pdf(file=Title)
   par(mfrow=mfRow, cex.axis=0.75)

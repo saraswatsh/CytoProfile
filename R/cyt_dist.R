@@ -16,7 +16,7 @@
 #' cyt.dist(data.df, Title = "Skew and Kurtosis.pdf")
 #' @export
 #'
-cyt.dist = function(x.df, Title) {
+cyt.skku = function(x.df, Title) {
   pdf(file = Title)
   cytokine.mat = x.df[, -c(1:2)]
   cytokineNames = colnames(cytokine.mat)
@@ -31,7 +31,7 @@ cyt.dist = function(x.df, Title) {
   nOutcome = length( outcomes )
 
   ## raw value
-  if ("Stimulation" %in% names(data.df0[,c(1:2)])){
+  if ("Stimulation" %in% names(x.df[,c(1:2)])){
     Treatment.Group.vec = paste(x.df[,"Stimulation"], x.df[,"Group"], sep=".")
   }
   else{
