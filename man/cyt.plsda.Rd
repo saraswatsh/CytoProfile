@@ -42,8 +42,8 @@ of groups and stimulation of patients and using the rest of the columns as
 components for the PLS-DA analysis.
 }
 \examples{
-cyt.plsda(data.df, colors = c("black", "purple"), title = "Example Analysis.pdf", bg = TRUE, conf.mat = TRUE)
-cyt.plsda(data.df, colors = c("black", "purple"), title = "Example Analysis.pdf", ellipse = TRUE, conf.mat = TRUE)
-cyt.plsda(data.df, colors = c("black", "purple"), title = "Example Analysis.pdf", conf.mat = FALSE)
-cyt.plsda(data.df, ellipse = TRUE, title = "Example Analysis.pdf", conf.mat = TRUE)
+cyt.plsda(cytdata.df[,-c(1,3)], colors = c("black", "purple"), title = "Example Analysis.pdf", bg = TRUE, conf.mat = TRUE)
+cyt.plsda(cytdata.df[,-c(1,3)], colors = c("black", "purple"), title = "Example Analysis.pdf", ellipse = TRUE, conf.mat = TRUE)
+cyt.plsda(cytdata.df[,-c(1,2)], colors = c("black", "purple"), title = "Example Analysis.pdf", conf.mat = FALSE)
+cyt.plsda(cytdata.df[,-c(1,4)], ellipse = TRUE, title = "Example Analysis.pdf", conf.mat = TRUE)
 }

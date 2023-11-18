@@ -19,6 +19,3 @@ The function takes in a data frame and subsets the numeric columns from the data
 used to calculate the skewed and kurtosis values. The values are then plotted using histograms
 to visualize the distribution of raw skewed values and log2 transformed values.
 }
-\examples{
-cyt.dist(data.df, Title = "Skew and Kurtosis.pdf")
-}

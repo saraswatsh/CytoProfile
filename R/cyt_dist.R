@@ -13,7 +13,7 @@
 #'
 #' @return Prints histograms of Skewness and Kurtosis of the continuous variables using raw data and log2 transformation.
 #' @examples
-#' cyt.dist(data.df, Title = "Skew and Kurtosis.pdf")
+#' cyt.dist(cytdata.df", Title = "Skew and Kurtosis.pdf")
 #' @export
 #'
 cyt.skku = function(x.df, Title) {

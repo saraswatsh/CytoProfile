@@ -30,10 +30,10 @@
 #' @return A PDF file consisting of classification figures, component figures including Variable of importance in projection (VIP) scores, and
 #' classification of groups with VIP scores greater than 1.
 #' @examples
-#' cyt.plsda(data.df, colors = c("black", "purple"), title = "Example Analysis.pdf", bg = TRUE, conf.mat = TRUE)
-#' cyt.plsda(data.df, colors = c("black", "purple"), title = "Example Analysis.pdf", ellipse = TRUE, conf.mat = TRUE)
-#' cyt.plsda(data.df, colors = c("black", "purple"), title = "Example Analysis.pdf", conf.mat = FALSE)
-#' cyt.plsda(data.df, ellipse = TRUE, title = "Example Analysis.pdf", conf.mat = TRUE)
+#' cyt.plsda(cytdata.df[,-c(1,3)], colors = c("black", "purple"), title = "Example Analysis.pdf", bg = TRUE, conf.mat = TRUE)
+#' cyt.plsda(cytdata.df[,-c(1,3)], colors = c("black", "purple"), title = "Example Analysis.pdf", ellipse = TRUE, conf.mat = TRUE)
+#' cyt.plsda(cytdata.df[,-c(1,2)], colors = c("black", "purple"), title = "Example Analysis.pdf", conf.mat = FALSE)
+#' cyt.plsda(cytdata.df[,-c(1,4)], ellipse = TRUE, title = "Example Analysis.pdf", conf.mat = TRUE)
 #' @export
 
 cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, conf.mat = FALSE){
