@@ -37,6 +37,14 @@
 
 cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, conf.mat = FALSE){
 
+  if (!requireNamespace("BiocManager", quietly = TRUE)) {
+    install.packages("BiocManager")
+  }
+
+  if (!requireNamespace("mixOmics", quietly = TRUE)) {
+    BiocManager::install("mixOmics")
+  }
+  library(mixOmics)
   # Log2 transforming cytokines
   x.df = data.frame(x.df[,c(1:2)], log2(x.df[, -c(1:2)]))
 
