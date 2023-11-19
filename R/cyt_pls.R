@@ -44,12 +44,11 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
   # Making the first two columns to be lowercase
   names(x.df)[1:2] <- tolower(names(x.df)[1:2])
   # Creating a table to have two separate vectors for group and stimulation
-  a = table( x.df[, c(2,1)] ); a
+  a = table( x.df[, c(1,2)] ); a
 
   if("treatment" %in% names(x.df)[1:2]){
     Treatment.vec = dimnames(a)$treatment; Treatment.vec
-  }
-  else{
+  }else{
     Stimulation.vec = dimnames(a)$stimulation; Stimulation.vec
   }
   Group.vec = dimnames(a)$group; Group.vec
@@ -197,8 +196,7 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
       cat("Confusion Matrix for PLS-DA Comparison with VIP Score > 1 \n")
       print(get.confusion_matrix(truth = Prediction2[,1], predicted = Prediction2[,2])) # Confusion matrix for all variables with VIP Score > 1
     }
-  }
-  else{
+  }else{
     pdf( file= title)
     for(i in 1:length(Stimulation.vec) ) {
       theTrts = Stimulation.vec[i]
@@ -336,5 +334,4 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
       print(get.confusion_matrix(truth = Prediction2[,1], predicted = Prediction2[,2])) # Confusion matrix for all variables with VIP Score > 1
     }
   }
-
 }
