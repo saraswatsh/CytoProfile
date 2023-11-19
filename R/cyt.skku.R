@@ -57,7 +57,7 @@ cyt.skku = function(x.df, Title) {
   result.noComb.raw.arr = result.arr
 
   ## Log2 value
-  if ("Stimulation" %in% names(data.df0[,c(1:2)])){
+  if ("Stimulation" %in% names(x.df[,c(1:2)])){
     Treatment.Group.vec = paste(x.df[,"Stimulation"], x.df[,"Group"], sep=".")
   }else{
     Treatment.Group.vec = paste(x.df[,"Treatment"], x.df[,"Group"], sep=".")
