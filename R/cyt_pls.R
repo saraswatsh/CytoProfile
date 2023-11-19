@@ -32,7 +32,6 @@
 #' @examples
 #' cyt.plsda(cytdata.df[,-c(1,3)], colors = c("black", "purple"), title = "Example Analysis.pdf", bg = TRUE, conf.mat = TRUE)
 #' cyt.plsda(cytdata.df[,-c(1,3)], colors = c("black", "purple"), title = "Example Analysis.pdf", ellipse = TRUE, conf.mat = TRUE)
-#' cyt.plsda(cytdata.df[,-c(1,2)], colors = c("black", "purple"), title = "Example Analysis.pdf", conf.mat = FALSE)
 #' cyt.plsda(cytdata.df[,-c(1,4)], ellipse = TRUE, title = "Example Analysis.pdf", conf.mat = TRUE)
 #' @export
 

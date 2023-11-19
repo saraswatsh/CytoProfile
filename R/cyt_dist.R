@@ -13,7 +13,9 @@
 #'
 #' @return Prints histograms of Skewness and Kurtosis of the continuous variables using raw data and log2 transformation.
 #' @examples
-#' cyt.dist(cytdata.df", Title = "Skew and Kurtosis.pdf")
+#' data(cytdata.df)
+#' cyt.skku(cytdata.df[,-c(1,3)], Title = "Skew and Kurtosis.pdf")
+#' cyt.skku(cytdata.df[,-c(1,4)], Title = "Skew and Kurtosis.pdf")
 #' @export
 #'
 cyt.skku = function(x.df, Title) {
@@ -33,8 +35,7 @@ cyt.skku = function(x.df, Title) {
   ## raw value
   if ("Stimulation" %in% names(x.df[,c(1:2)])){
     Treatment.Group.vec = paste(x.df[,"Stimulation"], x.df[,"Group"], sep=".")
-  }
-  else{
+  }else{
     Treatment.Group.vec = paste(x.df[,"Treatment"], x.df[,"Group"], sep=".")
   }
   Treatment.Groups = names( tapply( x.df[,3], INDEX=Treatment.Group.vec, mean ))
@@ -58,8 +59,7 @@ cyt.skku = function(x.df, Title) {
   ## Log2 value
   if ("Stimulation" %in% names(data.df0[,c(1:2)])){
     Treatment.Group.vec = paste(x.df[,"Stimulation"], x.df[,"Group"], sep=".")
-  }
-  else{
+  }else{
     Treatment.Group.vec = paste(x.df[,"Treatment"], x.df[,"Group"], sep=".")
   }
   Treatment.Groups = names( tapply( x.df[,3], INDEX=Treatment.Group.vec, mean ))
