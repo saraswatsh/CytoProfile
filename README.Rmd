@@ -1,0 +1,55 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# CytProfile
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of CytProfile is to conduct quality control using biological
+    meaningful cutoff on raw measured values of cytokines. Test on distributional
+    symmetry to suggest the adopt of transformation. Exploratory analysis including
+    summary statistics, enriched boxplot, and barplots. Univariate analysis 
+    and Multivariate analysis options are further available to dive deeper
+
+## Installation
+
+Before installation of the CytProfile package, make sure to install BiocManager and mix0mics packages using: 
+
+```r
+## install BiocManager
+if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager") 
+## install mixOmics 
+BiocManager::install('mixOmics')
+```
+
+
+You can install the development version of CytProfile from [GitHub](https://github.com/steal123/CytProfile) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("steal123/CytProfile")
+```
+
+## Example
+
+This is a basic example which shows you how to analyze a data set:
+
+```{r example}
+library(CytProfile)
+## basic example code
+```
+
+You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this.
