@@ -45,7 +45,7 @@ devtools::install_github("steal123/CytProfile")
 
 ## Example
 
-This is a basic example which shows you how to analyze a data set:
+This is a basic example which shows you how to analyze a data set. The PDF files of the plots and PLS-DA analysis will be under the output folder. 
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 library(CytProfile)
@@ -53,7 +53,8 @@ library(CytProfile)
 # Loading in data
 data("cytdata.df")
 data.df = cytdata.df
-
+## Setting working directory to output folder to save the PDF files. 
+setwd("C:/Users/shubh/Desktop/RA/R Package/CytProfile/output")
 ## Exploratory Data Analysis
 # Generating boxplots to check for outliers for raw values
 cyt.bp(data.df[,-c(1:4)], Title = "Boxplot.byCytokine.Raw.pdf") # We are removing the first 4 columns as we only want the continuous variables. 
