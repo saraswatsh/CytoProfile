@@ -30,7 +30,7 @@ You can install the development version of CytProfile from
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("steal123/CytProfile")
+devtools::install_github("saraswatsh/CytProfile")
 ```
 
 ## Example
