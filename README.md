@@ -26,7 +26,7 @@ BiocManager::install('mixOmics')
 ```
 
 You can install the development version of CytProfile from
-[GitHub](https://github.com/steal123/CytProfile) with:
+[GitHub](https://github.com/saraswatsh/CytProfile) with:
 
 ``` r
 # install.packages("devtools")
