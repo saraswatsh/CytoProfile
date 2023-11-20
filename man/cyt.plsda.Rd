@@ -16,7 +16,7 @@ cyt.plsda(
 \arguments{
 \item{x.df}{A matrix or data frame of variables.}
 
-\item{colors}{Vector of colors to be set, list of colors to be set. Default set to NULL and will result in random colors.}
+\item{colors}{Vector of colors to be set, list of colors to be set equal to the number of groups or treatments. Default set to NULL and will result in random colors.}
 
 \item{title}{Title of the PDF file to be saved.}
 

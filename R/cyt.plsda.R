@@ -16,7 +16,7 @@
 #' components for the PLS-DA analysis.
 #'
 #' @param x.df A matrix or data frame of variables.
-#' @param colors Vector of colors to be set, list of colors to be set. Default set to NULL and will result in random colors.
+#' @param colors Vector of colors to be set, list of colors to be set equal to the number of groups or treatments. Default set to NULL and will result in random colors.
 #' @param title Title of the PDF file to be saved.
 #' @param ellipse If ellipse should be drawn in the figures or not. Default set to FALSE.
 #' @param bg If prediction background should be drawn in the figures or not. Default set to FALSE.
@@ -36,15 +36,6 @@
 #' @export
 
 cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, conf.mat = FALSE){
-
-  if (!requireNamespace("BiocManager", quietly = TRUE)) {
-    install.packages("BiocManager")
-  }
-
-  if (!requireNamespace("mixOmics", quietly = TRUE)) {
-    BiocManager::install("mixOmics")
-  }
-  library(mixOmics)
   # Log2 transforming cytokines
   x.df = data.frame(x.df[,c(1:2)], log2(x.df[, -c(1:2)]))
 
@@ -174,7 +165,7 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
       # Conditions to have either ellipses or prediction background or both or neither on graphs.
       if(ellipse == TRUE & bg == TRUE){
         plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=16,
-                  ellipse=TRUE, title= paste (Title, "With Accuracy:",acc1,"%"),
+                  ellipse=TRUE, title= paste (Title, "(VIP>1)", "With Accuracy:",acc2,"%"),
                   background = bg.maxdist)
       }
       else if(ellipse == TRUE) {
@@ -188,7 +179,7 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
       }
       else if(ellipse == FALSE & bg == FALSE){
         plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=16,
-                  ellipse=FALSE, title= paste (Title, "With Accuracy:",acc1,"%"))
+                  ellipse=FALSE, title= paste (Title, "(VIP>1)", "With Accuracy:",acc2,"%"))
       }
 
       plotLoadings(cytokine.splsda, comp=1, contrib = 'max', method = 'mean',
@@ -311,21 +302,21 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
       # Conditions to have either ellipses or prediction background or both or neither on graphs.
       if(ellipse == TRUE & bg == TRUE){
         plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=16,
-                  ellipse=TRUE, title= paste (Title, "With Accuracy:",acc1,"%"),
+                  ellipse=TRUE, title= paste (Title, "(VIP>1)", "With Accuracy:",acc2,"%"),
                   background = bg.maxdist)
       }
       else if(ellipse == TRUE) {
         plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=16,
-                  ellipse=TRUE, title=paste(Title, "(VIP>1)","With Accuracy", acc2, "%" ))
+                  ellipse=TRUE, title=paste(Title, "(VIP>1)", "With Accuracy:",acc2,"%"))
       }
       else if(bg == TRUE){
         plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=16,
-                  ellipse=FALSE, title=paste(Title, "(VIP>1)","With Accuracy", acc2, "%" ),
+                  ellipse=FALSE, title=paste(Title, "(VIP>1)", "With Accuracy:",acc2,"%"),
                   background = bg.maxdist)
       }
       else if(ellipse == FALSE & bg == FALSE){
         plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=16,
-                  ellipse=FALSE, title= paste (Title, "With Accuracy:",acc1,"%"))
+                  ellipse=FALSE, title= paste (Title, "(VIP>1)", "With Accuracy:",acc2,"%"))
       }
 
       plotLoadings(cytokine.splsda, comp=1, contrib = 'max', method = 'mean',
