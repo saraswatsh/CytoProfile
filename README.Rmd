@@ -47,7 +47,7 @@ devtools::install_github("steal123/CytProfile")
 
 This is a basic example which shows you how to analyze a data set:
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
 library(CytProfile)
 ## basic example code
 # Loading in data

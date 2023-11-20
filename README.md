@@ -39,33 +39,6 @@ This is a basic example which shows you how to analyze a data set:
 
 ``` r
 library(CytProfile)
-#> Loading required package: BiocManager
-#> Bioconductor version '3.17' is out-of-date; the current release version '3.18'
-#>   is available with R version '4.3'; see https://bioconductor.org/install
-#> Loading required package: mixOmics
-#> Loading required package: MASS
-#> Loading required package: lattice
-#> Loading required package: ggplot2
-#> 
-#> Loaded mixOmics 6.24.0
-#> Thank you for using mixOmics!
-#> Tutorials: http://mixomics.org
-#> Bookdown vignette: https://mixomicsteam.github.io/Bookdown
-#> Questions, issues: Follow the prompts at http://mixomics.org/contact-us
-#> Cite us:  citation('mixOmics')
-#> Loading required package: moments
-#> Loading required package: tidyverse
-#> ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-#> ✔ dplyr     1.1.4     ✔ readr     2.1.4
-#> ✔ forcats   1.0.0     ✔ stringr   1.5.1
-#> ✔ lubridate 1.9.3     ✔ tibble    3.2.1
-#> ✔ purrr     1.0.2     ✔ tidyr     1.3.0
-#> ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-#> ✖ dplyr::filter() masks stats::filter()
-#> ✖ dplyr::lag()    masks stats::lag()
-#> ✖ purrr::map()    masks mixOmics::map()
-#> ✖ dplyr::select() masks MASS::select()
-#> ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 ## basic example code
 # Loading in data
 data("cytdata.df")
@@ -116,7 +89,6 @@ cyt.anova(data.df[,c(2:4,5:6)]) # This only considers 2 cytokines for this examp
 # Note this takes into account all groups and treatment. 
 x.df = data.df[,-c(1,4)]
 cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE, conf.mat = TRUE)
-#> Warning in cor(A[[k]], variates.A[[k]]): the standard deviation is zero
 #> Confusion Matrix for PLS-DA Comparison 
 #>          predicted.as.LeanNGT predicted.as.ObeseNGT predicted.as.preT2D
 #> LeanNGT                     3                     0                  25
@@ -143,13 +115,6 @@ cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE, conf.mat = TRU
 # Filtering data for specific groups and treatment
 filt.data = filter(data.df, Group != "LeanNGT" & Group != "preT2D")
 cyt.plsda(filt.data[,-c(1,3)], colors = c("black", "purple"), title = "Example PLS-DA Analysis 2.pdf", bg = TRUE, conf.mat = TRUE)
-#> Warning in cor(A[[k]], variates.A[[k]]): the standard deviation is zero
-
-#> Warning in cor(A[[k]], variates.A[[k]]): the standard deviation is zero
-
-#> Warning in cor(A[[k]], variates.A[[k]]): the standard deviation is zero
-
-#> Warning in cor(A[[k]], variates.A[[k]]): the standard deviation is zero
 #> Confusion Matrix for PLS-DA Comparison 
 #>          predicted.as.ObeseNGT predicted.as.T2D
 #> ObeseNGT                     5                4
