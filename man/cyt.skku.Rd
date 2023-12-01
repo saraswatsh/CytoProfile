@@ -2,7 +2,7 @@
 % Please edit documentation in R/cyt.skku.R
 \name{cyt.skku}
 \alias{cyt.skku}
-\title{Distribution of the data set}
+\title{Distribution of the data set shown by skewness and kurtosis}
 \usage{
 cyt.skku(x.df, Title)
 }

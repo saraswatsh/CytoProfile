@@ -2,5 +2,6 @@
 
 export(cyt.anova)
 export(cyt.bp)
+export(cyt.errbp)
 export(cyt.plsda)
 export(cyt.skku)

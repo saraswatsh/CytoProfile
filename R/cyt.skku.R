@@ -2,7 +2,7 @@
 ############### Skewness and Kurtosis #########################################
 ###############################################################################
 
-#' Distribution of the data set
+#' Distribution of the data set shown by skewness and kurtosis
 #'
 #' @param x.df A matrix or data frame of raw data.
 #' @param Title Name for the PDF file.
