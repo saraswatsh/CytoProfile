@@ -7,7 +7,7 @@
 \format{
 \subsection{\code{cytdata.df}}{
 
-A data frame with 159 rows and 29 columns:
+A data frame with 297 rows and 29 columns:
 \describe{
 \item{Group}{Group assigned to the subjects.}
 \item{Stimulation}{Stimulation recieved by subjects.}

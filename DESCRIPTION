@@ -2,10 +2,9 @@ Package: CytProfile
 Title: Cytokine Profiling Analysis Tool
 Version: 1.0
 Authors@R: c(
-    person("Shubh", "Saraswat", email = "shubh.saraswat00@gmail.com", role = c("cre", "aut"),
+    person("Shubh", "Saraswat", email = "shubh.saraswat00@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0009-2359-1484")),
     person("Xiaohua Douglas", "Zhang", email = "douglas.zhang@uky.edu", role = "aut"))
-Maintainer: Shubh Saraswat <shubh.saraswat00@gmail.com>
 Description: This tool will help in conducting quality control using biological
     meaningful cutoff on raw measured values of cytokines. Test on distributional
     symmetry to suggest the adopt of transformation. Exploratory analysis including
