@@ -57,34 +57,26 @@ cyt.bp(log2(data.df[,-c(1:4)]), Title = "Boxplot.byCytokine.log2.pdf") # Make su
 #> png 
 #>   2
 # Generating histograms for skewness and kurtosis based on raw values and log2 transformation
-cyt.skku(data.df[,-c(1,3)], Title = "Skew and Kurtosis.pdf")
+cyt.skku(data.df[,-c(1,4)], Title = "Skew and Kurtosis.pdf")
 #> png 
 #>   2
 # Performing ANOVA comparisons test for univariate analysis
-cyt.anova(data.df[,c(2:4,5:6)]) # This only considers 2 cytokines for this example only
+cyt.anova(data.df[,c(2:3,5:6)]) # This only considers 2 cytokines for this example only
 #> $IL.17F_Group
-#> ObeseNGT-LeanNGT   preT2D-LeanNGT      T2D-LeanNGT  preT2D-ObeseNGT 
-#>        0.7032340        0.8858652        0.4831059        0.2876549 
-#>     T2D-ObeseNGT       T2D-preT2D 
-#>        0.9868528        0.1478753 
+#>  PreT2D-ND     T2D-ND T2D-PreT2D 
+#>  0.6445189  0.1638310  0.6223573 
 #> 
 #> $GM.CSF_Group
-#> ObeseNGT-LeanNGT   preT2D-LeanNGT      T2D-LeanNGT  preT2D-ObeseNGT 
-#>      0.812501426      0.747090933      0.001642992      0.999884541 
-#>     T2D-ObeseNGT       T2D-preT2D 
-#>      0.037723063      0.031770058 
+#>  PreT2D-ND     T2D-ND T2D-PreT2D 
+#>  0.7730980  0.5373287  0.1893654 
 #> 
 #> $IL.17F_Treatment
-#>   Etomoxir-BPTES     UK5099-BPTES    Vehicle-BPTES  UK5099-Etomoxir 
-#>     6.112997e-06     4.769375e-08     1.078340e-01     7.632088e-01 
-#> Vehicle-Etomoxir   Vehicle-UK5099 
-#>     2.709334e-02     1.070054e-03 
+#>          LPS-CD3/CD28 Unstimulated-CD3/CD28      Unstimulated-LPS 
+#>          7.229772e-13          7.214229e-13          9.990797e-01 
 #> 
 #> $GM.CSF_Treatment
-#>   Etomoxir-BPTES     UK5099-BPTES    Vehicle-BPTES  UK5099-Etomoxir 
-#>     5.479244e-09     9.588992e-09     4.995809e-02     9.988347e-01 
-#> Vehicle-Etomoxir   Vehicle-UK5099 
-#>     6.937026e-04     1.095577e-03
+#>          LPS-CD3/CD28 Unstimulated-CD3/CD28      Unstimulated-LPS 
+#>          7.183143e-13          6.974421e-13          3.481621e-01
 
 ## Partial Least Squares Discriminant Analysis (PLS-DA) 
 # In this code, we will have background predict to be turned on to see the classification areas and 
@@ -93,37 +85,25 @@ cyt.anova(data.df[,c(2:4,5:6)]) # This only considers 2 cytokines for this examp
 x.df = data.df[,-c(1,4)]
 cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE, conf.mat = TRUE)
 #> Confusion Matrix for PLS-DA Comparison 
-#>          predicted.as.LeanNGT predicted.as.ObeseNGT predicted.as.preT2D
-#> LeanNGT                     3                     0                  25
-#> ObeseNGT                    4                     0                  18
-#> preT2D                      3                     0                  25
-#> T2D                         2                     0                   9
-#>          predicted.as.T2D
-#> LeanNGT                15
-#> ObeseNGT               14
-#> preT2D                 16
-#> T2D                    25
+#>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
+#> ND                   0                  17               16
+#> PreT2D               0                  31                2
+#> T2D                  0                  12               21
 #> Confusion Matrix for PLS-DA Comparison with VIP Score > 1 
-#>          predicted.as.LeanNGT predicted.as.ObeseNGT predicted.as.preT2D
-#> LeanNGT                     1                     0                  25
-#> ObeseNGT                    1                     0                  19
-#> preT2D                      0                     0                  30
-#> T2D                         1                     0                   8
-#>          predicted.as.T2D
-#> LeanNGT                17
-#> ObeseNGT               16
-#> preT2D                 14
-#> T2D                    27
+#>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
+#> ND                   0                  14               19
+#> PreT2D               0                  28                5
+#> T2D                  0                  10               23
 
 # Filtering data for specific groups and treatment
-filt.data = filter(data.df, Group != "LeanNGT" & Group != "preT2D")
-cyt.plsda(filt.data[,-c(1,3)], colors = c("black", "purple"), title = "Example PLS-DA Analysis 2.pdf", bg = TRUE, conf.mat = TRUE)
+filt.data = filter(data.df, Group != "ND", Treatment != "Unstimulated")
+cyt.plsda(filt.data[,-c(1,4)], colors = c("black", "purple"), title = "Example PLS-DA Analysis 2.pdf", bg = TRUE, conf.mat = TRUE)
 #> Confusion Matrix for PLS-DA Comparison 
-#>          predicted.as.ObeseNGT predicted.as.T2D
-#> ObeseNGT                     5                4
-#> T2D                          3                6
+#>        predicted.as.PreT2D predicted.as.T2D
+#> PreT2D                  17               16
+#> T2D                      6               27
 #> Confusion Matrix for PLS-DA Comparison with VIP Score > 1 
-#>          predicted.as.ObeseNGT predicted.as.T2D
-#> ObeseNGT                     5                4
-#> T2D                          2                7
+#>        predicted.as.PreT2D predicted.as.T2D
+#> PreT2D                  17               16
+#> T2D                      3               30
 ```
