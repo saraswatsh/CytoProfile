@@ -6,6 +6,8 @@
 #'
 #' @param x.df A matrix or data frame of raw data.
 #' @param Title Name for the PDF file.
+#' @param printResRaw Print tibbles of skewness and kurtosis for raw values. Default set to FALSE.
+#' @param printResLog Print tibbles of skewness and kurtosis for log2 transformed values. Default set to FALSE.
 #' @description
 #' The function takes in a data frame and subsets the numeric columns from the data which is then
 #' used to calculate the skewed and kurtosis values. The values are then plotted using histograms
@@ -14,11 +16,10 @@
 #' @return Prints histograms of Skewness and Kurtosis of the continuous variables using raw data and log2 transformation.
 #' @examples
 #' data(cytdata.df)
-#' cyt.skku(cytdata.df[,-c(1,3)], Title = "Skew and Kurtosis.pdf")
 #' cyt.skku(cytdata.df[,-c(1,4)], Title = "Skew and Kurtosis.pdf")
 #' @export
 #'
-cyt.skku = function(x.df, Title) {
+cyt.skku = function(x.df, Title, printResRaw = FALSE, printResLog = FALSE) {
   pdf(file = Title)
   cytokine.mat = x.df[, -c(1:2)]
   cytokineNames = colnames(cytokine.mat)
@@ -88,4 +89,17 @@ cyt.skku = function(x.df, Title) {
   hist(result.noComb.arr[,"kurtosis",], xlab="kurtosis of log2 data", main="log2 transformed:kurtosis")
 
   dev.off()
+
+  if(printResRAW == TRUE && printResLog == TRUE){
+    print("Results for Raw Values: /n")
+    return(result.noComb.raw.arr)
+    print("Results for Log2 Transformed Values /n")
+    return(result.noComb.arr)
+  }else if (printResRaw == TRUE){
+    print("Results for Raw Values: /n")
+    return(result.noComb.raw.arr)
+  }else if (printResLog == TRUE){
+    print("Results for Log2 Transformed Values: /n")
+    return(result.noComb.arr)
+  }
 }
