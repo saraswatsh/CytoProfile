@@ -29,7 +29,6 @@
 #' @param xlab Labeling x axis.
 #' @param ylab Labeling y axis.
 #' @param main Title of the graph.
-#' @param Title Title of the pdf to be saved.
 #' @description This function draws an error-bar plot enriched with p-value and/or effect size
 #'              for the comparison of each selected groups to the baseline group.
 #'              Note: The first column for center.df must be for the baseline group.
@@ -38,8 +37,7 @@
 #'
 cyt.errbp =
   function(center.df, pLab=TRUE, esLab=TRUE, classSymbol=TRUE,
-           xlab="", ylab="", main="", Title) {
-    pdf(file = Title)
+           xlab="", ylab="", main="") {
 
     #  options(scipen = 3)
     #  options(digits = 2)

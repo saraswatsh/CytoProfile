@@ -11,8 +11,7 @@ cyt.errbp(
   classSymbol = TRUE,
   xlab = "",
   ylab = "",
-  main = "",
-  Title
+  main = ""
 )
 }
 \arguments{
@@ -32,8 +31,6 @@ cyt.errbp(
 \item{ylab}{Labeling y axis.}
 
 \item{main}{Title of the graph.}
-
-\item{Title}{Title of the pdf to be saved.}
 }
 \value{
 Prints error-bar plots.

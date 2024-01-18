@@ -58,6 +58,20 @@ cyt.bp(log2(data.df[,-c(1:4)]), Title = "Boxplot.byCytokine.log2.pdf") # Make su
 #>   2
 # Generating histograms for skewness and kurtosis based on raw values and log2 transformation
 cyt.skku(data.df[,-c(1,4)], Title = "Skew and Kurtosis.pdf")
+# Generating Error Bar Plot
+cytokine.mat = cytdata.df[, -c(1:4)] # Extracting all cytokines to be stored in one object
+cytokineNames = colnames(cytokine.mat) # Extracting the cytokine names
+nCytokine = length(cytokineNames) # Obtaining the total number of cytokines
+results = cyt.skku(cytdata.df[,-c(1,4)], printResLog = TRUE) # Extracting values
+#> [1] "Results for Log2 Transformed Values:/n"
+pdf( "barErrorPlot.pdf" )
+par(mfrow=c(2,2), mar=c(8.1,  4.1, 4.1, 2.1) )
+for( k in 1:nCytokine ) {
+  center.df = data.frame( "name"=rownames(results[,,k]), results[,,k] )
+  cyt.errbp(center.df, pLab=FALSE, esLab=FALSE, classSymbol=TRUE,
+               ylab="Concentration in log2 scale",  main=cytokineNames[k] )
+}
+dev.off()
 #> png 
 #>   2
 # Performing ANOVA comparisons test for univariate analysis
@@ -77,7 +91,6 @@ cyt.anova(data.df[,c(2:3,5:6)]) # This only considers 2 cytokines for this examp
 #> $GM.CSF_Treatment
 #>          LPS-CD3/CD28 Unstimulated-CD3/CD28      Unstimulated-LPS 
 #>          7.183143e-13          6.974421e-13          3.481621e-01
-
 ## Partial Least Squares Discriminant Analysis (PLS-DA) 
 # In this code, we will have background predict to be turned on to see the classification areas and 
 # we will also print out the confusion matrix based on classification. 

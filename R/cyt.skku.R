@@ -19,87 +19,163 @@
 #' cyt.skku(cytdata.df[,-c(1,4)], Title = "Skew and Kurtosis.pdf")
 #' @export
 #'
-cyt.skku = function(x.df, Title, printResRaw = FALSE, printResLog = FALSE) {
-  pdf(file = Title)
-  cytokine.mat = x.df[, -c(1:2)]
-  cytokineNames = colnames(cytokine.mat)
-  nCytokine = length(cytokineNames)
+cyt.skku = function(x.df, Title = NULL, printResRaw = FALSE, printResLog = FALSE) {
+  if(!is.null(Title)){
+    pdf(file = Title)
+    cytokine.mat = x.df[, -c(1:2)]
+    cytokineNames = colnames(cytokine.mat)
+    nCytokine = length(cytokineNames)
 
-  condt = !is.na(cytokine.mat) & cytokine.mat >0
-  min(cytokine.mat[condt], na.rm=TRUE)  # [1] 0.01
-  # quantile( cytokine.mat[condt], probs=0:100/100, na.rm=TRUE)
-  Cutoff = min(cytokine.mat[condt], na.rm=TRUE)/10
+    condt = !is.na(cytokine.mat) & cytokine.mat >0
+    min(cytokine.mat[condt], na.rm=TRUE)  # [1] 0.01
+    # quantile( cytokine.mat[condt], probs=0:100/100, na.rm=TRUE)
+    Cutoff = min(cytokine.mat[condt], na.rm=TRUE)/10
 
-  outcomes = c("n", "center", "spread", "skewness", "kurtosis")
-  nOutcome = length( outcomes )
+    outcomes = c("n", "center", "spread", "skewness", "kurtosis")
+    nOutcome = length( outcomes )
 
-  ## raw value
-  if ("Stimulation" %in% names(x.df[,c(1:2)])){
-    Treatment.Group.vec = paste(x.df[,"Stimulation"], x.df[,"Group"], sep=".")
-  }else{
-    Treatment.Group.vec = paste(x.df[,"Treatment"], x.df[,"Group"], sep=".")
+    ## raw value
+    if ("Stimulation" %in% names(x.df[,c(1:2)])){
+      Treatment.Group.vec = paste(x.df[,"Stimulation"], x.df[,"Group"], sep=".")
+    }else{
+      Treatment.Group.vec = paste(x.df[,"Treatment"], x.df[,"Group"], sep=".")
+    }
+    Treatment.Groups = names( tapply( x.df[,3], INDEX=Treatment.Group.vec, mean ))
+    nTrtGroup = length( Treatment.Groups )
+    result.arr = array(NA, dim=c(nTrtGroup, nOutcome, nCytokine) )
+    dimnames(result.arr) = list( Treatment.Groups, outcomes, cytokineNames )
+
+    for( k in 1:nCytokine ) {
+      Y = cytokine.mat[,k]
+      idx = Treatment.Group.vec
+      result.arr[,1,k] = tapply( Y, INDEX=idx, function(x){sum(!is.na(x))} )
+      result.arr[,2,k] = tapply( Y, INDEX=idx, mean, na.rm=TRUE)
+      #  result.arr[,3,k] = tapply( Y, INDEX=idx, sd, na.rm=TRUE)       # standard deviation
+      result.arr[,3,k] = tapply( Y, INDEX=idx,
+                                 function(x){sd(x, na.rm=TRUE)/sqrt(sum(!is.na(x)))} ) # standard error
+      result.arr[,4,k] = tapply( Y, INDEX=idx, skewness, na.rm=TRUE)  # skewness
+      result.arr[,5,k] = tapply( Y, INDEX=idx, kurtosis, na.rm=TRUE)  #kurtosis
+    }
+    result.noComb.raw.arr = result.arr
+
+    ## Log2 value
+    if ("Stimulation" %in% names(x.df[,c(1:2)])){
+      Treatment.Group.vec = paste(x.df[,"Stimulation"], x.df[,"Group"], sep=".")
+    }else{
+      Treatment.Group.vec = paste(x.df[,"Treatment"], x.df[,"Group"], sep=".")
+    }
+    Treatment.Groups = names( tapply( x.df[,3], INDEX=Treatment.Group.vec, mean ))
+    nTrtGroup = length( Treatment.Groups )
+    result.arr = array(NA, dim=c(nTrtGroup, nOutcome, nCytokine) )
+    dimnames(result.arr) = list( Treatment.Groups, outcomes, cytokineNames )
+
+    for( k in 1:nCytokine ) {
+      Y = log2(cytokine.mat[,k]+Cutoff)
+      idx = Treatment.Group.vec
+      result.arr[,1,k] = tapply( Y, INDEX=idx, function(x){sum(!is.na(x))} )
+      result.arr[,2,k] = tapply( Y, INDEX=idx, mean, na.rm=TRUE)
+      #  result.arr[,3,k] = tapply( Y, INDEX=idx, sd, na.rm=TRUE)       # standard deviation
+      result.arr[,3,k] = tapply( Y, INDEX=idx,
+                                 function(x){sd(x, na.rm=TRUE)/sqrt(sum(!is.na(x)))} ) # standard error
+      result.arr[,4,k] = tapply( Y, INDEX=idx, skewness, na.rm=TRUE)  # skewness
+      result.arr[,5,k] = tapply( Y, INDEX=idx, kurtosis, na.rm=TRUE)  #kurtosis
+    }
+    result.noComb.arr = result.arr
+
+    par(mfrow=c(1,2))
+    hist(result.noComb.raw.arr[,"skewness",], xlab="skewness of raw data (every combination)", main="raw data: skewness")
+    hist(result.noComb.arr[,"skewness",], xlab="skewness of log2 data (every combination)", main="log2 transformed: skewness")
+
+    hist(result.noComb.raw.arr[,"kurtosis",], xlab="kurtosis of raw data", main="raw data: kurtosis")
+    hist(result.noComb.arr[,"kurtosis",], xlab="kurtosis of log2 data", main="log2 transformed:kurtosis")
+
+    dev.off()
+
+    if(printResRaw == TRUE & printResLog == TRUE){
+      print("Results for Raw Values:/n")
+      return(result.noComb.raw.arr)
+      print("Results for Log2 Transformed Values:/n")
+      return(result.noComb.arr)
+    }else if (printResRaw == TRUE){
+      print("Results for Raw Values:/n")
+      return(result.noComb.raw.arr)
+    }else if (printResLog == TRUE){
+      print("Results for Log2 Transformed Values:/n")
+      return(result.noComb.arr)
+    }
   }
-  Treatment.Groups = names( tapply( x.df[,3], INDEX=Treatment.Group.vec, mean ))
-  nTrtGroup = length( Treatment.Groups )
-  result.arr = array(NA, dim=c(nTrtGroup, nOutcome, nCytokine) )
-  dimnames(result.arr) = list( Treatment.Groups, outcomes, cytokineNames )
+  else{
+    cytokine.mat = x.df[, -c(1:2)]
+    cytokineNames = colnames(cytokine.mat)
+    nCytokine = length(cytokineNames)
 
-  for( k in 1:nCytokine ) {
-    Y = cytokine.mat[,k]
-    idx = Treatment.Group.vec
-    result.arr[,1,k] = tapply( Y, INDEX=idx, function(x){sum(!is.na(x))} )
-    result.arr[,2,k] = tapply( Y, INDEX=idx, mean, na.rm=TRUE)
-    #  result.arr[,3,k] = tapply( Y, INDEX=idx, sd, na.rm=TRUE)       # standard deviation
-    result.arr[,3,k] = tapply( Y, INDEX=idx,
-                               function(x){sd(x, na.rm=TRUE)/sqrt(sum(!is.na(x)))} ) # standard error
-    result.arr[,4,k] = tapply( Y, INDEX=idx, skewness, na.rm=TRUE)  # skewness
-    result.arr[,5,k] = tapply( Y, INDEX=idx, kurtosis, na.rm=TRUE)  #kurtosis
-  }
-  result.noComb.raw.arr = result.arr
+    condt = !is.na(cytokine.mat) & cytokine.mat >0
+    min(cytokine.mat[condt], na.rm=TRUE)  # [1] 0.01
+    # quantile( cytokine.mat[condt], probs=0:100/100, na.rm=TRUE)
+    Cutoff = min(cytokine.mat[condt], na.rm=TRUE)/10
 
-  ## Log2 value
-  if ("Stimulation" %in% names(x.df[,c(1:2)])){
-    Treatment.Group.vec = paste(x.df[,"Stimulation"], x.df[,"Group"], sep=".")
-  }else{
-    Treatment.Group.vec = paste(x.df[,"Treatment"], x.df[,"Group"], sep=".")
-  }
-  Treatment.Groups = names( tapply( x.df[,3], INDEX=Treatment.Group.vec, mean ))
-  nTrtGroup = length( Treatment.Groups )
-  result.arr = array(NA, dim=c(nTrtGroup, nOutcome, nCytokine) )
-  dimnames(result.arr) = list( Treatment.Groups, outcomes, cytokineNames )
+    outcomes = c("n", "center", "spread", "skewness", "kurtosis")
+    nOutcome = length( outcomes )
 
-  for( k in 1:nCytokine ) {
-    Y = log2(cytokine.mat[,k]+Cutoff)
-    idx = Treatment.Group.vec
-    result.arr[,1,k] = tapply( Y, INDEX=idx, function(x){sum(!is.na(x))} )
-    result.arr[,2,k] = tapply( Y, INDEX=idx, mean, na.rm=TRUE)
-    #  result.arr[,3,k] = tapply( Y, INDEX=idx, sd, na.rm=TRUE)       # standard deviation
-    result.arr[,3,k] = tapply( Y, INDEX=idx,
-                               function(x){sd(x, na.rm=TRUE)/sqrt(sum(!is.na(x)))} ) # standard error
-    result.arr[,4,k] = tapply( Y, INDEX=idx, skewness, na.rm=TRUE)  # skewness
-    result.arr[,5,k] = tapply( Y, INDEX=idx, kurtosis, na.rm=TRUE)  #kurtosis
-  }
-  result.noComb.arr = result.arr
+    ## raw value
+    if ("Stimulation" %in% names(x.df[,c(1:2)])){
+      Treatment.Group.vec = paste(x.df[,"Stimulation"], x.df[,"Group"], sep=".")
+    }else{
+      Treatment.Group.vec = paste(x.df[,"Treatment"], x.df[,"Group"], sep=".")
+    }
+    Treatment.Groups = names( tapply( x.df[,3], INDEX=Treatment.Group.vec, mean ))
+    nTrtGroup = length( Treatment.Groups )
+    result.arr = array(NA, dim=c(nTrtGroup, nOutcome, nCytokine) )
+    dimnames(result.arr) = list( Treatment.Groups, outcomes, cytokineNames )
 
-  par(mfrow=c(1,2))
-  hist(result.noComb.raw.arr[,"skewness",], xlab="skewness of raw data (every combination)", main="raw data: skewness")
-  hist(result.noComb.arr[,"skewness",], xlab="skewness of log2 data (every combination)", main="log2 transformed: skewness")
+    for( k in 1:nCytokine ) {
+      Y = cytokine.mat[,k]
+      idx = Treatment.Group.vec
+      result.arr[,1,k] = tapply( Y, INDEX=idx, function(x){sum(!is.na(x))} )
+      result.arr[,2,k] = tapply( Y, INDEX=idx, mean, na.rm=TRUE)
+      #  result.arr[,3,k] = tapply( Y, INDEX=idx, sd, na.rm=TRUE)       # standard deviation
+      result.arr[,3,k] = tapply( Y, INDEX=idx,
+                                 function(x){sd(x, na.rm=TRUE)/sqrt(sum(!is.na(x)))} ) # standard error
+      result.arr[,4,k] = tapply( Y, INDEX=idx, skewness, na.rm=TRUE)  # skewness
+      result.arr[,5,k] = tapply( Y, INDEX=idx, kurtosis, na.rm=TRUE)  #kurtosis
+    }
+    result.noComb.raw.arr = result.arr
 
-  hist(result.noComb.raw.arr[,"kurtosis",], xlab="kurtosis of raw data", main="raw data: kurtosis")
-  hist(result.noComb.arr[,"kurtosis",], xlab="kurtosis of log2 data", main="log2 transformed:kurtosis")
+    ## Log2 value
+    if ("Stimulation" %in% names(x.df[,c(1:2)])){
+      Treatment.Group.vec = paste(x.df[,"Stimulation"], x.df[,"Group"], sep=".")
+    }else{
+      Treatment.Group.vec = paste(x.df[,"Treatment"], x.df[,"Group"], sep=".")
+    }
+    Treatment.Groups = names( tapply( x.df[,3], INDEX=Treatment.Group.vec, mean ))
+    nTrtGroup = length( Treatment.Groups )
+    result.arr = array(NA, dim=c(nTrtGroup, nOutcome, nCytokine) )
+    dimnames(result.arr) = list( Treatment.Groups, outcomes, cytokineNames )
 
-  dev.off()
+    for( k in 1:nCytokine ) {
+      Y = log2(cytokine.mat[,k]+Cutoff)
+      idx = Treatment.Group.vec
+      result.arr[,1,k] = tapply( Y, INDEX=idx, function(x){sum(!is.na(x))} )
+      result.arr[,2,k] = tapply( Y, INDEX=idx, mean, na.rm=TRUE)
+      #  result.arr[,3,k] = tapply( Y, INDEX=idx, sd, na.rm=TRUE)       # standard deviation
+      result.arr[,3,k] = tapply( Y, INDEX=idx,
+                                 function(x){sd(x, na.rm=TRUE)/sqrt(sum(!is.na(x)))} ) # standard error
+      result.arr[,4,k] = tapply( Y, INDEX=idx, skewness, na.rm=TRUE)  # skewness
+      result.arr[,5,k] = tapply( Y, INDEX=idx, kurtosis, na.rm=TRUE)  #kurtosis
+    }
+    result.noComb.arr = result.arr
 
-  if(printResRAW == TRUE && printResLog == TRUE){
-    print("Results for Raw Values: /n")
-    return(result.noComb.raw.arr)
-    print("Results for Log2 Transformed Values /n")
-    return(result.noComb.arr)
-  }else if (printResRaw == TRUE){
-    print("Results for Raw Values: /n")
-    return(result.noComb.raw.arr)
-  }else if (printResLog == TRUE){
-    print("Results for Log2 Transformed Values: /n")
-    return(result.noComb.arr)
+    if(printResRaw == TRUE & printResLog == TRUE){
+      print("Results for Raw Values:/n")
+      return(result.noComb.raw.arr)
+      print("Results for Log2 Transformed Values:/n")
+      return(result.noComb.arr)
+    }else if (printResRaw == TRUE){
+      print("Results for Raw Values:/n")
+      return(result.noComb.raw.arr)
+    }else if (printResLog == TRUE){
+      print("Results for Log2 Transformed Values:/n")
+      return(result.noComb.arr)
+    }
   }
 }
