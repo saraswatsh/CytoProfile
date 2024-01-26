@@ -38,7 +38,56 @@
 cyt.errbp =
   function(center.df, pLab=TRUE, esLab=TRUE, classSymbol=TRUE,
            xlab="", ylab="", main="") {
-
+    # Significance mark function
+    significanceMark.fn = function( p.value )
+    {
+      ##**************************************************************************
+      ## function to mark the significant level based on p-value
+      ## Input
+      ##   p.value:  a vector for p-value
+      ## Author: Xiaohua Douglas Zhang, 2022
+      ## Reference:
+      ##   Zhang XHD, 2011. Optimal High-Throughput Screening: Practical
+      ##   Experimental Design and Data Analysis for Genome-scale RNAi Research.
+      ##   Cambridge University Press, Cambridge, UK
+      ##**************************************************************************
+      significanceClass.vec <- rep( NA, length(p.value) )
+      significanceClass.vec[ p.value <= 0.05& p.value > 0.01] <- "*"
+      significanceClass.vec[ p.value <= 0.01& p.value > 0.001   ] <- "**"
+      significanceClass.vec[ p.value <= 0.001   & p.value > 0.0001   ] <- "***"
+      significanceClass.vec[ p.value <= 0.0001  & p.value > 0.00001    ] <- "****"
+      significanceClass.vec[ p.value <= 0.00001 ] <- "*****"
+      if( sum(is.na(p.value)) > 0 ) significanceClass.vec[ is.na(p.value) ] <- NA
+      significanceClass.vec
+    }
+    # Effect size mark function
+    effectSizeMark.fn <- function( SSMD )
+    {
+      ##**************************************************************************
+      ## function to mark SSMD-based effect size being large or beyond
+      ## Input
+      ##   SSMD:  a vector for SSMD value
+      ## Author: Xiaohua Douglas Zhang, 2022
+      ## Reference:
+      ##   Zhang XHD, 2011. Optimal High-Throughput Screening: Practical
+      ##   Experimental Design and Data Analysis for Genome-scale RNAi Research.
+      ##   Cambridge University Press, Cambridge, UK
+      ##**************************************************************************
+      effectClass.vec <- rep( NA, length(SSMD) )
+      effectClass.vec[ SSMD >= 5 ] <- ">>>>>"                  #extre.large 3 +
+      effectClass.vec[ SSMD >= 3    & SSMD < 5  ] <- ">>>>"    #extre.large 2 +
+      effectClass.vec[ SSMD >= 1.645 & SSMD < 3 ] <- ">>>"     #extre.large 1 +
+      effectClass.vec[ SSMD >= 1    & SSMD < 1.645 ] <- ">>"   #large +
+      effectClass.vec[ SSMD > 0.25  & SSMD < 1     ] <- ">"    #medium +
+      effectClass.vec[ SSMD < 0.25     & SSMD > -0.25 ] <- " " #Small or no effect
+      effectClass.vec[ SSMD <= -0.25& SSMD > -1    ] <- "<"    #medium -
+      effectClass.vec[ SSMD <= -1   & SSMD > -1.645] <- "<<"   #large -
+      effectClass.vec[ SSMD <= -1.645 & SSMD > -3 ] <- "<<<"   #extre.large 1 -
+      effectClass.vec[ SSMD <= -3   & SSMD > -5    ] <- "<<<<" #extre.large 2 -
+      effectClass.vec[ SSMD <= -5 ] <- "<<<<<"                 #extre.large 3 -
+      if( sum(is.na(SSMD)) > 0 ) effectClass.vec[ is.na(SSMD) ] <- NA
+      effectClass.vec
+    }
     #  options(scipen = 3)
     #  options(digits = 2)
     Center = center.df[, "center"]

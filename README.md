@@ -74,27 +74,80 @@ for( k in 1:nCytokine ) {
 dev.off()
 #> png 
 #>   2
+# Generating Error Bar Plot enriched with p-value and effect size 
+data.df = cytdata.df[,-1]
+cyt.mat = log2(data.df[,-c(1:3)])
+data.df1 = data.frame(data.df[,c(1:3)], cyt.mat)
+cytokineNames = colnames(cyt.mat)
+nCytokine = length(cytokineNames)
+condt = !is.na(cyt.mat) & cyt.mat >0
+Cutoff = min(cyt.mat[condt], na.rm=TRUE)/10
+# Creating a matrix for p-values from anova tests
+p.aov.mat = matrix(NA, nrow=nCytokine, ncol=3)
+# Changing column names
+dimnames(p.aov.mat) = list( cytokineNames, c("Group", "Treatment", "Interaction") )
+# Matrix to extract p-values from Tukey group comparison
+p.groupComp.mat = matrix(NA, nrow=nCytokine, ncol=9)
+# Changing column names
+dimnames(p.groupComp.mat) = list( cytokineNames, c("Comparison 1", "Comparison 2", "Comparison 3",
+                                                   "Comparison 4", "Comparison 5", "Comparison 6",
+                                                   "Comparison 7", "Comparison 8", "Comparison 9") )
+# Matrix for SSMD same size as other matrices
+ssmd.groupComp.stm.mat = mD.groupComp.stm.mat = p.groupComp.stm.mat = p.groupComp.mat
+
+for( i in 1:nCytokine ) {
+   #i = 1 # i=2
+  Cytokine = (cyt.mat[,i]+Cutoff)
+  cytokine.aov = aov( Cytokine ~ Group * Treatment, data=data.df)
+  aov.table = summary(cytokine.aov)[[1]]
+  p.aov.mat[i,] = aov.table[1:3,5]
+  p.groupComp.mat[i,] = TukeyHSD(cytokine.aov)$Group[1:3,4]
+  p.groupComp.stm.mat[i,] = TukeyHSD(cytokine.aov)$`Group:Treatment`[c(2:8,22,23),4]
+  mD.groupComp.stm.mat[i,] = TukeyHSD(cytokine.aov)$`Group:Treatment`[c(2:8,22,23),1]
+  ssmd.groupComp.stm.mat[i,]=mD.groupComp.stm.mat[i,]/sqrt(2*aov.table["Residuals","Mean Sq"])
+}
+
+# p.aov.mat
+# p.groupComp.mat
+# p.groupComp.stm.mat
+results = cyt.skku(cytdata.df[,-c(1,4)], printResLog = TRUE)
+#> [1] "Results for Log2 Transformed Values:/n"
+pdf( "barErrorPlot.enriched.pdf" )
+par(mfrow=c(2,3), mar=c(8.1,  4.1, 4.1, 2.1) )
+for( k in 1:nCytokine ) {
+  #k = 1
+  result.mat = results[1:9,,k]
+  center.df =
+    data.frame( "name"=rownames(result.mat), result.mat[, c("center", "spread")],
+                "p.value"= c(1,p.groupComp.stm.mat[k,1:8]),
+                "effect.size"=c(0,ssmd.groupComp.stm.mat[k,1:8])
+    )
+  cyt.errbp(center.df, pLab=TRUE, esLab=TRUE, classSymbol=TRUE,
+               ylab="Concentration in log2 scale", main=cytokineNames[k])
+}
+dev.off()
+#> png 
+#>   2
+
 # Performing ANOVA comparisons test for univariate analysis
 cyt.anova(data.df[,c(2:3,5:6)]) # This only considers 2 cytokines for this example only
-#> $IL.17F_Group
-#>  PreT2D-ND     T2D-ND T2D-PreT2D 
-#>  0.6445189  0.1638310  0.6223573 
-#> 
-#> $GM.CSF_Group
-#>  PreT2D-ND     T2D-ND T2D-PreT2D 
-#>  0.7730980  0.5373287  0.1893654 
-#> 
-#> $IL.17F_Treatment
+#> $Time_Treatment
 #>          LPS-CD3/CD28 Unstimulated-CD3/CD28      Unstimulated-LPS 
-#>          7.229772e-13          7.214229e-13          9.990797e-01 
+#>                     1                     1                     1 
 #> 
 #> $GM.CSF_Treatment
 #>          LPS-CD3/CD28 Unstimulated-CD3/CD28      Unstimulated-LPS 
-#>          7.183143e-13          6.974421e-13          3.481621e-01
+#>          7.183143e-13          6.974421e-13          3.481621e-01 
+#> 
+#> $IFN.G_Treatment
+#>          LPS-CD3/CD28 Unstimulated-CD3/CD28      Unstimulated-LPS 
+#>          7.445156e-13          7.394085e-13          9.987624e-01
 ## Partial Least Squares Discriminant Analysis (PLS-DA) 
 # In this code, we will have background predict to be turned on to see the classification areas and 
 # we will also print out the confusion matrix based on classification. 
-# Note this takes into account all groups and treatment. 
+# Note this takes into account all groups and treatment and all values are log transformed through 
+# cyt.plsda function. 
+data.df = cytdata.df
 x.df = data.df[,-c(1,4)]
 cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE, conf.mat = TRUE)
 #> Confusion Matrix for PLS-DA Comparison 

@@ -83,8 +83,8 @@ cyt.skku = function(x.df, Title = NULL, printResRaw = FALSE, printResLog = FALSE
     result.noComb.arr = result.arr
 
     par(mfrow=c(1,2))
-    hist(result.noComb.raw.arr[,"skewness",], xlab="skewness of raw data (every combination)", main="raw data: skewness")
-    hist(result.noComb.arr[,"skewness",], xlab="skewness of log2 data (every combination)", main="log2 transformed: skewness")
+    hist(result.noComb.raw.arr[,"skewness",], xlab="skewness of raw data", main="raw data: skewness")
+    hist(result.noComb.arr[,"skewness",], xlab="skewness of log2 data", main="log2 transformed: skewness")
 
     hist(result.noComb.raw.arr[,"kurtosis",], xlab="kurtosis of raw data", main="raw data: kurtosis")
     hist(result.noComb.arr[,"kurtosis",], xlab="kurtosis of log2 data", main="log2 transformed:kurtosis")
