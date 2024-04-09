@@ -87,11 +87,9 @@ p.aov.mat = matrix(NA, nrow=nCytokine, ncol=3)
 # Changing column names
 dimnames(p.aov.mat) = list( cytokineNames, c("Group", "Treatment", "Interaction") )
 # Matrix to extract p-values from Tukey group comparison
-p.groupComp.mat = matrix(NA, nrow=nCytokine, ncol=9)
+p.groupComp.mat = matrix(NA, nrow=nCytokine, ncol=3)
 # Changing column names
-dimnames(p.groupComp.mat) = list( cytokineNames, c("Comparison 1", "Comparison 2", "Comparison 3",
-                                                   "Comparison 4", "Comparison 5", "Comparison 6",
-                                                   "Comparison 7", "Comparison 8", "Comparison 9") )
+dimnames(p.groupComp.mat) = list( cytokineNames, c("2-1", "3-1", "3-2") )
 # Matrix for SSMD same size as other matrices
 ssmd.groupComp.stm.mat = mD.groupComp.stm.mat = p.groupComp.stm.mat = p.groupComp.mat
 
@@ -102,8 +100,8 @@ for( i in 1:nCytokine ) {
   aov.table = summary(cytokine.aov)[[1]]
   p.aov.mat[i,] = aov.table[1:3,5]
   p.groupComp.mat[i,] = TukeyHSD(cytokine.aov)$Group[1:3,4]
-  p.groupComp.stm.mat[i,] = TukeyHSD(cytokine.aov)$`Group:Treatment`[c(2:8,22,23),4]
-  mD.groupComp.stm.mat[i,] = TukeyHSD(cytokine.aov)$`Group:Treatment`[c(2:8,22,23),1]
+  p.groupComp.stm.mat[i,] = TukeyHSD(cytokine.aov)$`Group:Treatment`[c(1:3),4]
+  mD.groupComp.stm.mat[i,] = TukeyHSD(cytokine.aov)$`Group:Treatment`[c(1:3),1]
   ssmd.groupComp.stm.mat[i,]=mD.groupComp.stm.mat[i,]/sqrt(2*aov.table["Residuals","Mean Sq"])
 }
 
@@ -119,8 +117,8 @@ for( k in 1:nCytokine ) {
   result.mat = results[1:9,,k]
   center.df =
     data.frame( "name"=rownames(result.mat), result.mat[, c("center", "spread")],
-                "p.value"= c(1,p.groupComp.stm.mat[k,1:8]),
-                "effect.size"=c(0,ssmd.groupComp.stm.mat[k,1:8])
+                "p.value"= c(1,p.groupComp.stm.mat[k,1:2]),
+                "effect.size"=c(0,ssmd.groupComp.stm.mat[k,1:2])
     )
   cyt.errbp(center.df, pLab=TRUE, esLab=TRUE, classSymbol=TRUE,
                ylab="Concentration in log2 scale", main=cytokineNames[k])
@@ -149,27 +147,69 @@ cyt.anova(data.df[,c(2:3,5:6)]) # This only considers 2 cytokines for this examp
 # cyt.plsda function. 
 data.df = cytdata.df
 x.df = data.df[,-c(1,4)]
-cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE, conf.mat = TRUE)
-#> Confusion Matrix for PLS-DA Comparison 
+cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE, conf.mat = TRUE, var.num = 25, cv.opt = "loocv")
+#> [1] "CD3/CD28 T2DvsPreT2D LOOCV Accuracy: 0.424242424242424"
+#> [1] "CD3/CD28 T2DvsPreT2D LOOCV Accuracy (VIP) Cytokines: 0.484848484848485"
+#> [1] "CD3/CD28 T2DvsPreT2D Confusion Matrix for PLS-DA Comparison"
+#>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
+#> ND                   0                  15               18
+#> PreT2D               0                  19               14
+#> T2D                  0                   4               29
+#> [1] "CD3/CD28 T2DvsPreT2D Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
+#>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
+#> ND                   0                  15               18
+#> PreT2D               0                  19               14
+#> T2D                  0                   4               29
+#> [1] "LPS T2DvsPreT2D LOOCV Accuracy: 0.383838383838384"
+#> [1] "LPS T2DvsPreT2D LOOCV Accuracy (VIP) Cytokines: 0.454545454545455"
+#> [1] "LPS T2DvsPreT2D Confusion Matrix for PLS-DA Comparison"
+#>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
+#> ND                   0                  10               23
+#> PreT2D               0                  15               18
+#> T2D                  0                   5               28
+#> [1] "LPS T2DvsPreT2D Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
+#>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
+#> ND                   0                  10               23
+#> PreT2D               0                  16               17
+#> T2D                  0                   3               30
+#> [1] "Unstimulated T2DvsPreT2D LOOCV Accuracy: 0.373737373737374"
+#> [1] "Unstimulated T2DvsPreT2D LOOCV Accuracy (VIP) Cytokines: 0.474747474747475"
+#> [1] "Unstimulated T2DvsPreT2D Confusion Matrix for PLS-DA Comparison"
 #>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
 #> ND                   0                  17               16
 #> PreT2D               0                  31                2
 #> T2D                  0                  12               21
-#> Confusion Matrix for PLS-DA Comparison with VIP Score > 1 
+#> [1] "Unstimulated T2DvsPreT2D Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
 #>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
 #> ND                   0                  14               19
 #> PreT2D               0                  28                5
 #> T2D                  0                  10               23
+#> png 
+#>   2
 
 # Filtering data for specific groups and treatment
 filt.data = filter(data.df, Group != "ND", Treatment != "Unstimulated")
-cyt.plsda(filt.data[,-c(1,4)], colors = c("black", "purple"), title = "Example PLS-DA Analysis 2.pdf", bg = TRUE, conf.mat = TRUE)
-#> Confusion Matrix for PLS-DA Comparison 
+cyt.plsda(filt.data[,-c(1,4)], colors = c("black", "purple"), title = "Example PLS-DA Analysis 2.pdf", bg = TRUE, conf.mat = TRUE, var.num = 25, cv.opt = "Mfold", fold.num = 5)
+#> [1] "CD3/CD28 T2DvsPreT2D Mfold Accuracy: 0.683560606060606"
+#> [1] "CD3/CD28 T2DvsPreT2D Mfold Accuracy (VIP) Cytokines: 0.726030303030303"
+#> [1] "CD3/CD28 T2DvsPreT2D Confusion Matrix for PLS-DA Comparison"
+#>        predicted.as.PreT2D predicted.as.T2D
+#> PreT2D                  19               14
+#> T2D                      4               29
+#> [1] "CD3/CD28 T2DvsPreT2D Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
+#>        predicted.as.PreT2D predicted.as.T2D
+#> PreT2D                  19               14
+#> T2D                      4               29
+#> [1] "LPS T2DvsPreT2D Mfold Accuracy: 0.643378787878788"
+#> [1] "LPS T2DvsPreT2D Mfold Accuracy (VIP) Cytokines: 0.694424242424242"
+#> [1] "LPS T2DvsPreT2D Confusion Matrix for PLS-DA Comparison"
 #>        predicted.as.PreT2D predicted.as.T2D
 #> PreT2D                  17               16
 #> T2D                      6               27
-#> Confusion Matrix for PLS-DA Comparison with VIP Score > 1 
+#> [1] "LPS T2DvsPreT2D Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
 #>        predicted.as.PreT2D predicted.as.T2D
 #> PreT2D                  17               16
 #> T2D                      3               30
+#> png 
+#>   2
 ```

@@ -10,7 +10,10 @@ cyt.plsda(
   title,
   ellipse = FALSE,
   bg = FALSE,
-  conf.mat = FALSE
+  conf.mat = FALSE,
+  var.num,
+  cv.opt = NULL,
+  fold.num = 5
 )
 }
 \arguments{
@@ -25,6 +28,12 @@ cyt.plsda(
 \item{bg}{If prediction background should be drawn in the figures or not. Default set to FALSE.}
 
 \item{conf.mat}{If confusion matrix of the classifications be printed at the end or not. Default set to FALSE.}
+
+\item{var.num}{Number of variables to be used in PLS-DA.}
+
+\item{cv.opt}{Option for "loocv" or "Mfold" cross-validation methods.}
+
+\item{fold.num}{Number of folds if cv.opt equals "Mfold".}
 }
 \value{
 A PDF file consisting of classification figures, component figures including Variable of importance in projection (VIP) scores, and
@@ -42,7 +51,9 @@ of groups and stimulation of patients and using the rest of the columns as
 components for the PLS-DA analysis.
 }
 \examples{
+\dontrun{
 cyt.plsda(cytdata.df[,-c(1,3)], colors = c("black", "purple"), title = "Example Analysis.pdf", bg = TRUE, conf.mat = TRUE)
 cyt.plsda(cytdata.df[,-c(1,3)], colors = c("black", "purple"), title = "Example Analysis.pdf", ellipse = TRUE, conf.mat = TRUE)
 cyt.plsda(cytdata.df[,-c(1,4)], ellipse = TRUE, title = "Example Analysis.pdf", conf.mat = TRUE)
+}
 }

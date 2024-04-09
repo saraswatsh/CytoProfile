@@ -21,6 +21,9 @@
 #' @param ellipse If ellipse should be drawn in the figures or not. Default set to FALSE.
 #' @param bg If prediction background should be drawn in the figures or not. Default set to FALSE.
 #' @param conf.mat If confusion matrix of the classifications be printed at the end or not. Default set to FALSE.
+#' @param var.num Number of variables to be used in PLS-DA.
+#' @param cv.opt Option for "loocv" or "Mfold" cross-validation methods.
+#' @param fold.num Number of folds if cv.opt equals "Mfold".
 #' @description
 #' This function takes a matrix or data frame of variables where the first two columns must consist of "Group"
 #' and "Stimulation" or "Group" and "Treatment". The rest of columns will be cytokines that will be analyzed.
@@ -30,12 +33,14 @@
 #' @return A PDF file consisting of classification figures, component figures including Variable of importance in projection (VIP) scores, and
 #' classification of groups with VIP scores greater than 1.
 #' @examples
+#' \dontrun{
 #' cyt.plsda(cytdata.df[,-c(1,3)], colors = c("black", "purple"), title = "Example Analysis.pdf", bg = TRUE, conf.mat = TRUE)
 #' cyt.plsda(cytdata.df[,-c(1,3)], colors = c("black", "purple"), title = "Example Analysis.pdf", ellipse = TRUE, conf.mat = TRUE)
 #' cyt.plsda(cytdata.df[,-c(1,4)], ellipse = TRUE, title = "Example Analysis.pdf", conf.mat = TRUE)
+#' }
 #' @export
 
-cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, conf.mat = FALSE){
+cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, conf.mat = FALSE, var.num, cv.opt = NULL, fold.num = 5){
   # Log2 transforming cytokines
   x.df = data.frame(x.df[,c(1:2)], log2(x.df[, -c(1:2)]))
 
@@ -67,39 +72,63 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
       theGroups  = x.df[condt, "group"]
 
       cytokine.splsda =
-        splsda(theData.df, theGroups, scale=TRUE, ncomp=2, keepX = c(ncol(x.df)-2, ncol(x.df)-2))
+        splsda(theData.df, theGroups, scale=TRUE, ncomp=2, keepX = c(var.num, var.num))
 
       splsda.predict = predict( cytokine.splsda, theData.df, dist="max.dist")
       Prediction1 = cbind( original = theGroups, splsda.predict$class$max.dist )
       accuracy1 = sum(Prediction1[,1] == Prediction1[,2])/length(Prediction1[,1]); accuracy1
       acc1 = 100*signif(accuracy1, digits = 2)
 
+      # Creating a shaded predicted background using max.dist
       bg.maxdist <-  background.predict(cytokine.splsda,
                                         comp.predicted = 2,
                                         dist = 'max.dist')
+      ## Cross-validation methods
+      if(!is.null(cv.opt)) {
+        # LOOCV Different method
+        if(cv.opt == "loocv"){
+          set.seed(123) # For reproducibility
+          loocv_results = perf(cytokine.splsda, validation = "loo")
+          loocv_error_rate = loocv_results$error.rate$overall["comp1", "max.dist"]
+          loocv_acc = 1 - loocv_error_rate; loocv_acc
+          print(paste0(theTrt, " ",unique(theGroups)[1],"vs",unique(theGroups)[2]," LOOCV Accuracy: ", loocv_acc))
+        }
+        #Mfold
+        else if(cv.opt == "Mfold"){
+          set.seed(123) # For reproducibility
+          fold_results = perf(cytokine.splsda, validation = "Mfold", folds = fold.num, nrepeat = 1000)
+          fold_error_rate = fold_results$error.rate$overall["comp1", "max.dist"]
+          fold_acc = 1 - fold_error_rate; fold_acc
+          print(paste0(theTrt, " ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Mfold Accuracy: ", fold_acc))
+        }
+      }
+
+
       # Conditions to have either ellipses or prediction background or both or neither on graphs.
       if(ellipse == TRUE & bg == TRUE){
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=16,
+        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
                   ellipse=TRUE, title= paste (Title, "With Accuracy:",acc1,"%"),
                   background = bg.maxdist)
       }
       else if(ellipse == TRUE){
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=16,
+        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
                   ellipse=TRUE, title= paste (Title, "With Accuracy:",acc1,"%"))
       }
       else if(bg == TRUE){
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=16,
+        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
                   ellipse=FALSE, title= paste (Title, "With Accuracy:",acc1,"%"),
                   background = bg.maxdist)
       }
       else if(ellipse == FALSE & bg == FALSE){
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=16,
+        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
                   ellipse=FALSE, title= paste (Title, "With Accuracy:",acc1,"%"))
       }
 
-      plotLoadings(cytokine.splsda, comp=1, contrib = 'max', method = 'mean',
+      plotLoadings(cytokine.splsda, comp=1, contrib = 'max', method = 'mean',size.name = 1,
+                   size.legend = 1,
                    legend.color=colors, title=paste("Component 1: ", Title), size.title=1 )
-      plotLoadings(cytokine.splsda, comp=2, contrib = 'max', method = 'mean',
+      plotLoadings(cytokine.splsda, comp=2, contrib = 'max', method = 'mean',size.name = 1,
+                   size.legend = 1,
                    legend.color=colors, title=paste("Component 2: ", Title), size.title=1 )
       loading.vip.df = data.frame(cytokine.splsda$loadings$X, vip(cytokine.splsda))
       colnames(loading.vip.df)= c("loading.comp1", "loading.comp2", "vip.comp1", "vip.comp2")
@@ -119,7 +148,7 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
         geom_bar(stat="identity", position = "dodge") +scale_y_continuous(limits=c(0,max(bar[,2])))+
         geom_hline(yintercept=1, color="grey") +     #draw a horizontal line
         scale_x_discrete(limits=factor(bar[,1])) +   #set the first column to be a factor
-        theme(axis.text.x=element_text(angle=45, hjust=1)) +    # angle
+        theme(axis.text.x=element_text(angle=45, hjust=1, size = 15)) +    # angle
         labs(x="", y="VIP score")+
         ggtitle("Component 1")+
         theme(panel.grid=element_blank(), panel.background=element_rect(color='black', fill='transparent'))
@@ -139,7 +168,7 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
         geom_bar(stat="identity", position = "dodge") +scale_y_continuous(limits=c(0,max(bar[,2])))+
         geom_hline(yintercept=1, color="grey") +     #draw a horizontal line
         scale_x_discrete(limits=factor(bar[,1])) +   #set the first column to be a factor
-        theme(axis.text.x=element_text(angle=45, hjust=1)) +    # angle
+        theme(axis.text.x=element_text(angle=45, hjust=1, size = 15)) +    # angle
         labs(x="", y="VIP score")+
         ggtitle("Component 2")+
         theme(panel.grid=element_blank(), panel.background=element_rect(color='black', fill='transparent'))
@@ -150,50 +179,73 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
       KeepX = sum( condtVariable )
       KeepX
       theData.mat = theData.df[, condtVariable]
-      cytokine.splsda =
+      cytokine.splsda2 =
         splsda(theData.mat, theGroups, scale=TRUE, ncomp=2, keepX = c(KeepX, KeepX))
 
 
-      splsda.predict = predict( cytokine.splsda, theData.mat, dist="max.dist")
+      splsda.predict = predict( cytokine.splsda2, theData.mat, dist="max.dist")
       Prediction2 = cbind( original = theGroups, splsda.predict$class$max.dist )
       accuracy2 = sum(Prediction2[,1] == Prediction2[,2])/length(Prediction2[,1]); accuracy2
       acc2 = 100*signif(accuracy2, digits = 2)
-
-      bg.maxdist <-  background.predict(cytokine.splsda,
+      # Creating a shaded predicted background using max.dist
+      bg.maxdist <-  background.predict(cytokine.splsda2,
                                         comp.predicted = 2,
                                         dist = 'max.dist')
+
+      ## Cross-validation methods
+      if(!is.null(cv.opt)){
+        # LOOCV Different method
+        if(cv.opt == "loocv"){
+          set.seed(123) # For reproducibility
+          loocv_results2 = perf(cytokine.splsda2, validation = "loo")
+          loocv_error_rate2 = loocv_results2$error.rate$overall["comp1", "max.dist"]
+          loocv_acc2 = 1 - loocv_error_rate2; loocv_acc2
+          print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," LOOCV Accuracy (VIP) Cytokines: ", loocv_acc2))
+        }
+        #Mfold
+        else if(cv.opt == "Mfold"){
+          set.seed(123) # For reproducibility
+          fold_results2 = perf(cytokine.splsda2, validation = "Mfold", folds = fold.num, nrepeat = 1000)
+          fold_error_rate2 = fold_results2$error.rate$overall["comp1", "max.dist"]
+          fold_acc2 = 1 - fold_error_rate2; fold_acc2
+          print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Mfold Accuracy (VIP) Cytokines: ", fold_acc2))
+        }
+      }
+
+
       # Conditions to have either ellipses or prediction background or both or neither on graphs.
       if(ellipse == TRUE & bg == TRUE){
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=16,
+        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
                   ellipse=TRUE, title= paste (Title, "(VIP>1)", "With Accuracy:",acc2,"%"),
                   background = bg.maxdist)
       }
       else if(ellipse == TRUE) {
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=16,
+        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
                   ellipse=TRUE, title=paste(Title, "(VIP>1)","With Accuracy", acc2, "%" ))
       }
       else if(bg == TRUE){
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=16,
+        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
                   ellipse=FALSE, title=paste(Title, "(VIP>1)","With Accuracy", acc2, "%" ),
                   background = bg.maxdist)
       }
       else if(ellipse == FALSE & bg == FALSE){
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=16,
+        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
                   ellipse=FALSE, title= paste (Title, "(VIP>1)", "With Accuracy:",acc2,"%"))
       }
 
-      plotLoadings(cytokine.splsda, comp=1, contrib = 'max', method = 'mean',
+      plotLoadings(cytokine.splsda2, comp=1, contrib = 'max', method = 'mean',size.name = 1,
+                   size.legend = 1,
                    legend.color=colors,
                    title=paste("Component 1: ", Title, "(VIP>1)"), size.title=1 )
+      # Prints confusion matrix
+      if(conf.mat == TRUE){
+        print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Confusion Matrix for PLS-DA Comparison"))
+        print(get.confusion_matrix(truth = Prediction1[,1], predicted = Prediction1[,2])) # Confusion matrix for all variables in model
+        print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Confusion Matrix for PLS-DA Comparison with VIP Score > 1"))
+        print(get.confusion_matrix(truth = Prediction2[,1], predicted = Prediction2[,2])) # Confusion matrix for all variables with VIP Score > 1
+      }
     }
     dev.off()
-    # Prints confusion matrix
-    if(conf.mat == TRUE){
-      cat("Confusion Matrix for PLS-DA Comparison \n")
-      print(get.confusion_matrix(truth = Prediction1[,1], predicted = Prediction1[,2])) # Confusion matrix for all variables in model
-      cat("Confusion Matrix for PLS-DA Comparison with VIP Score > 1 \n")
-      print(get.confusion_matrix(truth = Prediction2[,1], predicted = Prediction2[,2])) # Confusion matrix for all variables with VIP Score > 1
-    }
   }else{
     pdf( file= title)
     for(i in 1:length(Stimulation.vec) ) {
@@ -204,39 +256,63 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
       theGroups  = x.df[condt, "group"]
 
       cytokine.splsda =
-        splsda(theData.df, theGroups, scale=TRUE, ncomp=2, keepX = c(ncol(x.df)-2, ncol(x.df)-2))
+        splsda(theData.df, theGroups, scale=TRUE, ncomp=2, keepX = c(var.num, var.num))
 
       splsda.predict = predict( cytokine.splsda, theData.df, dist="max.dist")
       Prediction1 = cbind( original = theGroups, splsda.predict$class$max.dist )
       accuracy1 = sum(Prediction1[,1] == Prediction1[,2])/length(Prediction1[,1]); accuracy1
       acc1 = 100*signif(accuracy1, digits = 2)
 
+      # Creating a shaded predicted background using max.dist
       bg.maxdist <-  background.predict(cytokine.splsda,
                                         comp.predicted = 2,
                                         dist = 'max.dist')
+      ## Cross-validation methods
+      # LOOCV Different method
+      if(!is.null(cv.opt)) {
+        # LOOCV Different method
+        if(cv.opt == "loocv"){
+          set.seed(123) # For reproducibility
+          loocv_results = perf(cytokine.splsda, validation = "loo")
+          loocv_error_rate = loocv_results$error.rate$overall["comp1", "max.dist"]
+          loocv_acc = 1 - loocv_error_rate; loocv_acc
+          print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," LOOCV Accuracy: ", loocv_acc))
+        }
+        #Mfold
+        else if(cv.opt == "Mfold"){
+          set.seed(123) # For reproducibility
+          fold_results = perf(cytokine.splsda, validation = "Mfold", folds = fold.num, nrepeat = 1000)
+          fold_error_rate = fold_results$error.rate$overall["comp1", "max.dist"]
+          fold_acc = 1 - fold_error_rate; fold_acc
+          print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Mfold Accuracy: ", fold_acc))
+        }
+      }
+
       # Conditions to have either ellipses or prediction background or both or neither on graphs.
       if(ellipse == TRUE & bg == TRUE){
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=16,
+        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
                   ellipse=TRUE, title= paste (Title, "With Accuracy:",acc1,"%"),
                   background = bg.maxdist)
       }
       else if(ellipse == TRUE){
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=16,
+        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
                   ellipse=TRUE, title= paste (Title, "With Accuracy:",acc1,"%"))
       }
       else if(bg == TRUE){
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=16,
+        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
                   ellipse=FALSE, title= paste (Title, "With Accuracy:",acc1,"%"),
                   background = bg.maxdist)
       }
       else if(ellipse == FALSE & bg == FALSE){
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=16,
+        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
                   ellipse=FALSE, title= paste (Title, "With Accuracy:",acc1,"%"))
       }
 
-      plotLoadings(cytokine.splsda, comp=1, contrib = 'max', method = 'mean',
+      plotLoadings(cytokine.splsda, comp=1, contrib = 'max', method = 'mean',size.name = 1,
+                   size.legend = 1,
                    legend.color=colors, title=paste("Component 1: ", Title), size.title=1 )
-      plotLoadings(cytokine.splsda, comp=2, contrib = 'max', method = 'mean',
+      plotLoadings(cytokine.splsda, comp=2, contrib = 'max', method = 'mean',size.name = 1,
+                   size.legend = 1,
                    legend.color=colors, title=paste("Component 2: ", Title), size.title=1 )
       loading.vip.df = data.frame(cytokine.splsda$loadings$X, vip(cytokine.splsda))
       colnames(loading.vip.df)= c("loading.comp1", "loading.comp2", "vip.comp1", "vip.comp2")
@@ -256,7 +332,7 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
         geom_bar(stat="identity", position = "dodge") +scale_y_continuous(limits=c(0,max(bar[,2])))+
         geom_hline(yintercept=1, color="grey") +     #draw a horizontal line
         scale_x_discrete(limits=factor(bar[,1])) +   #set the first column to be a factor
-        theme(axis.text.x=element_text(angle=45, hjust=1)) +    # angle
+        theme(axis.text.x=element_text(angle=45, hjust=1, size = 15)) +    # angle
         labs(x="", y="VIP score")+
         ggtitle("Component 1")+
         theme(panel.grid=element_blank(), panel.background=element_rect(color='black', fill='transparent'))
@@ -276,7 +352,7 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
         geom_bar(stat="identity", position = "dodge") +scale_y_continuous(limits=c(0,max(bar[,2])))+
         geom_hline(yintercept=1, color="grey") +     #draw a horizontal line
         scale_x_discrete(limits=factor(bar[,1])) +   #set the first column to be a factor
-        theme(axis.text.x=element_text(angle=45, hjust=1)) +    # angle
+        theme(axis.text.x=element_text(angle=45, hjust=1, size = 15)) +    # angle
         labs(x="", y="VIP score")+
         ggtitle("Component 2")+
         theme(panel.grid=element_blank(), panel.background=element_rect(color='black', fill='transparent'))
@@ -287,49 +363,73 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
       KeepX = sum( condtVariable )
       KeepX
       theData.mat = theData.df[, condtVariable]
-      cytokine.splsda =
+      cytokine.splsda2 =
         splsda(theData.mat, theGroups, scale=TRUE, ncomp=2, keepX = c(KeepX, KeepX))
 
 
-      splsda.predict = predict( cytokine.splsda, theData.mat, dist="max.dist")
+      splsda.predict = predict( cytokine.splsda2, theData.mat, dist="max.dist")
       Prediction2 = cbind( original = theGroups, splsda.predict$class$max.dist )
       accuracy2 = sum(Prediction2[,1] == Prediction2[,2])/length(Prediction2[,1]); accuracy2
       acc2 = 100*signif(accuracy2, digits = 2)
 
-      bg.maxdist <-  background.predict(cytokine.splsda,
+      # Creating a shaded predicted background using max.dist
+      bg.maxdist <-  background.predict(cytokine.splsda2,
                                         comp.predicted = 2,
                                         dist = 'max.dist')
+
+      ## Cross-validation methods
+      if(!is.null(cv.opt)){
+        # LOOCV Different method
+        if(cv.opt == "loocv"){
+          set.seed(123) # For reproducibility
+          loocv_results2 = perf(cytokine.splsda2, validation = "loo")
+          loocv_error_rate2 = loocv_results2$error.rate$overall["comp1", "max.dist"]
+          loocv_acc2 = 1 - loocv_error_rate2; loocv_acc2
+          print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," LOOCV Accuracy (VIP) Cytokines: ", loocv_acc2))
+        }
+        #Mfold
+        else if(cv.opt == "Mfold"){
+          set.seed(123) # For reproducibility
+          fold_results2 = perf(cytokine.splsda2, validation = "Mfold", folds = fold.num, nrepeat = 1000)
+          fold_error_rate2 = fold_results2$error.rate$overall["comp1", "max.dist"]
+          fold_acc2 = 1 - fold_error_rate2; fold_acc2
+          print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Mfold Accuracy (VIP) Cytokines: ", fold_acc2))
+        }
+      }
+
       # Conditions to have either ellipses or prediction background or both or neither on graphs.
       if(ellipse == TRUE & bg == TRUE){
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=16,
+        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
                   ellipse=TRUE, title= paste (Title, "(VIP>1)", "With Accuracy:",acc2,"%"),
                   background = bg.maxdist)
       }
       else if(ellipse == TRUE) {
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=16,
+        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
                   ellipse=TRUE, title=paste(Title, "(VIP>1)", "With Accuracy:",acc2,"%"))
       }
       else if(bg == TRUE){
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=16,
+        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
                   ellipse=FALSE, title=paste(Title, "(VIP>1)", "With Accuracy:",acc2,"%"),
                   background = bg.maxdist)
       }
       else if(ellipse == FALSE & bg == FALSE){
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=16,
+        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
                   ellipse=FALSE, title= paste (Title, "(VIP>1)", "With Accuracy:",acc2,"%"))
       }
 
-      plotLoadings(cytokine.splsda, comp=1, contrib = 'max', method = 'mean',
-                   legend.color=colors,
+      plotLoadings(cytokine.splsda2, comp=1, contrib = 'max', method = 'mean',
+                   legend.color=colors,size.name = 1,
+                   size.legend = 1,
                    title=paste("Component 1: ", Title, "(VIP>1)"), size.title=1 )
+      # Prints confusion matrix
+      if(conf.mat == TRUE){
+        print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Confusion Matrix for PLS-DA Comparison"))
+        print(get.confusion_matrix(truth = Prediction1[,1], predicted = Prediction1[,2])) # Confusion matrix for all variables in model
+        print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Confusion Matrix for PLS-DA Comparison with VIP Score > 1"))
+        print(get.confusion_matrix(truth = Prediction2[,1], predicted = Prediction2[,2])) # Confusion matrix for all variables with VIP Score > 1
+      }
     }
     dev.off()
     # Prints confusion matrix
-    if(conf.mat == TRUE){
-      cat("Confusion Matrix for PLS-DA Comparison \n")
-      print(get.confusion_matrix(truth = Prediction1[,1], predicted = Prediction1[,2])) # Confusion matrix for all variables in model
-      cat("Confusion Matrix for PLS-DA Comparison with VIP Score > 1 \n")
-      print(get.confusion_matrix(truth = Prediction2[,1], predicted = Prediction2[,2])) # Confusion matrix for all variables with VIP Score > 1
-    }
   }
 }
