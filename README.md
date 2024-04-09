@@ -147,7 +147,8 @@ cyt.anova(data.df[,c(2:3,5:6)]) # This only considers 2 cytokines for this examp
 # cyt.plsda function. 
 data.df = cytdata.df
 x.df = data.df[,-c(1,4)]
-cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE, conf.mat = TRUE, var.num = 25, cv.opt = "loocv")
+cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE, 
+          conf.mat = TRUE, var.num = 25, cv.opt = "loocv")
 #> [1] "CD3/CD28 T2DvsPreT2D LOOCV Accuracy: 0.424242424242424"
 #> [1] "CD3/CD28 T2DvsPreT2D LOOCV Accuracy (VIP) Cytokines: 0.484848484848485"
 #> [1] "CD3/CD28 T2DvsPreT2D Confusion Matrix for PLS-DA Comparison"
@@ -189,7 +190,9 @@ cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE, conf.mat = TRU
 
 # Filtering data for specific groups and treatment
 filt.data = filter(data.df, Group != "ND", Treatment != "Unstimulated")
-cyt.plsda(filt.data[,-c(1,4)], colors = c("black", "purple"), title = "Example PLS-DA Analysis 2.pdf", bg = TRUE, conf.mat = TRUE, var.num = 25, cv.opt = "Mfold", fold.num = 5)
+cyt.plsda(filt.data[,-c(1,4)], colors = c("black", "purple"), 
+          title = "Example PLS-DA Analysis 2.pdf", bg = TRUE, 
+          conf.mat = TRUE, var.num = 25, cv.opt = "Mfold", fold.num = 5)
 #> [1] "CD3/CD28 T2DvsPreT2D Mfold Accuracy: 0.683560606060606"
 #> [1] "CD3/CD28 T2DvsPreT2D Mfold Accuracy (VIP) Cytokines: 0.726030303030303"
 #> [1] "CD3/CD28 T2DvsPreT2D Confusion Matrix for PLS-DA Comparison"

@@ -134,9 +134,12 @@ cyt.anova(data.df[,c(2:3,5:6)]) # This only considers 2 cytokines for this examp
 # cyt.plsda function. 
 data.df = cytdata.df
 x.df = data.df[,-c(1,4)]
-cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE, conf.mat = TRUE, var.num = 25, cv.opt = "loocv")
+cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE, 
+          conf.mat = TRUE, var.num = 25, cv.opt = "loocv")
 
 # Filtering data for specific groups and treatment
 filt.data = filter(data.df, Group != "ND", Treatment != "Unstimulated")
-cyt.plsda(filt.data[,-c(1,4)], colors = c("black", "purple"), title = "Example PLS-DA Analysis 2.pdf", bg = TRUE, conf.mat = TRUE, var.num = 25, cv.opt = "Mfold", fold.num = 5)
+cyt.plsda(filt.data[,-c(1,4)], colors = c("black", "purple"), 
+          title = "Example PLS-DA Analysis 2.pdf", bg = TRUE, 
+          conf.mat = TRUE, var.num = 25, cv.opt = "Mfold", fold.num = 5)
 ```
