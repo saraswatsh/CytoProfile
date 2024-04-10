@@ -276,7 +276,7 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
           loocv_results = perf(cytokine.splsda, validation = "loo")
           loocv_error_rate = loocv_results$error.rate$overall["comp1", "max.dist"]
           loocv_acc = 1 - loocv_error_rate; loocv_acc
-          print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," LOOCV Accuracy: ", loocv_acc))
+          print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," LOOCV Accuracy: ", loocv_acc))
         }
         #Mfold
         else if(cv.opt == "Mfold"){
@@ -284,7 +284,7 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
           fold_results = perf(cytokine.splsda, validation = "Mfold", folds = fold.num, nrepeat = 1000)
           fold_error_rate = fold_results$error.rate$overall["comp1", "max.dist"]
           fold_acc = 1 - fold_error_rate; fold_acc
-          print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Mfold Accuracy: ", fold_acc))
+          print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Mfold Accuracy: ", fold_acc))
         }
       }
 
@@ -385,7 +385,7 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
           loocv_results2 = perf(cytokine.splsda2, validation = "loo")
           loocv_error_rate2 = loocv_results2$error.rate$overall["comp1", "max.dist"]
           loocv_acc2 = 1 - loocv_error_rate2; loocv_acc2
-          print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," LOOCV Accuracy (VIP) Cytokines: ", loocv_acc2))
+          print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," LOOCV Accuracy (VIP) Cytokines: ", loocv_acc2))
         }
         #Mfold
         else if(cv.opt == "Mfold"){
@@ -393,7 +393,7 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
           fold_results2 = perf(cytokine.splsda2, validation = "Mfold", folds = fold.num, nrepeat = 1000)
           fold_error_rate2 = fold_results2$error.rate$overall["comp1", "max.dist"]
           fold_acc2 = 1 - fold_error_rate2; fold_acc2
-          print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Mfold Accuracy (VIP) Cytokines: ", fold_acc2))
+          print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Mfold Accuracy (VIP) Cytokines: ", fold_acc2))
         }
       }
 
@@ -423,9 +423,9 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
                    title=paste("Component 1: ", Title, "(VIP>1)"), size.title=1 )
       # Prints confusion matrix
       if(conf.mat == TRUE){
-        print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Confusion Matrix for PLS-DA Comparison"))
+        print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Confusion Matrix for PLS-DA Comparison"))
         print(get.confusion_matrix(truth = Prediction1[,1], predicted = Prediction1[,2])) # Confusion matrix for all variables in model
-        print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Confusion Matrix for PLS-DA Comparison with VIP Score > 1"))
+        print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Confusion Matrix for PLS-DA Comparison with VIP Score > 1"))
         print(get.confusion_matrix(truth = Prediction2[,1], predicted = Prediction2[,2])) # Confusion matrix for all variables with VIP Score > 1
       }
     }
@@ -433,3 +433,4 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
     # Prints confusion matrix
   }
 }
+
