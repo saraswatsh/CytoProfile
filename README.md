@@ -7,11 +7,11 @@
 <!-- badges: end -->
 
 The goal of CytProfile is to conduct quality control using biological
-meaningful cutoff on raw measured values of cytokines. Test on
-distributional symmetry to suggest the adopt of transformation.
-Exploratory analysis including summary statistics, enriched boxplot, and
-barplots. Univariate analysis and Multivariate analysis options are
-further available to dive deeper
+meaningful cutoff on raw measured values of cytokines. Specifically,
+test on distributional symmetry to suggest the adopt of transformation.
+Conduct exploratory analysis including summary statistics, generate
+enriched barplots, and boxplots. Further, conduct univariate analysis
+and multivariate analysis for advance analysis.
 
 ## Installation
 
