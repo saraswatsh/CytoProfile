@@ -19,10 +19,10 @@ knitr::opts_chunk$set(
 <!-- badges: end -->
 
 The goal of CytProfile is to conduct quality control using biological
-    meaningful cutoff on raw measured values of cytokines. Test on distributional
-    symmetry to suggest the adopt of transformation. Exploratory analysis including
-    summary statistics, enriched boxplot, and barplots. Univariate analysis 
-    and Multivariate analysis options are further available to dive deeper
+meaningful cutoff on raw measured values of cytokines. Test on distributional
+symmetry to suggest the adopt of transformation. Exploratory analysis including
+summary statistics, enriched boxplot, and barplots. Univariate analysis 
+and Multivariate analysis options are further available to dive deeper
 
 ## Installation
 
@@ -134,12 +134,39 @@ cyt.anova(data.df[,c(2:3,5:6)]) # This only considers 2 cytokines for this examp
 # cyt.plsda function. 
 data.df = cytdata.df
 x.df = data.df[,-c(1,4)]
-cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE, 
-          conf.mat = TRUE, var.num = 25, cv.opt = "loocv")
+cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE, conf.mat = TRUE, scale = "log2",
+var.num = 25, cv.opt = "loocv", comp.num = 2, colors = c("black", "purple", "red2"), 
+pch.values = c(16,4,3))
 
 # Filtering data for specific groups and treatment
 filt.data = filter(data.df, Group != "ND", Treatment != "Unstimulated")
 cyt.plsda(filt.data[,-c(1,4)], colors = c("black", "purple"), 
-          title = "Example PLS-DA Analysis 2.pdf", bg = TRUE, 
-          conf.mat = TRUE, var.num = 25, cv.opt = "Mfold", fold.num = 5)
+          title = "Example PLS-DA Analysis 2.pdf", bg = TRUE, scale = "log2", 
+          conf.mat = TRUE, var.num = 25, 
+          cv.opt = "Mfold", fold.num = 5, 
+          comp.num = 4, pch.values = c(3,4))
+
+# Generating Volcano Plot
+data.df = cytdata.df[,-4]
+volc_plot = cyt.volc(data.df, "Group", cond1 = "T2D", cond2 = "ND", fold_change_thresh = 2.0, top_labels= 15)
+ggsave("VolcanoPlot.png", plot = volc_plot$`T2D vs ND`, dpi = 300)
+
+# Printing table (This is usually printed by default when the function is called and not saved as an object)
+print(volc_plot$`T2D vs ND`$data)
+
+# Generating Heat map
+cyt.heatmap(data = data.df,
+                    scale = "log2",        # Optional scaling
+                    annotation_col_name = "Group",
+                    title = "Heatmap.png")
+
+# Generating dual flashlights plot
+data.df = cytdata.df[,-c(1,3)]
+
+dfp = cyt.dualflashplot(data.df, group_var = "Group", group1 = "ND", group2 = "T2D", 
+                  ssmd_thresh = -0.2, log2fc_thresh = 1, top_labels = 10)
+ggsave("DualFlashlightPlot.png", plot = dfp$plot_env$p, dpi = 300)
+
+# Printing table (This is usually printed by default when the function is called and not saved as an object)
+print(dfp$data)
 ```

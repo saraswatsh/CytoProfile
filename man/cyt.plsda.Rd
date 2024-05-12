@@ -5,7 +5,7 @@
 \title{Analyze data with PLS-DA method.}
 \usage{
 cyt.plsda(
-  x.df,
+  data.df,
   colors = NULL,
   title,
   ellipse = FALSE,
@@ -13,12 +13,13 @@ cyt.plsda(
   conf.mat = FALSE,
   var.num,
   cv.opt = NULL,
-  fold.num = 5
+  fold.num = 5,
+  scale = NULL,
+  comp.num = 2,
+  pch.values
 )
 }
 \arguments{
-\item{x.df}{A matrix or data frame of variables.}
-
 \item{colors}{Vector of colors to be set, list of colors to be set equal to the number of groups or treatments. Default set to NULL and will result in random colors.}
 
 \item{title}{Title of the PDF file to be saved.}
@@ -34,6 +35,14 @@ cyt.plsda(
 \item{cv.opt}{Option for "loocv" or "Mfold" cross-validation methods.}
 
 \item{fold.num}{Number of folds if cv.opt equals "Mfold".}
+
+\item{scale}{Option to transform data using log2. Default set to NULL.}
+
+\item{comp.num}{Number of components to be calculated. Default set to 2.}
+
+\item{pch.values}{A vector of integers specifying the plotting characters to be used in the plot.}
+
+\item{x.df}{A matrix or data frame of variables.}
 }
 \value{
 A PDF file consisting of classification figures, component figures including Variable of importance in projection (VIP) scores, and
@@ -52,8 +61,8 @@ components for the PLS-DA analysis.
 }
 \examples{
 \dontrun{
-cyt.plsda(cytdata.df[,-c(1,3)], colors = c("black", "purple"), title = "Example Analysis.pdf", bg = TRUE, conf.mat = TRUE)
-cyt.plsda(cytdata.df[,-c(1,3)], colors = c("black", "purple"), title = "Example Analysis.pdf", ellipse = TRUE, conf.mat = TRUE)
-cyt.plsda(cytdata.df[,-c(1,4)], ellipse = TRUE, title = "Example Analysis.pdf", conf.mat = TRUE)
+cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE, conf.mat = TRUE, scale = "log2",
+var.num = 25, cv.opt = "loocv", comp.num = 2, colors = c("black", "purple", "red2"),
+pch.values = c(16,4,3))
 }
 }

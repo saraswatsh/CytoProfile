@@ -147,40 +147,42 @@ cyt.anova(data.df[,c(2:3,5:6)]) # This only considers 2 cytokines for this examp
 # cyt.plsda function. 
 data.df = cytdata.df
 x.df = data.df[,-c(1,4)]
-cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE, 
-          conf.mat = TRUE, var.num = 25, cv.opt = "loocv")
-#> [1] "CD3/CD28 T2DvsPreT2D LOOCV Accuracy: 0.424242424242424"
+cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE, conf.mat = TRUE, scale = "log2",
+var.num = 25, cv.opt = "loocv", comp.num = 2, colors = c("black", "purple", "red2"), 
+pch.values = c(16,4,3))
+#> [1] "Results based on log2 transformation:"
+#> [1] "CD3/CD28 T2D vs PreT2D LOOCV Accuracy: 0.424242424242424"
 #> [1] "CD3/CD28 T2DvsPreT2D LOOCV Accuracy (VIP) Cytokines: 0.484848484848485"
-#> [1] "CD3/CD28 T2DvsPreT2D Confusion Matrix for PLS-DA Comparison"
+#> [1] "CD3/CD28 T2D vs PreT2D Confusion Matrix for PLS-DA Comparison"
 #>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
 #> ND                   0                  15               18
 #> PreT2D               0                  19               14
 #> T2D                  0                   4               29
-#> [1] "CD3/CD28 T2DvsPreT2D Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
+#> [1] "CD3/CD28 T2D vs PreT2D Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
 #>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
 #> ND                   0                  15               18
 #> PreT2D               0                  19               14
 #> T2D                  0                   4               29
-#> [1] "LPS T2DvsPreT2D LOOCV Accuracy: 0.383838383838384"
+#> [1] "LPS T2D vs PreT2D LOOCV Accuracy: 0.383838383838384"
 #> [1] "LPS T2DvsPreT2D LOOCV Accuracy (VIP) Cytokines: 0.454545454545455"
-#> [1] "LPS T2DvsPreT2D Confusion Matrix for PLS-DA Comparison"
+#> [1] "LPS T2D vs PreT2D Confusion Matrix for PLS-DA Comparison"
 #>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
 #> ND                   0                  10               23
 #> PreT2D               0                  15               18
 #> T2D                  0                   5               28
-#> [1] "LPS T2DvsPreT2D Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
+#> [1] "LPS T2D vs PreT2D Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
 #>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
 #> ND                   0                  10               23
 #> PreT2D               0                  16               17
 #> T2D                  0                   3               30
-#> [1] "Unstimulated T2DvsPreT2D LOOCV Accuracy: 0.373737373737374"
+#> [1] "Unstimulated T2D vs PreT2D LOOCV Accuracy: 0.373737373737374"
 #> [1] "Unstimulated T2DvsPreT2D LOOCV Accuracy (VIP) Cytokines: 0.474747474747475"
-#> [1] "Unstimulated T2DvsPreT2D Confusion Matrix for PLS-DA Comparison"
+#> [1] "Unstimulated T2D vs PreT2D Confusion Matrix for PLS-DA Comparison"
 #>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
 #> ND                   0                  17               16
 #> PreT2D               0                  31                2
 #> T2D                  0                  12               21
-#> [1] "Unstimulated T2DvsPreT2D Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
+#> [1] "Unstimulated T2D vs PreT2D Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
 #>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
 #> ND                   0                  14               19
 #> PreT2D               0                  28                5
@@ -191,28 +193,156 @@ cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE,
 # Filtering data for specific groups and treatment
 filt.data = filter(data.df, Group != "ND", Treatment != "Unstimulated")
 cyt.plsda(filt.data[,-c(1,4)], colors = c("black", "purple"), 
-          title = "Example PLS-DA Analysis 2.pdf", bg = TRUE, 
-          conf.mat = TRUE, var.num = 25, cv.opt = "Mfold", fold.num = 5)
-#> [1] "CD3/CD28 T2DvsPreT2D Mfold Accuracy: 0.683560606060606"
+          title = "Example PLS-DA Analysis 2.pdf", bg = TRUE, scale = "log2", 
+          conf.mat = TRUE, var.num = 25, 
+          cv.opt = "Mfold", fold.num = 5, 
+          comp.num = 4, pch.values = c(3,4))
+#> [1] "Results based on log2 transformation:"
+#> [1] "CD3/CD28 T2D vs PreT2D Mfold Accuracy: 0.683560606060606"
 #> [1] "CD3/CD28 T2DvsPreT2D Mfold Accuracy (VIP) Cytokines: 0.726030303030303"
-#> [1] "CD3/CD28 T2DvsPreT2D Confusion Matrix for PLS-DA Comparison"
+#> [1] "CD3/CD28 T2D vs PreT2D Confusion Matrix for PLS-DA Comparison"
 #>        predicted.as.PreT2D predicted.as.T2D
 #> PreT2D                  19               14
 #> T2D                      4               29
-#> [1] "CD3/CD28 T2DvsPreT2D Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
+#> [1] "CD3/CD28 T2D vs PreT2D Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
 #>        predicted.as.PreT2D predicted.as.T2D
 #> PreT2D                  19               14
 #> T2D                      4               29
-#> [1] "LPS T2DvsPreT2D Mfold Accuracy: 0.643378787878788"
+#> [1] "LPS T2D vs PreT2D Mfold Accuracy: 0.643378787878788"
 #> [1] "LPS T2DvsPreT2D Mfold Accuracy (VIP) Cytokines: 0.694424242424242"
-#> [1] "LPS T2DvsPreT2D Confusion Matrix for PLS-DA Comparison"
+#> [1] "LPS T2D vs PreT2D Confusion Matrix for PLS-DA Comparison"
 #>        predicted.as.PreT2D predicted.as.T2D
 #> PreT2D                  17               16
 #> T2D                      6               27
-#> [1] "LPS T2DvsPreT2D Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
+#> [1] "LPS T2D vs PreT2D Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
 #>        predicted.as.PreT2D predicted.as.T2D
 #> PreT2D                  17               16
 #> T2D                      3               30
 #> png 
 #>   2
+
+# Generating Volcano Plot
+data.df = cytdata.df[,-4]
+volc_plot = cyt.volc(data.df, "Group", cond1 = "T2D", cond2 = "ND", fold_change_thresh = 2.0, top_labels= 15)
+#>                    Cytokine      FC_Log      P_Log Significant
+#> IL.12.P70         IL.12.P70 -2.60117683 2.18641971        TRUE
+#> IL.6                   IL.6 -0.95013174 3.94758527       FALSE
+#> IL.27                 IL.27 -0.67878724 2.33099419       FALSE
+#> IL.23                 IL.23 -0.87320747 1.95290632       FALSE
+#> CCL.20.MIP.3A CCL.20.MIP.3A -0.48569948 1.40917287       FALSE
+#> IL.2                   IL.2 -0.80577278 1.22848122       FALSE
+#> IL.17F               IL.17F -0.93024059 1.16938373       FALSE
+#> IL.10                 IL.10 -0.48121242 1.01734902       FALSE
+#> IL.28A               IL.28A -0.31081278 0.98351262       FALSE
+#> IL.17A               IL.17A -0.80415853 0.90173665       FALSE
+#> IL.1B                 IL.1B -0.61564856 0.83381951       FALSE
+#> GM.CSF               GM.CSF  0.45980342 0.62042612       FALSE
+#> IL.21                 IL.21 -0.62254771 0.51843946       FALSE
+#> IL.17E.IL.25   IL.17E.IL.25  0.01449957 0.49515782       FALSE
+#> IL.22                 IL.22 -0.30363695 0.47550506       FALSE
+#> IL.9                   IL.9 -0.32752255 0.43117675       FALSE
+#> TNF.A                 TNF.A -0.15647551 0.21142412       FALSE
+#> IL.31                 IL.31  0.21056699 0.20929529       FALSE
+#> IL.4                   IL.4  0.21161574 0.20542291       FALSE
+#> IL.5                   IL.5 -0.20808037 0.17512546       FALSE
+#> IL.15                 IL.15 -0.05298748 0.12055764       FALSE
+#> IL.13                 IL.13 -0.07717527 0.06654004       FALSE
+#> IFN.G                 IFN.G -0.09088794 0.06221451       FALSE
+#> TNF.B                 TNF.B  0.07037796 0.05224667       FALSE
+#> IL.33                 IL.33  0.01213249 0.01719622       FALSE
+ggsave("VolcanoPlot.png", plot = volc_plot$`T2D vs ND`, dpi = 300)
+
+# Printing table (This is usually printed by default when the function is called and not saved as an object)
+print(volc_plot$`T2D vs ND`$data)
+#>                    Cytokine      FC_Log      P_Log Significant         Label
+#> IL.12.P70         IL.12.P70 -2.60117683 2.18641971        TRUE     IL.12.P70
+#> IL.6                   IL.6 -0.95013174 3.94758527       FALSE          IL.6
+#> IL.27                 IL.27 -0.67878724 2.33099419       FALSE         IL.27
+#> IL.23                 IL.23 -0.87320747 1.95290632       FALSE         IL.23
+#> CCL.20.MIP.3A CCL.20.MIP.3A -0.48569948 1.40917287       FALSE CCL.20.MIP.3A
+#> IL.2                   IL.2 -0.80577278 1.22848122       FALSE          IL.2
+#> IL.17F               IL.17F -0.93024059 1.16938373       FALSE        IL.17F
+#> IL.10                 IL.10 -0.48121242 1.01734902       FALSE         IL.10
+#> IL.28A               IL.28A -0.31081278 0.98351262       FALSE        IL.28A
+#> IL.17A               IL.17A -0.80415853 0.90173665       FALSE        IL.17A
+#> IL.1B                 IL.1B -0.61564856 0.83381951       FALSE         IL.1B
+#> GM.CSF               GM.CSF  0.45980342 0.62042612       FALSE        GM.CSF
+#> IL.21                 IL.21 -0.62254771 0.51843946       FALSE         IL.21
+#> IL.17E.IL.25   IL.17E.IL.25  0.01449957 0.49515782       FALSE  IL.17E.IL.25
+#> IL.22                 IL.22 -0.30363695 0.47550506       FALSE         IL.22
+#> IL.9                   IL.9 -0.32752255 0.43117675       FALSE              
+#> TNF.A                 TNF.A -0.15647551 0.21142412       FALSE              
+#> IL.31                 IL.31  0.21056699 0.20929529       FALSE              
+#> IL.4                   IL.4  0.21161574 0.20542291       FALSE              
+#> IL.5                   IL.5 -0.20808037 0.17512546       FALSE              
+#> IL.15                 IL.15 -0.05298748 0.12055764       FALSE              
+#> IL.13                 IL.13 -0.07717527 0.06654004       FALSE              
+#> IFN.G                 IFN.G -0.09088794 0.06221451       FALSE              
+#> TNF.B                 TNF.B  0.07037796 0.05224667       FALSE              
+#> IL.33                 IL.33  0.01213249 0.01719622       FALSE
+
+# Generating Heat map
+cyt.heatmap(data = data.df,
+                    scale = "log2",        # Optional scaling
+                    annotation_col_name = "Group",
+                    title = "Heatmap.png")
+#> png 
+#>   2
+
+# Generating dual flashlights plot
+data.df = cytdata.df[,-c(1,3)]
+
+dfp = cyt.dualflashplot(data.df, group_var = "Group", group1 = "ND", group2 = "T2D", 
+                  ssmd_thresh = -0.2, log2fc_thresh = 1, top_labels = 10)
+#> # A tibble: 26 × 10
+#>    cytokine         mean_ND mean_PreT2D   mean_T2D variance_ND variance_PreT2D
+#>    <chr>              <dbl>       <dbl>      <dbl>       <dbl>           <dbl>
+#>  1 CCL.20.MIP.3A   634.        404.       887.        6.72e+ 5         2.74e+5
+#>  2 GM.CSF            2.65        3.11       1.92      2.63e+ 1         3.14e+1
+#>  3 IFN.G         57730.      18303.     61484.        2.86e+10         2.30e+9
+#>  4 IL.10           979.        836.      1366.        1.99e+ 6         1.19e+6
+#>  5 IL.12.P70        13.0        39.1       78.9       4.15e+ 2         2.56e+4
+#>  6 IL.13          1064.       1543.      1122.        5.60e+ 6         1.11e+7
+#>  7 IL.15             7.92        4.29       8.22      3.54e+ 1         2.58e+1
+#>  8 IL.17A          352.        653.       615.        9.40e+ 5         2.88e+6
+#>  9 IL.17E.IL.25      0.0101      0.0163     0.01      1.01e- 6         3.88e-3
+#> 10 IL.17F            1.63        2.35       3.11      1.56e+ 1         3.37e+1
+#> 11 IL.1B          2806.       2977.      4299.        6.63e+ 7         3.76e+7
+#> 12 IL.2           9227.      10718.     16129.        2.60e+ 8         4.10e+8
+#> 13 IL.21           205.        210.       316.        3.15e+ 5         2.49e+5
+#> 14 IL.22             0.0513      0.0684     0.0633    4.58e- 3         4.51e-3
+#> 15 IL.23             0.147       0.243      0.269     3.13e- 2         9.37e-2
+#> 16 IL.27             0.0662      0.0834     0.106     6.18e- 3         5.66e-3
+#> 17 IL.28A            0.0537      0.0710     0.0666    2.45e- 3         5.10e-3
+#> 18 IL.31             0.0409      0.0905     0.0354    6.62e- 3         4.88e-2
+#> 19 IL.33             1.17        1.43       1.16      2.09e+ 0         2.71e+0
+#> 20 IL.4              0.344       0.707      0.297     4.24e- 1         2.96e+0
+#> 21 IL.5            134.        340.       155.        1.09e+ 5         9.88e+5
+#> 22 IL.6           4620.       5197.      8925.        2.86e+ 7         5.72e+7
+#> 23 IL.9            203.        256.       254.        1.34e+ 5         2.11e+5
+#> 24 TNF.A          5046.       3069.      5624.        7.02e+ 7         1.63e+7
+#> 25 TNF.B             0.641       0.709      0.610     2.37e+ 0         2.76e+0
+#> 26 Time             44          44         44         4.63e+ 2         4.63e+2
+#> # ℹ 4 more variables: variance_T2D <dbl>, ssmd <dbl>, log2FC <dbl>,
+#> #   Significant <lgl>
+ggsave("DualFlashlightPlot.png", plot = dfp$plot_env$p, dpi = 300)
+
+# Printing table (This is usually printed by default when the function is called and not saved as an object)
+print(dfp$data)
+#> # A tibble: 26 × 10
+#>    cytokine         mean_ND mean_PreT2D mean_T2D variance_ND variance_PreT2D
+#>    <chr>              <dbl>       <dbl>    <dbl>       <dbl>           <dbl>
+#>  1 CCL.20.MIP.3A   634.        404.       887.      6.72e+ 5         2.74e+5
+#>  2 GM.CSF            2.65        3.11       1.92    2.63e+ 1         3.14e+1
+#>  3 IFN.G         57730.      18303.     61484.      2.86e+10         2.30e+9
+#>  4 IL.10           979.        836.      1366.      1.99e+ 6         1.19e+6
+#>  5 IL.12.P70        13.0        39.1       78.9     4.15e+ 2         2.56e+4
+#>  6 IL.13          1064.       1543.      1122.      5.60e+ 6         1.11e+7
+#>  7 IL.15             7.92        4.29       8.22    3.54e+ 1         2.58e+1
+#>  8 IL.17A          352.        653.       615.      9.40e+ 5         2.88e+6
+#>  9 IL.17E.IL.25      0.0101      0.0163     0.01    1.01e- 6         3.88e-3
+#> 10 IL.17F            1.63        2.35       3.11    1.56e+ 1         3.37e+1
+#> # ℹ 16 more rows
+#> # ℹ 4 more variables: variance_T2D <dbl>, ssmd <dbl>, log2FC <dbl>,
+#> #   Significant <lgl>
 ```

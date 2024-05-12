@@ -24,6 +24,9 @@
 #' @param var.num Number of variables to be used in PLS-DA.
 #' @param cv.opt Option for "loocv" or "Mfold" cross-validation methods.
 #' @param fold.num Number of folds if cv.opt equals "Mfold".
+#' @param scale Option to transform data using log2. Default set to NULL.
+#' @param comp.num Number of components to be calculated. Default set to 2.
+#' @param pch.values A vector of integers specifying the plotting characters to be used in the plot.
 #' @description
 #' This function takes a matrix or data frame of variables where the first two columns must consist of "Group"
 #' and "Stimulation" or "Group" and "Treatment". The rest of columns will be cytokines that will be analyzed.
@@ -34,22 +37,30 @@
 #' classification of groups with VIP scores greater than 1.
 #' @examples
 #' \dontrun{
-#' cyt.plsda(cytdata.df[,-c(1,3)], colors = c("black", "purple"), title = "Example Analysis.pdf", bg = TRUE, conf.mat = TRUE)
-#' cyt.plsda(cytdata.df[,-c(1,3)], colors = c("black", "purple"), title = "Example Analysis.pdf", ellipse = TRUE, conf.mat = TRUE)
-#' cyt.plsda(cytdata.df[,-c(1,4)], ellipse = TRUE, title = "Example Analysis.pdf", conf.mat = TRUE)
+#' cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE, conf.mat = TRUE, scale = "log2",
+#' var.num = 25, cv.opt = "loocv", comp.num = 2, colors = c("black", "purple", "red2"),
+#' pch.values = c(16,4,3))
 #' }
 #' @export
 
-cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, conf.mat = FALSE, var.num, cv.opt = NULL, fold.num = 5){
-  # Log2 transforming cytokines
-  x.df = data.frame(x.df[,c(1:2)], log2(x.df[, -c(1:2)]))
+cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
+                     conf.mat = FALSE, var.num, cv.opt = NULL, fold.num = 5,
+                     scale = NULL, comp.num = 2, pch.values){
+  if(scale == "log2"){
+    # Log2 transforming cytokines
+    data.df = data.frame(data.df[,c(1:2)], log2(data.df[, -c(1:2)]))
+    print("Results based on log2 transformation:")
+  }
+  else if (is.null(scale)){
+    print("Results based on no transformation:")
+  }
 
   # Making the first two columns to be lowercase
-  names(x.df)[1:2] <- tolower(names(x.df)[1:2])
+  names(data.df)[1:2] <- tolower(names(data.df)[1:2])
   # Creating a table to have two separate vectors for group and stimulation
-  a = table( x.df[, c(1,2)] ); a
+  a = table( data.df[, c(1,2)] ); a
 
-  if("treatment" %in% names(x.df)[1:2]){
+  if("treatment" %in% names(data.df)[1:2]){
     Treatment.vec = dimnames(a)$treatment; Treatment.vec
   }else{
     Stimulation.vec = dimnames(a)$stimulation; Stimulation.vec
@@ -58,21 +69,22 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
 
   # Generate a color palette based on the number of groups
   if (is.null(colors)) {
-    num_groups <- length(unique(x.df$group))
+    num_groups <- length(unique(data.df$group))
     colors <- rainbow(num_groups)
   }
 
-  if("treatment" %in% names(x.df)[1:2]){
+  if("treatment" %in% names(data.df)[1:2]){
     pdf( file= title)
     for(i in 1:length(Treatment.vec) ) {
+      #i = 1
       theTrt = Treatment.vec[i]
-      condt  = x.df[, "treatment"] == theTrt
+      condt  = data.df[, "treatment"] == theTrt
       Title  = theTrt
-      theData.df = x.df[condt,-c(1:2)]
-      theGroups  = x.df[condt, "group"]
+      theData.df = data.df[condt,-c(1:2)]
+      theGroups  = data.df[condt, "group"]
 
       cytokine.splsda =
-        splsda(theData.df, theGroups, scale=TRUE, ncomp=2, keepX = c(var.num, var.num))
+        splsda(theData.df, theGroups, scale=TRUE, ncomp=comp.num, keepX = c(var.num, var.num))
 
       splsda.predict = predict( cytokine.splsda, theData.df, dist="max.dist")
       Prediction1 = cbind( original = theGroups, splsda.predict$class$max.dist )
@@ -81,7 +93,7 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
 
       # Creating a shaded predicted background using max.dist
       bg.maxdist <-  background.predict(cytokine.splsda,
-                                        comp.predicted = 2,
+                                        comp.predicted = 1,
                                         dist = 'max.dist')
       ## Cross-validation methods
       if(!is.null(cv.opt)) {
@@ -91,7 +103,7 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
           loocv_results = perf(cytokine.splsda, validation = "loo")
           loocv_error_rate = loocv_results$error.rate$overall["comp1", "max.dist"]
           loocv_acc = 1 - loocv_error_rate; loocv_acc
-          print(paste0(theTrt, " ",unique(theGroups)[1],"vs",unique(theGroups)[2]," LOOCV Accuracy: ", loocv_acc))
+          print(paste0(theTrt, " ",unique(theGroups)[1]," vs ",unique(theGroups)[2]," LOOCV Accuracy: ", loocv_acc))
         }
         #Mfold
         else if(cv.opt == "Mfold"){
@@ -99,88 +111,93 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
           fold_results = perf(cytokine.splsda, validation = "Mfold", folds = fold.num, nrepeat = 1000)
           fold_error_rate = fold_results$error.rate$overall["comp1", "max.dist"]
           fold_acc = 1 - fold_error_rate; fold_acc
-          print(paste0(theTrt, " ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Mfold Accuracy: ", fold_acc))
+          print(paste0(theTrt, " ",unique(theGroups)[1]," vs ",unique(theGroups)[2]," Mfold Accuracy: ", fold_acc))
         }
       }
+
+      group_factors = sort(unique(theGroups))
+
 
 
       # Conditions to have either ellipses or prediction background or both or neither on graphs.
       if(ellipse == TRUE & bg == TRUE){
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
+        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=pch.values,
+                  pch.levels = group_factors,
                   ellipse=TRUE, title= paste (Title, "With Accuracy:",acc1,"%"),
                   background = bg.maxdist)
       }
       else if(ellipse == TRUE){
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
+        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=pch.values,
+                  pch.levels = group_factors,
                   ellipse=TRUE, title= paste (Title, "With Accuracy:",acc1,"%"))
       }
       else if(bg == TRUE){
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
+        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=pch.values,
+                  pch.levels = group_factors,
                   ellipse=FALSE, title= paste (Title, "With Accuracy:",acc1,"%"),
                   background = bg.maxdist)
       }
       else if(ellipse == FALSE & bg == FALSE){
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
+        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=pch.values,
+                  pch.levels = group_factors,
                   ellipse=FALSE, title= paste (Title, "With Accuracy:",acc1,"%"))
       }
 
-      plotLoadings(cytokine.splsda, comp=1, contrib = 'max', method = 'mean',size.name = 1,
-                   size.legend = 1,
-                   legend.color=colors, title=paste("Component 1: ", Title), size.title=1 )
-      plotLoadings(cytokine.splsda, comp=2, contrib = 'max', method = 'mean',size.name = 1,
-                   size.legend = 1,
-                   legend.color=colors, title=paste("Component 2: ", Title), size.title=1 )
-      loading.vip.df = data.frame(cytokine.splsda$loadings$X, vip(cytokine.splsda))
-      colnames(loading.vip.df)= c("loading.comp1", "loading.comp2", "vip.comp1", "vip.comp2")
-      loading.vip.df
 
-      #####VIPscore
-      # component 1
-      VIPscore=vip(cytokine.splsda)
-      Vscore=as.data.frame(VIPscore)
-      Vscore$metabo= rownames(Vscore)
-      Vscore$comp = Vscore$comp1
-      bar=Vscore[,c('metabo','comp')]
-      rownames(bar)=c(1:nrow(bar))
-      bar=bar[order(bar$comp, decreasing=T),]
+      num_rows <- nrow(cytokine.splsda$loadings$X)
+      loading.vip.df <- data.frame(matrix(ncol = 0, nrow = num_rows))
 
-      a1 = ggplot(bar, aes(x=metabo, y=comp)) +
-        geom_bar(stat="identity", position = "dodge") +scale_y_continuous(limits=c(0,max(bar[,2])))+
-        geom_hline(yintercept=1, color="grey") +     #draw a horizontal line
-        scale_x_discrete(limits=factor(bar[,1])) +   #set the first column to be a factor
-        theme(axis.text.x=element_text(angle=45, hjust=1, size = 15)) +    # angle
-        labs(x="", y="VIP score")+
-        ggtitle("Component 1")+
-        theme(panel.grid=element_blank(), panel.background=element_rect(color='black', fill='transparent'))
-      print(a1)
+      # Loop over the number of components specified by 'comp.num'
+      for (comp in 1:comp.num) {
+        # Plot loadings for the current component
+        plotLoadings(cytokine.splsda, comp=comp, contrib='max', method='mean', size.name=1,
+                     size.legend=1, legend.color=colors, title=paste("Component", comp, ":", Title), size.title=1)
 
-      # component 2
-      VIPscore=vip(cytokine.splsda)
-      Vscore=as.data.frame(VIPscore)
-      Vscore$metabo= rownames(Vscore)
-      Vscore$comp = Vscore$comp2
-      bar=Vscore[,c('metabo','comp')]
-      rownames(bar)=c(1:nrow(bar))
-      bar=bar[order(bar$comp, decreasing=T),]
+        # Add columns to the data frame for the loadings and VIP for the current component
+        loading.vip.df[[paste("loading.comp", comp, sep = "")]] <- cytokine.splsda$loadings$X[, comp]
+        loading.vip.df[[paste("vip.comp", comp, sep = "")]] <- vip(cytokine.splsda)
+      }
+
+      # Update the column names for loadings and VIP for all components
+      colnames(loading.vip.df) <- unlist(lapply(1:comp.num, function(comp) {
+        c(paste("loading.comp", comp, sep = ""), paste("vip.comp", comp, sep = ""))
+      }))
 
 
-      a2=ggplot(bar, aes(x=metabo, y=comp)) +
-        geom_bar(stat="identity", position = "dodge") +scale_y_continuous(limits=c(0,max(bar[,2])))+
-        geom_hline(yintercept=1, color="grey") +     #draw a horizontal line
-        scale_x_discrete(limits=factor(bar[,1])) +   #set the first column to be a factor
-        theme(axis.text.x=element_text(angle=45, hjust=1, size = 15)) +    # angle
-        labs(x="", y="VIP score")+
-        ggtitle("Component 2")+
-        theme(panel.grid=element_blank(), panel.background=element_rect(color='black', fill='transparent'))
-      print(a2)
+      # Calculate VIP scores once
+      all_VIP_scores <- vip(cytokine.splsda)
 
-      # conduct PLSDA on selected variable based on the first component
-      condtVariable = Vscore$comp1 > 1
-      KeepX = sum( condtVariable )
-      KeepX
-      theData.mat = theData.df[, condtVariable]
-      cytokine.splsda2 =
-        splsda(theData.mat, theGroups, scale=TRUE, ncomp=2, keepX = c(KeepX, KeepX))
+      # Use all_VIP_scores for plotting
+      for (comp in 1:comp.num) {
+        Vscore <- as.data.frame(all_VIP_scores[, comp, drop = FALSE])
+        Vscore$metabo <- rownames(Vscore)
+        Vscore$comp <- Vscore[,1]  # assuming the first column contains the VIP scores
+        bar <- Vscore[,c('metabo','comp')]
+        rownames(bar) <- 1:nrow(bar)
+        bar <- bar[order(bar$comp, decreasing = TRUE), ]
+
+        a <- ggplot(bar, aes(x = metabo, y = comp)) +
+          geom_bar(stat = "identity", position = "dodge") +
+          scale_y_continuous(limits = c(0, max(bar$comp))) +
+          geom_hline(yintercept = 1, color = "grey") +
+          scale_x_discrete(limits = factor(bar$metabo)) +
+          theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 15)) +
+          labs(x = "", y = "VIP score") +
+          ggtitle(paste("Component", comp)) +
+          theme(panel.grid = element_blank(), panel.background = element_rect(color = 'black', fill = 'transparent'))
+
+        print(a)  # This prints the plot for each component
+      }
+
+      # Conduct further analysis based on a specific component's VIP score
+      # For example, use the VIP scores from the first component
+      Vscore <- as.data.frame(all_VIP_scores[, 1, drop = FALSE])
+      Vscore$metabo <- rownames(Vscore)
+      Vscore$comp <- Vscore[,1]
+      condtVariable <- Vscore$comp > 1
+      KeepX <- sum(condtVariable)
+      theData.mat <- theData.df[, condtVariable, drop = FALSE]
+      cytokine.splsda2 <- splsda(theData.mat, theGroups, scale=TRUE, ncomp=comp.num, keepX = c(KeepX, KeepX))
 
 
       splsda.predict = predict( cytokine.splsda2, theData.mat, dist="max.dist")
@@ -189,7 +206,7 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
       acc2 = 100*signif(accuracy2, digits = 2)
       # Creating a shaded predicted background using max.dist
       bg.maxdist <-  background.predict(cytokine.splsda2,
-                                        comp.predicted = 2,
+                                        comp.predicted = 1,
                                         dist = 'max.dist')
 
       ## Cross-validation methods
@@ -215,33 +232,52 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
 
       # Conditions to have either ellipses or prediction background or both or neither on graphs.
       if(ellipse == TRUE & bg == TRUE){
-        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
+        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=pch.values,
+                  pch.levels = group_factors,
                   ellipse=TRUE, title= paste (Title, "(VIP>1)", "With Accuracy:",acc2,"%"),
                   background = bg.maxdist)
       }
       else if(ellipse == TRUE) {
-        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
+        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=pch.values,
+                  pch.levels = group_factors,
                   ellipse=TRUE, title=paste(Title, "(VIP>1)","With Accuracy", acc2, "%" ))
       }
       else if(bg == TRUE){
-        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
+        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=pch.values,
+                  pch.levels = group_factors,
                   ellipse=FALSE, title=paste(Title, "(VIP>1)","With Accuracy", acc2, "%" ),
                   background = bg.maxdist)
       }
       else if(ellipse == FALSE & bg == FALSE){
-        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
+        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=pch.values,
+                  pch.levels = group_factors,
                   ellipse=FALSE, title= paste (Title, "(VIP>1)", "With Accuracy:",acc2,"%"))
       }
 
-      plotLoadings(cytokine.splsda2, comp=1, contrib = 'max', method = 'mean',size.name = 1,
-                   size.legend = 1,
-                   legend.color=colors,
-                   title=paste("Component 1: ", Title, "(VIP>1)"), size.title=1 )
+      num_rows2 <- nrow(cytokine.splsda2$loadings$X)
+      loading.vip.df2 <- data.frame(matrix(ncol = 0, nrow = num_rows2))
+
+      # Loop over the number of components specified by 'comp.num'
+      for (comp in 1:comp.num) {
+        # Plot loadings for the current component
+        plotLoadings(cytokine.splsda2, comp=comp, contrib='max', method='mean', size.name=1,
+                     size.legend=1, legend.color=colors, title=paste("Component", comp, ":", Title), size.title=1)
+
+        # Add columns to the data frame for the loadings and VIP for the current component
+        loading.vip.df2[[paste("loading.comp", comp, sep = "")]] <- cytokine.splsda2$loadings$X[, comp]
+        loading.vip.df2[[paste("vip.comp", comp, sep = "")]] <- vip(cytokine.splsda2)
+      }
+
+      # Update the column names for loadings and VIP for all components
+      colnames(loading.vip.df2) <- unlist(lapply(1:comp.num, function(comp) {
+        c(paste("loading.comp", comp, sep = ""), paste("vip.comp", comp, sep = ""))
+      }))
+
       # Prints confusion matrix
       if(conf.mat == TRUE){
-        print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Confusion Matrix for PLS-DA Comparison"))
+        print(paste0(theTrt," ",unique(theGroups)[1]," vs ",unique(theGroups)[2]," Confusion Matrix for PLS-DA Comparison"))
         print(get.confusion_matrix(truth = Prediction1[,1], predicted = Prediction1[,2])) # Confusion matrix for all variables in model
-        print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Confusion Matrix for PLS-DA Comparison with VIP Score > 1"))
+        print(paste0(theTrt," ",unique(theGroups)[1]," vs ",unique(theGroups)[2]," Confusion Matrix for PLS-DA Comparison with VIP Score > 1"))
         print(get.confusion_matrix(truth = Prediction2[,1], predicted = Prediction2[,2])) # Confusion matrix for all variables with VIP Score > 1
       }
     }
@@ -250,13 +286,13 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
     pdf( file= title)
     for(i in 1:length(Stimulation.vec) ) {
       theTrts = Stimulation.vec[i]
-      condt  = x.df[, "stimulation"] == theTrts
+      condt  = data.df[, "stimulation"] == theTrts
       Title  = theTrts
-      theData.df = x.df[condt,-c(1:2)]
-      theGroups  = x.df[condt, "group"]
+      theData.df = data.df[condt,-c(1:2)]
+      theGroups  = data.df[condt, "group"]
 
       cytokine.splsda =
-        splsda(theData.df, theGroups, scale=TRUE, ncomp=2, keepX = c(var.num, var.num))
+        splsda(theData.df, theGroups, scale=TRUE, ncomp=comp.num, keepX = c(var.num, var.num))
 
       splsda.predict = predict( cytokine.splsda, theData.df, dist="max.dist")
       Prediction1 = cbind( original = theGroups, splsda.predict$class$max.dist )
@@ -265,7 +301,7 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
 
       # Creating a shaded predicted background using max.dist
       bg.maxdist <-  background.predict(cytokine.splsda,
-                                        comp.predicted = 2,
+                                        comp.predicted = 1,
                                         dist = 'max.dist')
       ## Cross-validation methods
       # LOOCV Different method
@@ -288,83 +324,85 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
         }
       }
 
+      group_factors = sort(unique(theGroups))
+
       # Conditions to have either ellipses or prediction background or both or neither on graphs.
       if(ellipse == TRUE & bg == TRUE){
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
+        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=pch.values,
+                  pch.levels = group_factors,
                   ellipse=TRUE, title= paste (Title, "With Accuracy:",acc1,"%"),
                   background = bg.maxdist)
       }
       else if(ellipse == TRUE){
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
+        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=pch.values,
+                  pch.levels = group_factors,
                   ellipse=TRUE, title= paste (Title, "With Accuracy:",acc1,"%"))
       }
       else if(bg == TRUE){
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
+        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=pch.values,
+                  pch.levels = group_factors,
                   ellipse=FALSE, title= paste (Title, "With Accuracy:",acc1,"%"),
                   background = bg.maxdist)
       }
       else if(ellipse == FALSE & bg == FALSE){
-        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
+        plotIndiv(cytokine.splsda, ind.names=NA, legend=TRUE, col=colors, pch=pch.values,
+                  pch.levels = group_factors,
                   ellipse=FALSE, title= paste (Title, "With Accuracy:",acc1,"%"))
       }
+      num_rows <- nrow(cytokine.splsda$loadings$X)
+      loading.vip.df <- data.frame(matrix(ncol = 0, nrow = num_rows))
 
-      plotLoadings(cytokine.splsda, comp=1, contrib = 'max', method = 'mean',size.name = 1,
-                   size.legend = 1,
-                   legend.color=colors, title=paste("Component 1: ", Title), size.title=1 )
-      plotLoadings(cytokine.splsda, comp=2, contrib = 'max', method = 'mean',size.name = 1,
-                   size.legend = 1,
-                   legend.color=colors, title=paste("Component 2: ", Title), size.title=1 )
-      loading.vip.df = data.frame(cytokine.splsda$loadings$X, vip(cytokine.splsda))
-      colnames(loading.vip.df)= c("loading.comp1", "loading.comp2", "vip.comp1", "vip.comp2")
-      loading.vip.df
+      # Loop over the number of components specified by 'comp.num'
+      for (comp in 1:comp.num) {
+        # Plot loadings for the current component
+        plotLoadings(cytokine.splsda, comp=comp, contrib='max', method='mean', size.name=1,
+                     size.legend=1, legend.color=colors, title=paste("Component", comp, ":", Title), size.title=1)
 
-      #####VIPscore
-      # component 1
-      VIPscore=vip(cytokine.splsda)
-      Vscore=as.data.frame(VIPscore)
-      Vscore$metabo= rownames(Vscore)
-      Vscore$comp = Vscore$comp1
-      bar=Vscore[,c('metabo','comp')]
-      rownames(bar)=c(1:nrow(bar))
-      bar=bar[order(bar$comp, decreasing=T),]
+        # Add columns to the data frame for the loadings and VIP for the current component
+        loading.vip.df[[paste("loading.comp", comp, sep = "")]] <- cytokine.splsda$loadings$X[, comp]
+        loading.vip.df[[paste("vip.comp", comp, sep = "")]] <- vip(cytokine.splsda)
+      }
 
-      a1 = ggplot(bar, aes(x=metabo, y=comp)) +
-        geom_bar(stat="identity", position = "dodge") +scale_y_continuous(limits=c(0,max(bar[,2])))+
-        geom_hline(yintercept=1, color="grey") +     #draw a horizontal line
-        scale_x_discrete(limits=factor(bar[,1])) +   #set the first column to be a factor
-        theme(axis.text.x=element_text(angle=45, hjust=1, size = 15)) +    # angle
-        labs(x="", y="VIP score")+
-        ggtitle("Component 1")+
-        theme(panel.grid=element_blank(), panel.background=element_rect(color='black', fill='transparent'))
-      print(a1)
-
-      # component 2
-      VIPscore=vip(cytokine.splsda)
-      Vscore=as.data.frame(VIPscore)
-      Vscore$metabo= rownames(Vscore)
-      Vscore$comp = Vscore$comp2
-      bar=Vscore[,c('metabo','comp')]
-      rownames(bar)=c(1:nrow(bar))
-      bar=bar[order(bar$comp, decreasing=T),]
+      # Update the column names for loadings and VIP for all components
+      colnames(loading.vip.df) <- unlist(lapply(1:comp.num, function(comp) {
+        c(paste("loading.comp", comp, sep = ""), paste("vip.comp", comp, sep = ""))
+      }))
 
 
-      a2=ggplot(bar, aes(x=metabo, y=comp)) +
-        geom_bar(stat="identity", position = "dodge") +scale_y_continuous(limits=c(0,max(bar[,2])))+
-        geom_hline(yintercept=1, color="grey") +     #draw a horizontal line
-        scale_x_discrete(limits=factor(bar[,1])) +   #set the first column to be a factor
-        theme(axis.text.x=element_text(angle=45, hjust=1, size = 15)) +    # angle
-        labs(x="", y="VIP score")+
-        ggtitle("Component 2")+
-        theme(panel.grid=element_blank(), panel.background=element_rect(color='black', fill='transparent'))
-      print(a2)
+      # Calculate VIP scores once
+      all_VIP_scores <- vip(cytokine.splsda)
 
-      # conduct PLSDA on selected variable based on the first component
-      condtVariable = Vscore$comp1 > 1
-      KeepX = sum( condtVariable )
-      KeepX
-      theData.mat = theData.df[, condtVariable]
-      cytokine.splsda2 =
-        splsda(theData.mat, theGroups, scale=TRUE, ncomp=2, keepX = c(KeepX, KeepX))
+      # Use all_VIP_scores for plotting
+      for (comp in 1:comp.num) {
+        Vscore <- as.data.frame(all_VIP_scores[, comp, drop = FALSE])
+        Vscore$metabo <- rownames(Vscore)
+        Vscore$comp <- Vscore[,1]  # assuming the first column contains the VIP scores
+        bar <- Vscore[,c('metabo','comp')]
+        rownames(bar) <- 1:nrow(bar)
+        bar <- bar[order(bar$comp, decreasing = TRUE), ]
+
+        a <- ggplot(bar, aes(x = metabo, y = comp)) +
+          geom_bar(stat = "identity", position = "dodge") +
+          scale_y_continuous(limits = c(0, max(bar$comp))) +
+          geom_hline(yintercept = 1, color = "grey") +
+          scale_x_discrete(limits = factor(bar$metabo)) +
+          theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 15)) +
+          labs(x = "", y = "VIP score") +
+          ggtitle(paste("Component", comp)) +
+          theme(panel.grid = element_blank(), panel.background = element_rect(color = 'black', fill = 'transparent'))
+
+        print(a)  # This prints the plot for each component
+      }
+
+      # Conduct further analysis based on a specific component's VIP score
+      # For example, use the VIP scores from the first component
+      Vscore <- as.data.frame(all_VIP_scores[, 1, drop = FALSE])
+      Vscore$metabo <- rownames(Vscore)
+      Vscore$comp <- Vscore[,1]
+      condtVariable <- Vscore$comp > 1
+      KeepX <- sum(condtVariable)
+      theData.mat <- theData.df[, condtVariable, drop = FALSE]
+      cytokine.splsda2 <- splsda(theData.mat, theGroups, scale=TRUE, ncomp=comp.num, keepX = c(KeepX, KeepX))
 
 
       splsda.predict = predict( cytokine.splsda2, theData.mat, dist="max.dist")
@@ -374,7 +412,7 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
 
       # Creating a shaded predicted background using max.dist
       bg.maxdist <-  background.predict(cytokine.splsda2,
-                                        comp.predicted = 2,
+                                        comp.predicted = 1,
                                         dist = 'max.dist')
 
       ## Cross-validation methods
@@ -399,38 +437,55 @@ cyt.plsda = function(x.df, colors = NULL, title, ellipse = FALSE, bg = FALSE, co
 
       # Conditions to have either ellipses or prediction background or both or neither on graphs.
       if(ellipse == TRUE & bg == TRUE){
-        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
+        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=pch.values,
+                  pch.levels = group_factors,
                   ellipse=TRUE, title= paste (Title, "(VIP>1)", "With Accuracy:",acc2,"%"),
                   background = bg.maxdist)
       }
       else if(ellipse == TRUE) {
-        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
+        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=pch.values,
+                  pch.levels = group_factors,
                   ellipse=TRUE, title=paste(Title, "(VIP>1)", "With Accuracy:",acc2,"%"))
       }
       else if(bg == TRUE){
-        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
+        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=pch.values,
+                  pch.levels = group_factors,
                   ellipse=FALSE, title=paste(Title, "(VIP>1)", "With Accuracy:",acc2,"%"),
                   background = bg.maxdist)
       }
       else if(ellipse == FALSE & bg == FALSE){
-        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=c(16,4),
+        plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=pch.values,
+                  pch.levels = group_factors,
                   ellipse=FALSE, title= paste (Title, "(VIP>1)", "With Accuracy:",acc2,"%"))
       }
 
-      plotLoadings(cytokine.splsda2, comp=1, contrib = 'max', method = 'mean',
-                   legend.color=colors,size.name = 1,
-                   size.legend = 1,
-                   title=paste("Component 1: ", Title, "(VIP>1)"), size.title=1 )
+      num_rows2 <- nrow(cytokine.splsda2$loadings$X)
+      loading.vip.df2 <- data.frame(matrix(ncol = 0, nrow = num_rows2))
+
+      # Loop over the number of components specified by 'comp.num'
+      for (comp in 1:comp.num) {
+        # Plot loadings for the current component
+        plotLoadings(cytokine.splsda2, comp=comp, contrib='max', method='mean', size.name=1,
+                     size.legend=1, legend.color=colors, title=paste("Component", comp, ":", Title), size.title=1)
+
+        # Add columns to the data frame for the loadings and VIP for the current component
+        loading.vip.df2[[paste("loading.comp", comp, sep = "")]] <- cytokine.splsda2$loadings$X[, comp]
+        loading.vip.df2[[paste("vip.comp", comp, sep = "")]] <- vip(cytokine.splsda2)
+      }
+
+      # Update the column names for loadings and VIP for all components
+      colnames(loading.vip.df2) <- unlist(lapply(1:comp.num, function(comp) {
+        c(paste("loading.comp", comp, sep = ""), paste("vip.comp", comp, sep = ""))
+      }))
       # Prints confusion matrix
       if(conf.mat == TRUE){
-        print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Confusion Matrix for PLS-DA Comparison"))
+        print(paste0(theTrts," ",unique(theGroups)[1]," vs ",unique(theGroups)[2]," Confusion Matrix for PLS-DA Comparison"))
         print(get.confusion_matrix(truth = Prediction1[,1], predicted = Prediction1[,2])) # Confusion matrix for all variables in model
-        print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Confusion Matrix for PLS-DA Comparison with VIP Score > 1"))
+        print(paste0(theTrts," ",unique(theGroups)[1]," vs ",unique(theGroups)[2]," Confusion Matrix for PLS-DA Comparison with VIP Score > 1"))
         print(get.confusion_matrix(truth = Prediction2[,1], predicted = Prediction2[,2])) # Confusion matrix for all variables with VIP Score > 1
       }
     }
     dev.off()
-    # Prints confusion matrix
   }
 }
 
