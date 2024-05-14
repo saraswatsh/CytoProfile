@@ -290,11 +290,11 @@ cyt.heatmap(data = data.df,
 #>   2
 
 # Generating dual flashlights plot
-data.df = cytdata.df[,-c(1,3)]
+data.df = cytdata.df[,-c(1,3:4)]
 
-dfp = cyt.dualflashplot(data.df, group_var = "Group", group1 = "ND", group2 = "T2D", 
+dfp = cyt.dualflashplot(data.df, group_var = "Group", group1 = "T2D", group2 = "ND", 
                   ssmd_thresh = -0.2, log2fc_thresh = 1, top_labels = 10)
-#> # A tibble: 26 × 10
+#> # A tibble: 25 × 11
 #>    cytokine         mean_ND mean_PreT2D   mean_T2D variance_ND variance_PreT2D
 #>    <chr>              <dbl>       <dbl>      <dbl>       <dbl>           <dbl>
 #>  1 CCL.20.MIP.3A   634.        404.       887.        6.72e+ 5         2.74e+5
@@ -322,14 +322,13 @@ dfp = cyt.dualflashplot(data.df, group_var = "Group", group1 = "ND", group2 = "T
 #> 23 IL.9            203.        256.       254.        1.34e+ 5         2.11e+5
 #> 24 TNF.A          5046.       3069.      5624.        7.02e+ 7         1.63e+7
 #> 25 TNF.B             0.641       0.709      0.610     2.37e+ 0         2.76e+0
-#> 26 Time             44          44         44         4.63e+ 2         4.63e+2
-#> # ℹ 4 more variables: variance_T2D <dbl>, ssmd <dbl>, log2FC <dbl>,
-#> #   Significant <lgl>
-ggsave("DualFlashlightPlot.png", plot = dfp$plot_env$p, dpi = 300)
+#> # ℹ 5 more variables: variance_T2D <dbl>, ssmd <dbl>, log2FC <dbl>,
+#> #   SSMD_Category <chr>, Significant <lgl>
+ggsave("DualFlashlightPlot.png", plot = dfp$plot_env$p, dpi = 300, width = 3000, height = 2000, units = "px")
 
 # Printing table (This is usually printed by default when the function is called and not saved as an object)
 print(dfp$data)
-#> # A tibble: 26 × 10
+#> # A tibble: 25 × 11
 #>    cytokine         mean_ND mean_PreT2D mean_T2D variance_ND variance_PreT2D
 #>    <chr>              <dbl>       <dbl>    <dbl>       <dbl>           <dbl>
 #>  1 CCL.20.MIP.3A   634.        404.       887.      6.72e+ 5         2.74e+5
@@ -342,7 +341,7 @@ print(dfp$data)
 #>  8 IL.17A          352.        653.       615.      9.40e+ 5         2.88e+6
 #>  9 IL.17E.IL.25      0.0101      0.0163     0.01    1.01e- 6         3.88e-3
 #> 10 IL.17F            1.63        2.35       3.11    1.56e+ 1         3.37e+1
-#> # ℹ 16 more rows
-#> # ℹ 4 more variables: variance_T2D <dbl>, ssmd <dbl>, log2FC <dbl>,
-#> #   Significant <lgl>
+#> # ℹ 15 more rows
+#> # ℹ 5 more variables: variance_T2D <dbl>, ssmd <dbl>, log2FC <dbl>,
+#> #   SSMD_Category <chr>, Significant <lgl>
 ```

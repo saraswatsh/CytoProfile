@@ -15,16 +15,13 @@
 #' cyt.dualflashplot(cytdata.df[,-c(1,3)], group_var = "Group", group1 = "ND", group2 = "T2D", ssmd_thresh = -0.2, log2fc_thresh = 1, top_labels = 10)
 
 cyt.dualflashplot <- function(data, group_var, group1, group2, ssmd_thresh = 1, log2fc_thresh = 1, top_labels = 15) {
-  # Check that the data is a dataframe
   if (!is.data.frame(data)) {
     stop("Input must be a data frame.")
   }
 
-  # Reshape data to long format
   data_long <- data %>%
     pivot_longer(cols = -all_of(group_var), names_to = "cytokine", values_to = "level")
 
-  # Calculate means, variances, ssmd, and log2 fold change
   stats <- data_long %>%
     group_by(cytokine, .data[[group_var]]) %>%
     summarise(.groups = "drop",
@@ -35,29 +32,31 @@ cyt.dualflashplot <- function(data, group_var, group1, group2, ssmd_thresh = 1, 
       ssmd = (get(paste0("mean_", group1)) - get(paste0("mean_", group2))) /
         sqrt((get(paste0("variance_", group1)) + get(paste0("variance_", group2))) / 2),
       log2FC = log2(get(paste0("mean_", group1)) / get(paste0("mean_", group2))),
+      SSMD_Category = case_when(
+        abs(ssmd) >= 1 ~ "Strong Effect",
+        abs(ssmd) >= 0.5 ~ "Moderate Effect",
+        TRUE ~ "Weak Effect"
+      ),
       Significant = (abs(ssmd) >= ssmd_thresh) & (abs(log2FC) >= log2fc_thresh)
-    ) %>%
-    ungroup()
-
-  top_n <- top_labels  # Number of cytokines to label based on highest SSMD
+    )
 
   p <- ggplot(stats, aes(x = log2FC, y = ssmd, label = cytokine)) +
-    geom_point(aes(color = Significant)) +
-    geom_text(data = top_n(stats %>% arrange(desc(abs(ssmd))), top_n), check_overlap = TRUE, nudge_y = 0.03) +
-    theme_minimal() +
-    labs(x = "Average log2 Fold Change", y = "SSMD", title = paste0("SSMD vs log2FC for ", group1, " vs ", group2)) +
+    geom_point(aes(color = SSMD_Category, shape = Significant)) +
+    geom_text(data = top_n(stats, top_labels, abs(ssmd)), vjust = 1.5, hjust = 1.1, check_overlap = TRUE) +
+    scale_color_manual(values = c("Strong Effect" = "red", "Moderate Effect" = "orange", "Weak Effect" = "blue")) +
+    scale_shape_manual(values = c(`FALSE` = 16, `TRUE` = 17)) +
     geom_hline(yintercept = 0, linetype = "dashed") +
-    geom_vline(xintercept = log2fc_thresh, linetype = "dashed", color = "blue") +
-    geom_vline(xintercept = -log2fc_thresh, linetype = "dashed", color = "blue") +
-    scale_color_manual(values = c("grey2", "red"))+
+    geom_vline(xintercept = c(log2fc_thresh, -log2fc_thresh), linetype = "dashed", color = "blue") +
+    labs(x = "Average log2 Fold Change", y = "SSMD",
+         title = paste0("SSMD vs log2FC for ", group1, " vs ", group2)) +
+    theme_minimal() +
     theme(panel.background = element_rect(fill = "white", colour = "white"),
-          plot.background = element_rect(fill = "white", colour = "white"),  # Ensure plot background is white
-          legend.background = element_rect(fill = "white", colour = "white"),  # Ensure legend background is white
-          axis.title = element_text(color = "black", size = 12, face = "bold"),  # Customize axis titles
-          legend.title = element_text(color = "black", size = 10, face = "bold"),  # Customize legend title
+          plot.background = element_rect(fill = "white", colour = "white"),
+          legend.background = element_rect(fill = "white", colour = "white"),
+          axis.title = element_text(color = "black", size = 12, face = "bold"),
+          legend.title = element_text(color = "black", size = 10, face = "bold"),
           legend.text = element_text(color = "black"))
 
-  # Return the plot
   print(stats, n = nrow(stats), na.print = "", quote = FALSE)
   return(p)
 }

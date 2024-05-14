@@ -18,7 +18,6 @@
 #' @return A PDF file consisting of box plots of the continuous variables in the columns.
 #' @export
 cyt.bp = function(x.df, Title, bin.size=25, mfRow=c(1,1), yLim=NULL) {
-  #x.df = x.df[, -c(1:2)]
   pdf(file=Title)
   par(mfrow=mfRow, cex.axis=0.75)
   nCol = ncol(x.df)
@@ -34,5 +33,9 @@ cyt.bp = function(x.df, Title, bin.size=25, mfRow=c(1,1), yLim=NULL) {
       boxplot( x.df, las=2, cex=0.75, ylim=yLim )
     }
   }
+  # Remove the ".pdf" from the Title for display purposes
+  displayTitle = sub("\\.pdf$", "", Title, ignore.case = TRUE)
+  title(main=displayTitle, cex.main=1.5, line=2.5)
+
   dev.off()
 }
