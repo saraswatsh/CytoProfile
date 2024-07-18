@@ -2,7 +2,7 @@
 # Function to generate a pdf file of plots of pls-da, components, and VIP score of components.
 # Author: Shubh Saraswat
 # Arguments:
-#   x.df: a matrix or data frame with groups, stimulation, and continuous variables
+#   x.df: a matrix or data frame with groups, stimulation or treatments, and continuous variables
 #   colors:  option to have specific colors representing different groups
 #   ellipse: option to have ellipse drawn in the classification figure. Default set to false.
 #   bg: option to have a prediction background drawn in the classification figure. Default set to false.
@@ -12,7 +12,7 @@
 #' Analyze data with PLS-DA method.
 #'
 #' This function takes a data frame assuming that the first two columns consists
-#' of groups and stimulation of patients and using the rest of the columns as
+#' of groups and stimulation/treatment of patients and using the rest of the columns as
 #' components for the PLS-DA analysis.
 #'
 #' @param x.df A matrix or data frame of variables.
@@ -27,6 +27,7 @@
 #' @param scale Option to transform data using log2. Default set to NULL.
 #' @param comp.num Number of components to be calculated. Default set to 2.
 #' @param pch.values A vector of integers specifying the plotting characters to be used in the plot.
+#' @param style A character input to have a 3D plot using '3D' or '3d'. Default set to NULL.
 #' @description
 #' This function takes a matrix or data frame of variables where the first two columns must consist of "Group"
 #' and "Stimulation" or "Group" and "Treatment". The rest of columns will be cytokines that will be analyzed.
@@ -45,7 +46,7 @@
 
 cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
                      conf.mat = FALSE, var.num, cv.opt = NULL, fold.num = 5,
-                     scale = NULL, comp.num = 2, pch.values){
+                     scale = NULL, comp.num = 2, pch.values, style = NULL){
   if(scale == "log2"){
     # Log2 transforming cytokines
     data.df = data.frame(data.df[,c(1:2)], log2(data.df[, -c(1:2)]))
@@ -95,29 +96,8 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
       bg.maxdist <-  background.predict(cytokine.splsda,
                                         comp.predicted = 1,
                                         dist = 'max.dist')
-      ## Cross-validation methods
-      if(!is.null(cv.opt)) {
-        # LOOCV Different method
-        if(cv.opt == "loocv"){
-          set.seed(123) # For reproducibility
-          loocv_results = perf(cytokine.splsda, validation = "loo")
-          loocv_error_rate = loocv_results$error.rate$overall["comp1", "max.dist"]
-          loocv_acc = 1 - loocv_error_rate; loocv_acc
-          print(paste0(theTrt, " ",unique(theGroups)[1]," vs ",unique(theGroups)[2]," LOOCV Accuracy: ", loocv_acc))
-        }
-        #Mfold
-        else if(cv.opt == "Mfold"){
-          set.seed(123) # For reproducibility
-          fold_results = perf(cytokine.splsda, validation = "Mfold", folds = fold.num, nrepeat = 1000)
-          fold_error_rate = fold_results$error.rate$overall["comp1", "max.dist"]
-          fold_acc = 1 - fold_error_rate; fold_acc
-          print(paste0(theTrt, " ",unique(theGroups)[1]," vs ",unique(theGroups)[2]," Mfold Accuracy: ", fold_acc))
-        }
-      }
 
       group_factors = sort(unique(theGroups))
-
-
 
       # Conditions to have either ellipses or prediction background or both or neither on graphs.
       if(ellipse == TRUE & bg == TRUE){
@@ -142,7 +122,73 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
                   pch.levels = group_factors,
                   ellipse=FALSE, title= paste (Title, "With Accuracy:",acc1,"%"))
       }
+      if(!is.null(style) && comp.num == 3 && (style == "3D" || style == "3d")){
+        # 3D scatter plot using plot3D package
+        cytokine.scores <- cytokine.splsda$variates$X
+        plot3D::scatter3D(cytokine.scores[,1], cytokine.scores[,2], cytokine.scores[,3], pch=pch.values, col=colors,
+                          xlab="Component 1", ylab="Component 2", zlab="Component 3", main=paste("3D Plot - Component", ":", Title),
+                          theta=20, phi=30, bty="g", colkey=FALSE)
+      }
+      else if(!is.null(style)){
+        stop("Please enter a valid style for 3D plot:'3d' or '3D' or enter valid number of components.")
+      }
+      ## Cross-validation methods
+      if(!is.null(cv.opt)) {
+        # LOOCV Different method
+        if(cv.opt == "loocv"){
+          set.seed(123) # For reproducibility
+          loocv_results = perf(cytokine.splsda, validation = "loo")
+          loocv_error_rate = loocv_results$error.rate$overall["comp1", "max.dist"]
+          loocv_acc = 1 - loocv_error_rate; loocv_acc
+          loocv_acc = 100*signif(loocv_acc, digits = 2)
+          print(paste0(theTrt, " ",unique(theGroups)[1]," vs ",unique(theGroups)[2]," LOOCV Accuracy: ", loocv_acc))
 
+          # Extracting data for plotting
+          error_rates <- loocv_results$error.rate$overall[,"max.dist"]
+          error_df <- as.data.frame(error_rates)
+          error_df$Component <- rownames(error_df)
+          error_df <- reshape2::melt(error_df, id.vars = "Component", variable.name = "Distance", value.name = "ErrorRate")
+
+          # Plotting with ggplot2
+          a <- ggplot(error_df, aes(x = Component, y = ErrorRate, color = Distance, group = 1)) +
+            geom_line() +
+            geom_point(size = 3) +
+            labs(title = paste("LOOCV Error Rate", ":", theTrt),
+                 x = "Number of Components",
+                 y = "Error Rate") +
+            theme_minimal() +
+            theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+            scale_color_manual(values = "red", labels = "max.dist")
+          print(a)
+        }
+        #Mfold
+        else if(cv.opt == "Mfold"){
+          set.seed(123) # For reproducibility
+          fold_results = perf(cytokine.splsda, validation = "Mfold", folds = fold.num, nrepeat = 1000)
+          fold_error_rate = fold_results$error.rate$overall["comp1", "max.dist"]
+          fold_acc = 1 - fold_error_rate; fold_acc
+          fold_acc = 100*signif(fold_acc, digits = 2)
+          print(paste0(theTrt, " ",unique(theGroups)[1]," vs ",unique(theGroups)[2]," Mfold Accuracy: ", fold_acc))
+
+          # Extracting data for plotting
+          error_rates <- fold_results$error.rate$overall[,"max.dist"]
+          error_df <- as.data.frame(error_rates)
+          error_df$Component <- rownames(error_df)
+          error_df <- reshape2::melt(error_df, id.vars = "Component", variable.name = "Distance", value.name = "ErrorRate")
+
+          # Plotting with ggplot2
+          a <- ggplot(error_df, aes(x = Component, y = ErrorRate, color = Distance, group = 1)) +
+            geom_line() +
+            geom_point(size = 3) +
+            labs(title = paste("Mfold Error Rate", ":", theTrt),
+                 x = "Number of Components",
+                 y = "Error Rate") +
+            theme_minimal() +
+            theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+            scale_color_manual(values = "red", labels = "max.dist")
+          print(a)
+        }
+      }
 
       num_rows <- nrow(cytokine.splsda$loadings$X)
       loading.vip.df <- data.frame(matrix(ncol = 0, nrow = num_rows))
@@ -209,26 +255,6 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
                                         comp.predicted = 1,
                                         dist = 'max.dist')
 
-      ## Cross-validation methods
-      if(!is.null(cv.opt)){
-        # LOOCV Different method
-        if(cv.opt == "loocv"){
-          set.seed(123) # For reproducibility
-          loocv_results2 = perf(cytokine.splsda2, validation = "loo")
-          loocv_error_rate2 = loocv_results2$error.rate$overall["comp1", "max.dist"]
-          loocv_acc2 = 1 - loocv_error_rate2; loocv_acc2
-          print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," LOOCV Accuracy (VIP) Cytokines: ", loocv_acc2))
-        }
-        #Mfold
-        else if(cv.opt == "Mfold"){
-          set.seed(123) # For reproducibility
-          fold_results2 = perf(cytokine.splsda2, validation = "Mfold", folds = fold.num, nrepeat = 1000)
-          fold_error_rate2 = fold_results2$error.rate$overall["comp1", "max.dist"]
-          fold_acc2 = 1 - fold_error_rate2; fold_acc2
-          print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Mfold Accuracy (VIP) Cytokines: ", fold_acc2))
-        }
-      }
-
 
       # Conditions to have either ellipses or prediction background or both or neither on graphs.
       if(ellipse == TRUE & bg == TRUE){
@@ -252,6 +278,73 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
         plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=pch.values,
                   pch.levels = group_factors,
                   ellipse=FALSE, title= paste (Title, "(VIP>1)", "With Accuracy:",acc2,"%"))
+      }
+      if(!is.null(style) && comp.num == 3 && (style == "3D" || style == "3d")){
+        # 3D scatter plot using plot3D package
+        cytokine.scores2 <- cytokine.splsda2$variates$X
+        plot3D::scatter3D(cytokine.scores2[,1], cytokine.scores2[,2], cytokine.scores2[,3], pch=pch.values, col=colors,
+                          xlab="Component 1", ylab="Component 2", zlab="Component 3", main=paste("3D Plot - Component", ":", Title),
+                          theta=20, phi=30, bty="g", colkey=FALSE)
+      }
+      else if(!is.null(style)){
+        stop("Please enter a valid style for 3D plot:'3d' or '3D' or enter valid number of components.")
+      }
+      ## Cross-validation methods
+      if(!is.null(cv.opt)){
+        # LOOCV Different method
+        if(cv.opt == "loocv"){
+          set.seed(123) # For reproducibility
+          loocv_results2 = perf(cytokine.splsda2, validation = "loo")
+          loocv_error_rate2 = loocv_results2$error.rate$overall["comp1", "max.dist"]
+          loocv_acc2 = 1 - loocv_error_rate2; loocv_acc2
+          loocv_acc2 = 100*signif(loocv_acc2, digits = 2)
+          print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," LOOCV Accuracy (VIP) Cytokines: ", loocv_acc2))
+
+          # Extracting data for plotting
+          error_rates <- loocv_results2$error.rate$overall[,"max.dist"]
+          error_df <- as.data.frame(error_rates)
+          error_df$Component <- rownames(error_df)
+          error_df <- reshape2::melt(error_df, id.vars = "Component", variable.name = "Distance", value.name = "ErrorRate")
+
+          # Plotting with ggplot2
+          a <- ggplot(error_df, aes(x = Component, y = ErrorRate, color = Distance, group = 1)) +
+            geom_line() +
+            geom_point(size = 3) +
+            labs(title = paste("LOOCV Error Rate VIP > 1", ":", theTrt),
+                 x = "Number of Components",
+                 y = "Error Rate") +
+            theme_minimal() +
+            theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+            scale_color_manual(values = "red", labels = "max.dist")
+          print(a)
+        }
+        #Mfold
+        else if(cv.opt == "Mfold"){
+          set.seed(123) # For reproducibility
+          fold_results2 = perf(cytokine.splsda2, validation = "Mfold", folds = fold.num, nrepeat = 1000)
+          fold_error_rate2 = fold_results2$error.rate$overall["comp1", "max.dist"]
+          fold_acc2 = 1 - fold_error_rate2; fold_acc2
+          fold_acc2 = 100*signif(fold_acc2, digits = 2)
+          print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Mfold Accuracy (VIP) Cytokines: ", fold_acc2))
+
+          # Extracting data for plotting
+          error_rates <- fold_results2$error.rate$overall[,"max.dist"]
+          error_df <- as.data.frame(error_rates)
+          error_df$Component <- rownames(error_df)
+          error_df <- reshape2::melt(error_df, id.vars = "Component", variable.name = "Distance", value.name = "ErrorRate")
+
+          # Plotting with ggplot2
+          a <- ggplot(error_df, aes(x = Component, y = ErrorRate, color = Distance, group = 1)) +
+            geom_line() +
+            geom_point(size = 3) +
+            labs(title = paste("Mfold Error Rate VIP > 1", ":", theTrt),
+                 x = "Number of Components",
+                 y = "Error Rate") +
+            theme_minimal() +
+            theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+            scale_color_manual(values = "red", labels = "max.dist")
+          print(a)
+        }
       }
 
       num_rows2 <- nrow(cytokine.splsda2$loadings$X)
@@ -303,26 +396,7 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
       bg.maxdist <-  background.predict(cytokine.splsda,
                                         comp.predicted = 1,
                                         dist = 'max.dist')
-      ## Cross-validation methods
-      # LOOCV Different method
-      if(!is.null(cv.opt)) {
-        # LOOCV Different method
-        if(cv.opt == "loocv"){
-          set.seed(123) # For reproducibility
-          loocv_results = perf(cytokine.splsda, validation = "loo")
-          loocv_error_rate = loocv_results$error.rate$overall["comp1", "max.dist"]
-          loocv_acc = 1 - loocv_error_rate; loocv_acc
-          print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," LOOCV Accuracy: ", loocv_acc))
-        }
-        #Mfold
-        else if(cv.opt == "Mfold"){
-          set.seed(123) # For reproducibility
-          fold_results = perf(cytokine.splsda, validation = "Mfold", folds = fold.num, nrepeat = 1000)
-          fold_error_rate = fold_results$error.rate$overall["comp1", "max.dist"]
-          fold_acc = 1 - fold_error_rate; fold_acc
-          print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Mfold Accuracy: ", fold_acc))
-        }
-      }
+
 
       group_factors = sort(unique(theGroups))
 
@@ -349,6 +423,76 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
                   pch.levels = group_factors,
                   ellipse=FALSE, title= paste (Title, "With Accuracy:",acc1,"%"))
       }
+
+      if(!is.null(style) && comp.num == 3 && (style == "3D" || style == "3d")){
+        # 3D scatter plot using plot3D package
+        cytokine.scores <- cytokine.splsda$variates$X
+        plot3D::scatter3D(cytokine.scores[,1], cytokine.scores[,2], cytokine.scores[,3], pch=pch.values, col=colors,
+                          xlab="Component 1", ylab="Component 2", zlab="Component 3", main=paste("3D Plot - Component", ":", Title),
+                          theta=20, phi=30, bty="g", colkey=FALSE)
+      }
+      else if(!is.null(style)){
+        stop("Please enter a valid style for 3D plot:'3d' or '3D' or enter valid number of components.")
+      }
+      ## Cross-validation methods
+      # LOOCV Different method
+      if(!is.null(cv.opt)) {
+        # LOOCV Different method
+        if(cv.opt == "loocv"){
+          set.seed(123) # For reproducibility
+          loocv_results = perf(cytokine.splsda, validation = "loo")
+          loocv_error_rate = loocv_results$error.rate$overall["comp1", "max.dist"]
+          loocv_acc = 1 - loocv_error_rate; loocv_acc
+          loocv_acc = 100*signif(loocv_acc, digits = 2)
+          print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," LOOCV Accuracy: ", loocv_acc))
+
+          # Extracting data for plotting
+          error_rates <- loocv_results$error.rate$overall[,"max.dist"]
+          error_df <- as.data.frame(error_rates)
+          error_df$Component <- rownames(error_df)
+          error_df <- reshape2::melt(error_df, id.vars = "Component", variable.name = "Distance", value.name = "ErrorRate")
+
+          # Plotting with ggplot2
+          a <- ggplot(error_df, aes(x = Component, y = ErrorRate, color = Distance, group = 1)) +
+            geom_line() +
+            geom_point(size = 3) +
+            labs(title = paste("LOOCV Error Rate", ":", theTrt),
+                 x = "Number of Components",
+                 y = "Error Rate") +
+            theme_minimal() +
+            theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+            scale_color_manual(values = "red", labels = "max.dist")
+          print(a)
+        }
+        #Mfold
+        else if(cv.opt == "Mfold"){
+          set.seed(123) # For reproducibility
+          fold_results = perf(cytokine.splsda, validation = "Mfold", folds = fold.num, nrepeat = 1000)
+          fold_error_rate = fold_results$error.rate$overall["comp1", "max.dist"]
+          fold_acc = 1 - fold_error_rate; fold_acc
+          fold_acc = 100*signif(fold_acc, digits = 2)
+          print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Mfold Accuracy: ", fold_acc))
+
+          # Extracting data for plotting
+          error_rates <- fold_results$error.rate$overall[,"max.dist"]
+          error_df <- as.data.frame(error_rates)
+          error_df$Component <- rownames(error_df)
+          error_df <- reshape2::melt(error_df, id.vars = "Component", variable.name = "Distance", value.name = "ErrorRate")
+
+          # Plotting with ggplot2
+          a <- ggplot(error_df, aes(x = Component, y = ErrorRate, color = Distance, group = 1)) +
+            geom_line() +
+            geom_point(size = 3) +
+            labs(title = paste("Mfold Error Rate", ":", theTrt),
+                 x = "Number of Components",
+                 y = "Error Rate") +
+            theme_minimal() +
+            theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+            scale_color_manual(values = "red", labels = "max.dist")
+          print(a)
+        }
+      }
+
       num_rows <- nrow(cytokine.splsda$loadings$X)
       loading.vip.df <- data.frame(matrix(ncol = 0, nrow = num_rows))
 
@@ -415,25 +559,7 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
                                         comp.predicted = 1,
                                         dist = 'max.dist')
 
-      ## Cross-validation methods
-      if(!is.null(cv.opt)){
-        # LOOCV Different method
-        if(cv.opt == "loocv"){
-          set.seed(123) # For reproducibility
-          loocv_results2 = perf(cytokine.splsda2, validation = "loo")
-          loocv_error_rate2 = loocv_results2$error.rate$overall["comp1", "max.dist"]
-          loocv_acc2 = 1 - loocv_error_rate2; loocv_acc2
-          print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," LOOCV Accuracy (VIP) Cytokines: ", loocv_acc2))
-        }
-        #Mfold
-        else if(cv.opt == "Mfold"){
-          set.seed(123) # For reproducibility
-          fold_results2 = perf(cytokine.splsda2, validation = "Mfold", folds = fold.num, nrepeat = 1000)
-          fold_error_rate2 = fold_results2$error.rate$overall["comp1", "max.dist"]
-          fold_acc2 = 1 - fold_error_rate2; fold_acc2
-          print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Mfold Accuracy (VIP) Cytokines: ", fold_acc2))
-        }
-      }
+
 
       # Conditions to have either ellipses or prediction background or both or neither on graphs.
       if(ellipse == TRUE & bg == TRUE){
@@ -457,6 +583,73 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
         plotIndiv(cytokine.splsda2, ind.names=NA, legend=TRUE, col=colors, pch=pch.values,
                   pch.levels = group_factors,
                   ellipse=FALSE, title= paste (Title, "(VIP>1)", "With Accuracy:",acc2,"%"))
+      }
+      if(!is.null(style) && comp.num == 3 && (style == "3D" || style == "3d")){
+        # 3D scatter plot using plot3D package
+        cytokine.scores2 <- cytokine.splsda2$variates$X
+        plot3D::scatter3D(cytokine.scores2[,1], cytokine.scores2[,2], cytokine.scores2[,3], pch=pch.values, col=colors,
+                          xlab="Component 1", ylab="Component 2", zlab="Component 3", main=paste("3D Plot - Component", ":", Title),
+                          theta=20, phi=30, bty="g", colkey=FALSE)
+      }
+      else if(!is.null(style)){
+        stop("Please enter a valid style for 3D plot:'3d' or '3D' or enter valid number of components.")
+      }
+      ## Cross-validation methods
+      if(!is.null(cv.opt)){
+        # LOOCV Different method
+        if(cv.opt == "loocv"){
+          set.seed(123) # For reproducibility
+          loocv_results2 = perf(cytokine.splsda2, validation = "loo")
+          loocv_error_rate2 = loocv_results2$error.rate$overall["comp1", "max.dist"]
+          loocv_acc2 = 1 - loocv_error_rate2; loocv_acc2
+          loocv_acc2 = 100*signif(loocv_acc2, digits = 2)
+          print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," LOOCV Accuracy (VIP) Cytokines: ", loocv_acc2))
+
+          # Extracting data for plotting
+          error_rates <- loocv_results2$error.rate$overall[,"max.dist"]
+          error_df <- as.data.frame(error_rates)
+          error_df$Component <- rownames(error_df)
+          error_df <- reshape2::melt(error_df, id.vars = "Component", variable.name = "Distance", value.name = "ErrorRate")
+
+          # Plotting with ggplot2
+          a <- ggplot(error_df, aes(x = Component, y = ErrorRate, color = Distance, group = 1)) +
+            geom_line() +
+            geom_point(size = 3) +
+            labs(title = paste("LOOCV Error Rate VIP > 1", ":", theTrt),
+                 x = "Number of Components",
+                 y = "Error Rate") +
+            theme_minimal() +
+            theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+            scale_color_manual(values = "red", labels = "max.dist")
+          print(a)
+        }
+        #Mfold
+        else if(cv.opt == "Mfold"){
+          set.seed(123) # For reproducibility
+          fold_results2 = perf(cytokine.splsda2, validation = "Mfold", folds = fold.num, nrepeat = 1000)
+          fold_error_rate2 = fold_results2$error.rate$overall["comp1", "max.dist"]
+          fold_acc2 = 1 - fold_error_rate2; fold_acc2
+          fold_acc2 = 100*signif(fold_acc2, digits = 2)
+          print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Mfold Accuracy (VIP) Cytokines: ", fold_acc2))
+
+          # Extracting data for plotting
+          error_rates <- fold_results2$error.rate$overall[,"max.dist"]
+          error_df <- as.data.frame(error_rates)
+          error_df$Component <- rownames(error_df)
+          error_df <- reshape2::melt(error_df, id.vars = "Component", variable.name = "Distance", value.name = "ErrorRate")
+
+          # Plotting with ggplot2
+          a <- ggplot(error_df, aes(x = Component, y = ErrorRate, color = Distance, group = 1)) +
+            geom_line() +
+            geom_point(size = 3) +
+            labs(title = paste("LOOCV Error Rate VIP > 1", ":", theTrt),
+                 x = "Number of Components",
+                 y = "Error Rate") +
+            theme_minimal() +
+            theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+            scale_color_manual(values = "red", labels = "max.dist")
+          print(a)
+        }
       }
 
       num_rows2 <- nrow(cytokine.splsda2$loadings$X)

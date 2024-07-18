@@ -1,4 +1,4 @@
-Package: CytProfile
+Package: CytoProfile
 Title: Cytokine Profiling Analysis Tool
 Version: 1.0
 Authors@R: c(
@@ -20,7 +20,7 @@ Depends:
     moments,
     R (>= 2.10),
     tidyverse
-Import: BiocManager, mixOmics
+Import: BiocManager, mixOmics, plot3D
 NeedsCompilation: no
 License: GPL-2
 LazyData: true

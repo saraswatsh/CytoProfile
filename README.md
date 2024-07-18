@@ -1,12 +1,12 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# CytProfile
+# CytoProfile
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of CytProfile is to conduct quality control using biological
+The goal of CytoProfile is to conduct quality control using biological
 meaningful cutoff on raw measured values of cytokines. Specifically,
 test on distributional symmetry to suggest the adopt of transformation.
 Conduct exploratory analysis including summary statistics, generate
@@ -15,7 +15,7 @@ and multivariate analysis for advance analysis.
 
 ## Installation
 
-Before installation of the CytProfile package, make sure to install
+Before installation of the CytoProfile package, make sure to install
 BiocManager and mix0mics packages using:
 
 ``` r
@@ -25,12 +25,12 @@ if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocMana
 BiocManager::install('mixOmics')
 ```
 
-You can install the development version of CytProfile from
-[GitHub](https://github.com/saraswatsh/CytProfile) with:
+You can install the development version of CytoProfile from
+[GitHub](https://github.com/saraswatsh/CytoProfile) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("saraswatsh/CytProfile")
+devtools::install_github("saraswatsh/CytoProfile")
 ```
 
 ## Example
@@ -40,13 +40,13 @@ PDF files of the plots and PLS-DA analysis will be under the output
 folder.
 
 ``` r
-library(CytProfile)
+library(CytoProfile)
 ## basic example code
 # Loading in data
 data("cytdata.df")
 data.df = cytdata.df
 ## Setting working directory to output folder to save the PDF files. 
-setwd("C:/Users/shubh/Desktop/RA/R Package/CytProfile/output")
+setwd("C:/Users/shubh/Desktop/RA/R Package/CytoProfile/output")
 ## Exploratory Data Analysis
 # Generating boxplots to check for outliers for raw values
 cyt.bp(data.df[,-c(1:4)], Title = "Boxplot.byCytokine.Raw.pdf") # We are removing the first 4 columns as we only want the continuous variables. 
@@ -149,10 +149,10 @@ data.df = cytdata.df
 x.df = data.df[,-c(1,4)]
 cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE, conf.mat = TRUE, scale = "log2",
 var.num = 25, cv.opt = "loocv", comp.num = 2, colors = c("black", "purple", "red2"), 
-pch.values = c(16,4,3))
+pch.values = c(16,4,3), style = NULL)
 #> [1] "Results based on log2 transformation:"
-#> [1] "CD3/CD28 T2D vs PreT2D LOOCV Accuracy: 0.424242424242424"
-#> [1] "CD3/CD28 T2DvsPreT2D LOOCV Accuracy (VIP) Cytokines: 0.484848484848485"
+#> [1] "CD3/CD28 T2D vs PreT2D LOOCV Accuracy: 42"
+#> [1] "CD3/CD28 T2DvsPreT2D LOOCV Accuracy (VIP) Cytokines: 48"
 #> [1] "CD3/CD28 T2D vs PreT2D Confusion Matrix for PLS-DA Comparison"
 #>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
 #> ND                   0                  15               18
@@ -163,8 +163,8 @@ pch.values = c(16,4,3))
 #> ND                   0                  15               18
 #> PreT2D               0                  19               14
 #> T2D                  0                   4               29
-#> [1] "LPS T2D vs PreT2D LOOCV Accuracy: 0.383838383838384"
-#> [1] "LPS T2DvsPreT2D LOOCV Accuracy (VIP) Cytokines: 0.454545454545455"
+#> [1] "LPS T2D vs PreT2D LOOCV Accuracy: 38"
+#> [1] "LPS T2DvsPreT2D LOOCV Accuracy (VIP) Cytokines: 45"
 #> [1] "LPS T2D vs PreT2D Confusion Matrix for PLS-DA Comparison"
 #>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
 #> ND                   0                  10               23
@@ -175,8 +175,8 @@ pch.values = c(16,4,3))
 #> ND                   0                  10               23
 #> PreT2D               0                  16               17
 #> T2D                  0                   3               30
-#> [1] "Unstimulated T2D vs PreT2D LOOCV Accuracy: 0.373737373737374"
-#> [1] "Unstimulated T2DvsPreT2D LOOCV Accuracy (VIP) Cytokines: 0.474747474747475"
+#> [1] "Unstimulated T2D vs PreT2D LOOCV Accuracy: 37"
+#> [1] "Unstimulated T2DvsPreT2D LOOCV Accuracy (VIP) Cytokines: 47"
 #> [1] "Unstimulated T2D vs PreT2D Confusion Matrix for PLS-DA Comparison"
 #>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
 #> ND                   0                  17               16
@@ -196,10 +196,10 @@ cyt.plsda(filt.data[,-c(1,4)], colors = c("black", "purple"),
           title = "Example PLS-DA Analysis 2.pdf", bg = TRUE, scale = "log2", 
           conf.mat = TRUE, var.num = 25, 
           cv.opt = "Mfold", fold.num = 5, 
-          comp.num = 4, pch.values = c(3,4))
+          comp.num = 3, pch.values = c(3,4), style = "3d")
 #> [1] "Results based on log2 transformation:"
-#> [1] "CD3/CD28 T2D vs PreT2D Mfold Accuracy: 0.683560606060606"
-#> [1] "CD3/CD28 T2DvsPreT2D Mfold Accuracy (VIP) Cytokines: 0.726030303030303"
+#> [1] "CD3/CD28 T2D vs PreT2D Mfold Accuracy: 68"
+#> [1] "CD3/CD28 T2DvsPreT2D Mfold Accuracy (VIP) Cytokines: 73"
 #> [1] "CD3/CD28 T2D vs PreT2D Confusion Matrix for PLS-DA Comparison"
 #>        predicted.as.PreT2D predicted.as.T2D
 #> PreT2D                  19               14
@@ -208,8 +208,8 @@ cyt.plsda(filt.data[,-c(1,4)], colors = c("black", "purple"),
 #>        predicted.as.PreT2D predicted.as.T2D
 #> PreT2D                  19               14
 #> T2D                      4               29
-#> [1] "LPS T2D vs PreT2D Mfold Accuracy: 0.643378787878788"
-#> [1] "LPS T2DvsPreT2D Mfold Accuracy (VIP) Cytokines: 0.694424242424242"
+#> [1] "LPS T2D vs PreT2D Mfold Accuracy: 64"
+#> [1] "LPS T2DvsPreT2D Mfold Accuracy (VIP) Cytokines: 69"
 #> [1] "LPS T2D vs PreT2D Confusion Matrix for PLS-DA Comparison"
 #>        predicted.as.PreT2D predicted.as.T2D
 #> PreT2D                  17               16

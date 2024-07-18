@@ -13,12 +13,12 @@ knitr::opts_chunk$set(
 )
 ```
 
-# CytProfile
+# CytoProfile
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of CytProfile is to conduct quality control using biological
+The goal of CytoProfile is to conduct quality control using biological
 meaningful cutoff on raw measured values of cytokines. Specifically, test on 
 distributional symmetry to suggest the adopt of transformation. 
 Conduct exploratory analysis including summary statistics, generate enriched 
@@ -27,7 +27,7 @@ multivariate analysis for advance analysis.
 
 ## Installation
 
-Before installation of the CytProfile package, make sure to install BiocManager and mix0mics packages using: 
+Before installation of the CytoProfile package, make sure to install BiocManager and mix0mics packages using: 
 
 ```r
 ## install BiocManager
@@ -37,11 +37,11 @@ BiocManager::install('mixOmics')
 ```
 
 
-You can install the development version of CytProfile from [GitHub](https://github.com/saraswatsh/CytProfile) with:
+You can install the development version of CytoProfile from [GitHub](https://github.com/saraswatsh/CytoProfile) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("saraswatsh/CytProfile")
+devtools::install_github("saraswatsh/CytoProfile")
 ```
 
 ## Example
@@ -49,13 +49,13 @@ devtools::install_github("saraswatsh/CytProfile")
 This is a basic example which shows you how to analyze a data set. The PDF files of the plots and PLS-DA analysis will be under the output folder. 
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
-library(CytProfile)
+library(CytoProfile)
 ## basic example code
 # Loading in data
 data("cytdata.df")
 data.df = cytdata.df
 ## Setting working directory to output folder to save the PDF files. 
-setwd("C:/Users/shubh/Desktop/RA/R Package/CytProfile/output")
+setwd("C:/Users/shubh/Desktop/RA/R Package/CytoProfile/output")
 ## Exploratory Data Analysis
 # Generating boxplots to check for outliers for raw values
 cyt.bp(data.df[,-c(1:4)], Title = "Boxplot.byCytokine.Raw.pdf") # We are removing the first 4 columns as we only want the continuous variables. 
@@ -137,7 +137,7 @@ data.df = cytdata.df
 x.df = data.df[,-c(1,4)]
 cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE, conf.mat = TRUE, scale = "log2",
 var.num = 25, cv.opt = "loocv", comp.num = 2, colors = c("black", "purple", "red2"), 
-pch.values = c(16,4,3))
+pch.values = c(16,4,3), style = NULL)
 
 # Filtering data for specific groups and treatment
 filt.data = filter(data.df, Group != "ND", Treatment != "Unstimulated")
@@ -145,7 +145,7 @@ cyt.plsda(filt.data[,-c(1,4)], colors = c("black", "purple"),
           title = "Example PLS-DA Analysis 2.pdf", bg = TRUE, scale = "log2", 
           conf.mat = TRUE, var.num = 25, 
           cv.opt = "Mfold", fold.num = 5, 
-          comp.num = 4, pch.values = c(3,4))
+          comp.num = 3, pch.values = c(3,4), style = "3d")
 
 # Generating Volcano Plot
 data.df = cytdata.df[,-4]
