@@ -126,7 +126,7 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
         # 3D scatter plot using plot3D package
         cytokine.scores <- cytokine.splsda$variates$X
         plot3D::scatter3D(cytokine.scores[,1], cytokine.scores[,2], cytokine.scores[,3], pch=pch.values, col=colors,
-                          xlab="Component 1", ylab="Component 2", zlab="Component 3", main=paste("3D Plot - Component", ":", Title),
+                          xlab="Component 1", ylab="Component 2", zlab="Component 3", main=paste("3D Plot", ":", Title),
                           theta=20, phi=30, bty="g", colkey=FALSE)
       }
       else if(!is.null(style)){
@@ -283,7 +283,7 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
         # 3D scatter plot using plot3D package
         cytokine.scores2 <- cytokine.splsda2$variates$X
         plot3D::scatter3D(cytokine.scores2[,1], cytokine.scores2[,2], cytokine.scores2[,3], pch=pch.values, col=colors,
-                          xlab="Component 1", ylab="Component 2", zlab="Component 3", main=paste("3D Plot - Component", ":", Title),
+                          xlab="Component 1", ylab="Component 2", zlab="Component 3", main=paste("3D Plot", ":", Title, "(VIP>1)"),
                           theta=20, phi=30, bty="g", colkey=FALSE)
       }
       else if(!is.null(style)){
@@ -298,7 +298,7 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
           loocv_error_rate2 = loocv_results2$error.rate$overall["comp1", "max.dist"]
           loocv_acc2 = 1 - loocv_error_rate2; loocv_acc2
           loocv_acc2 = 100*signif(loocv_acc2, digits = 2)
-          print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," LOOCV Accuracy (VIP) Cytokines: ", loocv_acc2))
+          print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," LOOCV Accuracy (VIP>1) Cytokines: ", loocv_acc2))
 
           # Extracting data for plotting
           error_rates <- loocv_results2$error.rate$overall[,"max.dist"]
@@ -325,7 +325,7 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
           fold_error_rate2 = fold_results2$error.rate$overall["comp1", "max.dist"]
           fold_acc2 = 1 - fold_error_rate2; fold_acc2
           fold_acc2 = 100*signif(fold_acc2, digits = 2)
-          print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Mfold Accuracy (VIP) Cytokines: ", fold_acc2))
+          print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Mfold Accuracy (VIP>1) Cytokines: ", fold_acc2))
 
           # Extracting data for plotting
           error_rates <- fold_results2$error.rate$overall[,"max.dist"]
@@ -428,7 +428,7 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
         # 3D scatter plot using plot3D package
         cytokine.scores <- cytokine.splsda$variates$X
         plot3D::scatter3D(cytokine.scores[,1], cytokine.scores[,2], cytokine.scores[,3], pch=pch.values, col=colors,
-                          xlab="Component 1", ylab="Component 2", zlab="Component 3", main=paste("3D Plot - Component", ":", Title),
+                          xlab="Component 1", ylab="Component 2", zlab="Component 3", main=paste("3D Plot", ":", Title),
                           theta=20, phi=30, bty="g", colkey=FALSE)
       }
       else if(!is.null(style)){
@@ -588,7 +588,7 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
         # 3D scatter plot using plot3D package
         cytokine.scores2 <- cytokine.splsda2$variates$X
         plot3D::scatter3D(cytokine.scores2[,1], cytokine.scores2[,2], cytokine.scores2[,3], pch=pch.values, col=colors,
-                          xlab="Component 1", ylab="Component 2", zlab="Component 3", main=paste("3D Plot - Component", ":", Title),
+                          xlab="Component 1", ylab="Component 2", zlab="Component 3", main=paste("3D Plot", ":", Title, "(VIP>1)"),
                           theta=20, phi=30, bty="g", colkey=FALSE)
       }
       else if(!is.null(style)){
@@ -603,7 +603,7 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
           loocv_error_rate2 = loocv_results2$error.rate$overall["comp1", "max.dist"]
           loocv_acc2 = 1 - loocv_error_rate2; loocv_acc2
           loocv_acc2 = 100*signif(loocv_acc2, digits = 2)
-          print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," LOOCV Accuracy (VIP) Cytokines: ", loocv_acc2))
+          print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," LOOCV Accuracy (VIP>1) Cytokines: ", loocv_acc2))
 
           # Extracting data for plotting
           error_rates <- loocv_results2$error.rate$overall[,"max.dist"]
@@ -630,7 +630,7 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
           fold_error_rate2 = fold_results2$error.rate$overall["comp1", "max.dist"]
           fold_acc2 = 1 - fold_error_rate2; fold_acc2
           fold_acc2 = 100*signif(fold_acc2, digits = 2)
-          print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Mfold Accuracy (VIP) Cytokines: ", fold_acc2))
+          print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Mfold Accuracy (VIP>1) Cytokines: ", fold_acc2))
 
           # Extracting data for plotting
           error_rates <- fold_results2$error.rate$overall[,"max.dist"]

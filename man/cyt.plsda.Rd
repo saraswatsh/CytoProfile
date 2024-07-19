@@ -16,7 +16,8 @@ cyt.plsda(
   fold.num = 5,
   scale = NULL,
   comp.num = 2,
-  pch.values
+  pch.values,
+  style = NULL
 )
 }
 \arguments{
@@ -42,6 +43,8 @@ cyt.plsda(
 
 \item{pch.values}{A vector of integers specifying the plotting characters to be used in the plot.}
 
+\item{style}{A character input to have a 3D plot using '3D' or '3d'. Default set to NULL.}
+
 \item{x.df}{A matrix or data frame of variables.}
 }
 \value{
@@ -56,7 +59,7 @@ any transformation.
 }
 \details{
 This function takes a data frame assuming that the first two columns consists
-of groups and stimulation of patients and using the rest of the columns as
+of groups and stimulation/treatment of patients and using the rest of the columns as
 components for the PLS-DA analysis.
 }
 \examples{

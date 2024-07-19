@@ -152,7 +152,7 @@ var.num = 25, cv.opt = "loocv", comp.num = 2, colors = c("black", "purple", "red
 pch.values = c(16,4,3), style = NULL)
 #> [1] "Results based on log2 transformation:"
 #> [1] "CD3/CD28 T2D vs PreT2D LOOCV Accuracy: 42"
-#> [1] "CD3/CD28 T2DvsPreT2D LOOCV Accuracy (VIP) Cytokines: 48"
+#> [1] "CD3/CD28 T2DvsPreT2D LOOCV Accuracy (VIP>1) Cytokines: 48"
 #> [1] "CD3/CD28 T2D vs PreT2D Confusion Matrix for PLS-DA Comparison"
 #>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
 #> ND                   0                  15               18
@@ -164,7 +164,7 @@ pch.values = c(16,4,3), style = NULL)
 #> PreT2D               0                  19               14
 #> T2D                  0                   4               29
 #> [1] "LPS T2D vs PreT2D LOOCV Accuracy: 38"
-#> [1] "LPS T2DvsPreT2D LOOCV Accuracy (VIP) Cytokines: 45"
+#> [1] "LPS T2DvsPreT2D LOOCV Accuracy (VIP>1) Cytokines: 45"
 #> [1] "LPS T2D vs PreT2D Confusion Matrix for PLS-DA Comparison"
 #>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
 #> ND                   0                  10               23
@@ -176,7 +176,7 @@ pch.values = c(16,4,3), style = NULL)
 #> PreT2D               0                  16               17
 #> T2D                  0                   3               30
 #> [1] "Unstimulated T2D vs PreT2D LOOCV Accuracy: 37"
-#> [1] "Unstimulated T2DvsPreT2D LOOCV Accuracy (VIP) Cytokines: 47"
+#> [1] "Unstimulated T2DvsPreT2D LOOCV Accuracy (VIP>1) Cytokines: 47"
 #> [1] "Unstimulated T2D vs PreT2D Confusion Matrix for PLS-DA Comparison"
 #>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
 #> ND                   0                  17               16
@@ -199,7 +199,7 @@ cyt.plsda(filt.data[,-c(1,4)], colors = c("black", "purple"),
           comp.num = 3, pch.values = c(3,4), style = "3d")
 #> [1] "Results based on log2 transformation:"
 #> [1] "CD3/CD28 T2D vs PreT2D Mfold Accuracy: 68"
-#> [1] "CD3/CD28 T2DvsPreT2D Mfold Accuracy (VIP) Cytokines: 73"
+#> [1] "CD3/CD28 T2DvsPreT2D Mfold Accuracy (VIP>1) Cytokines: 73"
 #> [1] "CD3/CD28 T2D vs PreT2D Confusion Matrix for PLS-DA Comparison"
 #>        predicted.as.PreT2D predicted.as.T2D
 #> PreT2D                  19               14
@@ -209,7 +209,7 @@ cyt.plsda(filt.data[,-c(1,4)], colors = c("black", "purple"),
 #> PreT2D                  19               14
 #> T2D                      4               29
 #> [1] "LPS T2D vs PreT2D Mfold Accuracy: 64"
-#> [1] "LPS T2DvsPreT2D Mfold Accuracy (VIP) Cytokines: 69"
+#> [1] "LPS T2DvsPreT2D Mfold Accuracy (VIP>1) Cytokines: 69"
 #> [1] "LPS T2D vs PreT2D Confusion Matrix for PLS-DA Comparison"
 #>        predicted.as.PreT2D predicted.as.T2D
 #> PreT2D                  17               16
