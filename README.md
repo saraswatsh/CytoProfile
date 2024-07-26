@@ -56,6 +56,15 @@ cyt.bp(data.df[,-c(1:4)], Title = "Boxplot.byCytokine.Raw.pdf") # We are removin
 cyt.bp(log2(data.df[,-c(1:4)]), Title = "Boxplot.byCytokine.log2.pdf") # Make sure to use log2 to transform the cytokines and same reason as above for removing initial columns.
 #> png 
 #>   2
+# Second function for generating boxplots
+# Raw values
+cyt.bp2(data.df[,-c(1,4)], Title = "Boxplot.byGroupandTreatment.raw.pdf", scale = NULL)
+#> png 
+#>   2
+# Log-2 transformation
+cyt.bp2(data.df[,-c(1,4)], Title = "Boxplot.byGroupandTreatment.log2.pdf", scale = "log2")
+#> png 
+#>   2
 # Generating histograms for skewness and kurtosis based on raw values and log2 transformation
 cyt.skku(data.df[,-c(1,4)], Title = "Skew and Kurtosis.pdf")
 # Generating Error Bar Plot
@@ -127,19 +136,126 @@ dev.off()
 #> png 
 #>   2
 
+# Performing Two Sample T-test and Mann Whitney U Test
+data.df = cytdata.df[,-c(1,4)]
+data.df = filter(data.df, Group != "ND", Treatment != "Unstimulated")
+# Two sample T-test
+cyt.ttests(data.df, scale = "log2")
+#> T-test p-value for PreT2D vs T2D on IL.17F: 0.422939563509921
+#> T-test p-value for PreT2D vs T2D on GM.CSF: 0.640213842858851
+#> T-test p-value for PreT2D vs T2D on IFN.G: 0.020823953738953
+#> T-test p-value for PreT2D vs T2D on IL.10: 0.0248419503583982
+#> T-test p-value for PreT2D vs T2D on CCL.20.MIP.3A: 1.05652747898593e-07
+#> T-test p-value for PreT2D vs T2D on IL.12.P70: 0.000462802087516377
+#> T-test p-value for PreT2D vs T2D on IL.13: 0.977511396213605
+#> T-test p-value for PreT2D vs T2D on IL.15: 0.00709989171799444
+#> T-test p-value for PreT2D vs T2D on IL.17A: 0.977594978364051
+#> T-test p-value for PreT2D vs T2D on IL.22: 0.0953377169338354
+#> T-test p-value for PreT2D vs T2D on IL.9: 0.833861140930955
+#> T-test p-value for PreT2D vs T2D on IL.1B: 0.000566862271316051
+#> T-test p-value for PreT2D vs T2D on IL.33: 0.922832629072384
+#> T-test p-value for PreT2D vs T2D on IL.2: 0.897267459322106
+#> T-test p-value for PreT2D vs T2D on IL.21: 0.146339395993712
+#> T-test p-value for PreT2D vs T2D on IL.4: 0.149006740397168
+#> T-test p-value for PreT2D vs T2D on IL.23: 0.964667232639956
+#> T-test p-value for PreT2D vs T2D on IL.5: 0.423582860000592
+#> T-test p-value for PreT2D vs T2D on IL.6: 0.00232363071577129
+#> Skipping test due to low variance in IL.17E.IL.25 
+#> T-test p-value for PreT2D vs T2D on IL.27: 0.0592678660937652
+#> T-test p-value for PreT2D vs T2D on IL.31: 0.0346896919700123
+#> T-test p-value for PreT2D vs T2D on TNF.A: 0.081758569241274
+#> T-test p-value for PreT2D vs T2D on TNF.B: 0.950354075844566
+#> T-test p-value for PreT2D vs T2D on IL.28A: 0.98266022927896
+#> T-test p-value for CD3/CD28 vs LPS on IL.17F: 3.15478761348163e-31
+#> T-test p-value for CD3/CD28 vs LPS on GM.CSF: 5.71686822918306e-09
+#> T-test p-value for CD3/CD28 vs LPS on IFN.G: 7.30960263330573e-22
+#> T-test p-value for CD3/CD28 vs LPS on IL.10: 0.000140229141772713
+#> T-test p-value for CD3/CD28 vs LPS on CCL.20.MIP.3A: 0.0780039334429007
+#> T-test p-value for CD3/CD28 vs LPS on IL.12.P70: 0.00173352096663525
+#> T-test p-value for CD3/CD28 vs LPS on IL.13: 1.59009641224272e-34
+#> T-test p-value for CD3/CD28 vs LPS on IL.15: 7.47478289354263e-07
+#> T-test p-value for CD3/CD28 vs LPS on IL.17A: 2.54969928791167e-37
+#> T-test p-value for CD3/CD28 vs LPS on IL.22: 1.08637893603037e-13
+#> T-test p-value for CD3/CD28 vs LPS on IL.9: 2.11288766131603e-31
+#> T-test p-value for CD3/CD28 vs LPS on IL.1B: 0.00172254277518451
+#> T-test p-value for CD3/CD28 vs LPS on IL.33: 4.98670884745259e-07
+#> T-test p-value for CD3/CD28 vs LPS on IL.2: 1.65045851085779e-42
+#> T-test p-value for CD3/CD28 vs LPS on IL.21: 9.84381615242624e-11
+#> T-test p-value for CD3/CD28 vs LPS on IL.4: 2.09768024368801e-23
+#> T-test p-value for CD3/CD28 vs LPS on IL.23: 0.003962411047315
+#> T-test p-value for CD3/CD28 vs LPS on IL.5: 1.9301420263009e-28
+#> T-test p-value for CD3/CD28 vs LPS on IL.6: 0.480947271765423
+#> Skipping test due to low variance in IL.17E.IL.25 
+#> T-test p-value for CD3/CD28 vs LPS on IL.27: 0.000534071516220325
+#> T-test p-value for CD3/CD28 vs LPS on IL.31: 4.71672784129416e-17
+#> T-test p-value for CD3/CD28 vs LPS on TNF.A: 1.72872730806301e-07
+#> T-test p-value for CD3/CD28 vs LPS on TNF.B: 9.10789211896627e-32
+#> T-test p-value for CD3/CD28 vs LPS on IL.28A: 5.27051208036701e-07
+# Mann Whitney U Test
+cyt.ttests(data.df)
+#> Mann-Whitney U test p-value for PreT2D vs T2D on IL.17F: 0.421868950350848
+#> Mann-Whitney U test p-value for PreT2D vs T2D on GM.CSF: 0.552522578663034
+#> Mann-Whitney U test p-value for PreT2D vs T2D on IFN.G: 0.00846249337760339
+#> Mann-Whitney U test p-value for PreT2D vs T2D on IL.10: 0.0119136263675125
+#> Mann-Whitney U test p-value for PreT2D vs T2D on CCL.20.MIP.3A: 2.91054284908639e-07
+#> Mann-Whitney U test p-value for PreT2D vs T2D on IL.12.P70: 0.00163308433285844
+#> Mann-Whitney U test p-value for PreT2D vs T2D on IL.13: 0.574068105550945
+#> Mann-Whitney U test p-value for PreT2D vs T2D on IL.15: 0.00016338463811738
+#> Mann-Whitney U test p-value for PreT2D vs T2D on IL.17A: 0.998149768651504
+#> Mann-Whitney U test p-value for PreT2D vs T2D on IL.22: 0.0613997616837295
+#> Mann-Whitney U test p-value for PreT2D vs T2D on IL.9: 0.525483425319374
+#> Mann-Whitney U test p-value for PreT2D vs T2D on IL.1B: 0.00172717180980661
+#> Mann-Whitney U test p-value for PreT2D vs T2D on IL.33: 0.397254286703658
+#> Mann-Whitney U test p-value for PreT2D vs T2D on IL.2: 0.746614520285629
+#> Mann-Whitney U test p-value for PreT2D vs T2D on IL.21: 0.477716048537159
+#> Mann-Whitney U test p-value for PreT2D vs T2D on IL.4: 0.172875479981857
+#> Mann-Whitney U test p-value for PreT2D vs T2D on IL.23: 0.972476915197134
+#> Mann-Whitney U test p-value for PreT2D vs T2D on IL.5: 0.32536294875658
+#> Mann-Whitney U test p-value for PreT2D vs T2D on IL.6: 7.40414125739882e-05
+#> Skipping test due to low variance in IL.17E.IL.25 
+#> Mann-Whitney U test p-value for PreT2D vs T2D on IL.27: 0.108633824389273
+#> Mann-Whitney U test p-value for PreT2D vs T2D on IL.31: 0.1215062263387
+#> Mann-Whitney U test p-value for PreT2D vs T2D on TNF.A: 0.00911097614923371
+#> Mann-Whitney U test p-value for PreT2D vs T2D on TNF.B: 0.939885549533893
+#> Mann-Whitney U test p-value for PreT2D vs T2D on IL.28A: 0.856934115112329
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on IL.17F: 1.42823313991057e-19
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on GM.CSF: 1.4413325671106e-12
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on IFN.G: 5.91528064522474e-19
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on IL.10: 3.2782201468954e-05
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on CCL.20.MIP.3A: 0.131956404765558
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on IL.12.P70: 0.000213072490809883
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on IL.13: 9.61209359732893e-20
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on IL.15: 5.28302247711846e-07
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on IL.17A: 8.71793255441275e-22
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on IL.22: 5.60221278044707e-12
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on IL.9: 1.74545072698478e-21
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on IL.1B: 1.32836093769345e-07
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on IL.33: 3.34712231385806e-11
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on IL.2: 1.91352971348874e-22
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on IL.21: 6.29946819640946e-10
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on IL.4: 6.49809855939832e-17
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on IL.23: 0.00252718241087377
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on IL.5: 2.51612668159609e-19
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on IL.6: 0.0130148210700095
+#> Skipping test due to low variance in IL.17E.IL.25 
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on IL.27: 0.000584083581151205
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on IL.31: 3.06708770248274e-18
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on TNF.A: 2.70877378492254e-17
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on TNF.B: 2.65495930966719e-23
+#> Mann-Whitney U test p-value for CD3/CD28 vs LPS on IL.28A: 1.66729791608952e-08
 # Performing ANOVA comparisons test for univariate analysis
-cyt.anova(data.df[,c(2:3,5:6)]) # This only considers 2 cytokines for this example only
-#> $Time_Treatment
-#>          LPS-CD3/CD28 Unstimulated-CD3/CD28      Unstimulated-LPS 
-#>                     1                     1                     1 
+cyt.anova(data.df[,c(1:2,5:6)]) # This only considers 2 cytokines for this example only
+#> $IFN.G_Group
+#> [1] 0.00356939
 #> 
-#> $GM.CSF_Treatment
-#>          LPS-CD3/CD28 Unstimulated-CD3/CD28      Unstimulated-LPS 
-#>          7.183143e-13          6.974421e-13          3.481621e-01 
+#> $IL.10_Group
+#> [1] 0.003323717
 #> 
 #> $IFN.G_Treatment
-#>          LPS-CD3/CD28 Unstimulated-CD3/CD28      Unstimulated-LPS 
-#>          7.445156e-13          7.394085e-13          9.987624e-01
+#> [1] 3.805612e-08
+#> 
+#> $IL.10_Treatment
+#> [1] 0.0002059574
 ## Partial Least Squares Discriminant Analysis (PLS-DA) 
 # In this code, we will have background predict to be turned on to see the classification areas and 
 # we will also print out the confusion matrix based on classification. 

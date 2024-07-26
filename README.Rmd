@@ -61,6 +61,11 @@ setwd("C:/Users/shubh/Desktop/RA/R Package/CytoProfile/output")
 cyt.bp(data.df[,-c(1:4)], Title = "Boxplot.byCytokine.Raw.pdf") # We are removing the first 4 columns as we only want the continuous variables. 
 # Generating boxplots to check for outliers for log2 values
 cyt.bp(log2(data.df[,-c(1:4)]), Title = "Boxplot.byCytokine.log2.pdf") # Make sure to use log2 to transform the cytokines and same reason as above for removing initial columns.
+# Second function for generating boxplots
+# Raw values
+cyt.bp2(data.df[,-c(1,4)], Title = "Boxplot.byGroupandTreatment.raw.pdf", scale = NULL)
+# Log-2 transformation
+cyt.bp2(data.df[,-c(1,4)], Title = "Boxplot.byGroupandTreatment.log2.pdf", scale = "log2")
 # Generating histograms for skewness and kurtosis based on raw values and log2 transformation
 cyt.skku(data.df[,-c(1,4)], Title = "Skew and Kurtosis.pdf")
 # Generating Error Bar Plot
@@ -126,8 +131,15 @@ for( k in 1:nCytokine ) {
 }
 dev.off()
 
+# Performing Two Sample T-test and Mann Whitney U Test
+data.df = cytdata.df[,-c(1,4)]
+data.df = filter(data.df, Group != "ND", Treatment != "Unstimulated")
+# Two sample T-test
+cyt.ttests(data.df, scale = "log2")
+# Mann Whitney U Test
+cyt.ttests(data.df)
 # Performing ANOVA comparisons test for univariate analysis
-cyt.anova(data.df[,c(2:3,5:6)]) # This only considers 2 cytokines for this example only
+cyt.anova(data.df[,c(1:2,5:6)]) # This only considers 2 cytokines for this example only
 ## Partial Least Squares Discriminant Analysis (PLS-DA) 
 # In this code, we will have background predict to be turned on to see the classification areas and 
 # we will also print out the confusion matrix based on classification. 
