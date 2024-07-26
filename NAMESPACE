@@ -2,9 +2,11 @@
 
 export(cyt.anova)
 export(cyt.bp)
+export(cyt.bp2)
 export(cyt.dualflashplot)
 export(cyt.errbp)
 export(cyt.heatmap)
 export(cyt.plsda)
 export(cyt.skku)
+export(cyt.ttests)
 export(cyt.volc)
