@@ -16,8 +16,8 @@
 #' @return Prints histograms of Skewness and Kurtosis of the continuous variables using raw data and log2 transformation.
 #' @examples
 #' \dontrun{
-#' data(cytdata.df)
-#' cyt.skku(cytdata.df[,-c(1,4)], Title = "Skew and Kurtosis.pdf")
+#' data(cytodata)
+#' cyt.skku(cytodata[,-c(1,4)], Title = "Skew and Kurtosis.pdf")
 #' }
 #' @export
 #'

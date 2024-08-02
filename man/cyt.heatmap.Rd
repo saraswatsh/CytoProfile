@@ -22,5 +22,5 @@ Prints a heatmap.
 This function takes a data frame and subsets the numeric columns or variables to generate a heatmap.
 }
 \examples{
-cyt.heatmap(cytdata.df[,-4], scale = "log2", annotation_col_name = "Group")
+cyt.heatmap(cytodata[,-4], scale = "log2", annotation_col_name = "Group")
 }

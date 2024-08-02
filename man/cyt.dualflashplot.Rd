@@ -36,5 +36,5 @@ Prints dual flash plot.
 Dual flash plot.
 }
 \examples{
-cyt.dualflashplot(cytdata.df[,-c(1,3)], group_var = "Group", group1 = "ND", group2 = "T2D", ssmd_thresh = -0.2, log2fc_thresh = 1, top_labels = 10)
+cyt.dualflashplot(cytodata[,-c(1,3)], group_var = "Group", group1 = "ND", group2 = "T2D", ssmd_thresh = -0.2, log2fc_thresh = 1, top_labels = 10)
 }

@@ -25,7 +25,7 @@ to visualize the distribution of raw skewed values and log2 transformed values.
 }
 \examples{
 \dontrun{
-data(cytdata.df)
-cyt.skku(cytdata.df[,-c(1,4)], Title = "Skew and Kurtosis.pdf")
+data(cytodata)
+cyt.skku(cytodata[,-c(1,4)], Title = "Skew and Kurtosis.pdf")
 }
 }

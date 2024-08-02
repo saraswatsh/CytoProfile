@@ -42,6 +42,6 @@ If cond1 and cond2 are set to null, by default the function creates combinations
 to be used for comparisons.
 }
 \examples{
-cyt.volc(cytdata.df,group_col = "Group")
-cyt.volc(cytdata.df, group_col = "Group", fold_change_thresh = 2, top_labels = 15)
+cyt.volc(cytodata,group_col = "Group")
+cyt.volc(cytodata, group_col = "Group", fold_change_thresh = 2, top_labels = 15)
 }

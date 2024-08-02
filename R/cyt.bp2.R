@@ -9,7 +9,7 @@
 #' @export
 #'
 #' @examples
-#'data.df = cytdata.df[,-c(1,4)]
+#'data.df = cytodata[,-c(1,4)]
 #'cyt.bp2(data.df, Title = "boxplot2.test2.pdf", scale = "log2")
 
 cyt.bp2 <- function(x.df, Title, mfRow=c(1,1), scale = NULL, yLim=NULL) {

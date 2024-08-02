@@ -10,7 +10,7 @@
 #' @export
 #'
 #' @examples
-#' cyt.heatmap(cytdata.df[,-4], scale = "log2", annotation_col_name = "Group")
+#' cyt.heatmap(cytodata[,-4], scale = "log2", annotation_col_name = "Group")
 cyt.heatmap <- function(data, scale = NULL, annotation_col_name = NULL, title) {
 
   if(grepl(".pdf", title)){

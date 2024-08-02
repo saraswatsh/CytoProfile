@@ -8,7 +8,7 @@
 #' @export
 #'
 #' @examples
-#' data.df = cytdata.df[,-c(1,4)]
+#' data.df = cytodata[,-c(1,4)]
 #' data.df = filter(data.df, Group != "ND", Treatment != "Unstimulated")
 #' cyt.ttests(data.df, scale = "log2")
 #' cyt.ttests(data.df)

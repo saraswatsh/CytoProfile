@@ -20,7 +20,7 @@ be used as the outcomes.
 }
 \examples{
 \dontrun{
-data("cytdata.df")
-cyt.anova(cytdata.df[, c(2:4,5:6)])
+data("cytodata")
+cyt.anova(cytodata[, c(2:4,5:6)])
 }
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/cyt.plsda.R
 \name{cyt.plsda}
 \alias{cyt.plsda}
-\title{Analyze data with PLS-DA method.}
+\title{Analyze data with Sparse Partial Least Squares Discriminant Analysis (sPLS-DA).}
 \usage{
 cyt.plsda(
   data.df,
@@ -23,7 +23,7 @@ cyt.plsda(
 \arguments{
 \item{colors}{Vector of colors to be set, list of colors to be set equal to the number of groups or treatments. Default set to NULL and will result in random colors.}
 
-\item{title}{Title of the PDF file to be saved.}
+\item{title}{Title of the PDF file to be saved with figures.}
 
 \item{ellipse}{If ellipse should be drawn in the figures or not. Default set to FALSE.}
 

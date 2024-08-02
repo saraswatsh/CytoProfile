@@ -16,8 +16,8 @@
 #' @return Prints the p-values of comparisons conducted using the Tukey test of the ANOVA model.
 #' @examples
 #' \dontrun{
-#' data("cytdata.df")
-#' cyt.anova(cytdata.df[, c(2:4,5:6)])
+#' data("cytodata")
+#' cyt.anova(cytodata[, c(2:4,5:6)])
 #' }
 #' @export
 cyt.anova = function(x.df) {

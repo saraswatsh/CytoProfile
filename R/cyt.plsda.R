@@ -9,7 +9,7 @@
 #   conf.mat: option to print confusion matrix to show classification from model. Default set to false.
 #########################################################################################################
 
-#' Analyze data with PLS-DA method.
+#' Analyze data with Sparse Partial Least Squares Discriminant Analysis (sPLS-DA).
 #'
 #' This function takes a data frame assuming that the first two columns consists
 #' of groups and stimulation/treatment of patients and using the rest of the columns as
@@ -17,7 +17,7 @@
 #'
 #' @param x.df A matrix or data frame of variables.
 #' @param colors Vector of colors to be set, list of colors to be set equal to the number of groups or treatments. Default set to NULL and will result in random colors.
-#' @param title Title of the PDF file to be saved.
+#' @param title Title of the PDF file to be saved with figures.
 #' @param ellipse If ellipse should be drawn in the figures or not. Default set to FALSE.
 #' @param bg If prediction background should be drawn in the figures or not. Default set to FALSE.
 #' @param conf.mat If confusion matrix of the classifications be printed at the end or not. Default set to FALSE.
@@ -47,7 +47,7 @@
 cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
                      conf.mat = FALSE, var.num, cv.opt = NULL, fold.num = 5,
                      scale = NULL, comp.num = 2, pch.values, style = NULL){
-  if(scale == "log2"){
+  if(!is.null(scale) && scale == "log2"){
     # Log2 transforming cytokines
     data.df = data.frame(data.df[,c(1:2)], log2(data.df[, -c(1:2)]))
     print("Results based on log2 transformation:")
@@ -197,7 +197,8 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
       for (comp in 1:comp.num) {
         # Plot loadings for the current component
         plotLoadings(cytokine.splsda, comp=comp, contrib='max', method='mean', size.name=1,
-                     size.legend=1, legend.color=colors, title=paste("Component", comp, ":", Title), size.title=1)
+                     size.legend=1, legend.color=colors, title=paste("Component", comp, ":", Title), size.title=1,
+                     legend.title = "Group")
 
         # Add columns to the data frame for the loadings and VIP for the current component
         loading.vip.df[[paste("loading.comp", comp, sep = "")]] <- cytokine.splsda$loadings$X[, comp]
@@ -354,7 +355,8 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
       for (comp in 1:comp.num) {
         # Plot loadings for the current component
         plotLoadings(cytokine.splsda2, comp=comp, contrib='max', method='mean', size.name=1,
-                     size.legend=1, legend.color=colors, title=paste("Component", comp, ":", Title), size.title=1)
+                     size.legend=1, legend.color=colors, title=paste("Component", comp, ":", Title), size.title=1,
+                     legend.title = "Group")
 
         # Add columns to the data frame for the loadings and VIP for the current component
         loading.vip.df2[[paste("loading.comp", comp, sep = "")]] <- cytokine.splsda2$loadings$X[, comp]
@@ -500,7 +502,8 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
       for (comp in 1:comp.num) {
         # Plot loadings for the current component
         plotLoadings(cytokine.splsda, comp=comp, contrib='max', method='mean', size.name=1,
-                     size.legend=1, legend.color=colors, title=paste("Component", comp, ":", Title), size.title=1)
+                     size.legend=1, legend.color=colors, title=paste("Component", comp, ":", Title), size.title=1,
+                     legend.title = "Group")
 
         # Add columns to the data frame for the loadings and VIP for the current component
         loading.vip.df[[paste("loading.comp", comp, sep = "")]] <- cytokine.splsda$loadings$X[, comp]
@@ -659,7 +662,8 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
       for (comp in 1:comp.num) {
         # Plot loadings for the current component
         plotLoadings(cytokine.splsda2, comp=comp, contrib='max', method='mean', size.name=1,
-                     size.legend=1, legend.color=colors, title=paste("Component", comp, ":", Title), size.title=1)
+                     size.legend=1, legend.color=colors, title=paste("Component", comp, ":", Title), size.title=1,
+                     legend.title = "Group")
 
         # Add columns to the data frame for the loadings and VIP for the current component
         loading.vip.df2[[paste("loading.comp", comp, sep = "")]] <- cytokine.splsda2$loadings$X[, comp]

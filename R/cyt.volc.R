@@ -18,8 +18,8 @@
 #' @export
 #'
 #' @examples
-#' cyt.volc(cytdata.df,group_col = "Group")
-#' cyt.volc(cytdata.df, group_col = "Group", fold_change_thresh = 2, top_labels = 15)
+#' cyt.volc(cytodata,group_col = "Group")
+#' cyt.volc(cytodata, group_col = "Group", fold_change_thresh = 2, top_labels = 15)
 
 cyt.volc <- function(data, group_col, cond1 = NULL, cond2 = NULL, fold_change_thresh = 2, p_value_thresh = 0.05, top_labels = 10) {
 

@@ -43,8 +43,8 @@ folder.
 library(CytoProfile)
 ## basic example code
 # Loading in data
-data("cytdata.df")
-data.df = cytdata.df
+data("cytodata")
+data.df = cytodata
 ## Setting working directory to output folder to save the PDF files. 
 setwd("C:/Users/shubh/Desktop/RA/R Package/CytoProfile/output")
 ## Exploratory Data Analysis
@@ -68,10 +68,10 @@ cyt.bp2(data.df[,-c(1,4)], Title = "Boxplot.byGroupandTreatment.log2.pdf", scale
 # Generating histograms for skewness and kurtosis based on raw values and log2 transformation
 cyt.skku(data.df[,-c(1,4)], Title = "Skew and Kurtosis.pdf")
 # Generating Error Bar Plot
-cytokine.mat = cytdata.df[, -c(1:4)] # Extracting all cytokines to be stored in one object
+cytokine.mat = cytodata[, -c(1:4)] # Extracting all cytokines to be stored in one object
 cytokineNames = colnames(cytokine.mat) # Extracting the cytokine names
 nCytokine = length(cytokineNames) # Obtaining the total number of cytokines
-results = cyt.skku(cytdata.df[,-c(1,4)], printResLog = TRUE) # Extracting values
+results = cyt.skku(cytodata[,-c(1,4)], printResLog = TRUE) # Extracting values
 #> [1] "Results for Log2 Transformed Values:/n"
 pdf( "barErrorPlot.pdf" )
 par(mfrow=c(2,2), mar=c(8.1,  4.1, 4.1, 2.1) )
@@ -84,7 +84,7 @@ dev.off()
 #> png 
 #>   2
 # Generating Error Bar Plot enriched with p-value and effect size 
-data.df = cytdata.df[,-1]
+data.df = cytodata[,-1]
 cyt.mat = log2(data.df[,-c(1:3)])
 data.df1 = data.frame(data.df[,c(1:3)], cyt.mat)
 cytokineNames = colnames(cyt.mat)
@@ -117,7 +117,7 @@ for( i in 1:nCytokine ) {
 # p.aov.mat
 # p.groupComp.mat
 # p.groupComp.stm.mat
-results = cyt.skku(cytdata.df[,-c(1,4)], printResLog = TRUE)
+results = cyt.skku(cytodata[,-c(1,4)], printResLog = TRUE)
 #> [1] "Results for Log2 Transformed Values:/n"
 pdf( "barErrorPlot.enriched.pdf" )
 par(mfrow=c(2,3), mar=c(8.1,  4.1, 4.1, 2.1) )
@@ -137,7 +137,7 @@ dev.off()
 #>   2
 
 # Performing Two Sample T-test and Mann Whitney U Test
-data.df = cytdata.df[,-c(1,4)]
+data.df = cytodata[,-c(1,4)]
 data.df = filter(data.df, Group != "ND", Treatment != "Unstimulated")
 # Two sample T-test
 cyt.ttests(data.df, scale = "log2")
@@ -261,7 +261,7 @@ cyt.anova(data.df[,c(1:2,5:6)]) # This only considers 2 cytokines for this examp
 # we will also print out the confusion matrix based on classification. 
 # Note this takes into account all groups and treatment and all values are log transformed through 
 # cyt.plsda function. 
-data.df = cytdata.df
+data.df = cytodata
 x.df = data.df[,-c(1,4)]
 cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE, conf.mat = TRUE, scale = "log2",
 var.num = 25, cv.opt = "loocv", comp.num = 2, colors = c("black", "purple", "red2"), 
@@ -336,9 +336,16 @@ cyt.plsda(filt.data[,-c(1,4)], colors = c("black", "purple"),
 #> T2D                      3               30
 #> png 
 #>   2
-
+## Principal Component Analysis (PCA)
+data = cytodata[,-c(1,4)]
+data.df = filter(data, Group != "ND" & Treatment != "Unstimulated")
+data.df = data.df[,-22]
+cyt.pca(data.df, title = "Example PCA Analysis.pdf" ,colors = c("black", "red2"), scale = "log2", comp.num = 3, pch.values = c(16,4), style = "3D")
+#> [1] "Results based on log2 transformation:"
+#> png 
+#>   2
 # Generating Volcano Plot
-data.df = cytdata.df[,-4]
+data.df = cytodata[,-4]
 volc_plot = cyt.volc(data.df, "Group", cond1 = "T2D", cond2 = "ND", fold_change_thresh = 2.0, top_labels= 15)
 #>                    Cytokine      FC_Log      P_Log Significant
 #> IL.12.P70         IL.12.P70 -2.60117683 2.18641971        TRUE
@@ -406,7 +413,7 @@ cyt.heatmap(data = data.df,
 #>   2
 
 # Generating dual flashlights plot
-data.df = cytdata.df[,-c(1,3:4)]
+data.df = cytodata[,-c(1,3:4)]
 
 dfp = cyt.dualflashplot(data.df, group_var = "Group", group1 = "T2D", group2 = "ND", 
                   ssmd_thresh = -0.2, log2fc_thresh = 1, top_labels = 10)
