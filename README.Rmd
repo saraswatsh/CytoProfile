@@ -151,19 +151,24 @@ cyt.anova(data.df[,c(1:2,5:6)]) # This only considers 2 cytokines for this examp
 # Note this takes into account all groups and treatment and all values are log transformed through 
 # cyt.plsda function. 
 data.df <- cytodata
-x.df <- data.df[,-c(1,4)]
-cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE, conf.mat = TRUE, scale = "log2",
-var.num = 25, cv.opt = "loocv", comp.num = 2, colors = c("black", "purple", "red2"), 
-pch.values = c(16,4,3), style = NULL)
+
+cyt.plsda(data.df[,-c(1,4)], title = "Example PLS-DA Analysis.pdf",
+          colors = c("black", "purple", "red2"),
+          bg = TRUE, scale = "log2",
+          conf.mat = TRUE, var.num = 25,
+          cv.opt = "loocv",
+          comp.num = 2, pch.values = c(16,4,3), style = NULL,
+          group.col = "Group", trt.col = "Treatment")
 
 # Filtering data for specific groups and treatment
 filt.data <- filter(data.df, Group != "ND", Treatment != "Unstimulated")
-cyt.plsda(filt.data[,-c(1,4)], colors = c("black", "purple"), 
-          title = "Example PLS-DA Analysis 2.pdf", bg = TRUE, scale = "log2", 
-          conf.mat = TRUE, var.num = 25, 
-          cv.opt = "Mfold", fold.num = 5, 
-          comp.num = 3, pch.values = c(3,4), style = "3d")
-
+cyt.plsda(filt.data[,-c(1,4)], title = "Example PLS-DA Analysis 2.pdf",
+          colors = c("black", "purple"),
+          bg = TRUE, scale = "log2",
+          conf.mat = TRUE, var.num = 25,
+          cv.opt = "Mfold", fold.num = 5,
+          comp.num = 3, pch.values = c(3,4), style = "3d",
+          group.col = "Group", trt.col = "Treatment")
 ## Principal Component Analysis (PCA)
 data <- cytodata[,-c(1,4)]
 data.df <- filter(data, Group != "ND" & Treatment != "Unstimulated")

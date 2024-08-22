@@ -267,43 +267,47 @@ cyt.anova(data.df[,c(1:2,5:6)]) # This only considers 2 cytokines for this examp
 # Note this takes into account all groups and treatment and all values are log transformed through 
 # cyt.plsda function. 
 data.df <- cytodata
-x.df <- data.df[,-c(1,4)]
-cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE, conf.mat = TRUE, scale = "log2",
-var.num = 25, cv.opt = "loocv", comp.num = 2, colors = c("black", "purple", "red2"), 
-pch.values = c(16,4,3), style = NULL)
+
+cyt.plsda(data.df[,-c(1,4)], title = "Example PLS-DA Analysis.pdf",
+          colors = c("black", "purple", "red2"),
+          bg = TRUE, scale = "log2",
+          conf.mat = TRUE, var.num = 25,
+          cv.opt = "loocv",
+          comp.num = 2, pch.values = c(16,4,3), style = NULL,
+          group.col = "Group", trt.col = "Treatment")
 #> [1] "Results based on log2 transformation:"
-#> [1] "CD3/CD28 T2D vs PreT2D LOOCV Accuracy: 42"
-#> [1] "CD3/CD28 T2DvsPreT2D LOOCV Accuracy (VIP>1) Cytokines: 48"
-#> [1] "CD3/CD28 T2D vs PreT2D Confusion Matrix for PLS-DA Comparison"
+#> [1] "CD3/CD28 LOOCV Accuracy: 42%"
+#> [1] "CD3/CD28 LOOCV Accuracy (VIP>1): 48%"
+#> [1] "CD3/CD28 Confusion Matrix for PLS-DA Comparison"
 #>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
 #> ND                   0                  15               18
 #> PreT2D               0                  19               14
 #> T2D                  0                   4               29
-#> [1] "CD3/CD28 T2D vs PreT2D Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
+#> [1] "CD3/CD28 Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
 #>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
 #> ND                   0                  15               18
 #> PreT2D               0                  19               14
 #> T2D                  0                   4               29
-#> [1] "LPS T2D vs PreT2D LOOCV Accuracy: 38"
-#> [1] "LPS T2DvsPreT2D LOOCV Accuracy (VIP>1) Cytokines: 45"
-#> [1] "LPS T2D vs PreT2D Confusion Matrix for PLS-DA Comparison"
+#> [1] "LPS LOOCV Accuracy: 38%"
+#> [1] "LPS LOOCV Accuracy (VIP>1): 45%"
+#> [1] "LPS Confusion Matrix for PLS-DA Comparison"
 #>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
 #> ND                   0                  10               23
 #> PreT2D               0                  15               18
 #> T2D                  0                   5               28
-#> [1] "LPS T2D vs PreT2D Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
+#> [1] "LPS Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
 #>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
 #> ND                   0                  10               23
 #> PreT2D               0                  16               17
 #> T2D                  0                   3               30
-#> [1] "Unstimulated T2D vs PreT2D LOOCV Accuracy: 37"
-#> [1] "Unstimulated T2DvsPreT2D LOOCV Accuracy (VIP>1) Cytokines: 47"
-#> [1] "Unstimulated T2D vs PreT2D Confusion Matrix for PLS-DA Comparison"
+#> [1] "Unstimulated LOOCV Accuracy: 37%"
+#> [1] "Unstimulated LOOCV Accuracy (VIP>1): 47%"
+#> [1] "Unstimulated Confusion Matrix for PLS-DA Comparison"
 #>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
 #> ND                   0                  17               16
 #> PreT2D               0                  31                2
 #> T2D                  0                  12               21
-#> [1] "Unstimulated T2D vs PreT2D Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
+#> [1] "Unstimulated Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
 #>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
 #> ND                   0                  14               19
 #> PreT2D               0                  28                5
@@ -313,35 +317,36 @@ pch.values = c(16,4,3), style = NULL)
 
 # Filtering data for specific groups and treatment
 filt.data <- filter(data.df, Group != "ND", Treatment != "Unstimulated")
-cyt.plsda(filt.data[,-c(1,4)], colors = c("black", "purple"), 
-          title = "Example PLS-DA Analysis 2.pdf", bg = TRUE, scale = "log2", 
-          conf.mat = TRUE, var.num = 25, 
-          cv.opt = "Mfold", fold.num = 5, 
-          comp.num = 3, pch.values = c(3,4), style = "3d")
+cyt.plsda(filt.data[,-c(1,4)], title = "Example PLS-DA Analysis 2.pdf",
+          colors = c("black", "purple"),
+          bg = TRUE, scale = "log2",
+          conf.mat = TRUE, var.num = 25,
+          cv.opt = "Mfold", fold.num = 5,
+          comp.num = 3, pch.values = c(3,4), style = "3d",
+          group.col = "Group", trt.col = "Treatment")
 #> [1] "Results based on log2 transformation:"
-#> [1] "CD3/CD28 T2D vs PreT2D Mfold Accuracy: 68"
-#> [1] "CD3/CD28 T2DvsPreT2D Mfold Accuracy (VIP>1) Cytokines: 73"
-#> [1] "CD3/CD28 T2D vs PreT2D Confusion Matrix for PLS-DA Comparison"
+#> [1] "CD3/CD28 Mfold Accuracy: 68%"
+#> [1] "CD3/CD28 Mfold Accuracy (VIP>1): 73%"
+#> [1] "CD3/CD28 Confusion Matrix for PLS-DA Comparison"
 #>        predicted.as.PreT2D predicted.as.T2D
 #> PreT2D                  19               14
 #> T2D                      4               29
-#> [1] "CD3/CD28 T2D vs PreT2D Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
+#> [1] "CD3/CD28 Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
 #>        predicted.as.PreT2D predicted.as.T2D
 #> PreT2D                  19               14
 #> T2D                      4               29
-#> [1] "LPS T2D vs PreT2D Mfold Accuracy: 64"
-#> [1] "LPS T2DvsPreT2D Mfold Accuracy (VIP>1) Cytokines: 69"
-#> [1] "LPS T2D vs PreT2D Confusion Matrix for PLS-DA Comparison"
+#> [1] "LPS Mfold Accuracy: 64%"
+#> [1] "LPS Mfold Accuracy (VIP>1): 69%"
+#> [1] "LPS Confusion Matrix for PLS-DA Comparison"
 #>        predicted.as.PreT2D predicted.as.T2D
 #> PreT2D                  17               16
 #> T2D                      6               27
-#> [1] "LPS T2D vs PreT2D Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
+#> [1] "LPS Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
 #>        predicted.as.PreT2D predicted.as.T2D
 #> PreT2D                  17               16
 #> T2D                      3               30
 #> png 
 #>   2
-
 ## Principal Component Analysis (PCA)
 data <- cytodata[,-c(1,4)]
 data.df <- filter(data, Group != "ND" & Treatment != "Unstimulated")
