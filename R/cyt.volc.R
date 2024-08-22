@@ -72,7 +72,7 @@ cyt.volc <- function(data, group_col, cond1 = NULL, cond2 = NULL, fold_change_th
       mutate(Label = ifelse(row_number() <= top_labels, as.character(Cytokine), ""))
 
     # Create the volcano plot with labels for top significant points
-    volcano_plot = ggplot(plot_data, aes(x = FC_Log, y = P_Log, label = Label, color = Significant)) +
+    volcano_plot <- ggplot(plot_data, aes(x = FC_Log, y = P_Log, label = Label, color = Significant)) +
       geom_point(alpha = 1, size = 2) +
       geom_vline(xintercept = c(log2(fold_change_thresh), -log2(fold_change_thresh)), linetype = "dashed", color = "blue") +
       geom_hline(yintercept = -log10(p_value_thresh), linetype = "dashed", color = "blue") +

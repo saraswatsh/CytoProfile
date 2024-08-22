@@ -44,12 +44,12 @@
 #' }
 #' @export
 
-cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
+cyt.plsda <- function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
                      conf.mat = FALSE, var.num, cv.opt = NULL, fold.num = 5,
                      scale = NULL, comp.num = 2, pch.values, style = NULL){
   if(!is.null(scale) && scale == "log2"){
     # Log2 transforming cytokines
-    data.df = data.frame(data.df[,c(1:2)], log2(data.df[, -c(1:2)]))
+    data.df <- data.frame(data.df[,c(1:2)], log2(data.df[, -c(1:2)]))
     print("Results based on log2 transformation:")
   }
   else if (is.null(scale)){
@@ -59,14 +59,14 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
   # Making the first two columns to be lowercase
   names(data.df)[1:2] <- tolower(names(data.df)[1:2])
   # Creating a table to have two separate vectors for group and stimulation
-  a = table( data.df[, c(1,2)] ); a
+  a <- table( data.df[, c(1,2)] ); a
 
   if("treatment" %in% names(data.df)[1:2]){
-    Treatment.vec = dimnames(a)$treatment; Treatment.vec
+    Treatment.vec <- dimnames(a)$treatment; Treatment.vec
   }else{
-    Stimulation.vec = dimnames(a)$stimulation; Stimulation.vec
+    Stimulation.vec <- dimnames(a)$stimulation; Stimulation.vec
   }
-  Group.vec = dimnames(a)$group; Group.vec
+  Group.vec <- dimnames(a)$group; Group.vec
 
   # Generate a color palette based on the number of groups
   if (is.null(colors)) {
@@ -77,27 +77,27 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
   if("treatment" %in% names(data.df)[1:2]){
     pdf( file= title)
     for(i in 1:length(Treatment.vec) ) {
-      #i = 1
-      theTrt = Treatment.vec[i]
-      condt  = data.df[, "treatment"] == theTrt
-      Title  = theTrt
-      theData.df = data.df[condt,-c(1:2)]
-      theGroups  = data.df[condt, "group"]
+      #i <- 1
+      theTrt <- Treatment.vec[i]
+      condt  <- data.df[, "treatment"] == theTrt
+      Title  <- theTrt
+      theData.df <- data.df[condt,-c(1:2)]
+      theGroups  <- data.df[condt, "group"]
 
-      cytokine.splsda =
+      cytokine.splsda <-
         splsda(theData.df, theGroups, scale=TRUE, ncomp=comp.num, keepX = c(var.num, var.num))
 
-      splsda.predict = predict( cytokine.splsda, theData.df, dist="max.dist")
-      Prediction1 = cbind( original = theGroups, splsda.predict$class$max.dist )
-      accuracy1 = sum(Prediction1[,1] == Prediction1[,2])/length(Prediction1[,1]); accuracy1
-      acc1 = 100*signif(accuracy1, digits = 2)
+      splsda.predict <- predict( cytokine.splsda, theData.df, dist="max.dist")
+      Prediction1 <- cbind( original = theGroups, splsda.predict$class$max.dist )
+      accuracy1 <- sum(Prediction1[,1] == Prediction1[,2])/length(Prediction1[,1]); accuracy1
+      acc1 <- 100*signif(accuracy1, digits = 2)
 
       # Creating a shaded predicted background using max.dist
       bg.maxdist <-  background.predict(cytokine.splsda,
                                         comp.predicted = 1,
                                         dist = 'max.dist')
 
-      group_factors = sort(unique(theGroups))
+      group_factors <- sort(unique(theGroups))
 
       # Conditions to have either ellipses or prediction background or both or neither on graphs.
       if(ellipse == TRUE & bg == TRUE){
@@ -137,10 +137,10 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
         # LOOCV Different method
         if(cv.opt == "loocv"){
           set.seed(123) # For reproducibility
-          loocv_results = perf(cytokine.splsda, validation = "loo")
-          loocv_error_rate = loocv_results$error.rate$overall["comp1", "max.dist"]
-          loocv_acc = 1 - loocv_error_rate; loocv_acc
-          loocv_acc = 100*signif(loocv_acc, digits = 2)
+          loocv_results <- perf(cytokine.splsda, validation = "loo")
+          loocv_error_rate <- loocv_results$error.rate$overall["comp1", "max.dist"]
+          loocv_acc <- 1 - loocv_error_rate; loocv_acc
+          loocv_acc <- 100*signif(loocv_acc, digits = 2)
           print(paste0(theTrt, " ",unique(theGroups)[1]," vs ",unique(theGroups)[2]," LOOCV Accuracy: ", loocv_acc))
 
           # Extracting data for plotting
@@ -164,10 +164,10 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
         #Mfold
         else if(cv.opt == "Mfold"){
           set.seed(123) # For reproducibility
-          fold_results = perf(cytokine.splsda, validation = "Mfold", folds = fold.num, nrepeat = 1000)
-          fold_error_rate = fold_results$error.rate$overall["comp1", "max.dist"]
-          fold_acc = 1 - fold_error_rate; fold_acc
-          fold_acc = 100*signif(fold_acc, digits = 2)
+          fold_results <- perf(cytokine.splsda, validation = "Mfold", folds = fold.num, nrepeat = 1000)
+          fold_error_rate <- fold_results$error.rate$overall["comp1", "max.dist"]
+          fold_acc <- 1 - fold_error_rate; fold_acc
+          fold_acc <- 100*signif(fold_acc, digits = 2)
           print(paste0(theTrt, " ",unique(theGroups)[1]," vs ",unique(theGroups)[2]," Mfold Accuracy: ", fold_acc))
 
           # Extracting data for plotting
@@ -247,10 +247,10 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
       cytokine.splsda2 <- splsda(theData.mat, theGroups, scale=TRUE, ncomp=comp.num, keepX = c(KeepX, KeepX))
 
 
-      splsda.predict = predict( cytokine.splsda2, theData.mat, dist="max.dist")
-      Prediction2 = cbind( original = theGroups, splsda.predict$class$max.dist )
-      accuracy2 = sum(Prediction2[,1] == Prediction2[,2])/length(Prediction2[,1]); accuracy2
-      acc2 = 100*signif(accuracy2, digits = 2)
+      splsda.predict <- predict( cytokine.splsda2, theData.mat, dist="max.dist")
+      Prediction2 <- cbind( original = theGroups, splsda.predict$class$max.dist )
+      accuracy2 <- sum(Prediction2[,1] == Prediction2[,2])/length(Prediction2[,1]); accuracy2
+      acc2 <- 100*signif(accuracy2, digits = 2)
       # Creating a shaded predicted background using max.dist
       bg.maxdist <-  background.predict(cytokine.splsda2,
                                         comp.predicted = 1,
@@ -295,10 +295,10 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
         # LOOCV Different method
         if(cv.opt == "loocv"){
           set.seed(123) # For reproducibility
-          loocv_results2 = perf(cytokine.splsda2, validation = "loo")
-          loocv_error_rate2 = loocv_results2$error.rate$overall["comp1", "max.dist"]
-          loocv_acc2 = 1 - loocv_error_rate2; loocv_acc2
-          loocv_acc2 = 100*signif(loocv_acc2, digits = 2)
+          loocv_results2 <- perf(cytokine.splsda2, validation = "loo")
+          loocv_error_rate2 <- loocv_results2$error.rate$overall["comp1", "max.dist"]
+          loocv_acc2 <- 1 - loocv_error_rate2; loocv_acc2
+          loocv_acc2 <- 100*signif(loocv_acc2, digits = 2)
           print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," LOOCV Accuracy (VIP>1) Cytokines: ", loocv_acc2))
 
           # Extracting data for plotting
@@ -311,7 +311,7 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
           a <- ggplot(error_df, aes(x = Component, y = ErrorRate, color = Distance, group = 1)) +
             geom_line() +
             geom_point(size = 3) +
-            labs(title = paste("LOOCV Error Rate VIP > 1", ":", theTrt),
+            labs(title = paste("LOOCV Error Rate (VIP>1)", ":", theTrt),
                  x = "Number of Components",
                  y = "Error Rate") +
             theme_minimal() +
@@ -322,10 +322,10 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
         #Mfold
         else if(cv.opt == "Mfold"){
           set.seed(123) # For reproducibility
-          fold_results2 = perf(cytokine.splsda2, validation = "Mfold", folds = fold.num, nrepeat = 1000)
-          fold_error_rate2 = fold_results2$error.rate$overall["comp1", "max.dist"]
-          fold_acc2 = 1 - fold_error_rate2; fold_acc2
-          fold_acc2 = 100*signif(fold_acc2, digits = 2)
+          fold_results2 <- perf(cytokine.splsda2, validation = "Mfold", folds = fold.num, nrepeat = 1000)
+          fold_error_rate2 <- fold_results2$error.rate$overall["comp1", "max.dist"]
+          fold_acc2 <- 1 - fold_error_rate2; fold_acc2
+          fold_acc2 <- 100*signif(fold_acc2, digits = 2)
           print(paste0(theTrt," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Mfold Accuracy (VIP>1) Cytokines: ", fold_acc2))
 
           # Extracting data for plotting
@@ -338,7 +338,7 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
           a <- ggplot(error_df, aes(x = Component, y = ErrorRate, color = Distance, group = 1)) +
             geom_line() +
             geom_point(size = 3) +
-            labs(title = paste("Mfold Error Rate VIP > 1", ":", theTrt),
+            labs(title = paste("Mfold Error Rate (VIP>1)", ":", theTrt),
                  x = "Number of Components",
                  y = "Error Rate") +
             theme_minimal() +
@@ -355,7 +355,7 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
       for (comp in 1:comp.num) {
         # Plot loadings for the current component
         plotLoadings(cytokine.splsda2, comp=comp, contrib='max', method='mean', size.name=1,
-                     size.legend=1, legend.color=colors, title=paste("Component", comp, ":", Title), size.title=1,
+                     size.legend=1, legend.color=colors, title=paste("Component", comp, ":", Title, "(VIP>1)"), size.title=1,
                      legend.title = "Group")
 
         # Add columns to the data frame for the loadings and VIP for the current component
@@ -380,19 +380,19 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
   }else{
     pdf( file= title)
     for(i in 1:length(Stimulation.vec) ) {
-      theTrts = Stimulation.vec[i]
-      condt  = data.df[, "stimulation"] == theTrts
-      Title  = theTrts
-      theData.df = data.df[condt,-c(1:2)]
-      theGroups  = data.df[condt, "group"]
+      theTrts <- Stimulation.vec[i]
+      condt  <- data.df[, "stimulation"] == theTrts
+      Title  <- theTrts
+      theData.df <- data.df[condt,-c(1:2)]
+      theGroups  <- data.df[condt, "group"]
 
-      cytokine.splsda =
+      cytokine.splsda <-
         splsda(theData.df, theGroups, scale=TRUE, ncomp=comp.num, keepX = c(var.num, var.num))
 
-      splsda.predict = predict( cytokine.splsda, theData.df, dist="max.dist")
-      Prediction1 = cbind( original = theGroups, splsda.predict$class$max.dist )
-      accuracy1 = sum(Prediction1[,1] == Prediction1[,2])/length(Prediction1[,1]); accuracy1
-      acc1 = 100*signif(accuracy1, digits = 2)
+      splsda.predict <- predict( cytokine.splsda, theData.df, dist="max.dist")
+      Prediction1 <- cbind( original = theGroups, splsda.predict$class$max.dist )
+      accuracy1 <- sum(Prediction1[,1] == Prediction1[,2])/length(Prediction1[,1]); accuracy1
+      acc1 <- 100*signif(accuracy1, digits = 2)
 
       # Creating a shaded predicted background using max.dist
       bg.maxdist <-  background.predict(cytokine.splsda,
@@ -400,7 +400,7 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
                                         dist = 'max.dist')
 
 
-      group_factors = sort(unique(theGroups))
+      group_factors <- sort(unique(theGroups))
 
       # Conditions to have either ellipses or prediction background or both or neither on graphs.
       if(ellipse == TRUE & bg == TRUE){
@@ -442,10 +442,10 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
         # LOOCV Different method
         if(cv.opt == "loocv"){
           set.seed(123) # For reproducibility
-          loocv_results = perf(cytokine.splsda, validation = "loo")
-          loocv_error_rate = loocv_results$error.rate$overall["comp1", "max.dist"]
-          loocv_acc = 1 - loocv_error_rate; loocv_acc
-          loocv_acc = 100*signif(loocv_acc, digits = 2)
+          loocv_results <- perf(cytokine.splsda, validation = "loo")
+          loocv_error_rate <- loocv_results$error.rate$overall["comp1", "max.dist"]
+          loocv_acc <- 1 - loocv_error_rate; loocv_acc
+          loocv_acc <- 100*signif(loocv_acc, digits = 2)
           print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," LOOCV Accuracy: ", loocv_acc))
 
           # Extracting data for plotting
@@ -469,10 +469,10 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
         #Mfold
         else if(cv.opt == "Mfold"){
           set.seed(123) # For reproducibility
-          fold_results = perf(cytokine.splsda, validation = "Mfold", folds = fold.num, nrepeat = 1000)
-          fold_error_rate = fold_results$error.rate$overall["comp1", "max.dist"]
-          fold_acc = 1 - fold_error_rate; fold_acc
-          fold_acc = 100*signif(fold_acc, digits = 2)
+          fold_results <- perf(cytokine.splsda, validation = "Mfold", folds = fold.num, nrepeat = 1000)
+          fold_error_rate <- fold_results$error.rate$overall["comp1", "max.dist"]
+          fold_acc <- 1 - fold_error_rate; fold_acc
+          fold_acc <- 100*signif(fold_acc, digits = 2)
           print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Mfold Accuracy: ", fold_acc))
 
           # Extracting data for plotting
@@ -552,10 +552,10 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
       cytokine.splsda2 <- splsda(theData.mat, theGroups, scale=TRUE, ncomp=comp.num, keepX = c(KeepX, KeepX))
 
 
-      splsda.predict = predict( cytokine.splsda2, theData.mat, dist="max.dist")
-      Prediction2 = cbind( original = theGroups, splsda.predict$class$max.dist )
-      accuracy2 = sum(Prediction2[,1] == Prediction2[,2])/length(Prediction2[,1]); accuracy2
-      acc2 = 100*signif(accuracy2, digits = 2)
+      splsda.predict <- predict( cytokine.splsda2, theData.mat, dist="max.dist")
+      Prediction2 <- cbind( original = theGroups, splsda.predict$class$max.dist )
+      accuracy2 <- sum(Prediction2[,1] == Prediction2[,2])/length(Prediction2[,1]); accuracy2
+      acc2 <- 100*signif(accuracy2, digits = 2)
 
       # Creating a shaded predicted background using max.dist
       bg.maxdist <-  background.predict(cytokine.splsda2,
@@ -602,10 +602,10 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
         # LOOCV Different method
         if(cv.opt == "loocv"){
           set.seed(123) # For reproducibility
-          loocv_results2 = perf(cytokine.splsda2, validation = "loo")
-          loocv_error_rate2 = loocv_results2$error.rate$overall["comp1", "max.dist"]
-          loocv_acc2 = 1 - loocv_error_rate2; loocv_acc2
-          loocv_acc2 = 100*signif(loocv_acc2, digits = 2)
+          loocv_results2 <- perf(cytokine.splsda2, validation = "loo")
+          loocv_error_rate2 <- loocv_results2$error.rate$overall["comp1", "max.dist"]
+          loocv_acc2 <- 1 - loocv_error_rate2; loocv_acc2
+          loocv_acc2 <- 100*signif(loocv_acc2, digits = 2)
           print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," LOOCV Accuracy (VIP>1) Cytokines: ", loocv_acc2))
 
           # Extracting data for plotting
@@ -618,7 +618,7 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
           a <- ggplot(error_df, aes(x = Component, y = ErrorRate, color = Distance, group = 1)) +
             geom_line() +
             geom_point(size = 3) +
-            labs(title = paste("LOOCV Error Rate VIP > 1", ":", theTrt),
+            labs(title = paste("LOOCV Error Rate (VIP>1)", ":", theTrt),
                  x = "Number of Components",
                  y = "Error Rate") +
             theme_minimal() +
@@ -629,10 +629,10 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
         #Mfold
         else if(cv.opt == "Mfold"){
           set.seed(123) # For reproducibility
-          fold_results2 = perf(cytokine.splsda2, validation = "Mfold", folds = fold.num, nrepeat = 1000)
-          fold_error_rate2 = fold_results2$error.rate$overall["comp1", "max.dist"]
-          fold_acc2 = 1 - fold_error_rate2; fold_acc2
-          fold_acc2 = 100*signif(fold_acc2, digits = 2)
+          fold_results2 <- perf(cytokine.splsda2, validation = "Mfold", folds = fold.num, nrepeat = 1000)
+          fold_error_rate2 <- fold_results2$error.rate$overall["comp1", "max.dist"]
+          fold_acc2 <- 1 - fold_error_rate2; fold_acc2
+          fold_acc2 <- 100*signif(fold_acc2, digits = 2)
           print(paste0(theTrts," ",unique(theGroups)[1],"vs",unique(theGroups)[2]," Mfold Accuracy (VIP>1) Cytokines: ", fold_acc2))
 
           # Extracting data for plotting
@@ -645,7 +645,7 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
           a <- ggplot(error_df, aes(x = Component, y = ErrorRate, color = Distance, group = 1)) +
             geom_line() +
             geom_point(size = 3) +
-            labs(title = paste("LOOCV Error Rate VIP > 1", ":", theTrt),
+            labs(title = paste("LOOCV Error Rate (VIP>1)", ":", theTrt),
                  x = "Number of Components",
                  y = "Error Rate") +
             theme_minimal() +
@@ -662,7 +662,7 @@ cyt.plsda = function(data.df, colors = NULL, title, ellipse = FALSE, bg = FALSE,
       for (comp in 1:comp.num) {
         # Plot loadings for the current component
         plotLoadings(cytokine.splsda2, comp=comp, contrib='max', method='mean', size.name=1,
-                     size.legend=1, legend.color=colors, title=paste("Component", comp, ":", Title), size.title=1,
+                     size.legend=1, legend.color=colors, title=paste("Component", comp, ":", Title, "VIP>1"), size.title=1,
                      legend.title = "Group")
 
         # Add columns to the data frame for the loadings and VIP for the current component

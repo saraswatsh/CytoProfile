@@ -19,10 +19,10 @@
 #' cyt.pca(data.df, title = "PCA_Example_Analysis.pdf" ,colors = c("black", "red2"), scale = "log2", comp.num = 3, pch.values = c(16,4), style = "3D")
 #' cyt.pca(data.df, title = "PCA_Example_Analysis2.pdf" ,colors = c("black", "red2"), scale = "log2", comp.num = 2, ellipse = TRUE, pch.values = c(16,4))
 
-cyt.pca = function(data.df, colors = NULL, title, ellipse = FALSE, comp.num = 2, scale = NULL, pch.values = NULL, style = NULL) {
+cyt.pca <- function(data.df, colors = NULL, title, ellipse = FALSE, comp.num = 2, scale = NULL, pch.values = NULL, style = NULL) {
   if(!is.null(scale) && scale == "log2"){
     # Log2 transforming cytokines
-    data.df = data.frame(data.df[,c(1:2)], log2(data.df[, -c(1:2)]))
+    data.df <- data.frame(data.df[,c(1:2)], log2(data.df[, -c(1:2)]))
     print("Results based on log2 transformation:")
   } else {
     print("Results based on no transformation:")
@@ -31,13 +31,13 @@ cyt.pca = function(data.df, colors = NULL, title, ellipse = FALSE, comp.num = 2,
   # Making the first two columns to be lowercase
   names(data.df)[1:2] <- tolower(names(data.df)[1:2])
   # Creating a table to have two separate vectors for group and stimulation
-  a = table(data.df[, c(1, 2)])
+  a <- table(data.df[, c(1, 2)])
 
-  Group.vec = dimnames(a)$group
+  Group.vec <- dimnames(a)$group
   if("treatment" %in% names(data.df)[1:2]){
-    Treatment.vec = dimnames(a)$treatment
+    Treatment.vec <- dimnames(a)$treatment
   } else {
-    Stimulation.vec = dimnames(a)$stimulation
+    Stimulation.vec <- dimnames(a)$stimulation
   }
   # Generate a color palette based on the number of groups
   if (is.null(colors)) {
@@ -48,15 +48,14 @@ cyt.pca = function(data.df, colors = NULL, title, ellipse = FALSE, comp.num = 2,
   if("treatment" %in% names(data.df)[1:2]){
     pdf(file=title)
     for(i in 1:length(Treatment.vec)) {
-      #i=1
-      theTrt = Treatment.vec[i]
-      condt  = data.df[, "treatment"] == theTrt
-      theData.df = data.df[condt, -c(1:2)]
-      theGroups  = data.df[condt, "group"]
+      theTrt <- Treatment.vec[i]
+      condt  <- data.df[, "treatment"] == theTrt
+      theData.df <- data.df[condt, -c(1:2)]
+      theGroups  <- data.df[condt, "group"]
 
-      cytokine.pca = pca(theData.df, ncomp = comp.num, center = TRUE, scale = TRUE)
+      cytokine.pca <- pca(theData.df, ncomp = comp.num, center = TRUE, scale = TRUE)
 
-      group_factors = sort(unique(theGroups))
+      group_factors <- sort(unique(theGroups))
 
       # Plotting the PCA using plotIndiv
       plotIndiv(cytokine.pca, group = theGroups, ind.names = FALSE, legend = TRUE,
@@ -104,26 +103,26 @@ cyt.pca = function(data.df, colors = NULL, title, ellipse = FALSE, comp.num = 2,
       }
 
       # Creating biplot using mixOmics biplot function
-      b = biplot(cytokine.pca, comp = c(1, 2), group = theGroups, col.per.group = colors, var.arrow.col = "blue",
-                 var.arrow.size = 0.5, var.arrow.length = 0.2, var.names = TRUE, var.names.col = "blue",
-                 var.names.size = 3, ind.names = FALSE, legend = TRUE, legend.title = "Group")
+      b <- biplot(cytokine.pca, comp = c(1, 2), group = theGroups, col.per.group = colors, var.arrow.col = "blue",
+                  var.arrow.size = 0.5, var.arrow.length = 0.2, var.names = TRUE, var.names.col = "blue",
+                  var.names.size = 3, ind.names = FALSE, legend = TRUE, legend.title = "Group")
       print(b)
       # Variable plot: correlation circle plot
-      c = plotVar(cytokine.pca, comp = c(1,2), var.names = TRUE, cex = 4,  col = "black",
-                  overlap = T, title = paste("Correlation Circle Plot", ":", theTrt))
+      c <- plotVar(cytokine.pca, comp = c(1,2), var.names = TRUE, cex = 4, col = "black",
+                   overlap = T, title = paste("Correlation Circle Plot", ":", theTrt), style = "ggplot2")
     }
     dev.off()
   } else {
     pdf(file=title)
     for(i in 1:length(Stimulation.vec)) {
-      theTrts = Stimulation.vec[i]
-      condt  = data.df[, "stimulation"] == theTrt
-      theData.df = data.df[condt, -c(1:2)]
-      theGroups  = data.df[condt, "group"]
+      theTrts <- Stimulation.vec[i]
+      condt  <- data.df[, "stimulation"] == theTrt
+      theData.df <- data.df[condt, -c(1:2)]
+      theGroups  <- data.df[condt, "group"]
 
-      cytokine.pca = pca(theData.df, ncomp = comp.num, center = TRUE, scale = TRUE)
+      cytokine.pca <- pca(theData.df, ncomp = comp.num, center = TRUE, scale = TRUE)
 
-      group_factors = sort(unique(theGroups))
+      group_factors <- sort(unique(theGroups))
 
       # Plotting the PCA using plotIndiv
       plotIndiv(cytokine.pca, group = theGroups, ind.names = FALSE, legend = TRUE,
@@ -171,13 +170,13 @@ cyt.pca = function(data.df, colors = NULL, title, ellipse = FALSE, comp.num = 2,
       }
 
       # Creating biplot using mixOmics biplot function
-      b = biplot(cytokine.pca, comp = c(1, 2), group = theGroups, col.per.group = colors, var.arrow.col = "blue",
-                 var.arrow.size = 0.5, var.arrow.length = 0.2, var.names = TRUE, var.names.col = "blue",
-                 var.names.size = 3, ind.names = FALSE, legend = TRUE, legend.title = "Group")
+      b <- biplot(cytokine.pca, comp = c(1, 2), group = theGroups, col.per.group = colors, var.arrow.col = "blue",
+                  var.arrow.size = 0.5, var.arrow.length = 0.2, var.names = TRUE, var.names.col = "blue",
+                  var.names.size = 3, ind.names = FALSE, legend = TRUE, legend.title = "Group")
       print(b)
       # Variable plot: correlation circle plot
-      c = plotVar(cytokine.pca, comp = c(1,2), var.names = TRUE, cex = 4, col = "black",
-                  overlap = T, title = paste("Correlation Circle Plot", ":", theTrt), style = "ggplot2")
+      c <- plotVar(cytokine.pca, comp = c(1,2), var.names = TRUE, cex = 4, col = "black",
+                   overlap = T, title = paste("Correlation Circle Plot", ":", theTrt), style = "ggplot2")
     }
     dev.off()
   }

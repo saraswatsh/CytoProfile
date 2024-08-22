@@ -49,7 +49,6 @@ cyt.heatmap <- function(data, scale = NULL, annotation_col_name = NULL, title) {
 
   # Define the color palette for the heatmap
   max_colors <- min(9, length(unique(side_colors)))
-  #heatmap_colors <- colorRampPalette(RColorBrewer::brewer.pal(max_colors, color_palette))(256)
 
   # Plot the heatmap using heatmap.2
   gplots::heatmap.2(as.matrix(numeric_data),

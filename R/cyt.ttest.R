@@ -13,23 +13,23 @@
 #' cyt.ttests(data.df, scale = "log2")
 #' cyt.ttests(data.df)
 #'
-cyt.ttests = function(x.df, scale = NULL) {
+cyt.ttests <- function(x.df, scale = NULL) {
   # Take input and store it as its own data frame
-  x1.df = x.df
+  x1.df <- x.df
   # Convert any character variables to factors
-  cat_vars = sapply(x1.df, is.character)
+  cat_vars <- sapply(x1.df, is.character)
   if(any(cat_vars)){
-    x1.df[cat_vars] = lapply(x1.df[cat_vars], as.factor)
+    x1.df[cat_vars] <- lapply(x1.df[cat_vars], as.factor)
   }
   # Categorical Predictors
-  cat_preds = sapply(x1.df, is.factor)
+  cat_preds <- sapply(x1.df, is.factor)
   # Create a list to store column names with numeric data
   cont_vars <- sapply(x1.df, is.numeric)
   # Empty list to store test results
-  test_results = list()
+  test_results <- list()
   # Apply log2 transformation if scale is "log2"
   if(!is.null(scale) && scale == "log2"){
-    x1.df[cont_vars] = lapply(x1.df[cont_vars], function(x) log2(x))
+    x1.df[cont_vars] <- lapply(x1.df[cont_vars], function(x) log2(x))
   }
   # Perform tests based on user input
   for(cat_var in names(x1.df)[cat_preds]){

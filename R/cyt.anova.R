@@ -20,22 +20,22 @@
 #' cyt.anova(cytodata[, c(2:4,5:6)])
 #' }
 #' @export
-cyt.anova = function(x.df) {
-  # Take input and store it as it's own data frame
-  x1.df = x.df
+cyt.anova <- function(x.df) {
+  # Take input and store it as its own data frame
+  x1.df <- x.df
   # Convert any char variables to factors
-  cat_vars = sapply(x1.df, is.character)
+  cat_vars <- sapply(x1.df, is.character)
   if(any(cat_vars)){
-    x1.df[cat_vars] = lapply(x1.df[cat_vars], as.factor)
+    x1.df[cat_vars] <- lapply(x1.df[cat_vars], as.factor)
   }
   # Categorical Predictors
-  cat_preds = sapply(x1.df, is.factor)
+  cat_preds <- sapply(x1.df, is.factor)
   # Create a list to store column names with numeric data
   cont_vars <- sapply(x1.df, is.numeric)
   # Empty list to store ANOVA and Tukey results
-  tukey_results = list()
+  tukey_results <- list()
 
-  # ANOVA and TUkey Comparisons
+  # ANOVA and Tukey Comparisons
   for(cat_var in names(x1.df)[cat_preds]){
     for(outcome in names(x1.df)[cont_vars]){
       if(length(levels(x1.df[[cat_var]])) == 1){
@@ -48,14 +48,14 @@ cyt.anova = function(x.df) {
         # Perform ANOVA tests on each continuous variable with the current categorical variable
         model <- aov(as.formula(paste(outcome, "~", cat_var)), data = x1.df)
         # Tukey summary
-        tukey_result = TukeyHSD(model)
+        tukey_result <- TukeyHSD(model)
 
         # Extract p-values and store them in the list
         p_values_cat_var <- tukey_result[[cat_var]][, "p adj"]
 
         # Store the p-values in the results list
         result_key <- paste(outcome, cat_var, sep = "_")
-        tukey_results[[result_key]] = p_values_cat_var
+        tukey_results[[result_key]] <- p_values_cat_var
       }
     }
   }
