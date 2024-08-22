@@ -5,7 +5,9 @@
 \title{Analyze data with Sparse Partial Least Squares Discriminant Analysis (sPLS-DA).}
 \usage{
 cyt.plsda(
-  data.df,
+  x.df,
+  group.col,
+  trt.col = NULL,
   colors = NULL,
   title,
   ellipse = FALSE,
@@ -21,6 +23,12 @@ cyt.plsda(
 )
 }
 \arguments{
+\item{x.df}{A matrix or data frame of variables.}
+
+\item{group.col}{String value of the column name for groups. Default set to NULL}
+
+\item{trt.col}{String value of the column name for treatments.Default set to NULL}
+
 \item{colors}{Vector of colors to be set, list of colors to be set equal to the number of groups or treatments. Default set to NULL and will result in random colors.}
 
 \item{title}{Title of the PDF file to be saved with figures.}
@@ -44,23 +52,14 @@ cyt.plsda(
 \item{pch.values}{A vector of integers specifying the plotting characters to be used in the plot.}
 
 \item{style}{A character input to have a 3D plot using '3D' or '3d'. Default set to NULL.}
-
-\item{x.df}{A matrix or data frame of variables.}
 }
 \value{
 A PDF file consisting of classification figures, component figures including Variable of importance in projection (VIP) scores, and
 classification of groups with VIP scores greater than 1.
 }
 \description{
-This function takes a matrix or data frame of variables where the first two columns must consist of "Group"
-and "Stimulation" or "Group" and "Treatment". The rest of columns will be cytokines that will be analyzed.
-The function also uses log2 transformation of the data, so the data that is inputed, must be raw data without
-any transformation.
-}
-\details{
-This function takes a data frame assuming that the first two columns consists
-of groups and stimulation/treatment of patients and using the rest of the columns as
-components for the PLS-DA analysis.
+This function conducts Sparse Partial Least Squares Discriminant Analysis based on the groups and treatment inputed. The rest of columns will be assumed as continuous variables to be used in analysis.
+The function supports log2 transformation of the data and raw data analysis. The function also supports cross-validation methods such as Leave-One-Out Cross-Validation (LOOCV) and Mfold Cross-Validation.
 }
 \examples{
 \dontrun{

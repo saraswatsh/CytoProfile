@@ -19,8 +19,8 @@ Prints the p-values of comparisons conducted.
 Two Sample T-test Comparisons
 }
 \examples{
-data.df = cytodata[,-c(1,4)]
-data.df = filter(data.df, Group != "ND", Treatment != "Unstimulated")
+data.df <- cytodata[,-c(1,4)]
+data.df <- filter(data.df, Group != "ND", Treatment != "Unstimulated")
 cyt.ttests(data.df, scale = "log2")
 cyt.ttests(data.df)
 
