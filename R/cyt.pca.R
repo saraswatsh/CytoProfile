@@ -13,9 +13,9 @@
 #' @export
 #'
 #' @examples
-#' data = cytodata[,-c(1,4)]
-#' data.df = filter(data, Group != "ND" & Treatment != "Unstimulated")
-#' data.df = data.df[,-22]
+#' data <- cytodata[,-c(1,4)]
+#' data.df <- filter(data, Group != "ND" & Treatment != "Unstimulated")
+#' data.df <- data.df[,-22]
 #' cyt.pca(data.df, title = "PCA_Example_Analysis.pdf" ,colors = c("black", "red2"), scale = "log2", comp.num = 3, pch.values = c(16,4), style = "3D")
 #' cyt.pca(data.df, title = "PCA_Example_Analysis2.pdf" ,colors = c("black", "red2"), scale = "log2", comp.num = 2, ellipse = TRUE, pch.values = c(16,4))
 
