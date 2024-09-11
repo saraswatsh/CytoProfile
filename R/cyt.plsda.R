@@ -37,6 +37,7 @@
 #' var.num = 25, cv.opt = "loocv", comp.num = 2, colors = c("black", "purple", "red2"),
 #' pch.values = c(16,4,3))
 #' }
+#' @import mixOmics
 #' @export
 
 cyt.plsda <- function(x.df, group.col, trt.col = NULL, colors = NULL, title, ellipse = FALSE, bg = FALSE,
