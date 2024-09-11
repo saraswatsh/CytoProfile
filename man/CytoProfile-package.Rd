@@ -6,10 +6,10 @@
 \alias{CytoProfile-package}
 \title{CytoProfile: Cytokine Profiling Analysis Tool}
 \description{
-This tool will help in conducting quality control using biological meaningful cutoff on raw measured values of cytokines. Test on distributional symmetry to suggest the adopt of transformation. Exploratory analysis including summary statistics, enriched boxplot, and barplots. Univariate analysis and Multivariate analysis options are further available to dive deeper into the cytokine profiling.
+CytoProfile is a comprehensive tool for cytokine profiling analysis. It supports quality control using biologically meaningful cutoffs on raw cytokine measurements and tests for distributional symmetry to suggest appropriate transformations. The package offers exploratory data analysis with summary statistics, enhanced boxplots, and barplots, along with both univariate and multivariate analysis capabilities for in-depth cytokine profiling.
 }
 \author{
-\strong{Maintainer}: Shubh Saraswat \email{shubh.saraswat00@gmail.com} (\href{https://orcid.org/0009-0009-2359-1484}{ORCID})
+\strong{Maintainer}: Shubh Saraswat \email{shubh.saraswat00@gmail.com}
 
 Authors:
 \itemize{
