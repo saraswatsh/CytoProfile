@@ -47,7 +47,7 @@ data("cytodata")
 data.df <- cytodata
 
 ## Setting working directory to output folder to save the PDF files. 
-setwd("C:/Users/shubh/Desktop/RA/R Package/CytoProfile/output")
+setwd("E:/Desktop/RA/R Package/CytoProfile/output")
 
 ## Exploratory Data Analysis
 # Generating boxplots to check for outliers for raw values
@@ -479,4 +479,139 @@ print(dfp$data)
 #> # ℹ 15 more rows
 #> # ℹ 5 more variables: variance_T2D <dbl>, ssmd <dbl>, log2FC <dbl>,
 #> #   SSMD_Category <chr>, Significant <lgl>
+
+## Using XGBoost for classification
+data.df0 <- cytodata
+data.df <- data.frame(data.df0[,1:4], log2(data.df0[,-c(1:4)]))
+data.df <- data.df[,-c(1,3,4)]
+data.df <- filter(data.df, Group != "ND")
+
+results <- cyt.xgb(data = data.df, group_col = 'Group',
+                                      nrounds = 500, max_depth = 4, eta = 0.05,
+                                      nfold = 5, cv = TRUE, eval_metric = "mlogloss",
+                                      early_stopping_rounds = NULL, top_n_features = 10,
+                                      verbose = 0)
+#> 
+#> ### Group to Numeric Label Mapping ###
+#> PreT2D    T2D 
+#>      0      1 
+#> 
+#> ### TRAINING XGBOOST MODEL ###
+#> 
+#> Best iteration from training (based on mlogloss ):
+#>     iter train_mlogloss test_mlogloss
+#>    <num>          <num>         <num>
+#> 1:   313     0.01860717     0.4529601
+#> 
+#> ### Confusion Matrix on Test Set ###
+#> Confusion Matrix and Statistics
+#> 
+#>           Reference
+#> Prediction  0  1
+#>          0 25  7
+#>          1  4 22
+#>                                           
+#>                Accuracy : 0.8103          
+#>                  95% CI : (0.6859, 0.9013)
+#>     No Information Rate : 0.5             
+#>     P-Value [Acc > NIR] : 1.016e-06       
+#>                                           
+#>                   Kappa : 0.6207          
+#>                                           
+#>  Mcnemar's Test P-Value : 0.5465          
+#>                                           
+#>             Sensitivity : 0.8621          
+#>             Specificity : 0.7586          
+#>          Pos Pred Value : 0.7812          
+#>          Neg Pred Value : 0.8462          
+#>              Prevalence : 0.5000          
+#>          Detection Rate : 0.4310          
+#>    Detection Prevalence : 0.5517          
+#>       Balanced Accuracy : 0.8103          
+#>                                           
+#>        'Positive' Class : 0               
+#>                                           
+#> 
+#> ### Top 10 Important Features ###
+#>           Feature       Gain      Cover  Frequency
+#>            <char>      <num>      <num>      <num>
+#>  1:         TNF.A 0.18457678 0.10535233 0.09103448
+#>  2:         IL.22 0.15117263 0.16064281 0.09885057
+#>  3:     IL.12.P70 0.09955532 0.12855158 0.12321839
+#>  4:         IL.33 0.09384522 0.08514973 0.07908046
+#>  5:         IL.1B 0.07717208 0.03835908 0.05149425
+#>  6:          IL.9 0.07554566 0.06955229 0.07080460
+#>  7:         IL.15 0.04705740 0.05853239 0.03310345
+#>  8:         IL.23 0.04440949 0.02533791 0.02988506
+#>  9: CCL.20.MIP.3A 0.03678675 0.05623800 0.05287356
+#> 10:         IL.13 0.02785650 0.02633047 0.03678161
 ```
+
+<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+
+    #> 
+    #> ### CROSS-VALIDATION USING XGBOOST ###
+    #> 
+    #> Best iteration from cross-validation:
+    #>     iter train_mlogloss_mean train_mlogloss_std test_mlogloss_mean
+    #>    <num>               <num>              <num>              <num>
+    #> 1:    45           0.1664957         0.01796909           0.457419
+    #>    test_mlogloss_std
+    #>                <num>
+    #> 1:        0.08743712
+    ggsave("XGBoost_VIP_Plot.png", plot = results$plot, dpi = 300)
+
+    ## Using Random Forest for classification
+    results <- cyt.rf(data = data.df, group_col = 'Group', k_folds = 5, ntree = 1000, mtry = 4, run_rfcv = TRUE)
+    #> 
+    #> ### RANDOM FOREST RESULTS ON TRAINING SET ###
+    #> 
+    #> Call:
+    #>  randomForest(formula = formula, data = train_data, ntree = ntree,      mtry = mtry, importance = TRUE) 
+    #>                Type of random forest: classification
+    #>                      Number of trees: 1000
+    #> No. of variables tried at each split: 4
+    #> 
+    #>         OOB estimate of  error rate: 11.43%
+    #> Confusion matrix:
+    #>        PreT2D T2D class.error
+    #> PreT2D     62   8   0.1142857
+    #> T2D         8  62   0.1142857
+    #> 
+    #> Accuracy on training set:  0.8857143 
+    #> 
+    #> Class 'PreT2D' metrics:
+    #>   Sensitivity:  0.886 
+    #>   Specificity:  0.886 
+    #> 
+    #> Class 'T2D' metrics:
+    #>   Sensitivity:  0.886 
+    #>   Specificity:  0.886 
+    #> 
+    #> ### PREDICTIONS ON TEST SET ###
+    #>           Reference
+    #> Prediction PreT2D T2D
+    #>     PreT2D     25   7
+    #>     T2D         4  22
+    #> 
+    #> Accuracy on test set:  0.8103448 
+    #> 
+    #> Sensitivity by class:
+    #> Class: PreT2D: 0.862
+    #> Class: T2D: 0.241
+    #> 
+    #> Specificity by class:
+    #> Class: T2D: 0.759
+    #> Class: PreT2D: 0.138
+    #> 
+    #> AUC:  0.9298454
+
+<img src="man/figures/README-unnamed-chunk-2-2.png" width="100%" /><img src="man/figures/README-unnamed-chunk-2-3.png" width="100%" />
+
+    #> 
+    #> ### RANDOM FOREST CROSS-VALIDATION FOR FEATURE SELECTION ###
+
+<img src="man/figures/README-unnamed-chunk-2-4.png" width="100%" />
+
+    #> Random Forest CV completed for feature selection. Check the plot for error vs. number of variables.
+    ggsave("RandomForest_VIP_Plot.png", plot = results$importance_plot, dpi = 300)
