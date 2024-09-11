@@ -2,25 +2,30 @@ Package: CytoProfile
 Title: Cytokine Profiling Analysis Tool
 Version: 1.0
 Authors@R: c(
-    person("Shubh", "Saraswat", email = "shubh.saraswat00@gmail.com", role = c("aut", "cre"),
-           comment = c(ORCID = "0009-0009-2359-1484")),
+    person("Shubh", "Saraswat", email = "shubh.saraswat00@gmail.com", role = c("cre", "aut")),
     person("Xiaohua Douglas", "Zhang", email = "douglas.zhang@uky.edu", role = "aut"))
-Description: This tool will help in conducting quality control using biological
-    meaningful cutoff on raw measured values of cytokines. Test on distributional
-    symmetry to suggest the adopt of transformation. Exploratory analysis including
-    summary statistics, enriched boxplot, and barplots. Univariate analysis 
-    and Multivariate analysis options are further available to dive deeper
-    into the cytokine profiling.
+Description: CytoProfile is a comprehensive tool for cytokine profiling analysis. 
+  It supports quality control using biologically meaningful cutoffs on raw cytokine 
+  measurements and tests for distributional symmetry to suggest appropriate transformations. 
+  The package offers exploratory data analysis with summary statistics, enhanced boxplots, and 
+  barplots, along with both univariate and multivariate analysis capabilities for in-depth cytokine profiling.
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Depends: 
-    BiocManager,
     mixOmics,
     moments,
-    R (>= 2.10),
-    tidyverse
-Import: BiocManager, mixOmics, plot3D
+    dplyr,
+    tidyr,
+    pROC,
+    R (>= 2.10)
+Imports: BiocManager, 
+         mixOmics, 
+         plot3D, 
+         tidyverse, 
+         caret, 
+         xgboost, 
+         randomForest
 NeedsCompilation: no
 License: GPL-2
 LazyData: true
