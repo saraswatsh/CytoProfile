@@ -10,7 +10,7 @@ cyt.rf(
   ntree = 500,
   mtry = 5,
   train_fraction = 0.7,
-  plot_roc = TRUE,
+  plot_roc = FALSE,
   k_folds = 5,
   step = 0.5,
   run_rfcv = TRUE
@@ -27,7 +27,7 @@ cyt.rf(
 
 \item{train_fraction}{A numeric value between 0 and 1 representing the proportion of data to use for training (default is 0.7).}
 
-\item{plot_roc}{A logical value indicating whether to plot the ROC curve and calculate the AUC for binary classification (default is TRUE).}
+\item{plot_roc}{A logical value indicating whether to plot the ROC curve and calculate the AUC for binary classification (default is FALSE).}
 
 \item{k_folds}{An integer specifying the number of folds for cross-validation (default is 5).}
 

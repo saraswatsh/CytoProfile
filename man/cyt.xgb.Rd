@@ -21,7 +21,8 @@ cyt.xgb(
   subsample = 1,
   min_child_weight = 1,
   top_n_features = 10,
-  verbose = 1
+  verbose = 1,
+  plot_roc = FALSE
 )
 }
 \arguments{
@@ -58,6 +59,8 @@ cyt.xgb(
 \item{top_n_features}{An integer specifying the number of top features to display in the importance plot (default is 10).}
 
 \item{verbose}{An integer specifying the verbosity of the training process (default is 1).}
+
+\item{plot_roc}{A logical value indicating whether to plot the ROC curve and calculate the AUC for binary classification (default is FALSE).}
 }
 \value{
 A list containing:

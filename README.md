@@ -35,31 +35,46 @@ devtools::install_github("saraswatsh/CytoProfile")
 
 ## Example
 
-This is a basic example which shows you how to analyze a data set. The
-PDF files of the plots and PLS-DA analysis will be under the output
-folder.
+Below are examples of using the functions provided in CytoProfile. Any
+saved files whether PDF or PNG is available in the output folder.
+
+## 1. Data Loading and set up
 
 ``` r
+# Loading all packages required
+library(tidyverse) # Used to load dplyr, ggplot2, and tidyr
+library(knitr) # Required for setting the working directory
+library(mixOmics) # Required for sPLS-DA
+library(pROC) # Required for ROC curve in XGBoost and Random Forest
+library(moments) # Required for skewness and kurtosis
 library(CytoProfile)
-## basic example code
 # Loading in data
 data("cytodata")
 data.df <- cytodata
 
 ## Setting working directory to output folder to save the PDF files. 
-setwd("E:/Desktop/RA/R Package/CytoProfile/output")
+opts_knit$set(root.dir = "E:/Desktop/RA/R Package/CytoProfile/output")
+```
 
-## Exploratory Data Analysis
+## 2. Exploratory Data Analysis
+
+### Boxplots
+
+``` r
 # Generating boxplots to check for outliers for raw values
 cyt.bp(data.df[,-c(1:4)], Title = "Boxplot.byCytokine.Raw.pdf") # We are removing the first 4 columns as we only want the continuous variables. 
 #> png 
 #>   2
 
 # Generating boxplots to check for outliers for log2 values
-cyt.bp(log2(data.df[,-c(1:4)]), Title = "Boxplot.byCytokine.log2.pdf") # Make sure to use log2 to transform the cytokines and same reason as above for removing initial columns.
+cyt.bp(log2(data.df[,-c(1:4)]), Title = "Boxplot.byCytokine.log2.pdf") # Make sure to use log2 to transform the cytokines and same reason as above for removing initial columns
 #> png 
 #>   2
+```
 
+### Group-Specific Boxplots
+
+``` r
 # Second function for generating boxplots
 # Raw values
 cyt.bp2(data.df[,-c(1,4)], Title = "Boxplot.byGroupandTreatment.raw.pdf", scale = NULL)
@@ -69,9 +84,20 @@ cyt.bp2(data.df[,-c(1,4)], Title = "Boxplot.byGroupandTreatment.raw.pdf", scale 
 cyt.bp2(data.df[,-c(1,4)], Title = "Boxplot.byGroupandTreatment.log2.pdf", scale = "log2")
 #> png 
 #>   2
+```
+
+## 3. Skewness and Kurtosis
+
+``` r
 # Generating histograms for skewness and kurtosis based on raw values and log2 transformation
 cyt.skku(data.df[,-c(1,4)], Title = "Skew and Kurtosis.pdf")
+```
 
+## 4. Error Bar Plots
+
+### Basic Error Bar Plot
+
+``` r
 # Generating Error Bar Plot
 cytokine.mat <- cytodata[, -c(1:4)] # Extracting all cytokines to be stored in one object
 cytokineNames <- colnames(cytokine.mat) # Extracting the cytokine names
@@ -88,7 +114,11 @@ for( k in 1:nCytokine ) {
 dev.off()
 #> png 
 #>   2
+```
 
+### Enriched Error Bar Plot with p-values and Effect Sizes
+
+``` r
 # Generating Error Bar Plot enriched with p-value and effect size 
 data.df <- cytodata[,-1]
 cyt.mat <- log2(data.df[,-c(1:3)])
@@ -138,7 +168,13 @@ for( k in 1:nCytokine ) {
 dev.off()
 #> png 
 #>   2
+```
 
+## 5. Univariate Analysis
+
+### Two Sample T-test and Mann Whitney U Test
+
+``` r
 # Performing Two Sample T-test and Mann Whitney U Test
 data.df <- cytodata[,-c(1,4)]
 data.df <- filter(data.df, Group != "ND", Treatment != "Unstimulated")
@@ -246,7 +282,11 @@ cyt.ttests(data.df)
 #> Mann-Whitney U test p-value for CD3/CD28 vs LPS on TNF.A: 2.70877378492254e-17
 #> Mann-Whitney U test p-value for CD3/CD28 vs LPS on TNF.B: 2.65495930966719e-23
 #> Mann-Whitney U test p-value for CD3/CD28 vs LPS on IL.28A: 1.66729791608952e-08
+```
 
+### ANOVA Comparisons Test
+
+``` r
 # Performing ANOVA comparisons test for univariate analysis
 cyt.anova(data.df[,c(1:2,5:6)]) # This only considers 2 cytokines for this example only
 #> $IFN.G_Group
@@ -260,8 +300,13 @@ cyt.anova(data.df[,c(1:2,5:6)]) # This only considers 2 cytokines for this examp
 #> 
 #> $IL.10_Treatment
 #> [1] 0.0002059574
+```
 
-## Partial Least Squares Discriminant Analysis (PLS-DA) 
+## 6. Multivariate Analysis
+
+### Partial Least Squares Discriminant Analysis (PLS-DA)
+
+``` r
 # In this code, we will have background predict to be turned on to see the classification areas and 
 # we will also print out the confusion matrix based on classification. 
 # Note this takes into account all groups and treatment and all values are log transformed through 
@@ -347,7 +392,11 @@ cyt.plsda(filt.data[,-c(1,4)], title = "Example PLS-DA Analysis 2.pdf",
 #> T2D                      3               30
 #> png 
 #>   2
-## Principal Component Analysis (PCA)
+```
+
+## 7. Principal Component Analysis (PCA)
+
+``` r
 data <- cytodata[,-c(1,4)]
 data.df <- filter(data, Group != "ND" & Treatment != "Unstimulated")
 data.df <- data.df[,-22]
@@ -355,7 +404,11 @@ cyt.pca(data.df, title = "Example PCA Analysis.pdf" ,colors = c("black", "red2")
 #> [1] "Results based on log2 transformation:"
 #> png 
 #>   2
+```
 
+## 8. Volcano Plot
+
+``` r
 # Generating Volcano Plot
 data.df <- cytodata[,-4]
 volc_plot <- cyt.volc(data.df, "Group", cond1 = "T2D", cond2 = "ND", fold_change_thresh = 2.0, top_labels= 15)
@@ -415,7 +468,11 @@ print(volc_plot$`T2D vs ND`$data)
 #> IFN.G                 IFN.G -0.09088794 0.06221451       FALSE              
 #> TNF.B                 TNF.B  0.07037796 0.05224667       FALSE              
 #> IL.33                 IL.33  0.01213249 0.01719622       FALSE
+```
 
+## 9. Heatmap
+
+``` r
 # Generating Heat map
 cyt.heatmap(data = data.df,
                     scale = "log2",        # Optional scaling
@@ -423,7 +480,11 @@ cyt.heatmap(data = data.df,
                     title = "Heatmap.png")
 #> png 
 #>   2
+```
 
+## 10. Dual Flashlight Plot
+
+``` r
 # Generating dual flashlights plot
 data.df <- cytodata[,-c(1,3:4)]
 
@@ -479,18 +540,23 @@ print(dfp$data)
 #> # ℹ 15 more rows
 #> # ℹ 5 more variables: variance_T2D <dbl>, ssmd <dbl>, log2FC <dbl>,
 #> #   SSMD_Category <chr>, Significant <lgl>
+```
 
-## Using XGBoost for classification
+## 11. Machine Learning Models
+
+### Using XGBoost for classification
+
+``` r
 data.df0 <- cytodata
 data.df <- data.frame(data.df0[,1:4], log2(data.df0[,-c(1:4)]))
 data.df <- data.df[,-c(1,3,4)]
 data.df <- filter(data.df, Group != "ND")
 
-results <- cyt.xgb(data = data.df, group_col = 'Group',
-                                      nrounds = 500, max_depth = 4, eta = 0.05,
-                                      nfold = 5, cv = TRUE, eval_metric = "mlogloss",
-                                      early_stopping_rounds = NULL, top_n_features = 10,
-                                      verbose = 0)
+xgb.results <- cyt.xgb(data = data.df, group_col = 'Group',
+                   nrounds = 500, max_depth = 4, eta = 0.05,
+                   nfold = 5, cv = TRUE, eval_metric = "mlogloss",
+                   early_stopping_rounds = NULL, top_n_features = 10,
+                   verbose = 0, plot_roc = TRUE)
 #> 
 #> ### Group to Numeric Label Mapping ###
 #> PreT2D    T2D 
@@ -503,51 +569,56 @@ results <- cyt.xgb(data = data.df, group_col = 'Group',
 #>    <num>          <num>         <num>
 #> 1:   313     0.01860717     0.4529601
 #> 
-#> ### Confusion Matrix on Test Set ###
-#> Confusion Matrix and Statistics
-#> 
-#>           Reference
-#> Prediction  0  1
-#>          0 25  7
-#>          1  4 22
-#>                                           
-#>                Accuracy : 0.8103          
-#>                  95% CI : (0.6859, 0.9013)
-#>     No Information Rate : 0.5             
-#>     P-Value [Acc > NIR] : 1.016e-06       
-#>                                           
-#>                   Kappa : 0.6207          
-#>                                           
-#>  Mcnemar's Test P-Value : 0.5465          
-#>                                           
-#>             Sensitivity : 0.8621          
-#>             Specificity : 0.7586          
-#>          Pos Pred Value : 0.7812          
-#>          Neg Pred Value : 0.8462          
-#>              Prevalence : 0.5000          
-#>          Detection Rate : 0.4310          
-#>    Detection Prevalence : 0.5517          
-#>       Balanced Accuracy : 0.8103          
-#>                                           
-#>        'Positive' Class : 0               
-#>                                           
-#> 
-#> ### Top 10 Important Features ###
-#>           Feature       Gain      Cover  Frequency
-#>            <char>      <num>      <num>      <num>
-#>  1:         TNF.A 0.18457678 0.10535233 0.09103448
-#>  2:         IL.22 0.15117263 0.16064281 0.09885057
-#>  3:     IL.12.P70 0.09955532 0.12855158 0.12321839
-#>  4:         IL.33 0.09384522 0.08514973 0.07908046
-#>  5:         IL.1B 0.07717208 0.03835908 0.05149425
-#>  6:          IL.9 0.07554566 0.06955229 0.07080460
-#>  7:         IL.15 0.04705740 0.05853239 0.03310345
-#>  8:         IL.23 0.04440949 0.02533791 0.02988506
-#>  9: CCL.20.MIP.3A 0.03678675 0.05623800 0.05287356
-#> 10:         IL.13 0.02785650 0.02633047 0.03678161
+#> AUC:  0.9155767
 ```
 
-<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+<img src="output/README-unnamed-chunk-15-1.png" width="100%" />
+
+    #> 
+    #> ### Confusion Matrix on Test Set ###
+    #> Confusion Matrix and Statistics
+    #> 
+    #>           Reference
+    #> Prediction  0  1
+    #>          0 25  7
+    #>          1  4 22
+    #>                                           
+    #>                Accuracy : 0.8103          
+    #>                  95% CI : (0.6859, 0.9013)
+    #>     No Information Rate : 0.5             
+    #>     P-Value [Acc > NIR] : 1.016e-06       
+    #>                                           
+    #>                   Kappa : 0.6207          
+    #>                                           
+    #>  Mcnemar's Test P-Value : 0.5465          
+    #>                                           
+    #>             Sensitivity : 0.8621          
+    #>             Specificity : 0.7586          
+    #>          Pos Pred Value : 0.7812          
+    #>          Neg Pred Value : 0.8462          
+    #>              Prevalence : 0.5000          
+    #>          Detection Rate : 0.4310          
+    #>    Detection Prevalence : 0.5517          
+    #>       Balanced Accuracy : 0.8103          
+    #>                                           
+    #>        'Positive' Class : 0               
+    #>                                           
+    #> 
+    #> ### Top 10 Important Features ###
+    #>           Feature       Gain      Cover  Frequency
+    #>            <char>      <num>      <num>      <num>
+    #>  1:         TNF.A 0.18457678 0.10535233 0.09103448
+    #>  2:         IL.22 0.15117263 0.16064281 0.09885057
+    #>  3:     IL.12.P70 0.09955532 0.12855158 0.12321839
+    #>  4:         IL.33 0.09384522 0.08514973 0.07908046
+    #>  5:         IL.1B 0.07717208 0.03835908 0.05149425
+    #>  6:          IL.9 0.07554566 0.06955229 0.07080460
+    #>  7:         IL.15 0.04705740 0.05853239 0.03310345
+    #>  8:         IL.23 0.04440949 0.02533791 0.02988506
+    #>  9: CCL.20.MIP.3A 0.03678675 0.05623800 0.05287356
+    #> 10:         IL.13 0.02785650 0.02633047 0.03678161
+
+<img src="output/README-unnamed-chunk-15-2.png" width="100%" />
 
     #> 
     #> ### CROSS-VALIDATION USING XGBOOST ###
@@ -559,59 +630,90 @@ results <- cyt.xgb(data = data.df, group_col = 'Group',
     #>    test_mlogloss_std
     #>                <num>
     #> 1:        0.08743712
-    ggsave("XGBoost_VIP_Plot.png", plot = results$plot, dpi = 300)
-
-    ## Using Random Forest for classification
-    results <- cyt.rf(data = data.df, group_col = 'Group', k_folds = 5, ntree = 1000, mtry = 4, run_rfcv = TRUE)
+    #> Confusion Matrix and Statistics
     #> 
-    #> ### RANDOM FOREST RESULTS ON TRAINING SET ###
-    #> 
-    #> Call:
-    #>  randomForest(formula = formula, data = train_data, ntree = ntree,      mtry = mtry, importance = TRUE) 
-    #>                Type of random forest: classification
-    #>                      Number of trees: 1000
-    #> No. of variables tried at each split: 4
-    #> 
-    #>         OOB estimate of  error rate: 11.43%
-    #> Confusion matrix:
-    #>        PreT2D T2D class.error
-    #> PreT2D     62   8   0.1142857
-    #> T2D         8  62   0.1142857
-    #> 
-    #> Accuracy on training set:  0.8857143 
-    #> 
-    #> Class 'PreT2D' metrics:
-    #>   Sensitivity:  0.886 
-    #>   Specificity:  0.886 
-    #> 
-    #> Class 'T2D' metrics:
-    #>   Sensitivity:  0.886 
-    #>   Specificity:  0.886 
-    #> 
-    #> ### PREDICTIONS ON TEST SET ###
     #>           Reference
-    #> Prediction PreT2D T2D
-    #>     PreT2D     25   7
-    #>     T2D         4  22
+    #> Prediction  0  1
+    #>          0 57 13
+    #>          1 13 57
+    #>                                          
+    #>                Accuracy : 0.8143         
+    #>                  95% CI : (0.7398, 0.875)
+    #>     No Information Rate : 0.5            
+    #>     P-Value [Acc > NIR] : 1.212e-14      
+    #>                                          
+    #>                   Kappa : 0.6286         
+    #>                                          
+    #>  Mcnemar's Test P-Value : 1              
+    #>                                          
+    #>             Sensitivity : 0.8143         
+    #>             Specificity : 0.8143         
+    #>          Pos Pred Value : 0.8143         
+    #>          Neg Pred Value : 0.8143         
+    #>              Prevalence : 0.5000         
+    #>          Detection Rate : 0.4071         
+    #>    Detection Prevalence : 0.5000         
+    #>       Balanced Accuracy : 0.8143         
+    #>                                          
+    #>        'Positive' Class : 0              
+    #>                                          
     #> 
-    #> Accuracy on test set:  0.8103448 
-    #> 
-    #> Sensitivity by class:
-    #> Class: PreT2D: 0.862
-    #> Class: T2D: 0.241
-    #> 
-    #> Specificity by class:
-    #> Class: T2D: 0.759
-    #> Class: PreT2D: 0.138
-    #> 
-    #> AUC:  0.9298454
+    #> Cross-Validation Accuracy:  0.8142857
 
-<img src="man/figures/README-unnamed-chunk-2-2.png" width="100%" /><img src="man/figures/README-unnamed-chunk-2-3.png" width="100%" />
+### Using Random Forest for classification
+
+``` r
+rf.results <- cyt.rf(data = data.df, group_col = 'Group', k_folds = 5,
+                  ntree = 1000, mtry = 4, run_rfcv = TRUE, plot_roc = TRUE)
+#> 
+#> ### RANDOM FOREST RESULTS ON TRAINING SET ###
+#> 
+#> Call:
+#>  randomForest(formula = formula, data = train_data, ntree = ntree,      mtry = mtry, importance = TRUE) 
+#>                Type of random forest: classification
+#>                      Number of trees: 1000
+#> No. of variables tried at each split: 4
+#> 
+#>         OOB estimate of  error rate: 11.43%
+#> Confusion matrix:
+#>        PreT2D T2D class.error
+#> PreT2D     62   8   0.1142857
+#> T2D         8  62   0.1142857
+#> 
+#> Accuracy on training set:  0.8857143 
+#> 
+#> Class 'PreT2D' metrics:
+#>   Sensitivity:  0.886 
+#>   Specificity:  0.886 
+#> 
+#> Class 'T2D' metrics:
+#>   Sensitivity:  0.886 
+#>   Specificity:  0.886 
+#> 
+#> ### PREDICTIONS ON TEST SET ###
+#>           Reference
+#> Prediction PreT2D T2D
+#>     PreT2D     25   7
+#>     T2D         4  22
+#> 
+#> Accuracy on test set:  0.8103448 
+#> 
+#> Sensitivity by class:
+#> Class: PreT2D: 0.862
+#> Class: T2D: 0.241
+#> 
+#> Specificity by class:
+#> Class: T2D: 0.759
+#> Class: PreT2D: 0.138
+#> 
+#> AUC:  0.9298454
+```
+
+<img src="output/README-unnamed-chunk-16-1.png" width="100%" /><img src="output/README-unnamed-chunk-16-2.png" width="100%" />
 
     #> 
     #> ### RANDOM FOREST CROSS-VALIDATION FOR FEATURE SELECTION ###
 
-<img src="man/figures/README-unnamed-chunk-2-4.png" width="100%" />
+<img src="output/README-unnamed-chunk-16-3.png" width="100%" />
 
     #> Random Forest CV completed for feature selection. Check the plot for error vs. number of variables.
-    ggsave("RandomForest_VIP_Plot.png", plot = results$importance_plot, dpi = 300)

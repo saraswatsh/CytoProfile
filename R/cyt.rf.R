@@ -9,7 +9,7 @@
 #' @param ntree An integer specifying the number of trees to grow in the forest (default is 500).
 #' @param mtry An integer specifying the number of variables randomly selected at each split (default is 5).
 #' @param train_fraction A numeric value between 0 and 1 representing the proportion of data to use for training (default is 0.7).
-#' @param plot_roc A logical value indicating whether to plot the ROC curve and calculate the AUC for binary classification (default is TRUE).
+#' @param plot_roc A logical value indicating whether to plot the ROC curve and calculate the AUC for binary classification (default is FALSE).
 #' @param k_folds An integer specifying the number of folds for cross-validation (default is 5).
 #' @param step A numeric value specifying the fraction of variables to remove at each step during cross-validation for feature selection (default is 0.5).
 #' @param run_rfcv A logical value indicating whether to run Random Forest cross-validation for feature selection (default is TRUE).
@@ -39,8 +39,8 @@
 #' @import pROC
 #' @export
 
-cyt.rf <- function(data, group_col, ntree = 500, mtry = 5, train_fraction = 0.7, plot_roc = TRUE,
-                                             k_folds = 5, step = 0.5, run_rfcv = TRUE) {
+cyt.rf <- function(data, group_col, ntree = 500, mtry = 5, train_fraction = 0.7, plot_roc = FALSE,
+                   k_folds = 5, step = 0.5, run_rfcv = TRUE) {
 
   # Ensure the grouping variable is a factor
   data[[group_col]] <- as.factor(data[[group_col]])
@@ -87,6 +87,7 @@ cyt.rf <- function(data, group_col, ntree = 500, mtry = 5, train_fraction = 0.7,
     cat("  Sensitivity: ", round(sensitivity, 3), "\n")
     cat("  Specificity: ", round(specificity, 3), "\n")
   }
+
   # Make predictions on the test set
   rf_pred <- predict(rf_model, newdata = test_data)
 
@@ -128,43 +129,73 @@ cyt.rf <- function(data, group_col, ntree = 500, mtry = 5, train_fraction = 0.7,
       cat(paste0("Class: ", levels(data[[group_col]])[i], ": ", round(specificity[i], 4), "\n"))
     }
   }
-
-  # ROC Curve and AUC
   if (plot_roc && length(unique(test_data[[group_col]])) == 2) {  # Only for binary classification
     rf_prob <- predict(rf_model, newdata = test_data, type = "prob")[, 2]
+
+    # Compute ROC and AUC using pROC package
     roc_obj <- roc(test_data[[group_col]], rf_prob)
     auc_value <- auc(roc_obj)
     cat("\nAUC: ", auc_value, "\n")
-    plot(roc_obj, col = "blue", main = "ROC Curve")
+
+    # Create the ROC plot using ggroc()
+    roc_plot <- ggroc(roc_obj, color = "blue", linewidth = 1.5, legacy.axes = TRUE) +
+      geom_abline(linetype = "dashed", color = "red", linewidth = 1) +  # Random classifier line
+      labs(title = "ROC Curve (Test Set)", x = "1 - Specificity", y = "Sensitivity") +
+      annotate("text", x = 0.75, y = 0.25, label = paste("AUC =", round(auc_value, 3)), size = 5, color = "blue") +
+      theme_minimal()
+
+    # Display the ROC plot
+    print(roc_plot)
   }
-  # Extract variable importance based on Mean Decrease Gini
+  # Extract variable importance based on Mean Decrease Gini and plot with ggplot2
   importance_data <- data.frame(Variable = rownames(importance(rf_model)), Gini = importance(rf_model)[, "MeanDecreaseGini"])
 
-  # Plot Gini-based variable importance (VIP)
+  # Plot Gini-based variable importance (VIP) using ggplot2
   vip_plot <- ggplot(importance_data, aes(x = reorder(Variable, Gini), y = Gini)) +
-    geom_bar(stat = "identity") +
+    geom_bar(stat = "identity", fill = "red2") +
     coord_flip() +
     ggtitle("Variable Importance Plot (Mean Decrease in Gini)") +
-    xlab("Cytokines") +
-    ylab("Importance (Gini Index)")
+    xlab("Features") +
+    ylab("Importance (Gini Index)") +
+    theme_minimal()+
+    theme(legend.position = "none",
+          panel.background = element_rect(fill = "white", colour = "white"),
+          plot.background = element_rect(fill = "white", colour = "white"),  # Ensure plot background is white
+          legend.background = element_rect(fill = "white", colour = "white"),  # Ensure legend background is white
+          axis.title = element_text(color = "black", size = 12, face = "bold"),  # Customize axis titles
+          legend.title = element_text(color = "black", size = 10, face = "bold"),  # Customize legend title
+          legend.text = element_text(color = "black"))
 
   print(vip_plot)
 
   # Optional: Random Forest Cross-Validation for Feature Selection
+
   if (run_rfcv) {
     cat("\n### RANDOM FOREST CROSS-VALIDATION FOR FEATURE SELECTION ###\n")
     X <- train_data[, predictors]
     y <- train_data[[group_col]]
     rfcv_result <- rfcv(X, y, cv.fold = k_folds, step = step)
 
-    # Plot Cross-Validation Error vs Number of Variables
-    plot(rfcv_result$n.var, rfcv_result$error.cv, log = "x", type = "o", lwd = 2, col = "blue",
-         xlab = "Number of Variables", ylab = "Cross-Validation Error",
-         main = "Cross-Validation Error vs. Number of Variables")
+    # Convert rfcv results to a data frame for ggplot
+    rfcv_data <- data.frame(Variables = rfcv_result$n.var, Error = rfcv_result$error.cv)
+
+    # Plot Cross-Validation Error vs Number of Variables using ggplot2
+    rfcv_plot <- ggplot(rfcv_data, aes(x = Variables, y = Error)) +
+      geom_line(color = "blue") +
+      geom_point(color = "blue") +
+      ggtitle("Cross-Validation Error vs. Number of Variables") +
+      xlab("Number of Variables") +
+      ylab("Cross-Validation Error") +
+      scale_x_continuous(breaks = 1:(ncol(train_data)-1) )+  # Ensure all variable counts are showns
+      theme_minimal()
+
+    print(rfcv_plot)
 
     cat("Random Forest CV completed for feature selection. Check the plot for error vs. number of variables.\n")
   } else {
     rfcv_result <- NULL
   }
-  return(list(model = rf_model, confusion_matrix = confusion_mat, importance_plot = vip_plot, rfcv_result = rfcv_result, importance_data = importance_data))
+
+  return(list(model = rf_model, confusion_matrix = confusion_mat, importance_plot = vip_plot,
+              rfcv_result = rfcv_result, importance_data = importance_data, rfcv_data = rfcv_data))
 }

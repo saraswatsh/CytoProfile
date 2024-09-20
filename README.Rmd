@@ -8,7 +8,7 @@ output: github_document
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "man/figures/README-",
+  fig.path = "output/README-",
   out.width = "100%"
 )
 ```
@@ -46,33 +46,62 @@ devtools::install_github("saraswatsh/CytoProfile")
 
 ## Example
 
-This is a basic example which shows you how to analyze a data set. The PDF files of the plots and PLS-DA analysis will be under the output folder. 
+Below are examples of using the functions provided in CytoProfile. Any saved files whether PDF or PNG is available in the output folder. 
+
+## 1. Data Loading and set up
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
+# Loading all packages required
+library(tidyverse) # Used to load dplyr, ggplot2, and tidyr
+library(knitr) # Required for setting the working directory
+library(mixOmics) # Required for sPLS-DA
+library(pROC) # Required for ROC curve in XGBoost and Random Forest
+library(moments) # Required for skewness and kurtosis
 library(CytoProfile)
-## basic example code
 # Loading in data
 data("cytodata")
 data.df <- cytodata
 
 ## Setting working directory to output folder to save the PDF files. 
-setwd("E:/Desktop/RA/R Package/CytoProfile/output")
+opts_knit$set(root.dir = "E:/Desktop/RA/R Package/CytoProfile/output")
+```
 
-## Exploratory Data Analysis
+## 2. Exploratory Data Analysis
+
+### Boxplots
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
 # Generating boxplots to check for outliers for raw values
 cyt.bp(data.df[,-c(1:4)], Title = "Boxplot.byCytokine.Raw.pdf") # We are removing the first 4 columns as we only want the continuous variables. 
 
 # Generating boxplots to check for outliers for log2 values
-cyt.bp(log2(data.df[,-c(1:4)]), Title = "Boxplot.byCytokine.log2.pdf") # Make sure to use log2 to transform the cytokines and same reason as above for removing initial columns.
+cyt.bp(log2(data.df[,-c(1:4)]), Title = "Boxplot.byCytokine.log2.pdf") # Make sure to use log2 to transform the cytokines and same reason as above for removing initial columns
 
+```
+
+### Group-Specific Boxplots
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
 # Second function for generating boxplots
 # Raw values
 cyt.bp2(data.df[,-c(1,4)], Title = "Boxplot.byGroupandTreatment.raw.pdf", scale = NULL)
 # Log-2 transformation
 cyt.bp2(data.df[,-c(1,4)], Title = "Boxplot.byGroupandTreatment.log2.pdf", scale = "log2")
+
+```
+
+## 3. Skewness and Kurtosis 
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
 # Generating histograms for skewness and kurtosis based on raw values and log2 transformation
 cyt.skku(data.df[,-c(1,4)], Title = "Skew and Kurtosis.pdf")
+```
 
+## 4. Error Bar Plots
+
+### Basic Error Bar Plot
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
 # Generating Error Bar Plot
 cytokine.mat <- cytodata[, -c(1:4)] # Extracting all cytokines to be stored in one object
 cytokineNames <- colnames(cytokine.mat) # Extracting the cytokine names
@@ -86,7 +115,11 @@ for( k in 1:nCytokine ) {
                ylab="Concentration in log2 scale",  main=cytokineNames[k] )
 }
 dev.off()
+```
 
+### Enriched Error Bar Plot with p-values and Effect Sizes
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
 # Generating Error Bar Plot enriched with p-value and effect size 
 data.df <- cytodata[,-1]
 cyt.mat <- log2(data.df[,-c(1:3)])
@@ -133,7 +166,13 @@ for( k in 1:nCytokine ) {
                ylab="Concentration in log2 scale", main=cytokineNames[k])
 }
 dev.off()
+```
 
+## 5. Univariate Analysis
+
+### Two Sample T-test and Mann Whitney U Test
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
 # Performing Two Sample T-test and Mann Whitney U Test
 data.df <- cytodata[,-c(1,4)]
 data.df <- filter(data.df, Group != "ND", Treatment != "Unstimulated")
@@ -142,10 +181,20 @@ cyt.ttests(data.df, scale = "log2")
 # Mann Whitney U Test
 cyt.ttests(data.df)
 
+```
+
+### ANOVA Comparisons Test
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
 # Performing ANOVA comparisons test for univariate analysis
 cyt.anova(data.df[,c(1:2,5:6)]) # This only considers 2 cytokines for this example only
+```
 
-## Partial Least Squares Discriminant Analysis (PLS-DA) 
+## 6. Multivariate Analysis
+
+### Partial Least Squares Discriminant Analysis (PLS-DA) 
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
 # In this code, we will have background predict to be turned on to see the classification areas and 
 # we will also print out the confusion matrix based on classification. 
 # Note this takes into account all groups and treatment and all values are log transformed through 
@@ -169,12 +218,20 @@ cyt.plsda(filt.data[,-c(1,4)], title = "Example PLS-DA Analysis 2.pdf",
           cv.opt = "Mfold", fold.num = 5,
           comp.num = 3, pch.values = c(3,4), style = "3d",
           group.col = "Group", trt.col = "Treatment")
-## Principal Component Analysis (PCA)
+```
+
+## 7. Principal Component Analysis (PCA)
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
 data <- cytodata[,-c(1,4)]
 data.df <- filter(data, Group != "ND" & Treatment != "Unstimulated")
 data.df <- data.df[,-22]
 cyt.pca(data.df, title = "Example PCA Analysis.pdf" ,colors = c("black", "red2"), scale = "log2", comp.num = 3, pch.values = c(16,4), style = "3D")
+```
 
+## 8. Volcano Plot
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
 # Generating Volcano Plot
 data.df <- cytodata[,-4]
 volc_plot <- cyt.volc(data.df, "Group", cond1 = "T2D", cond2 = "ND", fold_change_thresh = 2.0, top_labels= 15)
@@ -183,12 +240,21 @@ ggsave("VolcanoPlot.png", plot = volc_plot$`T2D vs ND`, dpi = 300)
 # Printing table (This is usually printed by default when the function is called and not saved as an object.)
 print(volc_plot$`T2D vs ND`$data)
 
+```
+
+## 9. Heatmap
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
 # Generating Heat map
 cyt.heatmap(data = data.df,
                     scale = "log2",        # Optional scaling
                     annotation_col_name = "Group",
                     title = "Heatmap.png")
+```
 
+## 10. Dual Flashlight Plot
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
 # Generating dual flashlights plot
 data.df <- cytodata[,-c(1,3:4)]
 
@@ -199,20 +265,29 @@ ggsave("DualFlashlightPlot.png", plot = dfp$plot_env$p, dpi = 300, width = 3000,
 # Printing table (This is usually printed by default when the function is called and not saved as an object.)
 print(dfp$data)
 
-## Using XGBoost for classification
+```
+
+## 11. Machine Learning Models
+
+### Using XGBoost for classification
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
 data.df0 <- cytodata
 data.df <- data.frame(data.df0[,1:4], log2(data.df0[,-c(1:4)]))
 data.df <- data.df[,-c(1,3,4)]
 data.df <- filter(data.df, Group != "ND")
 
-results <- cyt.xgb(data = data.df, group_col = 'Group',
-                                      nrounds = 500, max_depth = 4, eta = 0.05,
-                                      nfold = 5, cv = TRUE, eval_metric = "mlogloss",
-                                      early_stopping_rounds = NULL, top_n_features = 10,
-                                      verbose = 0)
-ggsave("XGBoost_VIP_Plot.png", plot = results$plot, dpi = 300)
+xgb.results <- cyt.xgb(data = data.df, group_col = 'Group',
+                   nrounds = 500, max_depth = 4, eta = 0.05,
+                   nfold = 5, cv = TRUE, eval_metric = "mlogloss",
+                   early_stopping_rounds = NULL, top_n_features = 10,
+                   verbose = 0, plot_roc = TRUE)
+```
 
-## Using Random Forest for classification
-results <- cyt.rf(data = data.df, group_col = 'Group', k_folds = 5, ntree = 1000, mtry = 4, run_rfcv = TRUE)
-ggsave("RandomForest_VIP_Plot.png", plot = results$importance_plot, dpi = 300)
+
+### Using Random Forest for classification
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+rf.results <- cyt.rf(data = data.df, group_col = 'Group', k_folds = 5,
+                  ntree = 1000, mtry = 4, run_rfcv = TRUE, plot_roc = TRUE)
 ```
