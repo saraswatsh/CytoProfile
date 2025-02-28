@@ -15,33 +15,36 @@ cyt.volc(
 )
 }
 \arguments{
-\item{group_col}{Column used for comparison (i.e. group, treatment, or stimulation).}
+\item{group_col}{A character string specifying the column name used for comparisons (e.g., group, treatment, or stimulation).}
 
-\item{cond1}{A string of a group name to be chosen. Default set to NULL.}
+\item{cond1}{A character string specifying the name of the first condition for comparison. Default is \code{NULL}.}
 
-\item{cond2}{A string of a group name to be chosen. Default set to NULL.}
+\item{cond2}{A character string specifying the name of the second condition for comparison. Default is \code{NULL}.}
 
-\item{fold_change_thresh}{Threshold value for fold change. Default set to 2.}
+\item{fold_change_thresh}{A numeric threshold for the fold change. Default is \code{2}.}
 
-\item{p_value_thresh}{Threshold value for p-value. Default set to 0.05.}
+\item{p_value_thresh}{A numeric threshold for the p-value. Default is \code{0.05}.}
 
-\item{top_labels}{Number of labels to be print for top variables. Default set to 10}
+\item{top_labels}{An integer specifying the number of top variables to label on the plot. Default is \code{10}.}
 
-\item{x.df}{A matrix or data frame}
+\item{x.df}{A matrix or data frame containing the data to be analyzed.}
 }
 \value{
-Prints volcano plot.
+A list of volcano plots (as \code{ggplot} objects) for each pairwise comparison. Additionally, the function prints the data frame
+used for plotting (excluding the significance column) from the final comparison.
 }
 \description{
-This function takes a matrix or data frame and subsets the numeric columns or variables
-to compare against each other based on a selected column of choice that defines a category
-to draw a volcano plot.
+This function subsets the numeric columns from the input data and compares them based on a selected grouping column.
+It computes the fold changes (as the ratio of means) and associated p-values (using two-sample t-tests) for each numeric variable
+between two groups. The results are log2-transformed (for fold change) and -log10-transformed (for p-values) to generate a volcano plot.
 }
 \note{
-If cond1 and cond2 are set to null, by default the function creates combinations of pairs
-to be used for comparisons.
+If \code{cond1} and \code{cond2} are not provided, the function automatically generates all possible pairwise combinations of groups
+from the specified \code{group_col} for comparisons.
 }
 \examples{
-cyt.volc(cytodata,group_col = "Group")
-cyt.volc(cytodata, group_col = "Group", fold_change_thresh = 2, top_labels = 15)
+\dontrun{
+  cyt.volc(cytodata, group_col = "Group")
+  cyt.volc(cytodata, group_col = "Group", fold_change_thresh = 2, top_labels = 15)
+}
 }

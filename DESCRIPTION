@@ -12,20 +12,22 @@ Description: CytoProfile is a comprehensive tool for cytokine profiling analysis
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-Depends: 
+Depends: R (>= 3.5)
+Imports: 
     mixOmics,
     moments,
     dplyr,
     tidyr,
     pROC,
-    R (>= 2.10)
-Imports: BiocManager, 
-         mixOmics, 
-         plot3D, 
-         tidyverse, 
-         caret, 
-         xgboost, 
-         randomForest
+    plot3D,
+    tidyverse,
+    caret,
+    xgboost,
+    randomForest
+Suggests: 
+    BiocManager,
+    testthat,
+    knitr
 NeedsCompilation: no
 License: GPL-2
 LazyData: true

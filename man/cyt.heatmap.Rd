@@ -7,19 +7,23 @@
 cyt.heatmap(data, scale = NULL, annotation_col_name = NULL, title)
 }
 \arguments{
-\item{data}{A data frame to be entered.}
+\item{data}{A data frame containing the input data. Only numeric columns will be used to generate the heatmap.}
 
-\item{scale}{Log2 transformation for scaling. Default set to NULL.}
+\item{scale}{Character. An optional scaling option. If set to "log2", the numeric data will be log2-transformed (with non-positive values set to NA). Default is NULL.}
 
-\item{annotation_col_name}{A string of a column name to be chosen for annotation. Default set to NULL.}
+\item{annotation_col_name}{Character. An optional column name from \code{data} to be used for generating annotation colors. Default is NULL.}
 
-\item{title}{Title of the heatmap to be saved. Can save it as png or pdf.}
+\item{title}{Character. The title of the heatmap and the file name for saving the plot. The file extension (".pdf" or ".png") determines the output format.}
 }
 \value{
-Prints a heatmap.
+The function does not return a value. It saves the heatmap to a file.
 }
 \description{
-This function takes a data frame and subsets the numeric columns or variables to generate a heatmap.
+This function creates a heatmap using the numeric columns from the provided data frame. If requested via
+the \code{scale} parameter, the function applies a log2 transformation to the data (with non-positive values replaced by NA).
+Optionally, if an annotation column is specified and exists in \code{data}, the function attempts to generate a color annotation
+(although the annotation is not passed to \code{heatmap.2} in the current implementation). The heatmap is saved as a file,
+with the format determined by the file extension in \code{title}.
 }
 \examples{
 cyt.heatmap(cytodata[,-4], scale = "log2", annotation_col_name = "Group")

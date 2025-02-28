@@ -2,7 +2,7 @@
 % Please edit documentation in R/cyt.dualflashplot.R
 \name{cyt.dualflashplot}
 \alias{cyt.dualflashplot}
-\title{Dual flash plot.}
+\title{Dual flash plot for group comparisons.}
 \usage{
 cyt.dualflashplot(
   data,
@@ -15,26 +15,28 @@ cyt.dualflashplot(
 )
 }
 \arguments{
-\item{data}{A data frame to be entered.}
+\item{data}{A data frame containing the input data.}
 
-\item{group_var}{Grouping column to be used from the data frame.}
+\item{group_var}{A string specifying the name of the grouping column in the data.}
 
-\item{group1}{Name of the first group to be compared.}
+\item{group1}{A string representing the name of the first group for comparison.}
 
-\item{group2}{Name of the second group to be compared.}
+\item{group2}{A string representing the name of the second group for comparison.}
 
-\item{ssmd_thresh}{Threshold value for SSMD. Default set to 1.}
+\item{ssmd_thresh}{A numeric threshold for the SSMD value used to determine significance. Default is 1.}
 
-\item{log2fc_thresh}{Threshold value for log2 fold change. Default set to 1.}
+\item{log2fc_thresh}{A numeric threshold for the log2 fold change used to determine significance. Default is 1.}
 
-\item{top_labels}{Number of labels to be print for top variables. Default set to 15.}
+\item{top_labels}{An integer specifying the number of top variables (based on absolute SSMD) to label in the plot. Default is 15.}
 }
 \value{
-Prints dual flash plot.
+A ggplot object representing the dual flash plot for the comparisons between group1 and group2.
 }
 \description{
-Dual flash plot.
-}
-\examples{
-cyt.dualflashplot(cytodata[,-c(1,3)], group_var = "Group", group1 = "ND", group2 = "T2D", ssmd_thresh = -0.2, log2fc_thresh = 1, top_labels = 10)
+This function reshapes the input data and computes summary statistics (mean and variance) for each variable
+grouped by a specified factor column. It then calculates the SSMD (Strictly Standardized
+Mean Difference) and log2 fold change between two groups (group1 and group2) and categorizes the effect strength
+as "Strong Effect", "Moderate Effect", or "Weak Effect". A dual flash plot is generated using ggplot2 where the x-axis
+represents the average log2 fold change and the y-axis represents the SSMD. Additionally, the function prints the
+computed statistics to the console.
 }

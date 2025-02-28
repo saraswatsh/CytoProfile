@@ -42,12 +42,34 @@ saved files whether PDF or PNG is available in the output folder.
 
 ``` r
 # Loading all packages required
-library(tidyverse) # Used to load dplyr, ggplot2, and tidyr
-library(knitr) # Required for setting the working directory
-library(mixOmics) # Required for sPLS-DA
-library(pROC) # Required for ROC curve in XGBoost and Random Forest
-library(moments) # Required for skewness and kurtosis
+# Data manipulation and reshaping
+library(dplyr)       # For data filtering, grouping, and summarising.
+library(tidyr)       # For reshaping data (e.g., pivot_longer, pivot_wider).
+
+# Plotting and visualization
+library(ggplot2)     # For creating all the ggplot-based visualizations.
+library(ggrepel)     # For improved label placement in plots (e.g., volcano plots).
+library(gplots)      # For heatmap.2, which is used to generate heatmaps.
+library(plot3D)      # For creating 3D scatter plots in PCA and sPLS-DA analyses.
+library(reshape2)    # For data transformation (e.g., melt) in cross-validation plots.
+
+# Statistical analysis
+library(mixOmics)    # For multivariate analyses (PCA, sPLS-DA, etc.).
+library(moments)     # For computing skewness and kurtosis.
+library(pROC)        # For ROC curve generation in machine learning model evaluation.
+
+# Machine learning
+library(xgboost)     # For building XGBoost classification models.
+library(randomForest) # For building Random Forest classification models.
+library(caret)       # For cross-validation and other machine learning utilities.
+
+# Package development and document rendering
+library(knitr)       # For knitting RMarkdown files and setting chunk options.
+library(devtools)    # For installing the development version of the package from GitHub.
+
+# devtools::install_github("saraswatsh/CytoProfile")
 library(CytoProfile)
+
 # Loading in data
 data("cytodata")
 data.df <- cytodata
@@ -312,84 +334,141 @@ cyt.anova(data.df[,c(1:2,5:6)]) # This only considers 2 cytokines for this examp
 # Note this takes into account all groups and treatment and all values are log transformed through 
 # cyt.plsda function. 
 data.df <- cytodata
-
-cyt.plsda(data.df[,-c(1,4)], title = "Example PLS-DA Analysis.pdf",
+cyt.plsda(data.df[,-c(1,4)], title = "Example PLS-DA Analysis.pdf", 
           colors = c("black", "purple", "red2"),
-          bg = TRUE, scale = "log2",
-          conf.mat = TRUE, var.num = 25,
+          bg = TRUE, scale = "log2", 
+          conf.mat = TRUE, var.num = 25, 
           cv.opt = "loocv",
-          comp.num = 2, pch.values = c(16,4,3), style = NULL,
-          group.col = "Group", trt.col = "Treatment")
+          comp.num = 2, pch.values = c(16, 4, 3), 
+          group.col = "Group", trt.col = "Treatment", roc = TRUE)
 #> [1] "Results based on log2 transformation:"
-#> [1] "CD3/CD28 LOOCV Accuracy: 42%"
-#> [1] "CD3/CD28 LOOCV Accuracy (VIP>1): 48%"
+#> [1] "CD3/CD28 LOOCV Accuracy: 49%"
+#> [1] "CD3/CD28 LOOCV Accuracy (VIP>1): 52%"
 #> [1] "CD3/CD28 Confusion Matrix for PLS-DA Comparison"
-#>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
-#> ND                   0                  15               18
-#> PreT2D               0                  19               14
-#> T2D                  0                   4               29
+#>           Reference
+#> Prediction ND PreT2D T2D
+#>     ND      0      0   1
+#>     PreT2D 15     28   5
+#>     T2D    18      5  27
+#> Accuracy 
+#>     0.56 
+#> [1] NA
+#> [1] NA
 #> [1] "CD3/CD28 Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
-#>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
-#> ND                   0                  15               18
-#> PreT2D               0                  19               14
-#> T2D                  0                   4               29
-#> [1] "LPS LOOCV Accuracy: 38%"
-#> [1] "LPS LOOCV Accuracy (VIP>1): 45%"
+#>           Reference
+#> Prediction ND PreT2D T2D
+#>     ND      0      0   1
+#>     PreT2D 17     27   7
+#>     T2D    16      6  25
+#> Accuracy 
+#>     0.53 
+#> [1] NA
+#> [1] NA
+#> [1] "LPS LOOCV Accuracy: 44%"
+#> [1] "LPS LOOCV Accuracy (VIP>1): 44%"
 #> [1] "LPS Confusion Matrix for PLS-DA Comparison"
-#>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
-#> ND                   0                  10               23
-#> PreT2D               0                  15               18
-#> T2D                  0                   5               28
+#>           Reference
+#> Prediction ND PreT2D T2D
+#>     ND     13      4   9
+#>     PreT2D 12     21   5
+#>     T2D     8      8  19
+#> Accuracy 
+#>     0.54 
+#> [1] NA
+#> [1] NA
 #> [1] "LPS Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
-#>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
-#> ND                   0                  10               23
-#> PreT2D               0                  16               17
-#> T2D                  0                   3               30
-#> [1] "Unstimulated LOOCV Accuracy: 37%"
-#> [1] "Unstimulated LOOCV Accuracy (VIP>1): 47%"
+#>           Reference
+#> Prediction ND PreT2D T2D
+#>     ND     13      4   7
+#>     PreT2D 14     22   5
+#>     T2D     6      7  21
+#> Accuracy 
+#>     0.57 
+#> [1] NA
+#> [1] NA
+#> [1] "Unstimulated LOOCV Accuracy: 34%"
+#> [1] "Unstimulated LOOCV Accuracy (VIP>1): 42%"
 #> [1] "Unstimulated Confusion Matrix for PLS-DA Comparison"
-#>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
-#> ND                   0                  17               16
-#> PreT2D               0                  31                2
-#> T2D                  0                  12               21
+#>           Reference
+#> Prediction ND PreT2D T2D
+#>     ND      6      4   6
+#>     PreT2D 13     27   9
+#>     T2D    14      2  18
+#> Accuracy 
+#>     0.52 
+#> [1] NA
+#> [1] NA
 #> [1] "Unstimulated Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
-#>        predicted.as.ND predicted.as.PreT2D predicted.as.T2D
-#> ND                   0                  14               19
-#> PreT2D               0                  28                5
-#> T2D                  0                  10               23
+#>           Reference
+#> Prediction ND PreT2D T2D
+#>     ND      8      4   7
+#>     PreT2D 12     22   5
+#>     T2D    13      7  21
+#> Accuracy 
+#>     0.52 
+#> [1] NA
+#> [1] NA
 #> png 
 #>   2
 
 # Filtering data for specific groups and treatment
 filt.data <- filter(data.df, Group != "ND", Treatment != "Unstimulated")
-cyt.plsda(filt.data[,-c(1,4)], title = "Example PLS-DA Analysis 2.pdf",
+cyt.plsda(filt.data[,-c(1,4)], title = "Example PLS-DA Analysis 2.pdf", 
           colors = c("black", "purple"),
-          bg = TRUE, scale = "log2",
-          conf.mat = TRUE, var.num = 25,
+          bg = TRUE, scale = "log2", 
+          conf.mat = TRUE, var.num = 25, 
           cv.opt = "Mfold", fold.num = 5,
-          comp.num = 3, pch.values = c(3,4), style = "3d",
-          group.col = "Group", trt.col = "Treatment")
+          comp.num = 3, pch.values = c(3, 4), style = "3d",
+          group.col = "Group", trt.col = "Treatment", roc = TRUE)
 #> [1] "Results based on log2 transformation:"
-#> [1] "CD3/CD28 Mfold Accuracy: 68%"
-#> [1] "CD3/CD28 Mfold Accuracy (VIP>1): 73%"
+#> [1] "CD3/CD28 Mfold Accuracy: 79%"
+#> [1] "CD3/CD28 Mfold Accuracy (VIP>1): 78%"
 #> [1] "CD3/CD28 Confusion Matrix for PLS-DA Comparison"
-#>        predicted.as.PreT2D predicted.as.T2D
-#> PreT2D                  19               14
-#> T2D                      4               29
+#>           Reference
+#> Prediction PreT2D T2D
+#>     PreT2D     28   7
+#>     T2D         5  26
+#> Accuracy 
+#>     0.82 
+#> Sensitivity 
+#>        0.85 
+#> Specificity 
+#>        0.79 
 #> [1] "CD3/CD28 Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
-#>        predicted.as.PreT2D predicted.as.T2D
-#> PreT2D                  19               14
-#> T2D                      4               29
-#> [1] "LPS Mfold Accuracy: 64%"
-#> [1] "LPS Mfold Accuracy (VIP>1): 69%"
+#>           Reference
+#> Prediction PreT2D T2D
+#>     PreT2D     27   6
+#>     T2D         6  27
+#> Accuracy 
+#>     0.82 
+#> Sensitivity 
+#>        0.82 
+#> Specificity 
+#>        0.82
+#> [1] "LPS Mfold Accuracy: 72%"
+#> [1] "LPS Mfold Accuracy (VIP>1): 78%"
 #> [1] "LPS Confusion Matrix for PLS-DA Comparison"
-#>        predicted.as.PreT2D predicted.as.T2D
-#> PreT2D                  17               16
-#> T2D                      6               27
+#>           Reference
+#> Prediction PreT2D T2D
+#>     PreT2D     25   4
+#>     T2D         8  29
+#> Accuracy 
+#>     0.82 
+#> Sensitivity 
+#>        0.76 
+#> Specificity 
+#>        0.88 
 #> [1] "LPS Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
-#>        predicted.as.PreT2D predicted.as.T2D
-#> PreT2D                  17               16
-#> T2D                      3               30
+#>           Reference
+#> Prediction PreT2D T2D
+#>     PreT2D     28   8
+#>     T2D         5  25
+#> Accuracy 
+#>      0.8 
+#> Sensitivity 
+#>        0.85 
+#> Specificity 
+#>        0.76
 #> png 
 #>   2
 ```

@@ -1,5 +1,5 @@
 ##*********************************************************************************
-## function to draw an error-bar plot enriched with p-value and/or effect size    #
+## Function to draw an error-bar plot enriched with p-value and/or effect size    #
 ##   for the comparison of each of selected groups to the baseline group          #
 ## Author: Xiaohua Douglas Zhang, January 2022                                    #
 ## Arguments:                                                                     #
@@ -19,20 +19,28 @@
 #' Error-bar plot for comparison.
 #'
 #' @param center.df A data frame containing the following columns for each group:
-#'                  "name" for group names
-#'                  "center" for mean or median,
-#'                  "spread" for standard deviation, MAD or standard error,
-#'                  "p.value" for p-value,
-#'                  "effect.size" for effect size based on SSMD.
-#' @param pLab Whether to label the p-value , default set to TRUE.
-#' @param esLab whether to label the effect size usually in SSMD, default set to TRUE.
-#' @param xlab Labeling x axis.
-#' @param ylab Labeling y axis.
-#' @param main Title of the graph.
-#' @description This function draws an error-bar plot enriched with p-value and/or effect size
-#'              for the comparison of each selected groups to the baseline group.
-#'              Note: The first column for center.df must be for the baseline group.
-#' @return Prints error-bar plots.
+#'   \itemize{
+#'     \item \code{name}: Group names.
+#'     \item \code{center}: Mean or median values.
+#'     \item \code{spread}: Standard deviation, MAD, or standard error.
+#'     \item \code{p.value}: P-value for the comparison.
+#'     \item \code{effect.size}: Effect size based on SSMD.
+#'   }
+#'   Note: The first row of \code{center.df} must correspond to the baseline group.
+#' @param pLab Logical. Whether to label the p-values on the plot. Default is \code{TRUE}.
+#' @param esLab Logical. Whether to label the effect sizes on the plot. Default is \code{TRUE}.
+#' @param classSymbol Logical. Whether to use symbolic notation for significance and effect size. Default is \code{TRUE}.
+#' @param xlab Character. Label for the x-axis.
+#' @param ylab Character. Label for the y-axis.
+#' @param main Character. Title of the graph.
+#'
+#' @description
+#' This function draws an error-bar plot for comparing groups to a baseline group. It creates a barplot of
+#' the central tendency (mean or median) and overlays error bars representing the spread (e.g., standard deviation,
+#' MAD, or standard error). Optionally, p-value and effect size labels (based on SSMD) are added, either as symbols
+#' or numeric values.
+#'
+#' @return An error-bar plot is produced.
 #' @export
 #'
 cyt.errbp <- function(center.df, pLab=TRUE, esLab=TRUE, classSymbol=TRUE,

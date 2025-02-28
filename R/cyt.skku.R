@@ -4,23 +4,31 @@
 
 #' Distribution of the data set shown by skewness and kurtosis
 #'
-#' @param x.df A matrix or data frame of raw data.
-#' @param Title Name for the PDF file.
-#' @param printResRaw Print tibbles of skewness and kurtosis for raw values. Default set to FALSE.
-#' @param printResLog Print tibbles of skewness and kurtosis for log2 transformed values. Default set to FALSE.
-#' @description
-#' The function takes in a data frame and subsets the numeric columns from the data which is then
-#' used to calculate the skewed and kurtosis values. The values are then plotted using histograms
-#' to visualize the distribution of raw skewed values and log2 transformed values.
+#' @param x.df A matrix or data frame of raw data. The first two columns should contain grouping variables
+#' (e.g., "Treatment" and "Group" or "Stimulation" and "Group"), while the remaining columns are assumed to be numeric cytokine measurements.
+#' @param Title A character string specifying the name for the PDF file. If provided, the histograms will be saved to this PDF file;
+#' if not, the plots are produced on the current graphics device.
+#' @param printResRaw Logical. If \code{TRUE}, the function prints and returns the computed summary array (count, mean, standard error, skewness, and kurtosis)
+#' for the raw data. Default is \code{FALSE}.
+#' @param printResLog Logical. If \code{TRUE}, the function prints and returns the computed summary array for the log2-transformed data. Default is \code{FALSE}.
 #'
-#' @return Prints histograms of Skewness and Kurtosis of the continuous variables using raw data and log2 transformation.
+#' @description
+#' This function subsets the numeric columns from the input data (excluding the first two grouping columns) and computes summary statistics
+#' (including count, central tendency, spread as standard error, skewness, and kurtosis) for each group defined by a combination of the first two columns.
+#' A small cutoff (one-tenth of the minimum positive value in the data) is added to each numeric value before applying the log2 transformation
+#' to handle non-positive values. Histograms are then generated to visualize the distribution of skewness and kurtosis for both the raw and log2-transformed data.
+#'
+#' @return The function prints histograms of skewness and kurtosis for both raw and log2-transformed data.
+#' Optionally, if \code{printResRaw} and/or \code{printResLog} are \code{TRUE}, the function returns the corresponding summary arrays.
+#'
 #' @examples
 #' \dontrun{
 #' data(cytodata)
 #' cyt.skku(cytodata[,-c(1,4)], Title = "Skew and Kurtosis.pdf")
 #' }
-#' @export
 #'
+#' @export
+#' @import e1071
 
 cyt.skku <- function(x.df, Title = NULL, printResRaw = FALSE, printResLog = FALSE) {
   if(!is.null(Title)){

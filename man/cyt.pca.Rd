@@ -16,32 +16,44 @@ cyt.pca(
 )
 }
 \arguments{
-\item{colors}{Vector of colors to be set, list of colors to be set equal to the number of groups or treatments. Default set to NULL and will result in random colors.}
+\item{data.df}{A data frame containing cytokine data. The first two columns are assumed to hold grouping information (e.g., group and treatment/stimulation).}
 
-\item{title}{Title of pdf file to be saved with figures.}
+\item{colors}{A vector of colors corresponding to the groups. If set to NULL, a random palette (using rainbow) is generated based on the number of groups.}
 
-\item{ellipse}{95\% confidence region. Default set to FALSE.}
+\item{title}{A string specifying the  file name of the PDF file where the PCA plots will be saved.}
 
-\item{comp.num}{Number of components to be used in PCA. Default set to 2.}
+\item{ellipse}{Logical. If TRUE, a 95\% confidence ellipse is drawn on the PCA plot. Default is FALSE.}
 
-\item{scale}{Scale the data. Default set to NULL. Uses log2 transformation.}
+\item{comp.num}{Numeric. The number of principal components to compute and display. Default is 2.}
 
-\item{pch.values}{Vector of plotting characters to be used. Default set to NULL.}
+\item{scale}{Character. Scaling option; if set to "log2", a log2 transformation is applied to the cytokine measurements (excluding the grouping columns). Default is NULL.}
 
-\item{style}{Use "3d" or "3D" to generate a 3D plot. Default set to NULL.}
+\item{pch.values}{A vector of plotting characters to be used in the PCA plots. Default is NULL.}
 
-\item{x.df}{A data frame with cytokine data.}
+\item{style}{Character. If set to "3d" or "3D" and \code{comp.num} equals 3, a 3D scatter plot is generated using the plot3D package. Default is NULL.}
 }
 \value{
-A pdf file with PCA plots (2D and 3D), loadings plots, biplots, and correlation circle plots.
+A PDF file containing the PCA plots is generated and saved.
 }
 \description{
-Analyze data with Principal Component Analysis (PCA) for cytokines.
+This function performs Principal Component Analysis (PCA) on cytokine data and generates several types of plots,
+including:
+\itemize{
+\item 2D PCA plots using mixOmics's \code{plotIndiv} function,
+\item 3D scatter plots (if \code{style} is "3d" or "3D" and \code{comp.num} is 3) via the plot3D package,
+\item Scree plots showing both individual and cumulative explained variance,
+\item Loadings plots, and
+\item Biplots and correlation circle plots.
+}
+The function optionally applies a log2 transformation to the numeric data and handles analyses based on either treatment
+or stimulation groups.
 }
 \examples{
 data <- cytodata[,-c(1,4)]
 data.df <- filter(data, Group != "ND" & Treatment != "Unstimulated")
 data.df <- data.df[,-22]
-cyt.pca(data.df, title = "PCA_Example_Analysis.pdf" ,colors = c("black", "red2"), scale = "log2", comp.num = 3, pch.values = c(16,4), style = "3D")
-cyt.pca(data.df, title = "PCA_Example_Analysis2.pdf" ,colors = c("black", "red2"), scale = "log2", comp.num = 2, ellipse = TRUE, pch.values = c(16,4))
+cyt.pca(data.df, title = "PCA_Example_Analysis.pdf" ,colors = c("black", "red2"),
+scale = "log2", comp.num = 3, pch.values = c(16,4), style = "3D")
+cyt.pca(data.df, title = "PCA_Example_Analysis2.pdf" ,colors = c("black", "red2"),
+scale = "log2", comp.num = 2, ellipse = TRUE, pch.values = c(16,4))
 }

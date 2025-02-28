@@ -1,23 +1,41 @@
 #' Analyze data with Principal Component Analysis (PCA) for cytokines.
 #'
-#' @param x.df A data frame with cytokine data.
-#' @param colors Vector of colors to be set, list of colors to be set equal to the number of groups or treatments. Default set to NULL and will result in random colors.
-#' @param title Title of pdf file to be saved with figures.
-#' @param ellipse 95% confidence region. Default set to FALSE.
-#' @param comp.num Number of components to be used in PCA. Default set to 2.
-#' @param scale Scale the data. Default set to NULL. Uses log2 transformation.
-#' @param pch.values Vector of plotting characters to be used. Default set to NULL.
-#' @param style Use "3d" or "3D" to generate a 3D plot. Default set to NULL.
+#' @param data.df A data frame containing cytokine data. The first two columns are assumed to hold grouping information (e.g., group and treatment/stimulation).
+#' @param colors A vector of colors corresponding to the groups. If set to NULL, a random palette (using rainbow) is generated based on the number of groups.
+#' @param title A string specifying the  file name of the PDF file where the PCA plots will be saved.
+#' @param ellipse Logical. If TRUE, a 95% confidence ellipse is drawn on the PCA plot. Default is FALSE.
+#' @param comp.num Numeric. The number of principal components to compute and display. Default is 2.
+#' @param scale Character. Scaling option; if set to "log2", a log2 transformation is applied to the cytokine measurements (excluding the grouping columns). Default is NULL.
+#' @param pch.values A vector of plotting characters to be used in the PCA plots. Default is NULL.
+#' @param style Character. If set to "3d" or "3D" and \code{comp.num} equals 3, a 3D scatter plot is generated using the plot3D package. Default is NULL.
 #'
-#' @return A pdf file with PCA plots (2D and 3D), loadings plots, biplots, and correlation circle plots.
+#' @description
+#' This function performs Principal Component Analysis (PCA) on cytokine data and generates several types of plots,
+#' including:
+#' \itemize{
+#'   \item 2D PCA plots using mixOmics's \code{plotIndiv} function,
+#'   \item 3D scatter plots (if \code{style} is "3d" or "3D" and \code{comp.num} is 3) via the plot3D package,
+#'   \item Scree plots showing both individual and cumulative explained variance,
+#'   \item Loadings plots, and
+#'   \item Biplots and correlation circle plots.
+#' }
+#' The function optionally applies a log2 transformation to the numeric data and handles analyses based on either treatment
+#' or stimulation groups.
+#'
+#' @return A PDF file containing the PCA plots is generated and saved.
+#'
 #' @export
-#'
+#' @import mixOmics
+#' @import ggplot2
+#' @import plot3D
 #' @examples
 #' data <- cytodata[,-c(1,4)]
 #' data.df <- filter(data, Group != "ND" & Treatment != "Unstimulated")
 #' data.df <- data.df[,-22]
-#' cyt.pca(data.df, title = "PCA_Example_Analysis.pdf" ,colors = c("black", "red2"), scale = "log2", comp.num = 3, pch.values = c(16,4), style = "3D")
-#' cyt.pca(data.df, title = "PCA_Example_Analysis2.pdf" ,colors = c("black", "red2"), scale = "log2", comp.num = 2, ellipse = TRUE, pch.values = c(16,4))
+#' cyt.pca(data.df, title = "PCA_Example_Analysis.pdf" ,colors = c("black", "red2"),
+#' scale = "log2", comp.num = 3, pch.values = c(16,4), style = "3D")
+#' cyt.pca(data.df, title = "PCA_Example_Analysis2.pdf" ,colors = c("black", "red2"),
+#' scale = "log2", comp.num = 2, ellipse = TRUE, pch.values = c(16,4))
 
 cyt.pca <- function(data.df, colors = NULL, title, ellipse = FALSE, comp.num = 2, scale = NULL, pch.values = NULL, style = NULL) {
   if(!is.null(scale) && scale == "log2"){
@@ -53,7 +71,7 @@ cyt.pca <- function(data.df, colors = NULL, title, ellipse = FALSE, comp.num = 2
       theData.df <- data.df[condt, -c(1:2)]
       theGroups  <- data.df[condt, "group"]
 
-      cytokine.pca <- pca(theData.df, ncomp = comp.num, center = TRUE, scale = TRUE)
+      cytokine.pca <- mixOmics::pca(theData.df, ncomp = comp.num, center = TRUE, scale = TRUE)
 
       group_factors <- sort(unique(theGroups))
 
@@ -120,7 +138,7 @@ cyt.pca <- function(data.df, colors = NULL, title, ellipse = FALSE, comp.num = 2
       theData.df <- data.df[condt, -c(1:2)]
       theGroups  <- data.df[condt, "group"]
 
-      cytokine.pca <- pca(theData.df, ncomp = comp.num, center = TRUE, scale = TRUE)
+      cytokine.pca <- mixOmics::pca(theData.df, ncomp = comp.num, center = TRUE, scale = TRUE)
 
       group_factors <- sort(unique(theGroups))
 

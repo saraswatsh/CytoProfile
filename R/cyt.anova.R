@@ -6,14 +6,15 @@
 #########################################################################################################
 
 #' ANOVA analysis on all continuous variables within the data.
-#'
-#' @param x.df A matrix or data frame consisting of continuous and categorical variables.
+#'@param x.df A data frame or matrix containing both categorical and continuous variables.
+#'   Character columns are converted to factors; all factor columns are used as predictors,
+#'   while numeric columns are used as continuous outcomes.
 #' @description
-#' This function produces and prints list of p-values obtained from Tukey comparisons. It assumes that
-#' the first two columns are categorical variables whether it is group name or treatment name and uses
-#' those as predictors. The rest of the columns in the data set are assumed to be continuous variables to
-#' be used as the outcomes.
-#' @return Prints the p-values of comparisons conducted using the Tukey test of the ANOVA model.
+#' This function performs an ANOVA for each continuous variable against every categorical predictor
+#' in the input data. For each valid predictor (i.e., with more than one level and no more than 10 levels),
+#' it conducts Tukey's HSD test and extracts the adjusted p-values for pairwise comparisons.
+#' @return A list of adjusted p-values from Tukey's HSD tests for each combination of continuous outcome
+#'   and categorical predictor. The list elements are named in the format "outcome_predictor".
 #' @examples
 #' \dontrun{
 #' data("cytodata")

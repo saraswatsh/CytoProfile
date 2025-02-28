@@ -1,16 +1,25 @@
 #' Boxplot Function Enhanced for Specific Group Comparisons
 #'
 #' @param x.df A matrix or data frame of raw data.
-#' @param Title The title of the PDF file.
-#' @param scale Transformation option for continuous variables. Options are NULL (default) and "log2".
-#' @param yLim A range for the y-axis to be plotted.
+#' @param Title A string representing the title of the PDF file.
+#' @param mfRow A numeric vector of length two specifying the layout (rows and columns) for the plots on each page. Defaults to c(1,1).
+#' @param scale Transformation option for continuous variables. Options are NULL (default) and "log2". When set to "log2", numeric columns are transformed using the log2 function.
+#' @param yLim An optional numeric vector defining the y-axis limits for the plots.
 #'
-#' @return A PDF file containing boxplots of the data.
-#' @export
+#' @description
+#' This function generates a PDF file containing boxplots for each combination of numeric and factor variables in the provided data.
+#' It first converts any character columns to factors and checks that the data contains at least one numeric and one factor column.
+#' If the scale argument is set to "log2", all numeric columns are log2-transformed.
+#' The function then creates boxplots using ggplot2 for each numeric variable grouped by each factor variable.
+#'
+#' @return A PDF file containing the boxplots.
 #'
 #' @examples
-#'data.df <- cytodata[,-c(1,4)]
-#'cyt.bp2(data.df, Title = "boxplot2.test2.pdf", scale = "log2")
+#' data.df <- cytodata[,-c(1,4)]
+#' cyt.bp2(data.df, Title = "boxplot2.test2.pdf", scale = "log2")
+#'
+#' @export
+#' @import ggplot2
 
 cyt.bp2 <- function(x.df, Title, mfRow=c(1,1), scale = NULL, yLim=NULL) {
 

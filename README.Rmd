@@ -52,12 +52,34 @@ Below are examples of using the functions provided in CytoProfile. Any saved fil
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
 # Loading all packages required
-library(tidyverse) # Used to load dplyr, ggplot2, and tidyr
-library(knitr) # Required for setting the working directory
-library(mixOmics) # Required for sPLS-DA
-library(pROC) # Required for ROC curve in XGBoost and Random Forest
-library(moments) # Required for skewness and kurtosis
+# Data manipulation and reshaping
+library(dplyr)       # For data filtering, grouping, and summarising.
+library(tidyr)       # For reshaping data (e.g., pivot_longer, pivot_wider).
+
+# Plotting and visualization
+library(ggplot2)     # For creating all the ggplot-based visualizations.
+library(ggrepel)     # For improved label placement in plots (e.g., volcano plots).
+library(gplots)      # For heatmap.2, which is used to generate heatmaps.
+library(plot3D)      # For creating 3D scatter plots in PCA and sPLS-DA analyses.
+library(reshape2)    # For data transformation (e.g., melt) in cross-validation plots.
+
+# Statistical analysis
+library(mixOmics)    # For multivariate analyses (PCA, sPLS-DA, etc.).
+library(moments)     # For computing skewness and kurtosis.
+library(pROC)        # For ROC curve generation in machine learning model evaluation.
+
+# Machine learning
+library(xgboost)     # For building XGBoost classification models.
+library(randomForest) # For building Random Forest classification models.
+library(caret)       # For cross-validation and other machine learning utilities.
+
+# Package development and document rendering
+library(knitr)       # For knitting RMarkdown files and setting chunk options.
+library(devtools)    # For installing the development version of the package from GitHub.
+
+# devtools::install_github("saraswatsh/CytoProfile")
 library(CytoProfile)
+
 # Loading in data
 data("cytodata")
 data.df <- cytodata
@@ -200,24 +222,23 @@ cyt.anova(data.df[,c(1:2,5:6)]) # This only considers 2 cytokines for this examp
 # Note this takes into account all groups and treatment and all values are log transformed through 
 # cyt.plsda function. 
 data.df <- cytodata
-
-cyt.plsda(data.df[,-c(1,4)], title = "Example PLS-DA Analysis.pdf",
+cyt.plsda(data.df[,-c(1,4)], title = "Example PLS-DA Analysis.pdf", 
           colors = c("black", "purple", "red2"),
-          bg = TRUE, scale = "log2",
-          conf.mat = TRUE, var.num = 25,
+          bg = TRUE, scale = "log2", 
+          conf.mat = TRUE, var.num = 25, 
           cv.opt = "loocv",
-          comp.num = 2, pch.values = c(16,4,3), style = NULL,
-          group.col = "Group", trt.col = "Treatment")
+          comp.num = 2, pch.values = c(16, 4, 3), 
+          group.col = "Group", trt.col = "Treatment", roc = TRUE)
 
 # Filtering data for specific groups and treatment
 filt.data <- filter(data.df, Group != "ND", Treatment != "Unstimulated")
-cyt.plsda(filt.data[,-c(1,4)], title = "Example PLS-DA Analysis 2.pdf",
+cyt.plsda(filt.data[,-c(1,4)], title = "Example PLS-DA Analysis 2.pdf", 
           colors = c("black", "purple"),
-          bg = TRUE, scale = "log2",
-          conf.mat = TRUE, var.num = 25,
+          bg = TRUE, scale = "log2", 
+          conf.mat = TRUE, var.num = 25, 
           cv.opt = "Mfold", fold.num = 5,
-          comp.num = 3, pch.values = c(3,4), style = "3d",
-          group.col = "Group", trt.col = "Treatment")
+          comp.num = 3, pch.values = c(3, 4), style = "3d",
+          group.col = "Group", trt.col = "Treatment", roc = TRUE)
 ```
 
 ## 7. Principal Component Analysis (PCA)

@@ -16,27 +16,33 @@ cyt.errbp(
 }
 \arguments{
 \item{center.df}{A data frame containing the following columns for each group:
-"name" for group names
-"center" for mean or median,
-"spread" for standard deviation, MAD or standard error,
-"p.value" for p-value,
-"effect.size" for effect size based on SSMD.}
+\itemize{
+\item \code{name}: Group names.
+\item \code{center}: Mean or median values.
+\item \code{spread}: Standard deviation, MAD, or standard error.
+\item \code{p.value}: P-value for the comparison.
+\item \code{effect.size}: Effect size based on SSMD.
+}
+Note: The first row of \code{center.df} must correspond to the baseline group.}
 
-\item{pLab}{Whether to label the p-value , default set to TRUE.}
+\item{pLab}{Logical. Whether to label the p-values on the plot. Default is \code{TRUE}.}
 
-\item{esLab}{whether to label the effect size usually in SSMD, default set to TRUE.}
+\item{esLab}{Logical. Whether to label the effect sizes on the plot. Default is \code{TRUE}.}
 
-\item{xlab}{Labeling x axis.}
+\item{classSymbol}{Logical. Whether to use symbolic notation for significance and effect size. Default is \code{TRUE}.}
 
-\item{ylab}{Labeling y axis.}
+\item{xlab}{Character. Label for the x-axis.}
 
-\item{main}{Title of the graph.}
+\item{ylab}{Character. Label for the y-axis.}
+
+\item{main}{Character. Title of the graph.}
 }
 \value{
-Prints error-bar plots.
+An error-bar plot is produced.
 }
 \description{
-This function draws an error-bar plot enriched with p-value and/or effect size
-for the comparison of each selected groups to the baseline group.
-Note: The first column for center.df must be for the baseline group.
+This function draws an error-bar plot for comparing groups to a baseline group. It creates a barplot of
+the central tendency (mean or median) and overlays error bars representing the spread (e.g., standard deviation,
+MAD, or standard error). Optionally, p-value and effect size labels (based on SSMD) are added, either as symbols
+or numeric values.
 }

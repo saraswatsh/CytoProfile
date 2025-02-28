@@ -6,7 +6,7 @@
 \usage{
 cyt.plsda(
   x.df,
-  group.col,
+  group.col = NULL,
   trt.col = NULL,
   colors = NULL,
   title,
@@ -19,52 +19,71 @@ cyt.plsda(
   scale = NULL,
   comp.num = 2,
   pch.values,
-  style = NULL
+  style = NULL,
+  roc = FALSE
 )
 }
 \arguments{
-\item{x.df}{A matrix or data frame of variables.}
+\item{x.df}{A matrix or data frame containing the variables. Columns not specified by \code{group.col} or \code{trt.col} are assumed to be continuous variables for analysis.}
 
-\item{group.col}{String value of the column name for groups. Default set to NULL}
+\item{group.col}{A string specifying the column name that contains group information. If \code{trt.col} is not provided, it will be used for both grouping and treatment.}
 
-\item{trt.col}{String value of the column name for treatments.Default set to NULL}
+\item{trt.col}{A string specifying the column name for treatments. Default is \code{NULL}.}
 
-\item{colors}{Vector of colors to be set, list of colors to be set equal to the number of groups or treatments. Default set to NULL and will result in random colors.}
+\item{colors}{A vector of colors for the groups or treatments. If \code{NULL}, a random palette (using \code{rainbow}) is generated based on the number of groups.}
 
-\item{title}{Title of the PDF file to be saved with figures.}
+\item{title}{A string specifying the file name for saving the PDF output.}
 
-\item{ellipse}{If ellipse should be drawn in the figures or not. Default set to FALSE.}
+\item{ellipse}{Logical. Whether to draw a 95\% confidence ellipse on the figures. Default is \code{FALSE}.}
 
-\item{bg}{If prediction background should be drawn in the figures or not. Default set to FALSE.}
+\item{bg}{Logical. Whether to draw the prediction background in the figures. Default is \code{FALSE}.}
 
-\item{conf.mat}{If confusion matrix of the classifications be printed at the end or not. Default set to FALSE.}
+\item{conf.mat}{Logical. Whether to print the confusion matrix for the classifications. Default is \code{FALSE}.}
 
-\item{var.num}{Number of variables to be used in PLS-DA.}
+\item{var.num}{Numeric. The number of variables to be used in the PLS-DA model.}
 
-\item{cv.opt}{Option for "loocv" or "Mfold" cross-validation methods.}
+\item{cv.opt}{Character. Option for cross-validation method: either "loocv" or "Mfold". Default is \code{NULL}.}
 
-\item{fold.num}{Number of folds if cv.opt equals "Mfold".}
+\item{fold.num}{Numeric. The number of folds to use if \code{cv.opt} is "Mfold". Default is 5.}
 
-\item{scale}{Option to transform data using log2. Default set to NULL.}
+\item{scale}{Character. Option for data transformation; if set to \code{"log2"}, a log2 transformation is applied to the continuous variables. Default is \code{NULL}.}
 
-\item{comp.num}{Number of components to be calculated. Default set to 2.}
+\item{comp.num}{Numeric. The number of components to calculate in the sPLS-DA model. Default is 2.}
 
-\item{pch.values}{A vector of integers specifying the plotting characters to be used in the plot.}
+\item{pch.values}{A vector of integers specifying the plotting characters to be used in the plots.}
 
-\item{style}{A character input to have a 3D plot using '3D' or '3d'. Default set to NULL.}
+\item{style}{Character. If set to \code{"3D"} or \code{"3d"} and \code{comp.num} equals 3, a 3D plot is generated using the \code{plot3D} package. Default is \code{NULL}.}
+
+\item{roc}{Logical. Whether to compute and plot the ROC curve for the model. Default is \code{FALSE}.}
 }
 \value{
-A PDF file consisting of classification figures, component figures including Variable of importance in projection (VIP) scores, and
-classification of groups with VIP scores greater than 1.
+A PDF file containing the classification figures, component figures with Variable of Importance in Projection (VIP) scores,
+and classifications based on VIP scores greater than 1. ROC curves and confusion matrices are also produced if requested.
 }
 \description{
-This function conducts Sparse Partial Least Squares Discriminant Analysis based on the groups and treatment inputed. The rest of columns will be assumed as continuous variables to be used in analysis.
-The function supports log2 transformation of the data and raw data analysis. The function also supports cross-validation methods such as Leave-One-Out Cross-Validation (LOOCV) and Mfold Cross-Validation.
+This function conducts Sparse Partial Least Squares Discriminant Analysis (sPLS-DA) on the provided data.
+It uses the specified \code{group.col} (and optionally \code{trt.col}) to define class labels while assuming the remaining columns
+contain continuous variables. The function supports a log2 transformation via the \code{scale} parameter and generates a series of plots,
+including classification plots, scree plots, loadings plots, and VIP score plots. Optionally, ROC curves are produced when \code{roc} is \code{TRUE}.
+Additionally, cross-validation is supported via LOOCV or Mfold methods. When both \code{group.col} and \code{trt.col} are provided and differ,
+the function analyzes each treatment level separately.
 }
 \examples{
 \dontrun{
-cyt.plsda(x.df, title = "Example PLS-DA Analysis.pdf", bg = TRUE, conf.mat = TRUE, scale = "log2",
-var.num = 25, cv.opt = "loocv", comp.num = 2, colors = c("black", "purple", "red2"),
-pch.values = c(16,4,3))
+# Example using overall analysis (single factor)
+cyt.plsda(x.df = my_data, group.col = "Group", title = "PLSDA_overall.pdf",
+          var.num = 25, pch.values = c(16, 4, 3))
+
+# Example using separate group and treatment columns
+cyt.plsda(x.df = my_data, group.col = "Group", trt.col = "Treatment", title = "PLSDA_byTreatment.pdf",
+          colors = c("black", "purple", "red2"), ellipse = TRUE, bg = TRUE, conf.mat = TRUE,
+          var.num = 25, cv.opt = "loocv", comp.num = 2, pch.values = c(16, 4, 3))
+
+# Example with ROC curve and 3D plot (comp.num == 3)
+cyt.plsda(x.df = my_data, group.col = "Group", trt.col = "Treatment", title = "PLSDA_ROC_3D.pdf",
+          colors = c("black", "purple", "red2"), ellipse = TRUE, bg = TRUE, conf.mat = TRUE,
+          var.num = 25, cv.opt = "Mfold", fold.num = 5, scale = "log2", comp.num = 3,
+          pch.values = c(16, 4, 3), style = "3D", roc = TRUE)
 }
+
 }

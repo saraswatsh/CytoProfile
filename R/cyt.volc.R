@@ -1,25 +1,36 @@
 #' Volcano Plot
 #'
-#' @param x.df A matrix or data frame
-#' @param group_col Column used for comparison (i.e. group, treatment, or stimulation).
-#' @param cond1 A string of a group name to be chosen. Default set to NULL.
-#' @param cond2 A string of a group name to be chosen. Default set to NULL.
-#' @param fold_change_thresh Threshold value for fold change. Default set to 2.
-#' @param p_value_thresh Threshold value for p-value. Default set to 0.05.
-#' @param top_labels Number of labels to be print for top variables. Default set to 10
-#' @description
-#' This function takes a matrix or data frame and subsets the numeric columns or variables
-#' to compare against each other based on a selected column of choice that defines a category
-#' to draw a volcano plot.
-#' @note
-#' If cond1 and cond2 are set to null, by default the function creates combinations of pairs
-#' to be used for comparisons.
-#' @return Prints volcano plot.
-#' @export
+#' @param x.df A matrix or data frame containing the data to be analyzed.
+#' @param group_col A character string specifying the column name used for comparisons (e.g., group, treatment, or stimulation).
+#' @param cond1 A character string specifying the name of the first condition for comparison. Default is \code{NULL}.
+#' @param cond2 A character string specifying the name of the second condition for comparison. Default is \code{NULL}.
+#' @param fold_change_thresh A numeric threshold for the fold change. Default is \code{2}.
+#' @param p_value_thresh A numeric threshold for the p-value. Default is \code{0.05}.
+#' @param top_labels An integer specifying the number of top variables to label on the plot. Default is \code{10}.
 #'
+#' @description
+#' This function subsets the numeric columns from the input data and compares them based on a selected grouping column.
+#' It computes the fold changes (as the ratio of means) and associated p-values (using two-sample t-tests) for each numeric variable
+#' between two groups. The results are log2-transformed (for fold change) and -log10-transformed (for p-values) to generate a volcano plot.
+#'
+#' @note
+#' If \code{cond1} and \code{cond2} are not provided, the function automatically generates all possible pairwise combinations of groups
+#' from the specified \code{group_col} for comparisons.
+#'
+#' @return A list of volcano plots (as \code{ggplot} objects) for each pairwise comparison. Additionally, the function prints the data frame
+#' used for plotting (excluding the significance column) from the final comparison.
+#'
+#' @export
+#' @import ggplot2
+#' @import dplyr
+#' @import ggrepel
 #' @examples
-#' cyt.volc(cytodata,group_col = "Group")
-#' cyt.volc(cytodata, group_col = "Group", fold_change_thresh = 2, top_labels = 15)
+#' \dontrun{
+#'   cyt.volc(cytodata, group_col = "Group")
+#'   cyt.volc(cytodata, group_col = "Group", fold_change_thresh = 2, top_labels = 15)
+#' }
+
+
 
 cyt.volc <- function(data, group_col, cond1 = NULL, cond2 = NULL, fold_change_thresh = 2, p_value_thresh = 0.05, top_labels = 10) {
 
