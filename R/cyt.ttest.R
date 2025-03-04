@@ -18,8 +18,10 @@
 #' \dontrun{
 #' data.df <- cytodata[,-c(1,4)]
 #' data.df <- filter(data.df, Group != "ND", Treatment != "Unstimulated")
-#' cyt.ttests(data.df, scale = "log2")
-#' cyt.ttests(data.df)
+#' Two sample T-test
+#' cyt.ttests(data.df[, c(1,2, 5:6)], scale = "log2")
+#' Mann Whitney U Test
+#' cyt.ttests(data.df[, c(1,2, 5:6)])
 #' }
 
 cyt.ttests <- function(x.df, scale = NULL) {
@@ -71,12 +73,12 @@ cyt.ttests <- function(x.df, scale = NULL) {
           if(!is.null(scale) && scale == "log2"){
             # Perform two-sample t-test
             test_result <- t.test(formula, data = x1.df)
-            cat(paste0("T-test p-value for ", comparison_name, " on ", outcome, ": ", test_result$p.value, "\n"))
+            cat(paste0("T-test p-value for ", comparison_name, " on ", outcome, ": ", signif(test_result$p.value, 4), "\n"))
           }
           else if(is.null(scale)) {
             # Perform Mann-Whitney U test
             test_result <- wilcox.test(formula, data = x1.df)
-            cat(paste0("Mann-Whitney U test p-value for ", comparison_name, " on ", outcome, ": ", test_result$p.value, "\n"))
+            cat(paste0("Mann-Whitney U test p-value for ", comparison_name, " on ", outcome, ": ", signif(test_result$p.value, 4), "\n"))
           }
 
           # Extract p-value and store in results list
@@ -87,3 +89,4 @@ cyt.ttests <- function(x.df, scale = NULL) {
     }
   }
 }
+

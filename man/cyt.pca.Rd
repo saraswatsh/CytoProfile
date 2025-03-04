@@ -5,7 +5,9 @@
 \title{Analyze data with Principal Component Analysis (PCA) for cytokines.}
 \usage{
 cyt.pca(
-  data.df,
+  x.df,
+  group.col = NULL,
+  trt.col = NULL,
   colors = NULL,
   title,
   ellipse = FALSE,
@@ -16,21 +18,25 @@ cyt.pca(
 )
 }
 \arguments{
-\item{data.df}{A data frame containing cytokine data. The first two columns are assumed to hold grouping information (e.g., group and treatment/stimulation).}
+\item{group.col}{Character. The name of the column containing the grouping information. If not specified and \code{trt.col} is provided, the treatment column will be used as the grouping variable.}
 
-\item{colors}{A vector of colors corresponding to the groups. If set to NULL, a random palette (using rainbow) is generated based on the number of groups.}
+\item{trt.col}{Character. The name of the column containing the treatment (or stimulation) information. If not specified and \code{group.col} is provided, the grouping column will be used as the treatment variable.}
 
-\item{title}{A string specifying the  file name of the PDF file where the PCA plots will be saved.}
+\item{colors}{A vector of colors corresponding to the groups. If set to NULL, a palette is generated using \code{rainbow()} based on the number of unique groups.}
 
-\item{ellipse}{Logical. If TRUE, a 95\% confidence ellipse is drawn on the PCA plot. Default is FALSE.}
+\item{title}{A string specifying the file name of the PDF where the PCA plots will be saved.}
+
+\item{ellipse}{Logical. If TRUE, a 95\% confidence ellipse is drawn on the PCA individuals plot. Default is FALSE.}
 
 \item{comp.num}{Numeric. The number of principal components to compute and display. Default is 2.}
 
-\item{scale}{Character. Scaling option; if set to "log2", a log2 transformation is applied to the cytokine measurements (excluding the grouping columns). Default is NULL.}
+\item{scale}{Character. If set to "log2", a log2 transformation is applied to the numeric cytokine measurements (excluding the grouping columns). Default is NULL.}
 
-\item{pch.values}{A vector of plotting characters to be used in the PCA plots. Default is NULL.}
+\item{pch.values}{A vector of plotting symbols (pch values) to be used in the PCA plots. Default is NULL.}
 
 \item{style}{Character. If set to "3d" or "3D" and \code{comp.num} equals 3, a 3D scatter plot is generated using the plot3D package. Default is NULL.}
+
+\item{data.df}{A data frame containing cytokine data. It should include at least one column representing grouping information and optionally a second column representing treatment or stimulation.}
 }
 \value{
 A PDF file containing the PCA plots is generated and saved.
@@ -49,11 +55,13 @@ The function optionally applies a log2 transformation to the numeric data and ha
 or stimulation groups.
 }
 \examples{
-data <- cytodata[,-c(1,4)]
+\dontrun{
+data <- cytodata[,-c(1,4, 24)]
 data.df <- filter(data, Group != "ND" & Treatment != "Unstimulated")
-data.df <- data.df[,-22]
-cyt.pca(data.df, title = "PCA_Example_Analysis.pdf" ,colors = c("black", "red2"),
-scale = "log2", comp.num = 3, pch.values = c(16,4), style = "3D")
-cyt.pca(data.df, title = "PCA_Example_Analysis2.pdf" ,colors = c("black", "red2"),
-scale = "log2", comp.num = 2, ellipse = TRUE, pch.values = c(16,4))
+cyt.pca(data.df, title = "Example PCA Analysis.pdf" ,colors = c("black", "red2"),
+scale = "log2", comp.num = 3, pch.values = c(16,4), style = "3D",
+group.col = "Group", trt.col = "Treatment")
+cyt.pca(data.df, title = "Example PCA Analysis 2.pdf" ,colors = c("black", "red2"),
+scale = "log2", comp.num = 2, pch.values = c(16,4), group.col = "Group")
+}
 }

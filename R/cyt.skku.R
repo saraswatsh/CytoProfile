@@ -1,193 +1,171 @@
-###############################################################################
-############### Skewness and Kurtosis #########################################
-###############################################################################
-
-#' Distribution of the data set shown by skewness and kurtosis
+#' Distribution of the Data Set Shown by Skewness and Kurtosis
 #'
-#' @param x.df A matrix or data frame of raw data. The first two columns should contain grouping variables
-#' (e.g., "Treatment" and "Group" or "Stimulation" and "Group"), while the remaining columns are assumed to be numeric cytokine measurements.
-#' @param Title A character string specifying the name for the PDF file. If provided, the histograms will be saved to this PDF file;
-#' if not, the plots are produced on the current graphics device.
-#' @param printResRaw Logical. If \code{TRUE}, the function prints and returns the computed summary array (count, mean, standard error, skewness, and kurtosis)
-#' for the raw data. Default is \code{FALSE}.
-#' @param printResLog Logical. If \code{TRUE}, the function prints and returns the computed summary array for the log2-transformed data. Default is \code{FALSE}.
+#' @description This function computes summary statistics—including sample size, mean, standard error, skewness, and kurtosis—for each numeric measurement column in a data set. If grouping columns are provided via `group.cols`, the function computes the metrics separately for each group defined by the combination of these columns (using the first element as the treatment variable and the second as the grouping variable, or the same column for both if only one is given). When no grouping columns are provided, the entire data set is treated as a single group ("Overall"). A log2 transformation (using a cutoff equal to one-tenth of the smallest positive value in the data) is applied to generate alternative metrics. Histograms showing the distribution of skewness and kurtosis for both raw and log2-transformed data are then generated and saved to a PDF if a file name is provided.
 #'
-#' @description
-#' This function subsets the numeric columns from the input data (excluding the first two grouping columns) and computes summary statistics
-#' (including count, central tendency, spread as standard error, skewness, and kurtosis) for each group defined by a combination of the first two columns.
-#' A small cutoff (one-tenth of the minimum positive value in the data) is added to each numeric value before applying the log2 transformation
-#' to handle non-positive values. Histograms are then generated to visualize the distribution of skewness and kurtosis for both the raw and log2-transformed data.
+#' @param x.df A matrix or data frame containing the raw data. If `group.cols` is specified, the columns with names in `group.cols` are treated as grouping variables and all other columns are assumed to be numeric measurement variables.
+#' @param group.cols A character vector specifying the names of the grouping columns. When provided, the first element is treated as the treatment variable and the second as the group variable. If not provided, the entire data set is treated as one group.
+#' @param Title A character string specifying the file name for the PDF file in which the histograms will be saved. If omitted, the plots are generated on the current graphics device.
+#' @param printResRaw Logical. If \code{TRUE}, the function returns and prints the computed summary statistics for the raw data. Default is \code{FALSE}.
+#' @param printResLog Logical. If \code{TRUE}, the function returns and prints the computed summary statistics for the log2-transformed data. Default is \code{FALSE}.
 #'
-#' @return The function prints histograms of skewness and kurtosis for both raw and log2-transformed data.
-#' Optionally, if \code{printResRaw} and/or \code{printResLog} are \code{TRUE}, the function returns the corresponding summary arrays.
+#' @return The function generates histograms of skewness and kurtosis for both raw and log2-transformed data. Additionally, if either \code{printResRaw} and/or \code{printResLog} is \code{TRUE}, the function returns the corresponding summary statistics as a data frame or a list of data frames.
+#'
+#' @details A cutoff is computed as one-tenth of the minimum positive value among all numeric measurement columns to avoid taking logarithms of zero. When grouping columns are provided, the function loops over unique treatment levels (using the first element of `group.cols` as treatment and the second as group, if available) and computes the metrics for each measurement column within each subgroup. Without grouping columns, the entire data set is analyzed as one overall group.
 #'
 #' @examples
 #' \dontrun{
+#' # Example with grouping columns (e.g., "Group" and "Treatment")
 #' data(cytodata)
-#' cyt.skku(cytodata[,-c(1,4)], Title = "Skew and Kurtosis.pdf")
+#' cyt.skku(cytodata[,-c(1,3,4)], Title = "Skew_and_Kurtosis.pdf", group.cols = c("Group"))
+#'
+#' # Example without grouping columns (analyzes the entire data set)
+#' cyt.skku(cytodata[,-c(1,4)], Title = "Skew_and_Kurtosis_Overall.pdf")
 #' }
 #'
 #' @export
+#'
 #' @import e1071
+#' @import ggplot2
+#' @import gridExtra
 
-cyt.skku <- function(x.df, Title = NULL, printResRaw = FALSE, printResLog = FALSE) {
-  if(!is.null(Title)){
-    pdf(file = Title)
-    cytokine.mat <- x.df[, -c(1:2)]
-    cytokineNames <- colnames(cytokine.mat)
-    nCytokine <- length(cytokineNames)
+cyt.skku <- function(data.df, group.cols = NULL, Title = NULL,
+                     printResRaw = FALSE, printResLog = FALSE) {
 
-    condt <- !is.na(cytokine.mat) & cytokine.mat > 0
-    min(cytokine.mat[condt], na.rm=TRUE)  # [1] 0.01
-    # quantile( cytokine.mat[condt], probs=0:100/100, na.rm=TRUE)
-    Cutoff <- min(cytokine.mat[condt], na.rm=TRUE)/10
-
-    outcomes <- c("n", "center", "spread", "skewness", "kurtosis")
-    nOutcome <- length(outcomes)
-
-    ## raw value
-    if ("Stimulation" %in% names(x.df[,c(1:2)])){
-      Treatment.Group.vec <- paste(x.df[,"Stimulation"], x.df[,"Group"], sep=".")
-    } else {
-      Treatment.Group.vec <- paste(x.df[,"Treatment"], x.df[,"Group"], sep=".")
-    }
-    Treatment.Groups <- names(tapply(x.df[,3], INDEX=Treatment.Group.vec, mean))
-    nTrtGroup <- length(Treatment.Groups)
-    result.arr <- array(NA, dim=c(nTrtGroup, nOutcome, nCytokine))
-    dimnames(result.arr) <- list(Treatment.Groups, outcomes, cytokineNames)
-
-    for(k in 1:nCytokine) {
-      Y <- cytokine.mat[,k]
-      idx <- Treatment.Group.vec
-      result.arr[,1,k] <- tapply(Y, INDEX=idx, function(x){sum(!is.na(x))})
-      result.arr[,2,k] <- tapply(Y, INDEX=idx, mean, na.rm=TRUE)
-      #  result.arr[,3,k] = tapply( Y, INDEX=idx, sd, na.rm=TRUE)       # standard deviation
-      result.arr[,3,k] <- tapply(Y, INDEX=idx,
-                                 function(x){sd(x, na.rm=TRUE)/sqrt(sum(!is.na(x)))} ) # standard error
-      result.arr[,4,k] <- tapply(Y, INDEX=idx, skewness, na.rm=TRUE)  # skewness
-      result.arr[,5,k] <- tapply(Y, INDEX=idx, kurtosis, na.rm=TRUE)  # kurtosis
-    }
-    result.noComb.raw.arr <- result.arr
-
-    ## Log2 value
-    if ("Stimulation" %in% names(x.df[,c(1:2)])){
-      Treatment.Group.vec <- paste(x.df[,"Stimulation"], x.df[,"Group"], sep=".")
-    } else {
-      Treatment.Group.vec <- paste(x.df[,"Treatment"], x.df[,"Group"], sep=".")
-    }
-    Treatment.Groups <- names(tapply(x.df[,3], INDEX=Treatment.Group.vec, mean))
-    nTrtGroup <- length(Treatment.Groups)
-    result.arr <- array(NA, dim=c(nTrtGroup, nOutcome, nCytokine))
-    dimnames(result.arr) <- list(Treatment.Groups, outcomes, cytokineNames)
-
-    for(k in 1:nCytokine) {
-      Y <- log2(cytokine.mat[,k] + Cutoff)
-      idx <- Treatment.Group.vec
-      result.arr[,1,k] <- tapply(Y, INDEX=idx, function(x){sum(!is.na(x))})
-      result.arr[,2,k] <- tapply(Y, INDEX=idx, mean, na.rm=TRUE)
-      #  result.arr[,3,k] = tapply( Y, INDEX=idx, sd, na.rm=TRUE)       # standard deviation
-      result.arr[,3,k] <- tapply(Y, INDEX=idx,
-                                 function(x){sd(x, na.rm=TRUE)/sqrt(sum(!is.na(x)))} ) # standard error
-      result.arr[,4,k] <- tapply(Y, INDEX=idx, skewness, na.rm=TRUE)  # skewness
-      result.arr[,5,k] <- tapply(Y, INDEX=idx, kurtosis, na.rm=TRUE)  # kurtosis
-    }
-    result.noComb.arr <- result.arr
-
-    par(mfrow=c(1,2))
-    hist(result.noComb.raw.arr[,"skewness",], xlab="skewness of raw data", main="raw data: skewness")
-    hist(result.noComb.arr[,"skewness",], xlab="skewness of log2 data", main="log2 transformed: skewness")
-
-    hist(result.noComb.raw.arr[,"kurtosis",], xlab="kurtosis of raw data", main="raw data: kurtosis")
-    hist(result.noComb.arr[,"kurtosis",], xlab="kurtosis of log2 data", main="log2 transformed:kurtosis")
-
-    dev.off()
-
-    if(printResRaw == TRUE & printResLog == TRUE){
-      print("Results for Raw Values:/n")
-      return(result.noComb.raw.arr)
-      print("Results for Log2 Transformed Values:/n")
-      return(result.noComb.arr)
-    } else if (printResRaw == TRUE){
-      print("Results for Raw Values:/n")
-      return(result.noComb.raw.arr)
-    } else if (printResLog == TRUE){
-      print("Results for Log2 Transformed Values:/n")
-      return(result.noComb.arr)
-    }
+  # Identify measurement columns.
+  # If grouping columns are provided, exclude them from measurement columns.
+  if (!is.null(group.cols)) {
+    measure.cols <- setdiff(names(data.df), group.cols)
+  } else {
+    measure.cols <- names(data.df)
   }
-  else {
-    cytokine.mat <- x.df[, -c(1:2)]
-    cytokineNames <- colnames(cytokine.mat)
-    nCytokine <- length(cytokineNames)
 
-    condt <- !is.na(cytokine.mat) & cytokine.mat > 0
-    min(cytokine.mat[condt], na.rm=TRUE)  # [1] 0.01
-    # quantile( cytokine.mat[condt], probs=0:100/100, na.rm=TRUE)
-    Cutoff <- min(cytokine.mat[condt], na.rm=TRUE)/10
+  # Calculate a cutoff for log2 transformation:
+  measure.mat <- data.df[, measure.cols, drop = FALSE]
+  condt <- !is.na(measure.mat) & (measure.mat > 0)
+  cutoff <- min(measure.mat[condt], na.rm = TRUE) / 10
 
-    outcomes <- c("n", "center", "spread", "skewness", "kurtosis")
-    nOutcome <- length(outcomes)
+  # Helper function: compute metrics for a given numeric vector Y and grouping variable.
+  compute_metrics <- function(Y, groups) {
+    n      <- tapply(Y, groups, function(x) sum(!is.na(x)))
+    center <- tapply(Y, groups, mean, na.rm = TRUE)
+    spread <- tapply(Y, groups, function(x) sd(x, na.rm = TRUE) / sqrt(sum(!is.na(x))))
+    skew   <- tapply(Y, groups, skewness, na.rm = TRUE)
+    kurt   <- tapply(Y, groups, kurtosis, na.rm = TRUE)
 
-    ## raw value
-    if ("Stimulation" %in% names(x.df[,c(1:2)])){
-      Treatment.Group.vec <- paste(x.df[,"Stimulation"], x.df[,"Group"], sep=".")
+    data.frame(
+      Group = names(n),
+      n = as.numeric(n),
+      center = as.numeric(center),
+      spread = as.numeric(spread),
+      skewness = as.numeric(skew),
+      kurtosis = as.numeric(kurt),
+      stringsAsFactors = FALSE
+    )
+  }
+
+  # Initialize lists to store results.
+  raw_list <- list()
+  log_list <- list()
+
+  if (!is.null(group.cols)) {
+    # If grouping columns are provided.
+    # Determine treatment and group columns.
+    if (length(group.cols) == 1) {
+      treatment.col <- group.cols
+      group.col <- group.cols
     } else {
-      Treatment.Group.vec <- paste(x.df[,"Treatment"], x.df[,"Group"], sep=".")
+      treatment.col <- group.cols[1]
+      group.col <- group.cols[2]
     }
-    Treatment.Groups <- names(tapply(x.df[,3], INDEX=Treatment.Group.vec, mean))
-    nTrtGroup <- length(Treatment.Groups)
-    result.arr <- array(NA, dim=c(nTrtGroup, nOutcome, nCytokine))
-    dimnames(result.arr) <- list(Treatment.Groups, outcomes, cytokineNames)
 
-    for(k in 1:nCytokine) {
-      Y <- cytokine.mat[,k]
-      idx <- Treatment.Group.vec
-      result.arr[,1,k] <- tapply(Y, INDEX=idx, function(x){sum(!is.na(x))})
-      result.arr[,2,k] <- tapply(Y, INDEX=idx, mean, na.rm=TRUE)
-      #  result.arr[,3,k] = tapply( Y, INDEX=idx, sd, na.rm=TRUE)       # standard deviation
-      result.arr[,3,k] <- tapply(Y, INDEX=idx,
-                                 function(x){sd(x, na.rm=TRUE)/sqrt(sum(!is.na(x)))} ) # standard error
-      result.arr[,4,k] <- tapply(Y, INDEX=idx, skewness, na.rm=TRUE)  # skewness
-      result.arr[,5,k] <- tapply(Y, INDEX=idx, kurtosis, na.rm=TRUE)  # kurtosis
-    }
-    result.noComb.raw.arr <- result.arr
+    # Get unique treatment levels.
+    treatment_levels <- unique(data.df[[treatment.col]])
 
-    ## Log2 value
-    if ("Stimulation" %in% names(x.df[,c(1:2)])){
-      Treatment.Group.vec <- paste(x.df[,"Stimulation"], x.df[,"Group"], sep=".")
-    } else {
-      Treatment.Group.vec <- paste(x.df[,"Treatment"], x.df[,"Group"], sep=".")
-    }
-    Treatment.Groups <- names(tapply(x.df[,3], INDEX=Treatment.Group.vec, mean))
-    nTrtGroup <- length(Treatment.Groups)
-    result.arr <- array(NA, dim=c(nTrtGroup, nOutcome, nCytokine))
-    dimnames(result.arr) <- list(Treatment.Groups, outcomes, cytokineNames)
+    # Loop over each treatment level.
+    for (trt in treatment_levels) {
+      subset_df <- data.df[data.df[[treatment.col]] == trt, ]
+      groups <- subset_df[[group.col]]
 
-    for(k in 1:nCytokine) {
-      Y <- log2(cytokine.mat[,k] + Cutoff)
-      idx <- Treatment.Group.vec
-      result.arr[,1,k] <- tapply(Y, INDEX=idx, function(x){sum(!is.na(x))})
-      result.arr[,2,k] <- tapply(Y, INDEX=idx, mean, na.rm=TRUE)
-      #  result.arr[,3,k] = tapply( Y, INDEX=idx, sd, na.rm=TRUE)       # standard deviation
-      result.arr[,3,k] <- tapply(Y, INDEX=idx,
-                                 function(x){sd(x, na.rm=TRUE)/sqrt(sum(!is.na(x)))} ) # standard error
-      result.arr[,4,k] <- tapply(Y, INDEX=idx, skewness, na.rm=TRUE)  # skewness
-      result.arr[,5,k] <- tapply(Y, INDEX=idx, kurtosis, na.rm=TRUE)  # kurtosis
-    }
-    result.noComb.arr <- result.arr
+      for (col in measure.cols) {
+        # Raw data metrics.
+        Y_raw <- subset_df[[col]]
+        df_raw <- compute_metrics(Y_raw, groups)
+        df_raw$Measurement <- col
+        df_raw$Treatment <- trt
+        raw_list[[paste(trt, col, sep = "_")]] <- df_raw
 
-    if(printResRaw == TRUE & printResLog == TRUE){
-      print("Results for Raw Values:/n")
-      return(result.noComb.raw.arr)
-      print("Results for Log2 Transformed Values:/n")
-      return(result.noComb.arr)
-    } else if (printResRaw == TRUE){
-      print("Results for Raw Values:/n")
-      return(result.noComb.raw.arr)
-    } else if (printResLog == TRUE){
-      print("Results for Log2 Transformed Values:/n")
-      return(result.noComb.arr)
+        # Log2-transformed data metrics.
+        Y_log <- log2(Y_raw + cutoff)
+        df_log <- compute_metrics(Y_log, groups)
+        df_log$Measurement <- col
+        df_log$Treatment <- trt
+        log_list[[paste(trt, col, sep = "_")]] <- df_log
+      }
     }
+
+    # Combine results.
+    raw_results <- do.call(rbind, raw_list)
+    log_results <- do.call(rbind, log_list)
+
+  } else {
+    # No grouping columns provided: treat the entire dataset as one group.
+    groups <- rep("Overall", nrow(data.df))
+
+    for (col in measure.cols) {
+      # Raw data metrics.
+      Y_raw <- data.df[[col]]
+      df_raw <- compute_metrics(Y_raw, groups)
+      df_raw$Measurement <- col
+      raw_list[[col]] <- df_raw
+
+      # Log2-transformed data metrics.
+      Y_log <- log2(Y_raw + cutoff)
+      df_log <- compute_metrics(Y_log, groups)
+      df_log$Measurement <- col
+      log_list[[col]] <- df_log
+    }
+
+    raw_results <- do.call(rbind, raw_list)
+    log_results <- do.call(rbind, log_list)
+  }
+
+  # If a Title is provided, generate histograms using ggplot2.
+  if (!is.null(Title)) {
+    pdf(file = Title)
+    library(ggplot2)
+    library(gridExtra)
+
+    df_skew <- rbind(
+      data.frame(Value = raw_results$skewness, Transformation = "Raw"),
+      data.frame(Value = log_results$skewness, Transformation = "Log2")
+    )
+    df_kurt <- rbind(
+      data.frame(Value = raw_results$kurtosis, Transformation = "Raw"),
+      data.frame(Value = log_results$kurtosis, Transformation = "Log2")
+    )
+
+    p_skew <- ggplot(df_skew, aes(x = Value, fill = Transformation)) +
+      geom_histogram(bins = 30, alpha = 0.7, position = "identity") +
+      labs(x = "Skewness", title = "Distribution of Skewness") +
+      theme_minimal()
+
+    p_kurt <- ggplot(df_kurt, aes(x = Value, fill = Transformation)) +
+      geom_histogram(bins = 30, alpha = 0.7, position = "identity") +
+      labs(x = "Kurtosis", title = "Distribution of Kurtosis") +
+      theme_minimal()
+
+    grid.arrange(p_skew, p_kurt, ncol = 1)
+    dev.off()
+  }
+
+  # Return results based on flags.
+  if (printResRaw & printResLog) {
+    return(list(raw = raw_results, log2 = log_results))
+  } else if (printResRaw) {
+    return(raw_results)
+  } else if (printResLog) {
+    return(log_results)
+  } else {
+    return(invisible(NULL))
   }
 }
-

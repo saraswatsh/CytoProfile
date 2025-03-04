@@ -2,36 +2,44 @@
 % Please edit documentation in R/cyt.skku.R
 \name{cyt.skku}
 \alias{cyt.skku}
-\title{Distribution of the data set shown by skewness and kurtosis}
+\title{Distribution of the Data Set Shown by Skewness and Kurtosis}
 \usage{
-cyt.skku(x.df, Title = NULL, printResRaw = FALSE, printResLog = FALSE)
+cyt.skku(
+  data.df,
+  group.cols = NULL,
+  Title = NULL,
+  printResRaw = FALSE,
+  printResLog = FALSE
+)
 }
 \arguments{
-\item{x.df}{A matrix or data frame of raw data. The first two columns should contain grouping variables
-(e.g., "Treatment" and "Group" or "Stimulation" and "Group"), while the remaining columns are assumed to be numeric cytokine measurements.}
+\item{group.cols}{A character vector specifying the names of the grouping columns. When provided, the first element is treated as the treatment variable and the second as the group variable. If not provided, the entire data set is treated as one group.}
 
-\item{Title}{A character string specifying the name for the PDF file. If provided, the histograms will be saved to this PDF file;
-if not, the plots are produced on the current graphics device.}
+\item{Title}{A character string specifying the file name for the PDF file in which the histograms will be saved. If omitted, the plots are generated on the current graphics device.}
 
-\item{printResRaw}{Logical. If \code{TRUE}, the function prints and returns the computed summary array (count, mean, standard error, skewness, and kurtosis)
-for the raw data. Default is \code{FALSE}.}
+\item{printResRaw}{Logical. If \code{TRUE}, the function returns and prints the computed summary statistics for the raw data. Default is \code{FALSE}.}
 
-\item{printResLog}{Logical. If \code{TRUE}, the function prints and returns the computed summary array for the log2-transformed data. Default is \code{FALSE}.}
+\item{printResLog}{Logical. If \code{TRUE}, the function returns and prints the computed summary statistics for the log2-transformed data. Default is \code{FALSE}.}
+
+\item{x.df}{A matrix or data frame containing the raw data. If \code{group.cols} is specified, the columns with names in \code{group.cols} are treated as grouping variables and all other columns are assumed to be numeric measurement variables.}
 }
 \value{
-The function prints histograms of skewness and kurtosis for both raw and log2-transformed data.
-Optionally, if \code{printResRaw} and/or \code{printResLog} are \code{TRUE}, the function returns the corresponding summary arrays.
+The function generates histograms of skewness and kurtosis for both raw and log2-transformed data. Additionally, if either \code{printResRaw} and/or \code{printResLog} is \code{TRUE}, the function returns the corresponding summary statistics as a data frame or a list of data frames.
 }
 \description{
-This function subsets the numeric columns from the input data (excluding the first two grouping columns) and computes summary statistics
-(including count, central tendency, spread as standard error, skewness, and kurtosis) for each group defined by a combination of the first two columns.
-A small cutoff (one-tenth of the minimum positive value in the data) is added to each numeric value before applying the log2 transformation
-to handle non-positive values. Histograms are then generated to visualize the distribution of skewness and kurtosis for both the raw and log2-transformed data.
+This function computes summary statistics—including sample size, mean, standard error, skewness, and kurtosis—for each numeric measurement column in a data set. If grouping columns are provided via \code{group.cols}, the function computes the metrics separately for each group defined by the combination of these columns (using the first element as the treatment variable and the second as the grouping variable, or the same column for both if only one is given). When no grouping columns are provided, the entire data set is treated as a single group ("Overall"). A log2 transformation (using a cutoff equal to one-tenth of the smallest positive value in the data) is applied to generate alternative metrics. Histograms showing the distribution of skewness and kurtosis for both raw and log2-transformed data are then generated and saved to a PDF if a file name is provided.
+}
+\details{
+A cutoff is computed as one-tenth of the minimum positive value among all numeric measurement columns to avoid taking logarithms of zero. When grouping columns are provided, the function loops over unique treatment levels (using the first element of \code{group.cols} as treatment and the second as group, if available) and computes the metrics for each measurement column within each subgroup. Without grouping columns, the entire data set is analyzed as one overall group.
 }
 \examples{
 \dontrun{
+# Example with grouping columns (e.g., "Group" and "Treatment")
 data(cytodata)
-cyt.skku(cytodata[,-c(1,4)], Title = "Skew and Kurtosis.pdf")
+cyt.skku(cytodata[,-c(1,3,4)], Title = "Skew_and_Kurtosis.pdf", group.cols = c("Group"))
+
+# Example without grouping columns (analyzes the entire data set)
+cyt.skku(cytodata[,-c(1,4)], Title = "Skew_and_Kurtosis_Overall.pdf")
 }
 
 }
