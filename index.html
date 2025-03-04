@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Cytokine Profiling Analysis Tool • CytoProfile</title>
-<script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Welcome to CytoProfile • CytoProfile</title>
+<script src="lightswitch.js"></script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Cytokine Profiling Analysis Tool">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Welcome to CytoProfile">
 <meta name="description" content="CytoProfile is a comprehensive tool for cytokine profiling analysis. It supports quality control using biologically meaningful cutoffs on raw cytokine measurements and tests for distributional symmetry to suggest appropriate transformations. The package offers exploratory data analysis with summary statistics, enhanced boxplots, and barplots, along with both univariate and multivariate analysis capabilities for in-depth cytokine profiling.">
 <meta property="og:description" content="CytoProfile is a comprehensive tool for cytokine profiling analysis. It supports quality control using biologically meaningful cutoffs on raw cytokine measurements and tests for distributional symmetry to suggest appropriate transformations. The package offers exploratory data analysis with summary statistics, enhanced boxplots, and barplots, along with both univariate and multivariate analysis capabilities for in-depth cytokine profiling.">
 </head>
@@ -18,7 +18,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top " aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="index.html">CytoProfile</a>
 
@@ -31,6 +31,7 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
+<li class="active nav-item"><a class="nav-link" href="index.html">Home</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -38,6 +39,14 @@
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
 </form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/saraswatsh/CytoProfile/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-lightswitch" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-label="Light switch"><span class="fa fa-sun"></span></button>
+  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-lightswitch">
+<li><button class="dropdown-item" data-bs-theme-value="light"><span class="fa fa-sun"></span> Light</button></li>
+    <li><button class="dropdown-item" data-bs-theme-value="dark"><span class="fa fa-moon"></span> Dark</button></li>
+    <li><button class="dropdown-item" data-bs-theme-value="auto"><span class="fa fa-adjust"></span> Auto</button></li>
+  </ul>
+</li>
       </ul>
 </div>
 
@@ -48,8 +57,6 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="cytoprofile">CytoProfile<a class="anchor" aria-label="anchor" href="#cytoprofile"></a>
 </h1></div>
-<!-- badges: start -->
-<!-- badges: end -->
 <p>The goal of CytoProfile is to conduct quality control using biological meaningful cutoff on raw measured values of cytokines. Specifically, test on distributional symmetry to suggest the adopt of transformation. Conduct exploratory analysis including summary statistics, generate enriched barplots, and boxplots. Further, conduct univariate analysis and multivariate analysis for advance analysis.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -239,13 +246,13 @@
 <span><span class="va">data.df</span> <span class="op">&lt;-</span> <span class="va">cytodata</span><span class="op">[</span>,<span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">4</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">data.df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data.df</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span>, <span class="va">Treatment</span> <span class="op">!=</span> <span class="st">"Unstimulated"</span><span class="op">)</span></span>
 <span><span class="co"># Two sample T-test</span></span>
-<span><span class="fu"><a href="reference/cyt.ttests.html">cyt.ttests</a></span><span class="op">(</span><span class="va">data.df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">]</span>, scale <span class="op">=</span> <span class="st">"log2"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/cyt.ttest.html">cyt.ttest</a></span><span class="op">(</span><span class="va">data.df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">]</span>, scale <span class="op">=</span> <span class="st">"log2"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; T-test p-value for PreT2D vs T2D on IFN.G: 0.02082</span></span>
 <span><span class="co">#&gt; T-test p-value for PreT2D vs T2D on IL.10: 0.02484</span></span>
 <span><span class="co">#&gt; T-test p-value for CD3/CD28 vs LPS on IFN.G: 7.31e-22</span></span>
 <span><span class="co">#&gt; T-test p-value for CD3/CD28 vs LPS on IL.10: 0.0001402</span></span>
 <span><span class="co"># Mann Whitney U Test</span></span>
-<span><span class="fu"><a href="reference/cyt.ttests.html">cyt.ttests</a></span><span class="op">(</span><span class="va">data.df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/cyt.ttest.html">cyt.ttest</a></span><span class="op">(</span><span class="va">data.df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Mann-Whitney U test p-value for PreT2D vs T2D on IFN.G: 0.008462</span></span>
 <span><span class="co">#&gt; Mann-Whitney U test p-value for PreT2D vs T2D on IL.10: 0.01191</span></span>
 <span><span class="co">#&gt; Mann-Whitney U test p-value for CD3/CD28 vs LPS on IFN.G: 5.915e-19</span></span>
@@ -292,70 +299,118 @@
 <span><span class="co">#&gt; [1] "Results based on log2 transformation:"</span></span>
 <span><span class="co">#&gt; [1] "CD3/CD28 LOOCV Accuracy: 49%"</span></span>
 <span><span class="co">#&gt; [1] "CD3/CD28 LOOCV Accuracy (VIP&gt;1): 52%"</span></span>
-<span><span class="co">#&gt; [1] "CD3/CD28 Confusion Matrix for PLS-DA Comparison"</span></span>
+<span><span class="co">#&gt; CD3/CD28 Confusion Matrix for PLS-DA Comparison</span></span>
 <span><span class="co">#&gt;           Reference</span></span>
 <span><span class="co">#&gt; Prediction ND PreT2D T2D</span></span>
 <span><span class="co">#&gt;     ND      0      0   1</span></span>
 <span><span class="co">#&gt;     PreT2D 15     28   5</span></span>
 <span><span class="co">#&gt;     T2D    18      5  27</span></span>
-<span><span class="co">#&gt; Accuracy </span></span>
-<span><span class="co">#&gt;     0.56 </span></span>
-<span><span class="co">#&gt; [1] NA</span></span>
-<span><span class="co">#&gt; [1] NA</span></span>
-<span><span class="co">#&gt; [1] "CD3/CD28 Confusion Matrix for PLS-DA Comparison with VIP Score &gt; 1"</span></span>
+<span><span class="co">#&gt; Accuracy: 0.56 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Per-Class Sensitivity:</span></span>
+<span><span class="co">#&gt;     Class: ND Class: PreT2D    Class: T2D </span></span>
+<span><span class="co">#&gt;          0.00          0.85          0.82 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Per-Class Specificity:</span></span>
+<span><span class="co">#&gt;     Class: ND Class: PreT2D    Class: T2D </span></span>
+<span><span class="co">#&gt;          0.98          0.70          0.65 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Macro-Averaged Sensitivity: 0.56 </span></span>
+<span><span class="co">#&gt; Macro-Averaged Specificity: 0.78 </span></span>
+<span><span class="co">#&gt; CD3/CD28 Confusion Matrix for PLS-DA Comparison with VIP Score &gt; 1</span></span>
 <span><span class="co">#&gt;           Reference</span></span>
 <span><span class="co">#&gt; Prediction ND PreT2D T2D</span></span>
 <span><span class="co">#&gt;     ND      0      0   1</span></span>
 <span><span class="co">#&gt;     PreT2D 17     27   7</span></span>
 <span><span class="co">#&gt;     T2D    16      6  25</span></span>
-<span><span class="co">#&gt; Accuracy </span></span>
-<span><span class="co">#&gt;     0.53 </span></span>
-<span><span class="co">#&gt; [1] NA</span></span>
-<span><span class="co">#&gt; [1] NA</span></span>
+<span><span class="co">#&gt; Accuracy: 0.53 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Per-Class Sensitivity:</span></span>
+<span><span class="co">#&gt;     Class: ND Class: PreT2D    Class: T2D </span></span>
+<span><span class="co">#&gt;          0.00          0.82          0.76 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Per-Class Specificity:</span></span>
+<span><span class="co">#&gt;     Class: ND Class: PreT2D    Class: T2D </span></span>
+<span><span class="co">#&gt;          0.98          0.64          0.67 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Macro-Averaged Sensitivity: 0.53 </span></span>
+<span><span class="co">#&gt; Macro-Averaged Specificity: 0.76</span></span>
 <span><span class="co">#&gt; [1] "LPS LOOCV Accuracy: 44%"</span></span>
 <span><span class="co">#&gt; [1] "LPS LOOCV Accuracy (VIP&gt;1): 44%"</span></span>
-<span><span class="co">#&gt; [1] "LPS Confusion Matrix for PLS-DA Comparison"</span></span>
+<span><span class="co">#&gt; LPS Confusion Matrix for PLS-DA Comparison</span></span>
 <span><span class="co">#&gt;           Reference</span></span>
 <span><span class="co">#&gt; Prediction ND PreT2D T2D</span></span>
 <span><span class="co">#&gt;     ND     13      4   9</span></span>
 <span><span class="co">#&gt;     PreT2D 12     21   5</span></span>
 <span><span class="co">#&gt;     T2D     8      8  19</span></span>
-<span><span class="co">#&gt; Accuracy </span></span>
-<span><span class="co">#&gt;     0.54 </span></span>
-<span><span class="co">#&gt; [1] NA</span></span>
-<span><span class="co">#&gt; [1] NA</span></span>
-<span><span class="co">#&gt; [1] "LPS Confusion Matrix for PLS-DA Comparison with VIP Score &gt; 1"</span></span>
+<span><span class="co">#&gt; Accuracy: 0.54 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Per-Class Sensitivity:</span></span>
+<span><span class="co">#&gt;     Class: ND Class: PreT2D    Class: T2D </span></span>
+<span><span class="co">#&gt;          0.39          0.64          0.58 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Per-Class Specificity:</span></span>
+<span><span class="co">#&gt;     Class: ND Class: PreT2D    Class: T2D </span></span>
+<span><span class="co">#&gt;          0.80          0.74          0.76 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Macro-Averaged Sensitivity: 0.54 </span></span>
+<span><span class="co">#&gt; Macro-Averaged Specificity: 0.77 </span></span>
+<span><span class="co">#&gt; LPS Confusion Matrix for PLS-DA Comparison with VIP Score &gt; 1</span></span>
 <span><span class="co">#&gt;           Reference</span></span>
 <span><span class="co">#&gt; Prediction ND PreT2D T2D</span></span>
 <span><span class="co">#&gt;     ND     13      4   7</span></span>
 <span><span class="co">#&gt;     PreT2D 14     22   5</span></span>
 <span><span class="co">#&gt;     T2D     6      7  21</span></span>
-<span><span class="co">#&gt; Accuracy </span></span>
-<span><span class="co">#&gt;     0.57 </span></span>
-<span><span class="co">#&gt; [1] NA</span></span>
-<span><span class="co">#&gt; [1] NA</span></span>
+<span><span class="co">#&gt; Accuracy: 0.57 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Per-Class Sensitivity:</span></span>
+<span><span class="co">#&gt;     Class: ND Class: PreT2D    Class: T2D </span></span>
+<span><span class="co">#&gt;          0.39          0.67          0.64 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Per-Class Specificity:</span></span>
+<span><span class="co">#&gt;     Class: ND Class: PreT2D    Class: T2D </span></span>
+<span><span class="co">#&gt;          0.83          0.71          0.80 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Macro-Averaged Sensitivity: 0.57 </span></span>
+<span><span class="co">#&gt; Macro-Averaged Specificity: 0.78</span></span>
 <span><span class="co">#&gt; [1] "Unstimulated LOOCV Accuracy: 34%"</span></span>
 <span><span class="co">#&gt; [1] "Unstimulated LOOCV Accuracy (VIP&gt;1): 42%"</span></span>
-<span><span class="co">#&gt; [1] "Unstimulated Confusion Matrix for PLS-DA Comparison"</span></span>
+<span><span class="co">#&gt; Unstimulated Confusion Matrix for PLS-DA Comparison</span></span>
 <span><span class="co">#&gt;           Reference</span></span>
 <span><span class="co">#&gt; Prediction ND PreT2D T2D</span></span>
 <span><span class="co">#&gt;     ND      6      4   6</span></span>
 <span><span class="co">#&gt;     PreT2D 13     27   9</span></span>
 <span><span class="co">#&gt;     T2D    14      2  18</span></span>
-<span><span class="co">#&gt; Accuracy </span></span>
-<span><span class="co">#&gt;     0.52 </span></span>
-<span><span class="co">#&gt; [1] NA</span></span>
-<span><span class="co">#&gt; [1] NA</span></span>
-<span><span class="co">#&gt; [1] "Unstimulated Confusion Matrix for PLS-DA Comparison with VIP Score &gt; 1"</span></span>
+<span><span class="co">#&gt; Accuracy: 0.52 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Per-Class Sensitivity:</span></span>
+<span><span class="co">#&gt;     Class: ND Class: PreT2D    Class: T2D </span></span>
+<span><span class="co">#&gt;          0.18          0.82          0.55 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Per-Class Specificity:</span></span>
+<span><span class="co">#&gt;     Class: ND Class: PreT2D    Class: T2D </span></span>
+<span><span class="co">#&gt;          0.85          0.67          0.76 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Macro-Averaged Sensitivity: 0.52 </span></span>
+<span><span class="co">#&gt; Macro-Averaged Specificity: 0.76 </span></span>
+<span><span class="co">#&gt; Unstimulated Confusion Matrix for PLS-DA Comparison with VIP Score &gt; 1</span></span>
 <span><span class="co">#&gt;           Reference</span></span>
 <span><span class="co">#&gt; Prediction ND PreT2D T2D</span></span>
 <span><span class="co">#&gt;     ND      8      4   7</span></span>
 <span><span class="co">#&gt;     PreT2D 12     22   5</span></span>
 <span><span class="co">#&gt;     T2D    13      7  21</span></span>
-<span><span class="co">#&gt; Accuracy </span></span>
-<span><span class="co">#&gt;     0.52 </span></span>
-<span><span class="co">#&gt; [1] NA</span></span>
-<span><span class="co">#&gt; [1] NA</span></span>
+<span><span class="co">#&gt; Accuracy: 0.52 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Per-Class Sensitivity:</span></span>
+<span><span class="co">#&gt;     Class: ND Class: PreT2D    Class: T2D </span></span>
+<span><span class="co">#&gt;          0.24          0.67          0.64 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Per-Class Specificity:</span></span>
+<span><span class="co">#&gt;     Class: ND Class: PreT2D    Class: T2D </span></span>
+<span><span class="co">#&gt;          0.83          0.74          0.70 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Macro-Averaged Sensitivity: 0.52 </span></span>
+<span><span class="co">#&gt; Macro-Averaged Specificity: 0.76</span></span>
 <span><span class="co">#&gt; png </span></span>
 <span><span class="co">#&gt;   2</span></span>
 <span></span>
@@ -371,52 +426,40 @@
 <span><span class="co">#&gt; [1] "Results based on log2 transformation:"</span></span>
 <span><span class="co">#&gt; [1] "CD3/CD28 Mfold Accuracy: 79%"</span></span>
 <span><span class="co">#&gt; [1] "CD3/CD28 Mfold Accuracy (VIP&gt;1): 78%"</span></span>
-<span><span class="co">#&gt; [1] "CD3/CD28 Confusion Matrix for PLS-DA Comparison"</span></span>
+<span><span class="co">#&gt; CD3/CD28 Confusion Matrix for PLS-DA Comparison</span></span>
 <span><span class="co">#&gt;           Reference</span></span>
 <span><span class="co">#&gt; Prediction PreT2D T2D</span></span>
 <span><span class="co">#&gt;     PreT2D     28   7</span></span>
 <span><span class="co">#&gt;     T2D         5  26</span></span>
-<span><span class="co">#&gt; Accuracy </span></span>
-<span><span class="co">#&gt;     0.82 </span></span>
-<span><span class="co">#&gt; Sensitivity </span></span>
-<span><span class="co">#&gt;        0.85 </span></span>
-<span><span class="co">#&gt; Specificity </span></span>
-<span><span class="co">#&gt;        0.79 </span></span>
-<span><span class="co">#&gt; [1] "CD3/CD28 Confusion Matrix for PLS-DA Comparison with VIP Score &gt; 1"</span></span>
+<span><span class="co">#&gt; Accuracy: 0.82 </span></span>
+<span><span class="co">#&gt; Sensitivity: 0.85 </span></span>
+<span><span class="co">#&gt; Specificity: 0.79 </span></span>
+<span><span class="co">#&gt; CD3/CD28 Confusion Matrix for PLS-DA Comparison with VIP Score &gt; 1</span></span>
 <span><span class="co">#&gt;           Reference</span></span>
 <span><span class="co">#&gt; Prediction PreT2D T2D</span></span>
 <span><span class="co">#&gt;     PreT2D     27   6</span></span>
 <span><span class="co">#&gt;     T2D         6  27</span></span>
-<span><span class="co">#&gt; Accuracy </span></span>
-<span><span class="co">#&gt;     0.82 </span></span>
-<span><span class="co">#&gt; Sensitivity </span></span>
-<span><span class="co">#&gt;        0.82 </span></span>
-<span><span class="co">#&gt; Specificity </span></span>
-<span><span class="co">#&gt;        0.82</span></span>
+<span><span class="co">#&gt; Accuracy: 0.82 </span></span>
+<span><span class="co">#&gt; Sensitivity: 0.82 </span></span>
+<span><span class="co">#&gt; Specificity: 0.82</span></span>
 <span><span class="co">#&gt; [1] "LPS Mfold Accuracy: 72%"</span></span>
 <span><span class="co">#&gt; [1] "LPS Mfold Accuracy (VIP&gt;1): 78%"</span></span>
-<span><span class="co">#&gt; [1] "LPS Confusion Matrix for PLS-DA Comparison"</span></span>
+<span><span class="co">#&gt; LPS Confusion Matrix for PLS-DA Comparison</span></span>
 <span><span class="co">#&gt;           Reference</span></span>
 <span><span class="co">#&gt; Prediction PreT2D T2D</span></span>
 <span><span class="co">#&gt;     PreT2D     25   4</span></span>
 <span><span class="co">#&gt;     T2D         8  29</span></span>
-<span><span class="co">#&gt; Accuracy </span></span>
-<span><span class="co">#&gt;     0.82 </span></span>
-<span><span class="co">#&gt; Sensitivity </span></span>
-<span><span class="co">#&gt;        0.76 </span></span>
-<span><span class="co">#&gt; Specificity </span></span>
-<span><span class="co">#&gt;        0.88 </span></span>
-<span><span class="co">#&gt; [1] "LPS Confusion Matrix for PLS-DA Comparison with VIP Score &gt; 1"</span></span>
+<span><span class="co">#&gt; Accuracy: 0.82 </span></span>
+<span><span class="co">#&gt; Sensitivity: 0.76 </span></span>
+<span><span class="co">#&gt; Specificity: 0.88 </span></span>
+<span><span class="co">#&gt; LPS Confusion Matrix for PLS-DA Comparison with VIP Score &gt; 1</span></span>
 <span><span class="co">#&gt;           Reference</span></span>
 <span><span class="co">#&gt; Prediction PreT2D T2D</span></span>
 <span><span class="co">#&gt;     PreT2D     28   8</span></span>
 <span><span class="co">#&gt;     T2D         5  25</span></span>
-<span><span class="co">#&gt; Accuracy </span></span>
-<span><span class="co">#&gt;      0.8 </span></span>
-<span><span class="co">#&gt; Sensitivity </span></span>
-<span><span class="co">#&gt;        0.85 </span></span>
-<span><span class="co">#&gt; Specificity </span></span>
-<span><span class="co">#&gt;        0.76</span></span>
+<span><span class="co">#&gt; Accuracy: 0.8 </span></span>
+<span><span class="co">#&gt; Sensitivity: 0.85 </span></span>
+<span><span class="co">#&gt; Specificity: 0.76</span></span>
 <span><span class="co">#&gt; png </span></span>
 <span><span class="co">#&gt;   2</span></span></code></pre></div>
 </div>
@@ -602,7 +645,7 @@
 <span><span class="co">#&gt; 1:   313     0.01860717     0.4529601</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; AUC:  0.9155767</span></span></code></pre></div>
-<p><img src="output/README-unnamed-chunk-15-1.png" width="100%"></p>
+<p><img src="reference/figures/ML%201-1.png" width="100%"></p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="co">#&gt; </span><span class="al">###</span><span class="co"> Confusion Matrix on Test Set </span><span class="al">###</span></span>
 <span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="co">#&gt; Confusion Matrix and Statistics</span></span>
@@ -646,7 +689,7 @@
 <span id="cb17-41"><a href="#cb17-41" tabindex="-1"></a><span class="co">#&gt;  8:         IL.23 0.04440949 0.02533791 0.02988506</span></span>
 <span id="cb17-42"><a href="#cb17-42" tabindex="-1"></a><span class="co">#&gt;  9: CCL.20.MIP.3A 0.03678675 0.05623800 0.05287356</span></span>
 <span id="cb17-43"><a href="#cb17-43" tabindex="-1"></a><span class="co">#&gt; 10:         IL.13 0.02785650 0.02633047 0.03678161</span></span></code></pre></div>
-<p><img src="output/README-unnamed-chunk-15-2.png" width="100%"></p>
+<p><img src="reference/figures/ML%201-2.png" width="100%"></p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="co">#&gt; </span><span class="al">###</span><span class="co"> CROSS-VALIDATION USING XGBOOST </span><span class="al">###</span></span>
 <span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a><span class="co">#&gt; </span></span>
@@ -735,10 +778,10 @@
 <span><span class="co">#&gt; Class: PreT2D: 0.138</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; AUC:  0.9298454</span></span></code></pre></div>
-<p><img src="output/README-unnamed-chunk-16-1.png" width="100%"><img src="output/README-unnamed-chunk-16-2.png" width="100%"></p>
+<p><img src="reference/figures/ML%202-1.png" width="100%"><img src="reference/figures/ML%202-2.png" width="100%"></p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="co">#&gt; </span><span class="al">###</span><span class="co"> RANDOM FOREST CROSS-VALIDATION FOR FEATURE SELECTION </span><span class="al">###</span></span></code></pre></div>
-<p><img src="output/README-unnamed-chunk-16-3.png" width="100%"></p>
+<p><img src="reference/figures/ML%202-3.png" width="100%"></p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="co">#&gt; Random Forest CV completed for feature selection. Check the plot for error vs. number of variables.</span></span></code></pre></div>
 </div>
 </div>
