@@ -3,9 +3,6 @@
 
 # CytoProfile
 
-<!-- badges: start -->
-<!-- badges: end -->
-
 The goal of CytoProfile is to conduct quality control using biological
 meaningful cutoff on raw measured values of cytokines. Specifically,
 test on distributional symmetry to suggest the adopt of transformation.
@@ -201,13 +198,13 @@ dev.off()
 data.df <- cytodata[,-c(1,4)]
 data.df <- filter(data.df, Group != "ND", Treatment != "Unstimulated")
 # Two sample T-test
-cyt.ttests(data.df[, c(1:2, 5:6)], scale = "log2")
+cyt.ttest(data.df[, c(1:2, 5:6)], scale = "log2")
 #> T-test p-value for PreT2D vs T2D on IFN.G: 0.02082
 #> T-test p-value for PreT2D vs T2D on IL.10: 0.02484
 #> T-test p-value for CD3/CD28 vs LPS on IFN.G: 7.31e-22
 #> T-test p-value for CD3/CD28 vs LPS on IL.10: 0.0001402
 # Mann Whitney U Test
-cyt.ttests(data.df[, c(1:2, 5:6)])
+cyt.ttest(data.df[, c(1:2, 5:6)])
 #> Mann-Whitney U test p-value for PreT2D vs T2D on IFN.G: 0.008462
 #> Mann-Whitney U test p-value for PreT2D vs T2D on IL.10: 0.01191
 #> Mann-Whitney U test p-value for CD3/CD28 vs LPS on IFN.G: 5.915e-19
@@ -252,70 +249,118 @@ cyt.plsda(data.df[,-c(1,4)], title = "Example PLS-DA Analysis.pdf",
 #> [1] "Results based on log2 transformation:"
 #> [1] "CD3/CD28 LOOCV Accuracy: 49%"
 #> [1] "CD3/CD28 LOOCV Accuracy (VIP>1): 52%"
-#> [1] "CD3/CD28 Confusion Matrix for PLS-DA Comparison"
+#> CD3/CD28 Confusion Matrix for PLS-DA Comparison
 #>           Reference
 #> Prediction ND PreT2D T2D
 #>     ND      0      0   1
 #>     PreT2D 15     28   5
 #>     T2D    18      5  27
-#> Accuracy 
-#>     0.56 
-#> [1] NA
-#> [1] NA
-#> [1] "CD3/CD28 Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
+#> Accuracy: 0.56 
+#> 
+#> Per-Class Sensitivity:
+#>     Class: ND Class: PreT2D    Class: T2D 
+#>          0.00          0.85          0.82 
+#> 
+#> Per-Class Specificity:
+#>     Class: ND Class: PreT2D    Class: T2D 
+#>          0.98          0.70          0.65 
+#> 
+#> Macro-Averaged Sensitivity: 0.56 
+#> Macro-Averaged Specificity: 0.78 
+#> CD3/CD28 Confusion Matrix for PLS-DA Comparison with VIP Score > 1
 #>           Reference
 #> Prediction ND PreT2D T2D
 #>     ND      0      0   1
 #>     PreT2D 17     27   7
 #>     T2D    16      6  25
-#> Accuracy 
-#>     0.53 
-#> [1] NA
-#> [1] NA
+#> Accuracy: 0.53 
+#> 
+#> Per-Class Sensitivity:
+#>     Class: ND Class: PreT2D    Class: T2D 
+#>          0.00          0.82          0.76 
+#> 
+#> Per-Class Specificity:
+#>     Class: ND Class: PreT2D    Class: T2D 
+#>          0.98          0.64          0.67 
+#> 
+#> Macro-Averaged Sensitivity: 0.53 
+#> Macro-Averaged Specificity: 0.76
 #> [1] "LPS LOOCV Accuracy: 44%"
 #> [1] "LPS LOOCV Accuracy (VIP>1): 44%"
-#> [1] "LPS Confusion Matrix for PLS-DA Comparison"
+#> LPS Confusion Matrix for PLS-DA Comparison
 #>           Reference
 #> Prediction ND PreT2D T2D
 #>     ND     13      4   9
 #>     PreT2D 12     21   5
 #>     T2D     8      8  19
-#> Accuracy 
-#>     0.54 
-#> [1] NA
-#> [1] NA
-#> [1] "LPS Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
+#> Accuracy: 0.54 
+#> 
+#> Per-Class Sensitivity:
+#>     Class: ND Class: PreT2D    Class: T2D 
+#>          0.39          0.64          0.58 
+#> 
+#> Per-Class Specificity:
+#>     Class: ND Class: PreT2D    Class: T2D 
+#>          0.80          0.74          0.76 
+#> 
+#> Macro-Averaged Sensitivity: 0.54 
+#> Macro-Averaged Specificity: 0.77 
+#> LPS Confusion Matrix for PLS-DA Comparison with VIP Score > 1
 #>           Reference
 #> Prediction ND PreT2D T2D
 #>     ND     13      4   7
 #>     PreT2D 14     22   5
 #>     T2D     6      7  21
-#> Accuracy 
-#>     0.57 
-#> [1] NA
-#> [1] NA
+#> Accuracy: 0.57 
+#> 
+#> Per-Class Sensitivity:
+#>     Class: ND Class: PreT2D    Class: T2D 
+#>          0.39          0.67          0.64 
+#> 
+#> Per-Class Specificity:
+#>     Class: ND Class: PreT2D    Class: T2D 
+#>          0.83          0.71          0.80 
+#> 
+#> Macro-Averaged Sensitivity: 0.57 
+#> Macro-Averaged Specificity: 0.78
 #> [1] "Unstimulated LOOCV Accuracy: 34%"
 #> [1] "Unstimulated LOOCV Accuracy (VIP>1): 42%"
-#> [1] "Unstimulated Confusion Matrix for PLS-DA Comparison"
+#> Unstimulated Confusion Matrix for PLS-DA Comparison
 #>           Reference
 #> Prediction ND PreT2D T2D
 #>     ND      6      4   6
 #>     PreT2D 13     27   9
 #>     T2D    14      2  18
-#> Accuracy 
-#>     0.52 
-#> [1] NA
-#> [1] NA
-#> [1] "Unstimulated Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
+#> Accuracy: 0.52 
+#> 
+#> Per-Class Sensitivity:
+#>     Class: ND Class: PreT2D    Class: T2D 
+#>          0.18          0.82          0.55 
+#> 
+#> Per-Class Specificity:
+#>     Class: ND Class: PreT2D    Class: T2D 
+#>          0.85          0.67          0.76 
+#> 
+#> Macro-Averaged Sensitivity: 0.52 
+#> Macro-Averaged Specificity: 0.76 
+#> Unstimulated Confusion Matrix for PLS-DA Comparison with VIP Score > 1
 #>           Reference
 #> Prediction ND PreT2D T2D
 #>     ND      8      4   7
 #>     PreT2D 12     22   5
 #>     T2D    13      7  21
-#> Accuracy 
-#>     0.52 
-#> [1] NA
-#> [1] NA
+#> Accuracy: 0.52 
+#> 
+#> Per-Class Sensitivity:
+#>     Class: ND Class: PreT2D    Class: T2D 
+#>          0.24          0.67          0.64 
+#> 
+#> Per-Class Specificity:
+#>     Class: ND Class: PreT2D    Class: T2D 
+#>          0.83          0.74          0.70 
+#> 
+#> Macro-Averaged Sensitivity: 0.52 
+#> Macro-Averaged Specificity: 0.76
 #> png 
 #>   2
 
@@ -331,52 +376,40 @@ cyt.plsda(filt.data[,-c(1,4)], title = "Example PLS-DA Analysis 2.pdf",
 #> [1] "Results based on log2 transformation:"
 #> [1] "CD3/CD28 Mfold Accuracy: 79%"
 #> [1] "CD3/CD28 Mfold Accuracy (VIP>1): 78%"
-#> [1] "CD3/CD28 Confusion Matrix for PLS-DA Comparison"
+#> CD3/CD28 Confusion Matrix for PLS-DA Comparison
 #>           Reference
 #> Prediction PreT2D T2D
 #>     PreT2D     28   7
 #>     T2D         5  26
-#> Accuracy 
-#>     0.82 
-#> Sensitivity 
-#>        0.85 
-#> Specificity 
-#>        0.79 
-#> [1] "CD3/CD28 Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
+#> Accuracy: 0.82 
+#> Sensitivity: 0.85 
+#> Specificity: 0.79 
+#> CD3/CD28 Confusion Matrix for PLS-DA Comparison with VIP Score > 1
 #>           Reference
 #> Prediction PreT2D T2D
 #>     PreT2D     27   6
 #>     T2D         6  27
-#> Accuracy 
-#>     0.82 
-#> Sensitivity 
-#>        0.82 
-#> Specificity 
-#>        0.82
+#> Accuracy: 0.82 
+#> Sensitivity: 0.82 
+#> Specificity: 0.82
 #> [1] "LPS Mfold Accuracy: 72%"
 #> [1] "LPS Mfold Accuracy (VIP>1): 78%"
-#> [1] "LPS Confusion Matrix for PLS-DA Comparison"
+#> LPS Confusion Matrix for PLS-DA Comparison
 #>           Reference
 #> Prediction PreT2D T2D
 #>     PreT2D     25   4
 #>     T2D         8  29
-#> Accuracy 
-#>     0.82 
-#> Sensitivity 
-#>        0.76 
-#> Specificity 
-#>        0.88 
-#> [1] "LPS Confusion Matrix for PLS-DA Comparison with VIP Score > 1"
+#> Accuracy: 0.82 
+#> Sensitivity: 0.76 
+#> Specificity: 0.88 
+#> LPS Confusion Matrix for PLS-DA Comparison with VIP Score > 1
 #>           Reference
 #> Prediction PreT2D T2D
 #>     PreT2D     28   8
 #>     T2D         5  25
-#> Accuracy 
-#>      0.8 
-#> Sensitivity 
-#>        0.85 
-#> Specificity 
-#>        0.76
+#> Accuracy: 0.8 
+#> Sensitivity: 0.85 
+#> Specificity: 0.76
 #> png 
 #>   2
 ```
@@ -562,7 +595,7 @@ xgb.results <- cyt.xgb(data = data.df, group_col = 'Group',
 #> AUC:  0.9155767
 ```
 
-<img src="output/README-unnamed-chunk-15-1.png" width="100%" />
+<img src="man/figures/ML 1-1.png" width="100%" />
 
     #> 
     #> ### Confusion Matrix on Test Set ###
@@ -608,7 +641,7 @@ xgb.results <- cyt.xgb(data = data.df, group_col = 'Group',
     #>  9: CCL.20.MIP.3A 0.03678675 0.05623800 0.05287356
     #> 10:         IL.13 0.02785650 0.02633047 0.03678161
 
-<img src="output/README-unnamed-chunk-15-2.png" width="100%" />
+<img src="man/figures/ML 1-2.png" width="100%" />
 
     #> 
     #> ### CROSS-VALIDATION USING XGBOOST ###
@@ -699,11 +732,11 @@ rf.results <- cyt.rf(data = data.df, group_col = 'Group', k_folds = 5,
 #> AUC:  0.9298454
 ```
 
-<img src="output/README-unnamed-chunk-16-1.png" width="100%" /><img src="output/README-unnamed-chunk-16-2.png" width="100%" />
+<img src="man/figures/ML 2-1.png" width="100%" /><img src="man/figures/ML 2-2.png" width="100%" />
 
     #> 
     #> ### RANDOM FOREST CROSS-VALIDATION FOR FEATURE SELECTION ###
 
-<img src="output/README-unnamed-chunk-16-3.png" width="100%" />
+<img src="man/figures/ML 2-3.png" width="100%" />
 
     #> Random Forest CV completed for feature selection. Check the plot for error vs. number of variables.

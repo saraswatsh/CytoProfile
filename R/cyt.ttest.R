@@ -24,7 +24,7 @@
 #' cyt.ttests(data.df[, c(1,2, 5:6)])
 #' }
 
-cyt.ttests <- function(x.df, scale = NULL) {
+cyt.ttest <- function(x.df, scale = NULL) {
   # Take input and store it as its own data frame
   x1.df <- x.df
   # Convert any character variables to factors

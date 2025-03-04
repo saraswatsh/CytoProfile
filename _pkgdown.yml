@@ -1,4 +1,42 @@
 url: https://saraswatsh.github.io/CytoProfile/
 template:
   bootstrap: 5
+  light-switch: yes
+navbar:
+  title: CytoProfile
+  left:
+  - text: Home
+    href: index.html
+  - text: Reference
+    href: reference/index.html
+build:
+  readme: yes
+home:
+  title: Welcome to CytoProfile
+  tagline: An R package for Advanced Cytokine Data Analysis
+reference:
+- title: Exploratory Analysis Functions
+  contents:
+  - cyt.anova
+  - cyt.ttest
+  - cyt.bp
+  - cyt.bp2
+  - cyt.errbp
+  - cyt.skku
+  - cyt.volc
+  - cyt.heatmap
+  - cyt.dualflashplot
+- title: Multivariate Analysis
+  contents:
+  - cyt.plsda
+  - cyt.pca
+- title: Machine Learning Methods
+  contents:
+  - cyt.rf
+  - cyt.xgb
+- title: Datasets
+  contents: cytodata
+footer:
+  left: © 2025 Shubh Saraswat
+  right: Built with pkgdown
 
