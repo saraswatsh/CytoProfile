@@ -25,7 +25,9 @@ p-values. An error is thrown if a categorical variable does not have exactly two
 \dontrun{
 data.df <- cytodata[,-c(1,4)]
 data.df <- filter(data.df, Group != "ND", Treatment != "Unstimulated")
-cyt.ttests(data.df, scale = "log2")
-cyt.ttests(data.df)
+Two sample T-test
+cyt.ttests(data.df[, c(1,2, 5:6)], scale = "log2")
+Mann Whitney U Test
+cyt.ttests(data.df[, c(1,2, 5:6)])
 }
 }

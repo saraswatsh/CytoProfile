@@ -24,7 +24,8 @@ Imports:
     tidyverse,
     caret,
     xgboost,
-    randomForest
+    randomForest,
+    gplots
 Suggests: 
     BiocManager,
     testthat,

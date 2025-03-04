@@ -8,6 +8,14 @@
 \description{
 CytoProfile is a comprehensive tool for cytokine profiling analysis. It supports quality control using biologically meaningful cutoffs on raw cytokine measurements and tests for distributional symmetry to suggest appropriate transformations. The package offers exploratory data analysis with summary statistics, enhanced boxplots, and barplots, along with both univariate and multivariate analysis capabilities for in-depth cytokine profiling.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/saraswatsh/CytoProfile}
+  \item \url{https://saraswatsh.github.io/CytoProfile/}
+}
+
+}
 \author{
 \strong{Maintainer}: Shubh Saraswat \email{shubh.saraswat00@gmail.com}
 
