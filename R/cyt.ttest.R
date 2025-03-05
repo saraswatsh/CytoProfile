@@ -16,12 +16,12 @@
 #'
 #' @examples
 #' \dontrun{
-#' data.df <- cytodata[,-c(1,4)]
-#' data.df <- filter(data.df, Group != "ND", Treatment != "Unstimulated")
-#' Two sample T-test
-#' cyt.ttests(data.df[, c(1,2, 5:6)], scale = "log2")
-#' Mann Whitney U Test
-#' cyt.ttests(data.df[, c(1,2, 5:6)])
+#'   data.df <- cytodata[,-c(1,4)]
+#'   data.df <- filter(data.df, Group != "ND", Treatment != "Unstimulated")
+#'   # Two sample T-test
+#'   cyt.ttests(data.df[, c(1,2, 5:6)], scale = "log2")
+#'   # Mann Whitney U Test
+#'   cyt.ttests(data.df[, c(1,2, 5:6)])
 #' }
 
 cyt.ttest <- function(x.df, scale = NULL) {

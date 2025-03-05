@@ -36,10 +36,19 @@
 #' The function also visualizes the top N important features using `xgb.ggplot.importance()`.
 #'
 #' @examples
+#' \dontrun{
 #' # Example usage:
-#' results <- cyt.xgb(data = cytodata, group_col = "Group", train_fraction = 0.8, cv = TRUE)
-#' print(results$confusion_matrix)
-#' print(results$plot)
+#' data.df0 <- cytodata
+#' data.df <- data.frame(data.df0[,1:4], log2(data.df0[,-c(1:4)]))
+#' data.df <- data.df[,-c(1,3,4)]
+#' data.df <- filter(data.df, Group != "ND")
+#'
+#' cyt.xgb(data = data.df, group_col = 'Group',
+#' nrounds = 500, max_depth = 4, eta = 0.05,
+#' nfold = 5, cv = TRUE, eval_metric = "mlogloss",
+#' early_stopping_rounds = NULL, top_n_features = 10,
+#' verbose = 0, plot_roc = TRUE)
+#' }
 #'
 #' @import xgboost
 #' @import caret
@@ -131,9 +140,20 @@ cyt.xgb <- function(data, group_col, train_fraction = 0.7,
     # Plot using ggroc
     roc_plot <- ggroc(roc_obj, color = "blue", linewidth = 1.5, legacy.axes = TRUE) +
       geom_abline(linetype = "dashed", color = "red", linewidth = 1) +  # Random classifier line
-      labs(title = "ROC Curve (Test Set)", x = "1 - Specificity", y = "Sensitivity") +
-      annotate("text", x = 0.75, y = 0.25, label = paste("AUC =", round(auc_value, 3)), size = 5, color = "blue") +
-      theme_minimal()
+      labs(
+        title = "ROC Curve (Test Set)",
+        x = "1 - Specificity",
+        y = "Sensitivity"
+      ) +
+      annotate("text", x = 0.75, y = 0.25, label = paste("AUC =", round(auc_value, 3)),
+               size = 5, color = "blue") +
+      theme_minimal() +
+      theme(
+        panel.background = element_rect(fill = "white", color = NA),
+        plot.background  = element_rect(fill = "white", color = NA),
+        panel.grid.major = element_line(color = "grey90"),
+        panel.grid.minor = element_line(color = "grey95")
+      )
 
     # Display the plot
     print(roc_plot)

@@ -22,6 +22,14 @@
 #' @import dplyr
 #' @import tidyr
 #' @import ggplot2
+#'
+#' @examples
+#' \dontrun{
+#' data.df <- cytodata[,-c(1,3:4)]
+#' dfp <- cyt.dualflashplot(data.df, group_var = "Group", group1 = "T2D", group2 = "ND",
+#' ssmd_thresh = -0.2, log2fc_thresh = 1, top_labels = 10)
+#' }
+#'
 
 
 cyt.dualflashplot <- function(data, group_var, group1, group2, ssmd_thresh = 1, log2fc_thresh = 1, top_labels = 15) {

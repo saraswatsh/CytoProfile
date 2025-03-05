@@ -15,9 +15,10 @@
 #' @return A PDF file containing the boxplots.
 #'
 #' @examples
+#' \dontrun{
 #' data.df <- cytodata[,-c(1,4)]
 #' cyt.bp2(data.df, Title = "boxplot2.test2.pdf", scale = "log2")
-#'
+#' }
 #' @export
 #' @import ggplot2
 

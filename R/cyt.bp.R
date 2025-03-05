@@ -21,6 +21,15 @@
 #' If the number of columns in `x.df` exceeds `bin.size`, the function splits the plots across multiple pages.
 #' @return A PDF file containing the box plots of the continuous variables.
 #' @export
+#' @examples
+#' \dontrun{
+#'   # Generating boxplots to check for outliers for raw values:
+#'   cyt.bp(data.df[,-c(1:4)], Title = "Boxplot.byCytokine.Raw.pdf")
+#'
+#'   # Generating boxplots to check for outliers for log2 values:
+#'   cyt.bp(log2(data.df[,-c(1:4)]), Title = "Boxplot.byCytokine.log2.pdf")
+#' }
+
 cyt.bp <- function(x.df, Title, bin.size=25, mfRow=c(1,1), yLim=NULL) {
   pdf(file=Title)
   par(mfrow=mfRow, cex.axis=0.75)

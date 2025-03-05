@@ -28,10 +28,17 @@
 #' If `run_rfcv` is set to TRUE, Random Forest cross-validation is performed to identify the optimal number of features for classification.
 #'
 #' @examples
+#'
+#' \dontrun{
 #' # Example usage:
-#' results <- cyt.rf(data = cytodata, group_col = "Group", ntree = 500, plot_roc = TRUE)
-#' print(results$confusion_matrix)
-#' print(results$importance_plot)
+#' data.df0 <- cytodata
+#' data.df <- data.frame(data.df0[,1:4], log2(data.df0[,-c(1:4)]))
+#' data.df <- data.df[,-c(1,3,4)]
+#' data.df <- filter(data.df, Group != "ND")
+#'
+#' results <- cyt.rf(data = data.df, group_col = 'Group', k_folds = 5,
+#' ntree = 1000, mtry = 4, run_rfcv = TRUE, plot_roc = TRUE)
+#' }
 #'
 #' @import randomForest
 #' @import caret
@@ -140,10 +147,20 @@ cyt.rf <- function(data, group_col, ntree = 500, mtry = 5, train_fraction = 0.7,
     # Create the ROC plot using ggroc()
     roc_plot <- ggroc(roc_obj, color = "blue", linewidth = 1.5, legacy.axes = TRUE) +
       geom_abline(linetype = "dashed", color = "red", linewidth = 1) +  # Random classifier line
-      labs(title = "ROC Curve (Test Set)", x = "1 - Specificity", y = "Sensitivity") +
-      annotate("text", x = 0.75, y = 0.25, label = paste("AUC =", round(auc_value, 3)), size = 5, color = "blue") +
-      theme_minimal()
-
+      labs(
+        title = "ROC Curve (Test Set)",
+        x = "1 - Specificity",
+        y = "Sensitivity"
+      ) +
+      annotate("text", x = 0.75, y = 0.25, label = paste("AUC =", round(auc_value, 3)),
+               size = 5, color = "blue") +
+      theme_minimal() +
+      theme(
+        panel.background = element_rect(fill = "white", color = NA),
+        plot.background  = element_rect(fill = "white", color = NA),
+        panel.grid.major = element_line(color = "grey90"),
+        panel.grid.minor = element_line(color = "grey95")
+      )
     # Display the ROC plot
     print(roc_plot)
   }
@@ -186,8 +203,14 @@ cyt.rf <- function(data, group_col, ntree = 500, mtry = 5, train_fraction = 0.7,
       ggtitle("Cross-Validation Error vs. Number of Variables") +
       xlab("Number of Variables") +
       ylab("Cross-Validation Error") +
-      scale_x_continuous(breaks = 1:(ncol(train_data)-1) )+  # Ensure all variable counts are showns
-      theme_minimal()
+      scale_x_continuous(breaks = 1:(ncol(train_data) - 1)) +  # Ensure all variable counts are shown
+      theme_minimal() +
+      theme(
+        panel.background = element_rect(fill = "white", color = NA),
+        plot.background  = element_rect(fill = "white", color = NA),
+        panel.grid.major = element_line(color = "grey90"),
+        panel.grid.minor = element_line(color = "grey95")
+      )
 
     print(rfcv_plot)
 

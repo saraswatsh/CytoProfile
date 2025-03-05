@@ -159,7 +159,6 @@ dimnames(p.groupComp.mat) <- list( cytokineNames, c("2-1", "3-1", "3-2") )
 ssmd.groupComp.stm.mat <- mD.groupComp.stm.mat <- p.groupComp.stm.mat <- p.groupComp.mat
 
 for( i in 1:nCytokine ) {
-   #i <- 1 # i<-2
   Cytokine <- (cyt.mat[,i]+Cutoff)
   cytokine.aov <- aov( Cytokine ~ Group * Treatment, data=data.df)
   aov.table <- summary(cytokine.aov)[[1]]
@@ -174,7 +173,6 @@ results <- cyt.skku(cytodata[,-c(1,4)], printResLog = TRUE, group.cols = c("Grou
 pdf( "barErrorPlot.enriched.pdf" )
 par(mfrow=c(2,3), mar=c(8.1,  4.1, 4.1, 2.1) )
 for( k in 1:nCytokine ) {
-  #k <- 1
   result.mat <- results[1:9,,k]
   center.df <-
     data.frame( "name"=rownames(result.mat), result.mat[, c("center", "spread")],

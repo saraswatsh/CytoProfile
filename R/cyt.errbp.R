@@ -42,6 +42,21 @@
 #'
 #' @return An error-bar plot is produced.
 #' @export
+#' @examples
+#' \dontrun{
+#' cytokine.mat <- cytodata[, -c(1:4)] # Extracting all cytokines to be stored in one object
+#' cytokineNames <- colnames(cytokine.mat) # Extracting the cytokine names
+#' nCytokine <- length(cytokineNames) # Obtaining the total number of cytokines
+#' results <- cyt.skku(cytodata[,-c(1,4)], printResLog = TRUE, group.cols = c("Group", "Treatment")) # Extracting values
+#' pdf( "barErrorPlot.pdf" )
+#' par(mfrow=c(2,2), mar=c(8.1,  4.1, 4.1, 2.1) )
+#' for( k in 1:nCytokine ) {
+#' center.df <- data.frame( "name"=rownames(results[,,k]), results[,,k] )
+#' cyt.errbp(center.df, pLab=FALSE, esLab=FALSE, classSymbol=TRUE,
+#' ylab="Concentration in log2 scale",  main=cytokineNames[k] )
+#' }
+#' dev.off()
+#' }
 #'
 cyt.errbp <- function(center.df, pLab=TRUE, esLab=TRUE, classSymbol=TRUE,
                       xlab="", ylab="", main="") {

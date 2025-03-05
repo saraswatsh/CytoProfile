@@ -16,8 +16,15 @@
 #'
 #' @export
 #' @import gplots
+#'
 #' @examples
-#' cyt.heatmap(cytodata[,-4], scale = "log2", annotation_col_name = "Group")
+#' \dontrun{
+#' cyt.heatmap(data = data.df,
+#' scale = "log2",        # Optional scaling
+#' annotation_col_name = "Group",
+#' title = "Heatmap.png")
+#' }
+#'
 
 cyt.heatmap <- function(data, scale = NULL, annotation_col_name = NULL, title) {
 

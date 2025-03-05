@@ -29,7 +29,11 @@ Imports:
 Suggests: 
     BiocManager,
     testthat,
-    knitr
+    knitr,
+    rmarkdown,
+    devtools,
+    Ckmeans.1d.dp
 NeedsCompilation: no
 License: GPL-2
 LazyData: true
+VignetteBuilder: knitr

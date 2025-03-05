@@ -40,3 +40,11 @@ as "Strong Effect", "Moderate Effect", or "Weak Effect". A dual flash plot is ge
 represents the average log2 fold change and the y-axis represents the SSMD. Additionally, the function prints the
 computed statistics to the console.
 }
+\examples{
+\dontrun{
+data.df <- cytodata[,-c(1,3:4)]
+dfp <- cyt.dualflashplot(data.df, group_var = "Group", group1 = "T2D", group2 = "ND",
+ssmd_thresh = -0.2, log2fc_thresh = 1, top_labels = 10)
+}
+
+}

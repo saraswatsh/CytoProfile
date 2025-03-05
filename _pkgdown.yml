@@ -7,10 +7,12 @@ navbar:
   left:
   - text: Home
     href: index.html
-  - text: Reference
+  - text: Getting Started
+    href: articles/getting_started.html
+  - text: Functions and Datasets
     href: reference/index.html
-build:
-  readme: yes
+  - text: Vignettes
+    href: articles/index.html
 home:
   title: Welcome to CytoProfile
   tagline: An R package for Advanced Cytokine Data Analysis
@@ -39,4 +41,6 @@ reference:
 footer:
   left: © 2025 Shubh Saraswat
   right: Built with pkgdown
+development:
+  mode: auto
 

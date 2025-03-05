@@ -26,5 +26,11 @@ Optionally, if an annotation column is specified and exists in \code{data}, the 
 with the format determined by the file extension in \code{title}.
 }
 \examples{
-cyt.heatmap(cytodata[,-4], scale = "log2", annotation_col_name = "Group")
+\dontrun{
+cyt.heatmap(data = data.df,
+scale = "log2",        # Optional scaling
+annotation_col_name = "Group",
+title = "Heatmap.png")
+}
+
 }

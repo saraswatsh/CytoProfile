@@ -24,3 +24,12 @@ A PDF file containing the box plots of the continuous variables.
 This function creates a PDF file containing box plots for the continuous variables in the provided data.
 If the number of columns in \code{x.df} exceeds \code{bin.size}, the function splits the plots across multiple pages.
 }
+\examples{
+\dontrun{
+  # Generating boxplots to check for outliers for raw values:
+  cyt.bp(data.df[,-c(1:4)], Title = "Boxplot.byCytokine.Raw.pdf")
+
+  # Generating boxplots to check for outliers for log2 values:
+  cyt.bp(log2(data.df[,-c(1:4)]), Title = "Boxplot.byCytokine.log2.pdf")
+}
+}
