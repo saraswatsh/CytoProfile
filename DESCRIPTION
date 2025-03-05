@@ -31,8 +31,7 @@ Suggests:
     testthat,
     knitr,
     rmarkdown,
-    devtools,
-    Ckmeans.1d.dp
+    devtools
 NeedsCompilation: no
 License: GPL-2
 LazyData: true
