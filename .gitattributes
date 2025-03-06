@@ -1,4 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 # Mark pkgdown output as generated
-docs/* linguist-vendored=true
+docs/** linguist-generated=true
+index.html linguist-generated=true
+
