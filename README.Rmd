@@ -55,6 +55,7 @@ library(tidyr)       # For reshaping data (e.g., pivot_longer, pivot_wider).
 
 # Plotting and visualization
 library(ggplot2)     # For creating all the ggplot-based visualizations.
+library(gridExtra)   # For arranging multiple plots on a single page.
 library(ggrepel)     # For improved label placement in plots (e.g., volcano plots).
 library(gplots)      # For heatmap.2, which is used to generate heatmaps.
 library(plot3D)      # For creating 3D scatter plots in PCA and sPLS-DA analyses.
@@ -224,18 +225,8 @@ cyt.plsda(data.df[,-c(1,4)], title = "Example PLS-DA Analysis.pdf",
           bg = TRUE, scale = "log2", 
           conf.mat = TRUE, var.num = 25, 
           cv.opt = "loocv",
-          comp.num = 2, pch.values = c(16, 4, 3), 
-          group.col = "Group", trt.col = "Treatment", roc = TRUE)
-
-# Filtering data for specific groups and treatment
-filt.data <- filter(data.df, Group != "ND", Treatment != "Unstimulated")
-cyt.plsda(filt.data[,-c(1,4)], title = "Example PLS-DA Analysis 2.pdf", 
-          colors = c("black", "purple"),
-          bg = TRUE, scale = "log2", 
-          conf.mat = TRUE, var.num = 25, 
-          cv.opt = "Mfold", fold.num = 5,
-          comp.num = 3, pch.values = c(3, 4), style = "3d",
-          group.col = "Group", trt.col = "Treatment", roc = TRUE)
+          comp.num = 3, pch.values = c(16, 4, 3), style = "3d", 
+          group.col = "Group", trt.col = "Treatment", roc = TRUE) 
 ```
 
 ## 7. Principal Component Analysis (PCA)

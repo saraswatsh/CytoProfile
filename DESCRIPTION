@@ -25,13 +25,19 @@ Imports:
     caret,
     xgboost,
     randomForest,
-    gplots
+    gplots,
+    e1071, 
+    ggplot2,
+    ggrepel, 
+    gridExtra,
+    reshape2
 Suggests: 
     BiocManager,
     testthat,
     knitr,
     rmarkdown,
-    devtools
+    devtools,
+    Ckmeans.1d.dp
 NeedsCompilation: no
 License: GPL-2
 LazyData: true

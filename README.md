@@ -45,6 +45,7 @@ library(tidyr)       # For reshaping data (e.g., pivot_longer, pivot_wider).
 
 # Plotting and visualization
 library(ggplot2)     # For creating all the ggplot-based visualizations.
+library(gridExtra)   # For arranging multiple plots on a single page.
 library(ggrepel)     # For improved label placement in plots (e.g., volcano plots).
 library(gplots)      # For heatmap.2, which is used to generate heatmaps.
 library(plot3D)      # For creating 3D scatter plots in PCA and sPLS-DA analyses.
@@ -242,8 +243,8 @@ cyt.plsda(data.df[,-c(1,4)], title = "Example PLS-DA Analysis.pdf",
           bg = TRUE, scale = "log2", 
           conf.mat = TRUE, var.num = 25, 
           cv.opt = "loocv",
-          comp.num = 2, pch.values = c(16, 4, 3), 
-          group.col = "Group", trt.col = "Treatment", roc = TRUE)
+          comp.num = 3, pch.values = c(16, 4, 3), style = "3d", 
+          group.col = "Group", trt.col = "Treatment", roc = TRUE) 
 #> [1] "Results based on log2 transformation:"
 #> [1] "CD3/CD28 LOOCV Accuracy: 49%"
 #> [1] "CD3/CD28 LOOCV Accuracy (VIP>1): 52%"
@@ -359,55 +360,6 @@ cyt.plsda(data.df[,-c(1,4)], title = "Example PLS-DA Analysis.pdf",
 #> 
 #> Macro-Averaged Sensitivity: 0.52 
 #> Macro-Averaged Specificity: 0.76
-#> png 
-#>   2
-
-# Filtering data for specific groups and treatment
-filt.data <- filter(data.df, Group != "ND", Treatment != "Unstimulated")
-cyt.plsda(filt.data[,-c(1,4)], title = "Example PLS-DA Analysis 2.pdf", 
-          colors = c("black", "purple"),
-          bg = TRUE, scale = "log2", 
-          conf.mat = TRUE, var.num = 25, 
-          cv.opt = "Mfold", fold.num = 5,
-          comp.num = 3, pch.values = c(3, 4), style = "3d",
-          group.col = "Group", trt.col = "Treatment", roc = TRUE)
-#> [1] "Results based on log2 transformation:"
-#> [1] "CD3/CD28 Mfold Accuracy: 79%"
-#> [1] "CD3/CD28 Mfold Accuracy (VIP>1): 78%"
-#> CD3/CD28 Confusion Matrix for PLS-DA Comparison
-#>           Reference
-#> Prediction PreT2D T2D
-#>     PreT2D     28   7
-#>     T2D         5  26
-#> Accuracy: 0.82 
-#> Sensitivity: 0.85 
-#> Specificity: 0.79 
-#> CD3/CD28 Confusion Matrix for PLS-DA Comparison with VIP Score > 1
-#>           Reference
-#> Prediction PreT2D T2D
-#>     PreT2D     27   6
-#>     T2D         6  27
-#> Accuracy: 0.82 
-#> Sensitivity: 0.82 
-#> Specificity: 0.82
-#> [1] "LPS Mfold Accuracy: 72%"
-#> [1] "LPS Mfold Accuracy (VIP>1): 78%"
-#> LPS Confusion Matrix for PLS-DA Comparison
-#>           Reference
-#> Prediction PreT2D T2D
-#>     PreT2D     25   4
-#>     T2D         8  29
-#> Accuracy: 0.82 
-#> Sensitivity: 0.76 
-#> Specificity: 0.88 
-#> LPS Confusion Matrix for PLS-DA Comparison with VIP Score > 1
-#>           Reference
-#> Prediction PreT2D T2D
-#>     PreT2D     28   8
-#>     T2D         5  25
-#> Accuracy: 0.8 
-#> Sensitivity: 0.85 
-#> Specificity: 0.76
 #> png 
 #>   2
 ```

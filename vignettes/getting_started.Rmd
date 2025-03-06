@@ -11,7 +11,9 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  out.width = "100%"
+  out.width = "100%",
+  fig.keep = "none",  # Discards all plots generated in the chunk
+  fig.show = "hide"  # Hides plot output in the rendered document
 )
 ```
 
@@ -45,7 +47,8 @@ devtools::install_github("saraswatsh/CytoProfile")
 
 ## Example
 
-Below are examples of using the functions provided in CytoProfile. Any saved files whether PDF or PNG is available in the output folder. 
+Below are examples of using the functions provided in CytoProfile. Any saved files that are PDF or PNG format will be found at in the [Output Folder](https://github.com/saraswatsh/CytoProfile/tree/main/output). Additional figures generated will be displayed within the file and can be accessed through the [figures](https://github.com/saraswatsh/CytoProfile/tree/main/man/figures) folder. 
+
 
 ## 1. Data Loading and set up
 
@@ -57,6 +60,7 @@ library(tidyr)       # For reshaping data (e.g., pivot_longer, pivot_wider).
 
 # Plotting and visualization
 library(ggplot2)     # For creating all the ggplot-based visualizations.
+library(gridExtra)   # For arranging multiple plots on a single page.
 library(ggrepel)     # For improved label placement in plots (e.g., volcano plots).
 library(gplots)      # For heatmap.2, which is used to generate heatmaps.
 library(plot3D)      # For creating 3D scatter plots in PCA and sPLS-DA analyses.
@@ -226,23 +230,14 @@ cyt.plsda(data.df[,-c(1,4)], title = "Example PLS-DA Analysis.pdf",
           bg = TRUE, scale = "log2", 
           conf.mat = TRUE, var.num = 25, 
           cv.opt = "loocv",
-          comp.num = 2, pch.values = c(16, 4, 3), 
+          comp.num = 3, pch.values = c(16, 4, 3), style = "3d", 
           group.col = "Group", trt.col = "Treatment", roc = TRUE)
 
-# Filtering data for specific groups and treatment
-filt.data <- filter(data.df, Group != "ND", Treatment != "Unstimulated")
-cyt.plsda(filt.data[,-c(1,4)], title = "Example PLS-DA Analysis 2.pdf", 
-          colors = c("black", "purple"),
-          bg = TRUE, scale = "log2", 
-          conf.mat = TRUE, var.num = 25, 
-          cv.opt = "Mfold", fold.num = 5,
-          comp.num = 3, pch.values = c(3, 4), style = "3d",
-          group.col = "Group", trt.col = "Treatment", roc = TRUE)
 ```
 
 ## 7. Principal Component Analysis (PCA)
 
-```{r, Multivariate 2, echo=TRUE, warning=FALSE, message=FALSE}
+```{r, Multivariate 2, echo=TRUE, warning=FALSE, message=FALSE }
 data <- cytodata[,-c(1,4, 24)]
 data.df <- filter(data, Group != "ND" & Treatment != "Unstimulated")
 cyt.pca(data.df, title = "Example PCA Analysis.pdf" ,colors = c("black", "red2"), scale = "log2", comp.num = 3, pch.values = c(16,4), style = "3D", group.col = "Group", trt.col = "Treatment")
@@ -255,11 +250,10 @@ cyt.pca(data.df, title = "Example PCA Analysis 2.pdf" ,colors = c("black", "red2
 # Generating Volcano Plot
 data.df <- cytodata[,-4]
 volc_plot <- cyt.volc(data.df, "Group", cond1 = "T2D", cond2 = "ND", fold_change_thresh = 2.0, top_labels= 15)
-ggsave("VolcanoPlot.png", plot = volc_plot$`T2D vs ND`, dpi = 300)
 
+print(volc_plot$`T2D vs ND`)
 # Printing table (This is usually printed by default when the function is called and not saved as an object.)
 print(volc_plot$`T2D vs ND`$data)
-
 ```
 
 ## 9. Heatmap
@@ -280,8 +274,7 @@ data.df <- cytodata[,-c(1,3:4)]
 
 dfp <- cyt.dualflashplot(data.df, group_var = "Group", group1 = "T2D", group2 = "ND", 
                   ssmd_thresh = -0.2, log2fc_thresh = 1, top_labels = 10)
-ggsave("DualFlashlightPlot.png", plot = dfp$plot_env$p, dpi = 300, width = 3000, height = 2000, units = "px")
-
+print(dfp$plot_env$p)
 # Printing table (This is usually printed by default when the function is called and not saved as an object.)
 print(dfp$data)
 
