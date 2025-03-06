@@ -15,6 +15,8 @@ cyt.volc(
 )
 }
 \arguments{
+\item{data}{A matrix or data frame containing the data to be analyzed.}
+
 \item{group_col}{A character string specifying the column name used for comparisons (e.g., group, treatment, or stimulation).}
 
 \item{cond1}{A character string specifying the name of the first condition for comparison. Default is \code{NULL}.}
@@ -26,8 +28,6 @@ cyt.volc(
 \item{p_value_thresh}{A numeric threshold for the p-value. Default is \code{0.05}.}
 
 \item{top_labels}{An integer specifying the number of top variables to label on the plot. Default is \code{10}.}
-
-\item{x.df}{A matrix or data frame containing the data to be analyzed.}
 }
 \value{
 A list of volcano plots (as \code{ggplot} objects) for each pairwise comparison. Additionally, the function prints the data frame

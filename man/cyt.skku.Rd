@@ -5,7 +5,7 @@
 \title{Distribution of the Data Set Shown by Skewness and Kurtosis}
 \usage{
 cyt.skku(
-  data.df,
+  data,
   group.cols = NULL,
   Title = NULL,
   printResRaw = FALSE,
@@ -13,6 +13,8 @@ cyt.skku(
 )
 }
 \arguments{
+\item{data}{A matrix or data frame containing the raw data. If \code{group.cols} is specified, the columns with names in \code{group.cols} are treated as grouping variables and all other columns are assumed to be numeric measurement variables.}
+
 \item{group.cols}{A character vector specifying the names of the grouping columns. When provided, the first element is treated as the treatment variable and the second as the group variable. If not provided, the entire data set is treated as one group.}
 
 \item{Title}{A character string specifying the file name for the PDF file in which the histograms will be saved. If omitted, the plots are generated on the current graphics device.}
@@ -20,8 +22,6 @@ cyt.skku(
 \item{printResRaw}{Logical. If \code{TRUE}, the function returns and prints the computed summary statistics for the raw data. Default is \code{FALSE}.}
 
 \item{printResLog}{Logical. If \code{TRUE}, the function returns and prints the computed summary statistics for the log2-transformed data. Default is \code{FALSE}.}
-
-\item{x.df}{A matrix or data frame containing the raw data. If \code{group.cols} is specified, the columns with names in \code{group.cols} are treated as grouping variables and all other columns are assumed to be numeric measurement variables.}
 }
 \value{
 The function generates histograms of skewness and kurtosis for both raw and log2-transformed data. Additionally, if either \code{printResRaw} and/or \code{printResLog} is \code{TRUE}, the function returns the corresponding summary statistics as a data frame or a list of data frames.

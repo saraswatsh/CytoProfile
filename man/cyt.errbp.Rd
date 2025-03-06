@@ -5,7 +5,7 @@
 \title{Error-bar plot for comparison.}
 \usage{
 cyt.errbp(
-  center.df,
+  data,
   pLab = TRUE,
   esLab = TRUE,
   classSymbol = TRUE,
@@ -15,7 +15,7 @@ cyt.errbp(
 )
 }
 \arguments{
-\item{center.df}{A data frame containing the following columns for each group:
+\item{data}{A data frame containing the following columns for each group:
 \itemize{
 \item \code{name}: Group names.
 \item \code{center}: Mean or median values.
@@ -51,7 +51,8 @@ or numeric values.
 cytokine.mat <- cytodata[, -c(1:4)] # Extracting all cytokines to be stored in one object
 cytokineNames <- colnames(cytokine.mat) # Extracting the cytokine names
 nCytokine <- length(cytokineNames) # Obtaining the total number of cytokines
-results <- cyt.skku(cytodata[,-c(1,4)], printResLog = TRUE, group.cols = c("Group", "Treatment")) # Extracting values
+results <- cyt.skku(cytodata[,-c(1,4)], printResLog = TRUE,
+           group.cols = c("Group", "Treatment")) # Extracting values
 pdf( "barErrorPlot.pdf" )
 par(mfrow=c(2,2), mar=c(8.1,  4.1, 4.1, 2.1) )
 for( k in 1:nCytokine ) {

@@ -2,22 +2,31 @@ url: https://saraswatsh.github.io/CytoProfile/
 template:
   bootstrap: 5
   light-switch: yes
+home:
+  title: Welcome to CytoProfile
+  tagline: An R package for Advanced Cytokine Data Analysis
+  links:
+  - text: Report a bug
+    href: https://github.com/saraswatsh/CytoProfile/issues
+  - text: Read more
+    href: articles/getting_started.html
 navbar:
   title: CytoProfile
   left:
   - text: Home
     href: index.html
-  - text: Getting Started
-    href: articles/getting_started.html
-  - text: Functions and Datasets
+  - text: Reference
     href: reference/index.html
-  - text: Vignettes
+  - text: Articles
     href: articles/index.html
-home:
-  title: Welcome to CytoProfile
-  tagline: An R package for Advanced Cytokine Data Analysis
+articles:
+- title: Getting Started
+  contents: getting_started
 reference:
-- title: Exploratory Analysis Functions
+- title: Exploratory Analysis
+  description: |
+    Functions for exploring raw data, summarizing statistics,
+    and visualizing key patterns.
   contents:
   - cyt.anova
   - cyt.ttest
@@ -29,6 +38,8 @@ reference:
   - cyt.heatmap
   - cyt.dualflashplot
 - title: Multivariate Analysis
+  description: |
+    Functions for deeper multivariate insights.
   contents:
   - cyt.plsda
   - cyt.pca

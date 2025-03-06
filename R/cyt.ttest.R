@@ -1,12 +1,12 @@
 #' Two Sample T-test Comparisons
 #'
-#' @param x.df A matrix or data frame containing continuous variables and categorical variables.
+#' @param data A matrix or data frame containing continuous variables and categorical variables.
 #' @param scale A character value specifying a transformation for continuous variables. Options are \code{NULL} (default) and \code{"log2"}.
 #' When \code{scale = "log2"}, a log2 transformation is applied and a two-sample t-test is used; when \code{scale} is \code{NULL}, a Mann-Whitney U test is performed.
 #'
 #' @description
 #' This function performs pairwise comparisons between two groups for each combination of a categorical predictor (with exactly two levels)
-#' and a continuous outcome variable. It first converts any character variables in \code{x.df} to factors and applies a log2 transformation to the continuous
+#' and a continuous outcome variable. It first converts any character variables in \code{data} to factors and applies a log2 transformation to the continuous
 #' variables if specified. Depending on the value of \code{scale}, the function conducts either a two-sample t-test or a Mann-Whitney U test and prints the resulting
 #' p-values. An error is thrown if a categorical variable does not have exactly two levels.
 #'
@@ -24,9 +24,9 @@
 #'   cyt.ttests(data.df[, c(1,2, 5:6)])
 #' }
 
-cyt.ttest <- function(x.df, scale = NULL) {
+cyt.ttest <- function(data, scale = NULL) {
   # Take input and store it as its own data frame
-  x1.df <- x.df
+  x1.df <- data
   # Convert any character variables to factors
   cat_vars <- sapply(x1.df, is.character)
   if(any(cat_vars)){

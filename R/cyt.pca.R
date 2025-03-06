@@ -1,6 +1,6 @@
 #' Analyze data with Principal Component Analysis (PCA) for cytokines.
 #'
-#' @param data.df A data frame containing cytokine data. It should include at least one column representing grouping information and optionally a second column representing treatment or stimulation.
+#' @param data A data frame containing cytokine data. It should include at least one column representing grouping information and optionally a second column representing treatment or stimulation.
 #' @param group.col Character. The name of the column containing the grouping information. If not specified and \code{trt.col} is provided, the treatment column will be used as the grouping variable.
 #' @param trt.col Character. The name of the column containing the treatment (or stimulation) information. If not specified and \code{group.col} is provided, the grouping column will be used as the treatment variable.
 #' @param colors A vector of colors corresponding to the groups. If set to NULL, a palette is generated using \code{rainbow()} based on the number of unique groups.
@@ -42,7 +42,7 @@
 #' scale = "log2", comp.num = 2, pch.values = c(16,4), group.col = "Group")
 #' }
 
-cyt.pca <- function(x.df, group.col = NULL, trt.col = NULL, colors = NULL, title,
+cyt.pca <- function(data, group.col = NULL, trt.col = NULL, colors = NULL, title,
                     ellipse = FALSE, comp.num = 2, scale = NULL, pch.values = NULL, style = NULL) {
 
   # If one factor is missing, use the provided column for both grouping and treatment.
@@ -61,28 +61,28 @@ cyt.pca <- function(x.df, group.col = NULL, trt.col = NULL, colors = NULL, title
   # Optionally apply log2 transformation only to numeric columns
   if(!is.null(scale) && scale == "log2"){
     # Identify numeric columns not corresponding to the factor columns
-    numeric_idx <- sapply(x.df, is.numeric)
+    numeric_idx <- sapply(data, is.numeric)
     # Exclude the group and treatment columns (if present, even if numeric)
-    numeric_idx[names(x.df) %in% unique(c(group.col, trt.col))] <- FALSE
+    numeric_idx[names(data) %in% unique(c(group.col, trt.col))] <- FALSE
     if(sum(numeric_idx) == 0){
       warning("No numeric columns available for log2 transformation.")
     }
-    x.df <- data.frame(x.df[, unique(c(group.col, trt.col)), drop = FALSE],
-                       log2(x.df[, numeric_idx, drop = FALSE]))
+    data <- data.frame(data[, unique(c(group.col, trt.col)), drop = FALSE],
+                       log2(data[, numeric_idx, drop = FALSE]))
     print("Results based on log2 transformation:")
   } else {
     print("Results based on no transformation:")
   }
 
   # Convert factor column names to lowercase for consistency
-  names(x.df)[names(x.df) %in% unique(c(group.col, trt.col))] <-
-    tolower(names(x.df)[names(x.df) %in% unique(c(group.col, trt.col))])
+  names(data)[names(data) %in% unique(c(group.col, trt.col))] <-
+    tolower(names(data)[names(data) %in% unique(c(group.col, trt.col))])
   group.col <- tolower(group.col)
   trt.col <- tolower(trt.col)
 
   # Generate a color palette if not provided (based on the grouping variable levels)
   if (is.null(colors)) {
-    num_groups <- length(unique(x.df[[group.col]]))
+    num_groups <- length(unique(data[[group.col]]))
     colors <- rainbow(num_groups)
   }
 
@@ -93,10 +93,10 @@ cyt.pca <- function(x.df, group.col = NULL, trt.col = NULL, colors = NULL, title
     Title <- "Overall Analysis"
 
     # Remove the factor column(s) from predictors and keep only numeric columns
-    theData.df <- x.df[, !(names(x.df) %in% unique(c(group.col, trt.col)))]
+    theData.df <- data[, !(names(data) %in% unique(c(group.col, trt.col)))]
     theData.df <- theData.df[, sapply(theData.df, is.numeric)]
 
-    theGroups <- as.vector(x.df[[group.col]])
+    theGroups <- as.vector(data[[group.col]])
     if(length(unique(theGroups)) < 2){
       stop("The grouping variable must have at least two levels for PCA. Please provide an appropriate grouping column.")
     }
@@ -166,15 +166,15 @@ cyt.pca <- function(x.df, group.col = NULL, trt.col = NULL, colors = NULL, title
 
   } else {
     # Case 2: When grouping and treatment columns differ
-    levels.vec <- unique(x.df[[trt.col]])
+    levels.vec <- unique(data[[trt.col]])
     for(i in seq_along(levels.vec)) {
       current.level <- levels.vec[i]
       Title_sub <- current.level
-      condt <- x.df[[trt.col]] == current.level
+      condt <- data[[trt.col]] == current.level
 
-      theData.df <- x.df[condt, !(names(x.df) %in% unique(c(group.col, trt.col)))]
+      theData.df <- data[condt, !(names(data) %in% unique(c(group.col, trt.col)))]
       theData.df <- theData.df[, sapply(theData.df, is.numeric)]
-      theGroups <- as.vector(x.df[condt, group.col])
+      theGroups <- as.vector(data[condt, group.col])
 
       if(length(unique(theGroups)) < 2){
         stop("The grouping variable must have at least two levels for PCA. Please provide an appropriate grouping column.")

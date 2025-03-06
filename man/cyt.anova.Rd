@@ -4,10 +4,10 @@
 \alias{cyt.anova}
 \title{ANOVA analysis on all continuous variables within the data.}
 \usage{
-cyt.anova(x.df)
+cyt.anova(data)
 }
 \arguments{
-\item{x.df}{A data frame or matrix containing both categorical and continuous variables.
+\item{data}{A data frame or matrix containing both categorical and continuous variables.
 Character columns are converted to factors; all factor columns are used as predictors,
 while numeric columns are used as continuous outcomes.}
 }

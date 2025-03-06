@@ -1,7 +1,7 @@
 
 #' Analyze data with Sparse Partial Least Squares Discriminant Analysis (sPLS-DA).
 #'
-#' @param x.df A matrix or data frame containing the variables. Columns not specified by \code{group.col} or \code{trt.col} are assumed to be continuous variables for analysis.
+#' @param data A matrix or data frame containing the variables. Columns not specified by \code{group.col} or \code{trt.col} are assumed to be continuous variables for analysis.
 #' @param group.col A string specifying the column name that contains group information. If \code{trt.col} is not provided, it will be used for both grouping and treatment.
 #' @param trt.col A string specifying the column name for treatments. Default is \code{NULL}.
 #' @param colors A vector of colors for the groups or treatments. If \code{NULL}, a random palette (using \code{rainbow}) is generated based on the number of groups.
@@ -32,19 +32,21 @@
 #' @examples
 #' \dontrun{
 #' # Example using overall analysis (single factor)
-#' cyt.plsda(x.df = my_data, group.col = "Group", title = "PLSDA_overall.pdf",
+#' cyt.plsda(data = my_data, group.col = "Group", title = "PLSDA_overall.pdf",
 #'           var.num = 25, pch.values = c(16, 4, 3))
 #'
 #' # Example using separate group and treatment columns
-#' cyt.plsda(x.df = my_data, group.col = "Group", trt.col = "Treatment", title = "PLSDA_byTreatment.pdf",
-#'           colors = c("black", "purple", "red2"), ellipse = TRUE, bg = TRUE, conf.mat = TRUE,
-#'           var.num = 25, cv.opt = "loocv", comp.num = 2, pch.values = c(16, 4, 3))
+#' cyt.plsda(data = my_data, group.col = "Group", trt.col = "Treatment",
+#' title = "PLSDA_byTreatment.pdf",
+#' colors = c("black", "purple", "red2"), ellipse = TRUE, bg = TRUE, conf.mat = TRUE,
+#' var.num = 25, cv.opt = "loocv", comp.num = 2, pch.values = c(16, 4, 3))
 #'
 #' # Example with ROC curve and 3D plot (comp.num == 3)
-#' cyt.plsda(x.df = my_data, group.col = "Group", trt.col = "Treatment", title = "PLSDA_ROC_3D.pdf",
-#'           colors = c("black", "purple", "red2"), ellipse = TRUE, bg = TRUE, conf.mat = TRUE,
-#'           var.num = 25, cv.opt = "Mfold", fold.num = 5, scale = "log2", comp.num = 3,
-#'           pch.values = c(16, 4, 3), style = "3D", roc = TRUE)
+#' cyt.plsda(data = my_data, group.col = "Group", trt.col = "Treatment",
+#' title = "PLSDA_ROC_3D.pdf", colors = c("black", "purple", "red2"),
+#'  ellipse = TRUE, bg = TRUE, conf.mat = TRUE,
+#'  var.num = 25, cv.opt = "Mfold", fold.num = 5, scale = "log2", comp.num = 3,
+#'  pch.values = c(16, 4, 3), style = "3D", roc = TRUE)
 #' }
 #'
 #' @export
@@ -54,7 +56,7 @@
 #' @import reshape2
 #' @import caret
 
-cyt.plsda <- function(x.df, group.col = NULL, trt.col = NULL, colors = NULL, title,
+cyt.plsda <- function(data, group.col = NULL, trt.col = NULL, colors = NULL, title,
                       ellipse = FALSE, bg = FALSE, conf.mat = FALSE, var.num, cv.opt = NULL,
                       fold.num = 5, scale = NULL, comp.num = 2, pch.values, style = NULL, roc = FALSE){
 
@@ -73,22 +75,22 @@ cyt.plsda <- function(x.df, group.col = NULL, trt.col = NULL, colors = NULL, tit
 
   # Optionally apply log2 transformation
   if(!is.null(scale) && scale == "log2"){
-    x.df <- data.frame(x.df[, c(group.col, trt.col)],
-                       log2(x.df[, !(names(x.df) %in% c(group.col, trt.col))]))
+    data <- data.frame(data[, c(group.col, trt.col)],
+                       log2(data[, !(names(data) %in% c(group.col, trt.col))]))
     print("Results based on log2 transformation:")
   } else if (is.null(scale)){
     print("Results based on no transformation:")
   }
 
   # Convert factor column names to lowercase for consistency
-  names(x.df)[names(x.df) %in% c(group.col, trt.col)] <-
-    tolower(names(x.df)[names(x.df) %in% c(group.col, trt.col)])
+  names(data)[names(data) %in% c(group.col, trt.col)] <-
+    tolower(names(data)[names(data) %in% c(group.col, trt.col)])
   group.col <- tolower(group.col)
   trt.col <- tolower(trt.col)
 
   # Generate a color palette if not provided (based on the grouping variable levels in the entire dataset)
   if (is.null(colors)) {
-    num_groups <- length(unique(x.df[[group.col]]))
+    num_groups <- length(unique(data[[group.col]]))
     colors <- rainbow(num_groups)
   }
 
@@ -99,10 +101,10 @@ cyt.plsda <- function(x.df, group.col = NULL, trt.col = NULL, colors = NULL, tit
     Title <- "Overall Analysis"
 
     # Remove the factor column from predictors and keep only numeric columns
-    theData.df <- x.df[, !(names(x.df) %in% c(group.col))]
+    theData.df <- data[, !(names(data) %in% c(group.col))]
     theData.df <- theData.df[, sapply(theData.df, is.numeric)]
 
-    theGroups <- as.vector(x.df[[group.col]])
+    theGroups <- as.vector(data[[group.col]])
     if(length(unique(theGroups)) < 2){
       stop("The grouping variable must have at least two levels for PLS-DA. Please provide an appropriate grouping column.")
     }
@@ -317,15 +319,15 @@ cyt.plsda <- function(x.df, group.col = NULL, trt.col = NULL, colors = NULL, tit
 
   } else {
     # Case 2: Both group and treatment columns are provided and they differ.
-    levels.vec <- unique(x.df[[trt.col]])
+    levels.vec <- unique(data[[trt.col]])
     for(i in seq_along(levels.vec)) {
       current.level <- levels.vec[i]
       Title <- current.level
-      condt <- x.df[[trt.col]] == current.level
+      condt <- data[[trt.col]] == current.level
 
-      theData.df <- x.df[condt, -which(names(x.df) %in% c(group.col, trt.col))]
+      theData.df <- data[condt, -which(names(data) %in% c(group.col, trt.col))]
       theData.df <- theData.df[, sapply(theData.df, is.numeric)]
-      theGroups <- as.vector(x.df[condt, group.col])
+      theGroups <- as.vector(data[condt, group.col])
 
       if(length(unique(theGroups)) < 2){
         stop("The grouping variable must have at least two levels for PLS-DA. Please provide an appropriate grouping column.")

@@ -4,10 +4,10 @@
 \alias{cyt.bp2}
 \title{Boxplot Function Enhanced for Specific Group Comparisons}
 \usage{
-cyt.bp2(x.df, Title, mfRow = c(1, 1), scale = NULL, yLim = NULL)
+cyt.bp2(data, Title, mfRow = c(1, 1), scale = NULL, yLim = NULL)
 }
 \arguments{
-\item{x.df}{A matrix or data frame of raw data.}
+\item{data}{A matrix or data frame of raw data.}
 
 \item{Title}{A string representing the title of the PDF file.}
 

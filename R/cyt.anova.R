@@ -2,11 +2,11 @@
 # Function to generate ANOVA analysis and results
 # Author: Shubh Saraswat
 # Arguments:
-#   x.df: a matrix or data frame with groups, stimulation, and continuous variables
+#   data: a matrix or data frame with groups, stimulation, and continuous variables
 #########################################################################################################
 
 #' ANOVA analysis on all continuous variables within the data.
-#'@param x.df A data frame or matrix containing both categorical and continuous variables.
+#'@param data A data frame or matrix containing both categorical and continuous variables.
 #'   Character columns are converted to factors; all factor columns are used as predictors,
 #'   while numeric columns are used as continuous outcomes.
 #' @description
@@ -21,9 +21,9 @@
 #' cyt.anova(cytodata[, c(2:4,5:6)])
 #' }
 #' @export
-cyt.anova <- function(x.df) {
+cyt.anova <- function(data) {
   # Take input and store it as its own data frame
-  x1.df <- x.df
+  x1.df <- data
   # Convert any char variables to factors
   cat_vars <- sapply(x1.df, is.character)
   if(any(cat_vars)){

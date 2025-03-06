@@ -1,6 +1,6 @@
 #' Volcano Plot
 #'
-#' @param x.df A matrix or data frame containing the data to be analyzed.
+#' @param data A matrix or data frame containing the data to be analyzed.
 #' @param group_col A character string specifying the column name used for comparisons (e.g., group, treatment, or stimulation).
 #' @param cond1 A character string specifying the name of the first condition for comparison. Default is \code{NULL}.
 #' @param cond2 A character string specifying the name of the second condition for comparison. Default is \code{NULL}.

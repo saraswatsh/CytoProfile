@@ -4,10 +4,10 @@
 \alias{cyt.bp}
 \title{Generating a PDF file to show the measured value by column of the data frame.}
 \usage{
-cyt.bp(x.df, Title, bin.size = 25, mfRow = c(1, 1), yLim = NULL)
+cyt.bp(data, Title, bin.size = 25, mfRow = c(1, 1), yLim = NULL)
 }
 \arguments{
-\item{x.df}{A matrix or data frame containing the raw data to be plotted.}
+\item{data}{A matrix or data frame containing the raw data to be plotted.}
 
 \item{Title}{A string representing the name of the PDF file.}
 
@@ -22,7 +22,7 @@ A PDF file containing the box plots of the continuous variables.
 }
 \description{
 This function creates a PDF file containing box plots for the continuous variables in the provided data.
-If the number of columns in \code{x.df} exceeds \code{bin.size}, the function splits the plots across multiple pages.
+If the number of columns in \code{data} exceeds \code{bin.size}, the function splits the plots across multiple pages.
 }
 \examples{
 \dontrun{

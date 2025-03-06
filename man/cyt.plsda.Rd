@@ -5,7 +5,7 @@
 \title{Analyze data with Sparse Partial Least Squares Discriminant Analysis (sPLS-DA).}
 \usage{
 cyt.plsda(
-  x.df,
+  data,
   group.col = NULL,
   trt.col = NULL,
   colors = NULL,
@@ -24,7 +24,7 @@ cyt.plsda(
 )
 }
 \arguments{
-\item{x.df}{A matrix or data frame containing the variables. Columns not specified by \code{group.col} or \code{trt.col} are assumed to be continuous variables for analysis.}
+\item{data}{A matrix or data frame containing the variables. Columns not specified by \code{group.col} or \code{trt.col} are assumed to be continuous variables for analysis.}
 
 \item{group.col}{A string specifying the column name that contains group information. If \code{trt.col} is not provided, it will be used for both grouping and treatment.}
 
@@ -71,19 +71,21 @@ the function analyzes each treatment level separately.
 \examples{
 \dontrun{
 # Example using overall analysis (single factor)
-cyt.plsda(x.df = my_data, group.col = "Group", title = "PLSDA_overall.pdf",
+cyt.plsda(data = my_data, group.col = "Group", title = "PLSDA_overall.pdf",
           var.num = 25, pch.values = c(16, 4, 3))
 
 # Example using separate group and treatment columns
-cyt.plsda(x.df = my_data, group.col = "Group", trt.col = "Treatment", title = "PLSDA_byTreatment.pdf",
-          colors = c("black", "purple", "red2"), ellipse = TRUE, bg = TRUE, conf.mat = TRUE,
-          var.num = 25, cv.opt = "loocv", comp.num = 2, pch.values = c(16, 4, 3))
+cyt.plsda(data = my_data, group.col = "Group", trt.col = "Treatment",
+title = "PLSDA_byTreatment.pdf",
+colors = c("black", "purple", "red2"), ellipse = TRUE, bg = TRUE, conf.mat = TRUE,
+var.num = 25, cv.opt = "loocv", comp.num = 2, pch.values = c(16, 4, 3))
 
 # Example with ROC curve and 3D plot (comp.num == 3)
-cyt.plsda(x.df = my_data, group.col = "Group", trt.col = "Treatment", title = "PLSDA_ROC_3D.pdf",
-          colors = c("black", "purple", "red2"), ellipse = TRUE, bg = TRUE, conf.mat = TRUE,
-          var.num = 25, cv.opt = "Mfold", fold.num = 5, scale = "log2", comp.num = 3,
-          pch.values = c(16, 4, 3), style = "3D", roc = TRUE)
+cyt.plsda(data = my_data, group.col = "Group", trt.col = "Treatment",
+title = "PLSDA_ROC_3D.pdf", colors = c("black", "purple", "red2"),
+ ellipse = TRUE, bg = TRUE, conf.mat = TRUE,
+ var.num = 25, cv.opt = "Mfold", fold.num = 5, scale = "log2", comp.num = 3,
+ pch.values = c(16, 4, 3), style = "3D", roc = TRUE)
 }
 
 }

@@ -5,7 +5,7 @@
 \title{Analyze data with Principal Component Analysis (PCA) for cytokines.}
 \usage{
 cyt.pca(
-  x.df,
+  data,
   group.col = NULL,
   trt.col = NULL,
   colors = NULL,
@@ -18,6 +18,8 @@ cyt.pca(
 )
 }
 \arguments{
+\item{data}{A data frame containing cytokine data. It should include at least one column representing grouping information and optionally a second column representing treatment or stimulation.}
+
 \item{group.col}{Character. The name of the column containing the grouping information. If not specified and \code{trt.col} is provided, the treatment column will be used as the grouping variable.}
 
 \item{trt.col}{Character. The name of the column containing the treatment (or stimulation) information. If not specified and \code{group.col} is provided, the grouping column will be used as the treatment variable.}
@@ -35,8 +37,6 @@ cyt.pca(
 \item{pch.values}{A vector of plotting symbols (pch values) to be used in the PCA plots. Default is NULL.}
 
 \item{style}{Character. If set to "3d" or "3D" and \code{comp.num} equals 3, a 3D scatter plot is generated using the plot3D package. Default is NULL.}
-
-\item{data.df}{A data frame containing cytokine data. It should include at least one column representing grouping information and optionally a second column representing treatment or stimulation.}
 }
 \value{
 A PDF file containing the PCA plots is generated and saved.
