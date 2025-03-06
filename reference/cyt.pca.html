@@ -70,7 +70,7 @@ or stimulation groups.</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">cyt.pca</span><span class="op">(</span></span>
-<span>  <span class="va">x.df</span>,</span>
+<span>  <span class="va">data</span>,</span>
 <span>  group.col <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  trt.col <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  colors <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -87,7 +87,11 @@ or stimulation groups.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-group-col">group.col<a class="anchor" aria-label="anchor" href="#arg-group-col"></a></dt>
+<dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
+<dd><p>A data frame containing cytokine data. It should include at least one column representing grouping information and optionally a second column representing treatment or stimulation.</p></dd>
+
+
+<dt id="arg-group-col">group.col<a class="anchor" aria-label="anchor" href="#arg-group-col"></a></dt>
 <dd><p>Character. The name of the column containing the grouping information. If not specified and <code>trt.col</code> is provided, the treatment column will be used as the grouping variable.</p></dd>
 
 
@@ -121,10 +125,6 @@ or stimulation groups.</p>
 
 <dt id="arg-style">style<a class="anchor" aria-label="anchor" href="#arg-style"></a></dt>
 <dd><p>Character. If set to "3d" or "3D" and <code>comp.num</code> equals 3, a 3D scatter plot is generated using the plot3D package. Default is NULL.</p></dd>
-
-
-<dt id="arg-data-df">data.df<a class="anchor" aria-label="anchor" href="#arg-data-df"></a></dt>
-<dd><p>A data frame containing cytokine data. It should include at least one column representing grouping information and optionally a second column representing treatment or stimulation.</p></dd>
 
 </dl></div>
     <div class="section level2">

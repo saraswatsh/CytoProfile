@@ -62,7 +62,7 @@ the function analyzes each treatment level separately.</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">cyt.plsda</span><span class="op">(</span></span>
-<span>  <span class="va">x.df</span>,</span>
+<span>  <span class="va">data</span>,</span>
 <span>  group.col <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  trt.col <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  colors <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -85,7 +85,7 @@ the function analyzes each treatment level separately.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-x-df">x.df<a class="anchor" aria-label="anchor" href="#arg-x-df"></a></dt>
+<dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
 <dd><p>A matrix or data frame containing the variables. Columns not specified by <code>group.col</code> or <code>trt.col</code> are assumed to be continuous variables for analysis.</p></dd>
 
 
@@ -159,19 +159,21 @@ and classifications based on VIP scores greater than 1. ROC curves and confusion
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co"># Example using overall analysis (single factor)</span></span></span>
-<span class="r-in"><span><span class="fu">cyt.plsda</span><span class="op">(</span>x.df <span class="op">=</span> <span class="va">my_data</span>, group.col <span class="op">=</span> <span class="st">"Group"</span>, title <span class="op">=</span> <span class="st">"PLSDA_overall.pdf"</span>,</span></span>
+<span class="r-in"><span><span class="fu">cyt.plsda</span><span class="op">(</span>data <span class="op">=</span> <span class="va">my_data</span>, group.col <span class="op">=</span> <span class="st">"Group"</span>, title <span class="op">=</span> <span class="st">"PLSDA_overall.pdf"</span>,</span></span>
 <span class="r-in"><span>          var.num <span class="op">=</span> <span class="fl">25</span>, pch.values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example using separate group and treatment columns</span></span></span>
-<span class="r-in"><span><span class="fu">cyt.plsda</span><span class="op">(</span>x.df <span class="op">=</span> <span class="va">my_data</span>, group.col <span class="op">=</span> <span class="st">"Group"</span>, trt.col <span class="op">=</span> <span class="st">"Treatment"</span>, title <span class="op">=</span> <span class="st">"PLSDA_byTreatment.pdf"</span>,</span></span>
-<span class="r-in"><span>          colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"purple"</span>, <span class="st">"red2"</span><span class="op">)</span>, ellipse <span class="op">=</span> <span class="cn">TRUE</span>, bg <span class="op">=</span> <span class="cn">TRUE</span>, conf.mat <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>          var.num <span class="op">=</span> <span class="fl">25</span>, cv.opt <span class="op">=</span> <span class="st">"loocv"</span>, comp.num <span class="op">=</span> <span class="fl">2</span>, pch.values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">cyt.plsda</span><span class="op">(</span>data <span class="op">=</span> <span class="va">my_data</span>, group.col <span class="op">=</span> <span class="st">"Group"</span>, trt.col <span class="op">=</span> <span class="st">"Treatment"</span>,</span></span>
+<span class="r-in"><span>title <span class="op">=</span> <span class="st">"PLSDA_byTreatment.pdf"</span>,</span></span>
+<span class="r-in"><span>colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"purple"</span>, <span class="st">"red2"</span><span class="op">)</span>, ellipse <span class="op">=</span> <span class="cn">TRUE</span>, bg <span class="op">=</span> <span class="cn">TRUE</span>, conf.mat <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>var.num <span class="op">=</span> <span class="fl">25</span>, cv.opt <span class="op">=</span> <span class="st">"loocv"</span>, comp.num <span class="op">=</span> <span class="fl">2</span>, pch.values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example with ROC curve and 3D plot (comp.num == 3)</span></span></span>
-<span class="r-in"><span><span class="fu">cyt.plsda</span><span class="op">(</span>x.df <span class="op">=</span> <span class="va">my_data</span>, group.col <span class="op">=</span> <span class="st">"Group"</span>, trt.col <span class="op">=</span> <span class="st">"Treatment"</span>, title <span class="op">=</span> <span class="st">"PLSDA_ROC_3D.pdf"</span>,</span></span>
-<span class="r-in"><span>          colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"purple"</span>, <span class="st">"red2"</span><span class="op">)</span>, ellipse <span class="op">=</span> <span class="cn">TRUE</span>, bg <span class="op">=</span> <span class="cn">TRUE</span>, conf.mat <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>          var.num <span class="op">=</span> <span class="fl">25</span>, cv.opt <span class="op">=</span> <span class="st">"Mfold"</span>, fold.num <span class="op">=</span> <span class="fl">5</span>, scale <span class="op">=</span> <span class="st">"log2"</span>, comp.num <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>          pch.values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span>, style <span class="op">=</span> <span class="st">"3D"</span>, roc <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">cyt.plsda</span><span class="op">(</span>data <span class="op">=</span> <span class="va">my_data</span>, group.col <span class="op">=</span> <span class="st">"Group"</span>, trt.col <span class="op">=</span> <span class="st">"Treatment"</span>,</span></span>
+<span class="r-in"><span>title <span class="op">=</span> <span class="st">"PLSDA_ROC_3D.pdf"</span>, colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"purple"</span>, <span class="st">"red2"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span> ellipse <span class="op">=</span> <span class="cn">TRUE</span>, bg <span class="op">=</span> <span class="cn">TRUE</span>, conf.mat <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span> var.num <span class="op">=</span> <span class="fl">25</span>, cv.opt <span class="op">=</span> <span class="st">"Mfold"</span>, fold.num <span class="op">=</span> <span class="fl">5</span>, scale <span class="op">=</span> <span class="st">"log2"</span>, comp.num <span class="op">=</span> <span class="fl">3</span>,</span></span>
+<span class="r-in"><span> pch.values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span>, style <span class="op">=</span> <span class="st">"3D"</span>, roc <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
