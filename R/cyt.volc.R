@@ -26,14 +26,10 @@
 #' @import ggrepel
 #' @examples
 #' \dontrun{
-#'   cyt.volc(cytodata, group_col = "Group")
-#'   cyt.volc(cytodata, group_col = "Group", fold_change_thresh = 2, top_labels = 15)
+#' cyt.volc(cytodata, group_col = "Group")
+#' cyt.volc(cytodata, group_col = "Group", fold_change_thresh = 2, top_labels = 15)
 #' }
-
-
-
 cyt.volc <- function(data, group_col, cond1 = NULL, cond2 = NULL, fold_change_thresh = 2, p_value_thresh = 0.05, top_labels = 10) {
-
   # Determine the pairs of conditions to compare
   if (!is.null(cond1) && !is.null(cond2)) {
     condition_pairs <- list(c(cond1, cond2))
@@ -72,10 +68,12 @@ cyt.volc <- function(data, group_col, cond1 = NULL, cond2 = NULL, fold_change_th
     p_log <- -log10(p_values)
 
     # Create dataframe for plotting
-    plot_data <- data.frame(Cytokine = names(fold_changes),
-                            FC_Log = fc_log,
-                            P_Log = p_log,
-                            Significant = (abs(fc_log) >= log2(fold_change_thresh)) & (p_log >= -log10(p_value_thresh)))
+    plot_data <- data.frame(
+      Cytokine = names(fold_changes),
+      FC_Log = fc_log,
+      P_Log = p_log,
+      Significant = (abs(fc_log) >= log2(fold_change_thresh)) & (p_log >= -log10(p_value_thresh))
+    )
 
     # Order data by significance and P_Log
     plot_data <- plot_data %>%
@@ -90,17 +88,19 @@ cyt.volc <- function(data, group_col, cond1 = NULL, cond2 = NULL, fold_change_th
       ggrepel::geom_text_repel(aes(label = Label), size = 3, vjust = 1.5, hjust = .5, show.legend = FALSE) +
       scale_color_manual(values = c("grey2", "red")) +
       labs(x = "Log2 Fold Change", y = "-Log10 P-Value", title = paste("Volcano Plot of Cytokine Levels:", cond1, "vs", cond2)) +
-      theme_minimal()+
-      theme(panel.background = element_rect(fill = "white", colour = "white"),
-            plot.background = element_rect(fill = "white", colour = "white"),  # Ensure plot background is white
-            legend.background = element_rect(fill = "white", colour = "white"),  # Ensure legend background is white
-            axis.title = element_text(color = "black", size = 12, face = "bold"),  # Customize axis titles
-            legend.title = element_text(color = "black", size = 10, face = "bold"),  # Customize legend title
-            legend.text = element_text(color = "black"))
+      theme_minimal() +
+      theme(
+        panel.background = element_rect(fill = "white", colour = "white"),
+        plot.background = element_rect(fill = "white", colour = "white"), # Ensure plot background is white
+        legend.background = element_rect(fill = "white", colour = "white"), # Ensure legend background is white
+        axis.title = element_text(color = "black", size = 12, face = "bold"), # Customize axis titles
+        legend.title = element_text(color = "black", size = 10, face = "bold"), # Customize legend title
+        legend.text = element_text(color = "black")
+      )
     # Store the plot in the list
     plots[[paste(cond1, "vs", cond2)]] <- volcano_plot
   }
   # Return the list of plots
-  print(plot_data[,-5], n = nrow(plot_data),na.print = "", quote = FALSE)
+  print(plot_data[, -5], n = nrow(plot_data), na.print = "", quote = FALSE)
   return(plots)
 }

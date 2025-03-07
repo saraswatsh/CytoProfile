@@ -1,12 +1,5 @@
-#########################################################################################################
-# Function to generate ANOVA analysis and results
-# Author: Shubh Saraswat
-# Arguments:
-#   data: a matrix or data frame with groups, stimulation, and continuous variables
-#########################################################################################################
-
 #' ANOVA analysis on all continuous variables within the data.
-#'@param data A data frame or matrix containing both categorical and continuous variables.
+#' @param data A data frame or matrix containing both categorical and continuous variables.
 #'   Character columns are converted to factors; all factor columns are used as predictors,
 #'   while numeric columns are used as continuous outcomes.
 #' @description
@@ -18,7 +11,7 @@
 #' @examples
 #' \dontrun{
 #' data("cytodata")
-#' cyt.anova(cytodata[, c(2:4,5:6)])
+#' cyt.anova(cytodata[, c(2:4, 5:6)])
 #' }
 #' @export
 cyt.anova <- function(data) {
@@ -26,7 +19,7 @@ cyt.anova <- function(data) {
   x1.df <- data
   # Convert any char variables to factors
   cat_vars <- sapply(x1.df, is.character)
-  if(any(cat_vars)){
+  if (any(cat_vars)) {
     x1.df[cat_vars] <- lapply(x1.df[cat_vars], as.factor)
   }
   # Categorical Predictors
@@ -37,15 +30,13 @@ cyt.anova <- function(data) {
   tukey_results <- list()
 
   # ANOVA and Tukey Comparisons
-  for(cat_var in names(x1.df)[cat_preds]){
-    for(outcome in names(x1.df)[cont_vars]){
-      if(length(levels(x1.df[[cat_var]])) == 1){
+  for (cat_var in names(x1.df)[cat_preds]) {
+    for (outcome in names(x1.df)[cont_vars]) {
+      if (length(levels(x1.df[[cat_var]])) == 1) {
         next
-      }
-      else if(length(levels(x1.df[[cat_var]])) > 10){
+      } else if (length(levels(x1.df[[cat_var]])) > 10) {
         next
-      }
-      else{
+      } else {
         # Perform ANOVA tests on each continuous variable with the current categorical variable
         model <- aov(as.formula(paste(outcome, "~", cat_var)), data = x1.df)
         # Tukey summary

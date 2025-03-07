@@ -1,8 +1,8 @@
 Package: CytoProfile
 Title: Cytokine Profiling Analysis Tool
-Version: 1.0
+Version: 0.0.0.9000
 Authors@R: c(
-    person("Shubh", "Saraswat", email = "shubh.saraswat00@gmail.com", role = c("cre", "aut")),
+    person("Shubh", "Saraswat", email = "shubh.saraswat00@gmail.com", role = c("cre", "aut", "cph")),
     person("Xiaohua Douglas", "Zhang", email = "douglas.zhang@uky.edu", role = "aut"))
 Description: CytoProfile is a comprehensive tool for cytokine profiling analysis. 
   It supports quality control using biologically meaningful cutoffs on raw cytokine 
@@ -21,7 +21,6 @@ Imports:
     tidyr,
     pROC,
     plot3D,
-    tidyverse,
     caret,
     xgboost,
     randomForest,
@@ -39,6 +38,6 @@ Suggests:
     devtools,
     Ckmeans.1d.dp
 NeedsCompilation: no
-License: GPL-2
+License: GPL (>= 2)
 LazyData: true
 VignetteBuilder: knitr

@@ -26,10 +26,10 @@ If the number of columns in \code{data} exceeds \code{bin.size}, the function sp
 }
 \examples{
 \dontrun{
-  # Generating boxplots to check for outliers for raw values:
-  cyt.bp(data.df[,-c(1:4)], Title = "Boxplot.byCytokine.Raw.pdf")
+# Generating boxplots to check for outliers for raw values:
+cyt.bp(data.df[, -c(1:4)], Title = "Boxplot.byCytokine.Raw.pdf")
 
-  # Generating boxplots to check for outliers for log2 values:
-  cyt.bp(log2(data.df[,-c(1:4)]), Title = "Boxplot.byCytokine.log2.pdf")
+# Generating boxplots to check for outliers for log2 values:
+cyt.bp(log2(data.df[, -c(1:4)]), Title = "Boxplot.byCytokine.log2.pdf")
 }
 }

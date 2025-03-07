@@ -56,12 +56,16 @@ or stimulation groups.
 }
 \examples{
 \dontrun{
-data <- cytodata[,-c(1,4, 24)]
+data <- cytodata[, -c(1, 4, 24)]
 data.df <- filter(data, Group != "ND" & Treatment != "Unstimulated")
-cyt.pca(data.df, title = "Example PCA Analysis.pdf" ,colors = c("black", "red2"),
-scale = "log2", comp.num = 3, pch.values = c(16,4), style = "3D",
-group.col = "Group", trt.col = "Treatment")
-cyt.pca(data.df, title = "Example PCA Analysis 2.pdf" ,colors = c("black", "red2"),
-scale = "log2", comp.num = 2, pch.values = c(16,4), group.col = "Group")
+cyt.pca(data.df,
+  title = "Example PCA Analysis.pdf", colors = c("black", "red2"),
+  scale = "log2", comp.num = 3, pch.values = c(16, 4), style = "3D",
+  group.col = "Group", trt.col = "Treatment"
+)
+cyt.pca(data.df,
+  title = "Example PCA Analysis 2.pdf", colors = c("black", "red2"),
+  scale = "log2", comp.num = 2, pch.values = c(16, 4), group.col = "Group"
+)
 }
 }

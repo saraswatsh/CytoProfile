@@ -39,15 +39,17 @@
 #' \dontrun{
 #' # Example usage:
 #' data.df0 <- cytodata
-#' data.df <- data.frame(data.df0[,1:4], log2(data.df0[,-c(1:4)]))
-#' data.df <- data.df[,-c(1,3,4)]
+#' data.df <- data.frame(data.df0[, 1:4], log2(data.df0[, -c(1:4)]))
+#' data.df <- data.df[, -c(1, 3, 4)]
 #' data.df <- filter(data.df, Group != "ND")
 #'
-#' cyt.xgb(data = data.df, group_col = 'Group',
-#' nrounds = 500, max_depth = 4, eta = 0.05,
-#' nfold = 5, cv = TRUE, eval_metric = "mlogloss",
-#' early_stopping_rounds = NULL, top_n_features = 10,
-#' verbose = 0, plot_roc = TRUE)
+#' cyt.xgb(
+#'   data = data.df, group_col = "Group",
+#'   nrounds = 500, max_depth = 4, eta = 0.05,
+#'   nfold = 5, cv = TRUE, eval_metric = "mlogloss",
+#'   early_stopping_rounds = NULL, top_n_features = 10,
+#'   verbose = 0, plot_roc = TRUE
+#' )
 #' }
 #'
 #' @import xgboost
@@ -73,11 +75,11 @@ cyt.xgb <- function(data, group_col, train_fraction = 0.7,
   print(class_mapping)
 
   # Convert group column to numeric values using the mapping
-  data[[group_col]] <- as.numeric(data[[group_col]]) - 1  # Start from 0 for xgboost
+  data[[group_col]] <- as.numeric(data[[group_col]]) - 1 # Start from 0 for xgboost
 
   # Prepare the dataset for xgboost (convert to matrix)
   X <- as.matrix(data[, -which(names(data) == group_col)])
-  y <- data[[group_col]]  # Now the numeric class values (0, 1, 2, ..., n-1)
+  y <- data[[group_col]] # Now the numeric class values (0, 1, 2, ..., n-1)
 
   # Split the data into training and testing sets
   set.seed(123)
@@ -93,9 +95,9 @@ cyt.xgb <- function(data, group_col, train_fraction = 0.7,
 
   # Set parameters for xgboost
   params <- list(
-    objective = objective,  # Multi-class classification
+    objective = objective, # Multi-class classification
     eval_metric = eval_metric,
-    num_class = length(unique(y)),  # Number of classes
+    num_class = length(unique(y)), # Number of classes
     max_depth = max_depth,
     eta = eta,
     gamma = gamma,
@@ -106,8 +108,10 @@ cyt.xgb <- function(data, group_col, train_fraction = 0.7,
 
   # Train the XGBoost model
   cat("\n### TRAINING XGBOOST MODEL ###\n")
-  xgb_model <- xgb.train(params = params, data = dtrain, nrounds = nrounds, watchlist = list(train = dtrain, test = dtest),
-                         early_stopping_rounds = early_stopping_rounds, verbose = verbose)
+  xgb_model <- xgb.train(
+    params = params, data = dtrain, nrounds = nrounds, watchlist = list(train = dtrain, test = dtest),
+    early_stopping_rounds = early_stopping_rounds, verbose = verbose
+  )
 
   # Find the appropriate test evaluation metric dynamically
   eval_col_name <- paste0("test_", eval_metric)
@@ -118,9 +122,9 @@ cyt.xgb <- function(data, group_col, train_fraction = 0.7,
 
   # Make predictions on the test set
   preds <- predict(xgb_model, X_test)
-  pred_labels <- max.col(matrix(preds, ncol = length(unique(y_test)), byrow = TRUE)) - 1  # Convert probability output to labels
+  pred_labels <- max.col(matrix(preds, ncol = length(unique(y_test)), byrow = TRUE)) - 1 # Convert probability output to labels
   # For binary classification, reshape the prediction output into a matrix with 2 columns
-  if (length(unique(y_test)) == 2) {  # Binary classification case
+  if (length(unique(y_test)) == 2) { # Binary classification case
     # Reshape the vector into a matrix with two columns: class 0 and class 1 probabilities
     preds_matrix <- matrix(preds, ncol = 2, byrow = TRUE)
 
@@ -133,20 +137,22 @@ cyt.xgb <- function(data, group_col, train_fraction = 0.7,
     }
 
     # Compute ROC and AUC using pROC package
-    roc_obj <- roc(y_test, xgb_prob)  # 'y_test' should be the actual labels, and 'xgb_prob' is the predicted probability
+    roc_obj <- roc(y_test, xgb_prob) # 'y_test' should be the actual labels, and 'xgb_prob' is the predicted probability
     auc_value <- auc(roc_obj)
     cat("\nAUC: ", auc_value, "\n")
 
     # Plot using ggroc
     roc_plot <- ggroc(roc_obj, color = "blue", linewidth = 1.5, legacy.axes = TRUE) +
-      geom_abline(linetype = "dashed", color = "red", linewidth = 1) +  # Random classifier line
+      geom_abline(linetype = "dashed", color = "red", linewidth = 1) + # Random classifier line
       labs(
         title = "ROC Curve (Test Set)",
         x = "1 - Specificity",
         y = "Sensitivity"
       ) +
-      annotate("text", x = 0.75, y = 0.25, label = paste("AUC =", round(auc_value, 3)),
-               size = 5, color = "blue") +
+      annotate("text",
+        x = 0.75, y = 0.25, label = paste("AUC =", round(auc_value, 3)),
+        size = 5, color = "blue"
+      ) +
       theme_minimal() +
       theme(
         panel.background = element_rect(fill = "white", color = NA),
@@ -157,8 +163,7 @@ cyt.xgb <- function(data, group_col, train_fraction = 0.7,
 
     # Display the plot
     print(roc_plot)
-  }
-  else{
+  } else {
     cat("ROC curve is only available for binary classification.")
   }
 
@@ -181,22 +186,26 @@ cyt.xgb <- function(data, group_col, train_fraction = 0.7,
     ylab("Importance (Gain)") +
     xlab("Features") +
     theme_minimal() +
-    theme(legend.position = "none",
-          panel.background = element_rect(fill = "white", colour = "white"),
-          plot.background = element_rect(fill = "white", colour = "white"),
-          legend.background = element_rect(fill = "white", colour = "white"),
-          axis.title = element_text(color = "black", size = 12, face = "bold"),
-          legend.title = element_text(color = "black", size = 10, face = "bold"),
-          legend.text = element_text(color = "black"))
+    theme(
+      legend.position = "none",
+      panel.background = element_rect(fill = "white", colour = "white"),
+      plot.background = element_rect(fill = "white", colour = "white"),
+      legend.background = element_rect(fill = "white", colour = "white"),
+      axis.title = element_text(color = "black", size = 12, face = "bold"),
+      legend.title = element_text(color = "black", size = 10, face = "bold"),
+      legend.text = element_text(color = "black")
+    )
 
   print(ggplot_imp)
 
   # Cross-Validation (optional)
   if (cv) {
     cat("\n### CROSS-VALIDATION USING XGBOOST ###\n")
-    xgb_cv <- xgb.cv(params = params, data = dtrain, nrounds = nrounds, nfold = nfold,
-                     early_stopping_rounds = early_stopping_rounds, verbose = verbose,
-                     prediction = TRUE)
+    xgb_cv <- xgb.cv(
+      params = params, data = dtrain, nrounds = nrounds, nfold = nfold,
+      early_stopping_rounds = early_stopping_rounds, verbose = verbose,
+      prediction = TRUE
+    )
 
     # Print only the best iteration of the CV results
     cat("\nBest iteration from cross-validation:\n")
@@ -207,7 +216,7 @@ cyt.xgb <- function(data, group_col, train_fraction = 0.7,
     preds <- xgb_cv$pred
 
     # Check how many classes are in the dataset
-    num_class <- length(unique(y))  # Get the number of unique classes from labels
+    num_class <- length(unique(y)) # Get the number of unique classes from labels
 
     # Convert probabilities to class labels dynamically
     if (num_class == 2) {
@@ -215,7 +224,7 @@ cyt.xgb <- function(data, group_col, train_fraction = 0.7,
       pred_labels <- ifelse(preds[, 2] > preds[, 1], 1, 0)
     } else {
       # Multi-class classification: select class with highest probability
-      pred_labels <- max.col(preds) - 1  # Convert to labels starting from 0
+      pred_labels <- max.col(preds) - 1 # Convert to labels starting from 0
     }
 
     # Get actual labels for comparison
@@ -230,8 +239,10 @@ cyt.xgb <- function(data, group_col, train_fraction = 0.7,
     cat("\nCross-Validation Accuracy: ", accuracy, "\n")
   }
 
-  return(list(model = xgb_model, confusion_matrix = confusion_mat, importance = top_features,
-              class_mapping = class_mapping,
-              cv_results = if (cv) xgb_cv else NULL,
-              plot = ggplot_imp))
+  return(list(
+    model = xgb_model, confusion_matrix = confusion_mat, importance = top_features,
+    class_mapping = class_mapping,
+    cv_results = if (cv) xgb_cv else NULL,
+    plot = ggplot_imp
+  ))
 }

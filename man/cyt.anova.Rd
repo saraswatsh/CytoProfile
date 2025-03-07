@@ -23,6 +23,6 @@ it conducts Tukey's HSD test and extracts the adjusted p-values for pairwise com
 \examples{
 \dontrun{
 data("cytodata")
-cyt.anova(cytodata[, c(2:4,5:6)])
+cyt.anova(cytodata[, c(2:4, 5:6)])
 }
 }

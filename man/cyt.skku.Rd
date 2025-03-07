@@ -36,10 +36,10 @@ A cutoff is computed as one-tenth of the minimum positive value among all numeri
 \dontrun{
 # Example with grouping columns (e.g., "Group" and "Treatment")
 data(cytodata)
-cyt.skku(cytodata[,-c(1,3,4)], Title = "Skew_and_Kurtosis.pdf", group.cols = c("Group"))
+cyt.skku(cytodata[, -c(1, 3, 4)], Title = "Skew_and_Kurtosis.pdf", group.cols = c("Group"))
 
 # Example without grouping columns (analyzes the entire data set)
-cyt.skku(cytodata[,-c(1,4)], Title = "Skew_and_Kurtosis_Overall.pdf")
+cyt.skku(cytodata[, -c(1, 4)], Title = "Skew_and_Kurtosis_Overall.pdf")
 }
 
 }

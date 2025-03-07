@@ -16,10 +16,10 @@
 #' \dontrun{
 #' # Example with grouping columns (e.g., "Group" and "Treatment")
 #' data(cytodata)
-#' cyt.skku(cytodata[,-c(1,3,4)], Title = "Skew_and_Kurtosis.pdf", group.cols = c("Group"))
+#' cyt.skku(cytodata[, -c(1, 3, 4)], Title = "Skew_and_Kurtosis.pdf", group.cols = c("Group"))
 #'
 #' # Example without grouping columns (analyzes the entire data set)
-#' cyt.skku(cytodata[,-c(1,4)], Title = "Skew_and_Kurtosis_Overall.pdf")
+#' cyt.skku(cytodata[, -c(1, 4)], Title = "Skew_and_Kurtosis_Overall.pdf")
 #' }
 #'
 #' @export
@@ -30,7 +30,6 @@
 
 cyt.skku <- function(data, group.cols = NULL, Title = NULL,
                      printResRaw = FALSE, printResLog = FALSE) {
-
   # Identify measurement columns.
   # If grouping columns are provided, exclude them from measurement columns.
   if (!is.null(group.cols)) {
@@ -46,11 +45,11 @@ cyt.skku <- function(data, group.cols = NULL, Title = NULL,
 
   # Helper function: compute metrics for a given numeric vector Y and grouping variable.
   compute_metrics <- function(Y, groups) {
-    n      <- tapply(Y, groups, function(x) sum(!is.na(x)))
+    n <- tapply(Y, groups, function(x) sum(!is.na(x)))
     center <- tapply(Y, groups, mean, na.rm = TRUE)
     spread <- tapply(Y, groups, function(x) sd(x, na.rm = TRUE) / sqrt(sum(!is.na(x))))
-    skew   <- tapply(Y, groups, skewness, na.rm = TRUE)
-    kurt   <- tapply(Y, groups, kurtosis, na.rm = TRUE)
+    skew <- tapply(Y, groups, skewness, na.rm = TRUE)
+    kurt <- tapply(Y, groups, kurtosis, na.rm = TRUE)
 
     data.frame(
       Group = names(n),
@@ -106,7 +105,6 @@ cyt.skku <- function(data, group.cols = NULL, Title = NULL,
     # Combine results.
     raw_results <- do.call(rbind, raw_list)
     log_results <- do.call(rbind, log_list)
-
   } else {
     # No grouping columns provided: treat the entire dataset as one group.
     groups <- rep("Overall", nrow(data))

@@ -44,7 +44,7 @@ from the specified \code{group_col} for comparisons.
 }
 \examples{
 \dontrun{
-  cyt.volc(cytodata, group_col = "Group")
-  cyt.volc(cytodata, group_col = "Group", fold_change_thresh = 2, top_labels = 15)
+cyt.volc(cytodata, group_col = "Group")
+cyt.volc(cytodata, group_col = "Group", fold_change_thresh = 2, top_labels = 15)
 }
 }

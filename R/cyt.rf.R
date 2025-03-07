@@ -28,16 +28,17 @@
 #' If `run_rfcv` is set to TRUE, Random Forest cross-validation is performed to identify the optimal number of features for classification.
 #'
 #' @examples
-#'
 #' \dontrun{
 #' # Example usage:
 #' data.df0 <- cytodata
-#' data.df <- data.frame(data.df0[,1:4], log2(data.df0[,-c(1:4)]))
-#' data.df <- data.df[,-c(1,3,4)]
+#' data.df <- data.frame(data.df0[, 1:4], log2(data.df0[, -c(1:4)]))
+#' data.df <- data.df[, -c(1, 3, 4)]
 #' data.df <- filter(data.df, Group != "ND")
 #'
-#' results <- cyt.rf(data = data.df, group_col = 'Group', k_folds = 5,
-#' ntree = 1000, mtry = 4, run_rfcv = TRUE, plot_roc = TRUE)
+#' results <- cyt.rf(
+#'   data = data.df, group_col = "Group", k_folds = 5,
+#'   ntree = 1000, mtry = 4, run_rfcv = TRUE, plot_roc = TRUE
+#' )
 #' }
 #'
 #' @import randomForest
@@ -48,7 +49,6 @@
 
 cyt.rf <- function(data, group_col, ntree = 500, mtry = 5, train_fraction = 0.7, plot_roc = FALSE,
                    k_folds = 5, step = 0.5, run_rfcv = TRUE) {
-
   # Ensure the grouping variable is a factor
   data[[group_col]] <- as.factor(data[[group_col]])
 
@@ -104,7 +104,7 @@ cyt.rf <- function(data, group_col, ntree = 500, mtry = 5, train_fraction = 0.7,
   print(confusion_mat$table)
 
   # Additional metrics from confusion matrix
-  cat("\nAccuracy on test set: ", confusion_mat$overall['Accuracy'], "\n")
+  cat("\nAccuracy on test set: ", confusion_mat$overall["Accuracy"], "\n")
 
   # Check if there are two or more classes
   if (length(levels(data[[group_col]])) == 2) {
@@ -119,11 +119,10 @@ cyt.rf <- function(data, group_col, ntree = 500, mtry = 5, train_fraction = 0.7,
     cat("\nSpecificity by class:\n")
     cat(paste0("Class: ", levels(data[[group_col]])[2], ": ", round(specificity, 3), "\n"))
     cat(paste0("Class: ", levels(data[[group_col]])[1], ": ", round(1 - sensitivity, 3), "\n"))
-
   } else {
     # Multi-class case: Sensitivity and Specificity are vectors
-    sensitivity <- confusion_mat$byClass[,"Sensitivity"]
-    specificity <- confusion_mat$byClass[,"Specificity"]
+    sensitivity <- confusion_mat$byClass[, "Sensitivity"]
+    specificity <- confusion_mat$byClass[, "Specificity"]
 
     # Print sensitivity and specificity, labeled by class
     cat("\nSensitivity by class:\n")
@@ -136,7 +135,7 @@ cyt.rf <- function(data, group_col, ntree = 500, mtry = 5, train_fraction = 0.7,
       cat(paste0("Class: ", levels(data[[group_col]])[i], ": ", round(specificity[i], 4), "\n"))
     }
   }
-  if (plot_roc && length(unique(test_data[[group_col]])) == 2) {  # Only for binary classification
+  if (plot_roc && length(unique(test_data[[group_col]])) == 2) { # Only for binary classification
     rf_prob <- predict(rf_model, newdata = test_data, type = "prob")[, 2]
 
     # Compute ROC and AUC using pROC package
@@ -146,14 +145,16 @@ cyt.rf <- function(data, group_col, ntree = 500, mtry = 5, train_fraction = 0.7,
 
     # Create the ROC plot using ggroc()
     roc_plot <- ggroc(roc_obj, color = "blue", linewidth = 1.5, legacy.axes = TRUE) +
-      geom_abline(linetype = "dashed", color = "red", linewidth = 1) +  # Random classifier line
+      geom_abline(linetype = "dashed", color = "red", linewidth = 1) + # Random classifier line
       labs(
         title = "ROC Curve (Test Set)",
         x = "1 - Specificity",
         y = "Sensitivity"
       ) +
-      annotate("text", x = 0.75, y = 0.25, label = paste("AUC =", round(auc_value, 3)),
-               size = 5, color = "blue") +
+      annotate("text",
+        x = 0.75, y = 0.25, label = paste("AUC =", round(auc_value, 3)),
+        size = 5, color = "blue"
+      ) +
       theme_minimal() +
       theme(
         panel.background = element_rect(fill = "white", color = NA),
@@ -174,14 +175,16 @@ cyt.rf <- function(data, group_col, ntree = 500, mtry = 5, train_fraction = 0.7,
     ggtitle("Variable Importance Plot (Mean Decrease in Gini)") +
     xlab("Features") +
     ylab("Importance (Gini Index)") +
-    theme_minimal()+
-    theme(legend.position = "none",
-          panel.background = element_rect(fill = "white", colour = "white"),
-          plot.background = element_rect(fill = "white", colour = "white"),  # Ensure plot background is white
-          legend.background = element_rect(fill = "white", colour = "white"),  # Ensure legend background is white
-          axis.title = element_text(color = "black", size = 12, face = "bold"),  # Customize axis titles
-          legend.title = element_text(color = "black", size = 10, face = "bold"),  # Customize legend title
-          legend.text = element_text(color = "black"))
+    theme_minimal() +
+    theme(
+      legend.position = "none",
+      panel.background = element_rect(fill = "white", colour = "white"),
+      plot.background = element_rect(fill = "white", colour = "white"), # Ensure plot background is white
+      legend.background = element_rect(fill = "white", colour = "white"), # Ensure legend background is white
+      axis.title = element_text(color = "black", size = 12, face = "bold"), # Customize axis titles
+      legend.title = element_text(color = "black", size = 10, face = "bold"), # Customize legend title
+      legend.text = element_text(color = "black")
+    )
 
   print(vip_plot)
 
@@ -203,7 +206,7 @@ cyt.rf <- function(data, group_col, ntree = 500, mtry = 5, train_fraction = 0.7,
       ggtitle("Cross-Validation Error vs. Number of Variables") +
       xlab("Number of Variables") +
       ylab("Cross-Validation Error") +
-      scale_x_continuous(breaks = 1:(ncol(train_data) - 1)) +  # Ensure all variable counts are shown
+      scale_x_continuous(breaks = 1:(ncol(train_data) - 1)) + # Ensure all variable counts are shown
       theme_minimal() +
       theme(
         panel.background = element_rect(fill = "white", color = NA),
@@ -219,6 +222,8 @@ cyt.rf <- function(data, group_col, ntree = 500, mtry = 5, train_fraction = 0.7,
     rfcv_result <- NULL
   }
 
-  return(list(model = rf_model, confusion_matrix = confusion_mat, importance_plot = vip_plot,
-              rfcv_result = rfcv_result, importance_data = importance_data, rfcv_data = rfcv_data))
+  return(list(
+    model = rf_model, confusion_matrix = confusion_mat, importance_plot = vip_plot,
+    rfcv_result = rfcv_result, importance_data = importance_data, rfcv_data = rfcv_data
+  ))
 }

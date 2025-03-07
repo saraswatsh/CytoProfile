@@ -23,37 +23,35 @@
 #' @export
 #' @examples
 #' \dontrun{
-#'   # Generating boxplots to check for outliers for raw values:
-#'   cyt.bp(data.df[,-c(1:4)], Title = "Boxplot.byCytokine.Raw.pdf")
+#' # Generating boxplots to check for outliers for raw values:
+#' cyt.bp(data.df[, -c(1:4)], Title = "Boxplot.byCytokine.Raw.pdf")
 #'
-#'   # Generating boxplots to check for outliers for log2 values:
-#'   cyt.bp(log2(data.df[,-c(1:4)]), Title = "Boxplot.byCytokine.log2.pdf")
+#' # Generating boxplots to check for outliers for log2 values:
+#' cyt.bp(log2(data.df[, -c(1:4)]), Title = "Boxplot.byCytokine.log2.pdf")
 #' }
-
-cyt.bp <- function(data, Title, bin.size=25, mfRow=c(1,1), yLim=NULL) {
-  pdf(file=Title)
-  par(mfrow=mfRow, cex.axis=0.75)
+cyt.bp <- function(data, Title, bin.size = 25, mfRow = c(1, 1), yLim = NULL) {
+  pdf(file = Title)
+  par(mfrow = mfRow, cex.axis = 0.75)
   nCol <- ncol(data)
-  if(nCol > bin.size) {
-    for(i in 1:ceiling(nCol/bin.size)) {
-      theCols <- ((i-1)*bin.size+1):min(i*bin.size, nCol)
-      if(is.null(yLim)) {
-        boxplot(data[, theCols], las=2, cex=0.75)
+  if (nCol > bin.size) {
+    for (i in 1:ceiling(nCol / bin.size)) {
+      theCols <- ((i - 1) * bin.size + 1):min(i * bin.size, nCol)
+      if (is.null(yLim)) {
+        boxplot(data[, theCols], las = 2, cex = 0.75)
       } else {
-        boxplot(data[, theCols], las=2, cex=0.75, ylim=yLim)
+        boxplot(data[, theCols], las = 2, cex = 0.75, ylim = yLim)
       }
     }
   } else {
-    if(is.null(yLim)) {
-      boxplot(data, las=2, cex=0.75)
+    if (is.null(yLim)) {
+      boxplot(data, las = 2, cex = 0.75)
     } else {
-      boxplot(data, las=2, cex=0.75, ylim=yLim)
+      boxplot(data, las = 2, cex = 0.75, ylim = yLim)
     }
   }
   # Remove the ".pdf" from the Title for display purposes
   displayTitle <- sub("\\.pdf$", "", Title, ignore.case = TRUE)
-  title(main=displayTitle, cex.main=1.5, line=2.5)
+  title(main = displayTitle, cex.main = 1.5, line = 2.5)
 
   dev.off()
 }
-

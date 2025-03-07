@@ -55,16 +55,17 @@ For binary classification tasks, it can also plot the ROC curve and calculate th
 If \code{run_rfcv} is set to TRUE, Random Forest cross-validation is performed to identify the optimal number of features for classification.
 }
 \examples{
-
 \dontrun{
 # Example usage:
 data.df0 <- cytodata
-data.df <- data.frame(data.df0[,1:4], log2(data.df0[,-c(1:4)]))
-data.df <- data.df[,-c(1,3,4)]
+data.df <- data.frame(data.df0[, 1:4], log2(data.df0[, -c(1:4)]))
+data.df <- data.df[, -c(1, 3, 4)]
 data.df <- filter(data.df, Group != "ND")
 
-results <- cyt.rf(data = data.df, group_col = 'Group', k_folds = 5,
-ntree = 1000, mtry = 4, run_rfcv = TRUE, plot_roc = TRUE)
+results <- cyt.rf(
+  data = data.df, group_col = "Group", k_folds = 5,
+  ntree = 1000, mtry = 4, run_rfcv = TRUE, plot_roc = TRUE
+)
 }
 
 }

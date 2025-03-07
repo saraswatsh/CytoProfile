@@ -27,10 +27,12 @@ with the format determined by the file extension in \code{title}.
 }
 \examples{
 \dontrun{
-cyt.heatmap(data = data.df,
-scale = "log2",        # Optional scaling
-annotation_col_name = "Group",
-title = "Heatmap.png")
+cyt.heatmap(
+  data = data.df,
+  scale = "log2", # Optional scaling
+  annotation_col_name = "Group",
+  title = "Heatmap.png"
+)
 }
 
 }

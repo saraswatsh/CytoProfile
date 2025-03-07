@@ -17,7 +17,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Shubh Saraswat \email{shubh.saraswat00@gmail.com}
+\strong{Maintainer}: Shubh Saraswat \email{shubh.saraswat00@gmail.com} [copyright holder]
 
 Authors:
 \itemize{

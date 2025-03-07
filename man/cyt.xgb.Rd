@@ -84,15 +84,17 @@ The function also visualizes the top N important features using \code{xgb.ggplot
 \dontrun{
 # Example usage:
 data.df0 <- cytodata
-data.df <- data.frame(data.df0[,1:4], log2(data.df0[,-c(1:4)]))
-data.df <- data.df[,-c(1,3,4)]
+data.df <- data.frame(data.df0[, 1:4], log2(data.df0[, -c(1:4)]))
+data.df <- data.df[, -c(1, 3, 4)]
 data.df <- filter(data.df, Group != "ND")
 
-cyt.xgb(data = data.df, group_col = 'Group',
-nrounds = 500, max_depth = 4, eta = 0.05,
-nfold = 5, cv = TRUE, eval_metric = "mlogloss",
-early_stopping_rounds = NULL, top_n_features = 10,
-verbose = 0, plot_roc = TRUE)
+cyt.xgb(
+  data = data.df, group_col = "Group",
+  nrounds = 500, max_depth = 4, eta = 0.05,
+  nfold = 5, cv = TRUE, eval_metric = "mlogloss",
+  early_stopping_rounds = NULL, top_n_features = 10,
+  verbose = 0, plot_roc = TRUE
+)
 }
 
 }

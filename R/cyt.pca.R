@@ -33,42 +33,46 @@
 #'
 #' @examples
 #' \dontrun{
-#' data <- cytodata[,-c(1,4, 24)]
+#' data <- cytodata[, -c(1, 4, 24)]
 #' data.df <- filter(data, Group != "ND" & Treatment != "Unstimulated")
-#' cyt.pca(data.df, title = "Example PCA Analysis.pdf" ,colors = c("black", "red2"),
-#' scale = "log2", comp.num = 3, pch.values = c(16,4), style = "3D",
-#' group.col = "Group", trt.col = "Treatment")
-#' cyt.pca(data.df, title = "Example PCA Analysis 2.pdf" ,colors = c("black", "red2"),
-#' scale = "log2", comp.num = 2, pch.values = c(16,4), group.col = "Group")
+#' cyt.pca(data.df,
+#'   title = "Example PCA Analysis.pdf", colors = c("black", "red2"),
+#'   scale = "log2", comp.num = 3, pch.values = c(16, 4), style = "3D",
+#'   group.col = "Group", trt.col = "Treatment"
+#' )
+#' cyt.pca(data.df,
+#'   title = "Example PCA Analysis 2.pdf", colors = c("black", "red2"),
+#'   scale = "log2", comp.num = 2, pch.values = c(16, 4), group.col = "Group"
+#' )
 #' }
-
 cyt.pca <- function(data, group.col = NULL, trt.col = NULL, colors = NULL, title,
                     ellipse = FALSE, comp.num = 2, scale = NULL, pch.values = NULL, style = NULL) {
-
   # If one factor is missing, use the provided column for both grouping and treatment.
-  if(is.null(group.col) && !is.null(trt.col)){
+  if (is.null(group.col) && !is.null(trt.col)) {
     message("No group column provided; using the treatment column as the grouping variable.")
     group.col <- trt.col
   }
-  if(is.null(trt.col) && !is.null(group.col)){
+  if (is.null(trt.col) && !is.null(group.col)) {
     message("No treatment column provided; using the group column as the treatment variable.")
     trt.col <- group.col
   }
-  if(is.null(group.col) && is.null(trt.col)){
+  if (is.null(group.col) && is.null(trt.col)) {
     stop("At least one factor column must be provided.")
   }
 
   # Optionally apply log2 transformation only to numeric columns
-  if(!is.null(scale) && scale == "log2"){
+  if (!is.null(scale) && scale == "log2") {
     # Identify numeric columns not corresponding to the factor columns
     numeric_idx <- sapply(data, is.numeric)
     # Exclude the group and treatment columns (if present, even if numeric)
     numeric_idx[names(data) %in% unique(c(group.col, trt.col))] <- FALSE
-    if(sum(numeric_idx) == 0){
+    if (sum(numeric_idx) == 0) {
       warning("No numeric columns available for log2 transformation.")
     }
-    data <- data.frame(data[, unique(c(group.col, trt.col)), drop = FALSE],
-                       log2(data[, numeric_idx, drop = FALSE]))
+    data <- data.frame(
+      data[, unique(c(group.col, trt.col)), drop = FALSE],
+      log2(data[, numeric_idx, drop = FALSE])
+    )
     print("Results based on log2 transformation:")
   } else {
     print("Results based on no transformation:")
@@ -89,7 +93,7 @@ cyt.pca <- function(data, group.col = NULL, trt.col = NULL, colors = NULL, title
   pdf(file = title, width = 8.5, height = 8)
 
   # Case 1: Overall PCA when both factors are the same.
-  if(group.col == trt.col){
+  if (group.col == trt.col) {
     Title <- "Overall Analysis"
 
     # Remove the factor column(s) from predictors and keep only numeric columns
@@ -97,7 +101,7 @@ cyt.pca <- function(data, group.col = NULL, trt.col = NULL, colors = NULL, title
     theData.df <- theData.df[, sapply(theData.df, is.numeric)]
 
     theGroups <- as.vector(data[[group.col]])
-    if(length(unique(theGroups)) < 2){
+    if (length(unique(theGroups)) < 2) {
       stop("The grouping variable must have at least two levels for PCA. Please provide an appropriate grouping column.")
     }
 
@@ -106,19 +110,22 @@ cyt.pca <- function(data, group.col = NULL, trt.col = NULL, colors = NULL, title
     group_factors <- sort(unique(theGroups))
 
     # Plot PCA individuals plot
-    plotIndiv(cytokine.pca, group = theGroups, ind.names = FALSE, legend = TRUE,
-              col = colors, title = paste("PCA:", Title), ellipse = ellipse,
-              pch = pch.values, pch.levels = group_factors)
+    plotIndiv(cytokine.pca,
+      group = theGroups, ind.names = FALSE, legend = TRUE,
+      col = colors, title = paste("PCA:", Title), ellipse = ellipse,
+      pch = pch.values, pch.levels = group_factors
+    )
 
     # 3D Plot if requested and exactly three components are used
-    if(!is.null(style) && comp.num == 3 && (tolower(style) == "3d")){
+    if (!is.null(style) && comp.num == 3 && (tolower(style) == "3d")) {
       cytokine.scores <- cytokine.pca$variates$X
-      plot3D::scatter3D(cytokine.scores[,1], cytokine.scores[,2], cytokine.scores[,3],
-                        pch = pch.values, col = colors,
-                        xlab = "PC1", ylab = "PC2", zlab = "PC3",
-                        main = paste("3D Plot:", Title),
-                        theta = 20, phi = 30, bty = "g", colkey = FALSE)
-    } else if(!is.null(style)){
+      plot3D::scatter3D(cytokine.scores[, 1], cytokine.scores[, 2], cytokine.scores[, 3],
+        pch = pch.values, col = colors,
+        xlab = "PC1", ylab = "PC2", zlab = "PC3",
+        main = paste("3D Plot:", Title),
+        theta = 20, phi = 30, bty = "g", colkey = FALSE
+      )
+    } else if (!is.null(style)) {
       stop("Please enter a valid style for 3D plot: '3d' or '3D' or enter a valid number of components.")
     }
 
@@ -141,33 +148,40 @@ cyt.pca <- function(data, group.col = NULL, trt.col = NULL, colors = NULL, title
       theme_minimal() +
       scale_x_continuous(breaks = 1:comp.num) +
       geom_text(aes(y = Variance, label = paste0(round(Variance * 100, 1), "%")),
-                vjust = -1.5, hjust = 0.5, size = 4) +
+        vjust = -1.5, hjust = 0.5, size = 4
+      ) +
       geom_text(aes(y = Cumulative, label = paste0(round(Cumulative * 100, 1), "%")),
-                vjust = 1.5, hjust = 0.5, size = 4)
+        vjust = 1.5, hjust = 0.5, size = 4
+      )
 
     print(scree_plot)
 
     # Plot loadings for each component
-    for(comp in 1:comp.num) {
-      plotLoadings(cytokine.pca, comp = comp, size.names = 1, size.legend = 1, col = "grey",
-                   legend.color = colors, title = paste("Loadings Component", comp, ":", Title), legend = TRUE)
+    for (comp in 1:comp.num) {
+      plotLoadings(cytokine.pca,
+        comp = comp, size.names = 1, size.legend = 1, col = "grey",
+        legend.color = colors, title = paste("Loadings Component", comp, ":", Title), legend = TRUE
+      )
     }
 
     # Biplot for components 1 and 2
-    biplot_obj <- biplot(cytokine.pca, comp = c(1, 2), group = theGroups, col.per.group = colors,
-                         var.arrow.col = "blue", var.arrow.size = 0.5, var.arrow.length = 0.2,
-                         var.names = TRUE, var.names.col = "blue", var.names.size = 3,
-                         ind.names = FALSE, legend = TRUE, legend.title = "Group")
+    biplot_obj <- biplot(cytokine.pca,
+      comp = c(1, 2), group = theGroups, col.per.group = colors,
+      var.arrow.col = "blue", var.arrow.size = 0.5, var.arrow.length = 0.2,
+      var.names = TRUE, var.names.col = "blue", var.names.size = 3,
+      ind.names = FALSE, legend = TRUE, legend.title = "Group"
+    )
     print(biplot_obj)
 
     # Correlation circle plot
-    plotVar(cytokine.pca, comp = c(1, 2), var.names = TRUE, cex = 4, col = "black",
-            overlap = TRUE, title = paste("Correlation Circle Plot:", Title), style = "ggplot2")
-
+    plotVar(cytokine.pca,
+      comp = c(1, 2), var.names = TRUE, cex = 4, col = "black",
+      overlap = TRUE, title = paste("Correlation Circle Plot:", Title), style = "ggplot2"
+    )
   } else {
     # Case 2: When grouping and treatment columns differ
     levels.vec <- unique(data[[trt.col]])
-    for(i in seq_along(levels.vec)) {
+    for (i in seq_along(levels.vec)) {
       current.level <- levels.vec[i]
       Title_sub <- current.level
       condt <- data[[trt.col]] == current.level
@@ -176,7 +190,7 @@ cyt.pca <- function(data, group.col = NULL, trt.col = NULL, colors = NULL, title
       theData.df <- theData.df[, sapply(theData.df, is.numeric)]
       theGroups <- as.vector(data[condt, group.col])
 
-      if(length(unique(theGroups)) < 2){
+      if (length(unique(theGroups)) < 2) {
         stop("The grouping variable must have at least two levels for PCA. Please provide an appropriate grouping column.")
       }
 
@@ -185,18 +199,21 @@ cyt.pca <- function(data, group.col = NULL, trt.col = NULL, colors = NULL, title
       group_factors <- sort(unique(theGroups))
 
       # PCA individuals plot for current treatment level
-      plotIndiv(cytokine.pca, group = theGroups, ind.names = FALSE, legend = TRUE,
-                col = colors, title = paste("PCA of", current.level), ellipse = ellipse,
-                pch = pch.values, pch.levels = group_factors)
+      plotIndiv(cytokine.pca,
+        group = theGroups, ind.names = FALSE, legend = TRUE,
+        col = colors, title = paste("PCA of", current.level), ellipse = ellipse,
+        pch = pch.values, pch.levels = group_factors
+      )
 
       # 3D Plot if applicable
-      if(!is.null(style) && comp.num == 3 && (tolower(style) == "3d")){
+      if (!is.null(style) && comp.num == 3 && (tolower(style) == "3d")) {
         cytokine.scores <- cytokine.pca$variates$X
-        plot3D::scatter3D(cytokine.scores[,1], cytokine.scores[,2], cytokine.scores[,3],
-                          pch = pch.values, col = colors, xlab = "PC1", ylab = "PC2", zlab = "PC3",
-                          main = paste("3D Plot:", current.level),
-                          theta = 20, phi = 30, bty = "g", colkey = FALSE)
-      } else if(!is.null(style)){
+        plot3D::scatter3D(cytokine.scores[, 1], cytokine.scores[, 2], cytokine.scores[, 3],
+          pch = pch.values, col = colors, xlab = "PC1", ylab = "PC2", zlab = "PC3",
+          main = paste("3D Plot:", current.level),
+          theta = 20, phi = 30, bty = "g", colkey = FALSE
+        )
+      } else if (!is.null(style)) {
         stop("Please enter a valid style for 3D plot: '3d' or '3D' or enter a valid number of components.")
       }
 
@@ -219,28 +236,36 @@ cyt.pca <- function(data, group.col = NULL, trt.col = NULL, colors = NULL, title
         theme_minimal() +
         scale_x_continuous(breaks = 1:comp.num) +
         geom_text(aes(y = Variance, label = paste0(round(Variance * 100, 1), "%")),
-                  vjust = -1.5, hjust = 0.5, size = 4) +
+          vjust = -1.5, hjust = 0.5, size = 4
+        ) +
         geom_text(aes(y = Cumulative, label = paste0(round(Cumulative * 100, 1), "%")),
-                  vjust = 1.5, hjust = 0.5, size = 4)
+          vjust = 1.5, hjust = 0.5, size = 4
+        )
 
       print(scree_plot)
 
       # Plot loadings for each component
-      for(comp in 1:comp.num) {
-        plotLoadings(cytokine.pca, comp = comp, size.names = 1, size.legend = 1, col = "grey",
-                     legend.color = colors, title = paste("Loadings Component", comp, ":", current.level), legend = TRUE)
+      for (comp in 1:comp.num) {
+        plotLoadings(cytokine.pca,
+          comp = comp, size.names = 1, size.legend = 1, col = "grey",
+          legend.color = colors, title = paste("Loadings Component", comp, ":", current.level), legend = TRUE
+        )
       }
 
       # Biplot for components 1 and 2
-      biplot_obj <- biplot(cytokine.pca, comp = c(1, 2), group = theGroups, col.per.group = colors,
-                           var.arrow.col = "blue", var.arrow.size = 0.5, var.arrow.length = 0.2,
-                           var.names = TRUE, var.names.col = "blue", var.names.size = 3,
-                           ind.names = FALSE, legend = TRUE, legend.title = "Group")
+      biplot_obj <- biplot(cytokine.pca,
+        comp = c(1, 2), group = theGroups, col.per.group = colors,
+        var.arrow.col = "blue", var.arrow.size = 0.5, var.arrow.length = 0.2,
+        var.names = TRUE, var.names.col = "blue", var.names.size = 3,
+        ind.names = FALSE, legend = TRUE, legend.title = "Group"
+      )
       print(biplot_obj)
 
       # Correlation circle plot
-      plotVar(cytokine.pca, comp = c(1, 2), var.names = TRUE, cex = 4, col = "black",
-              overlap = TRUE, title = paste("Correlation Circle Plot:", current.level), style = "ggplot2")
+      plotVar(cytokine.pca,
+        comp = c(1, 2), var.names = TRUE, cex = 4, col = "black",
+        overlap = TRUE, title = paste("Correlation Circle Plot:", current.level), style = "ggplot2"
+      )
     }
   }
 

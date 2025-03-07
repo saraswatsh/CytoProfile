@@ -19,19 +19,18 @@
 #'
 #' @examples
 #' \dontrun{
-#' cyt.heatmap(data = data.df,
-#' scale = "log2",        # Optional scaling
-#' annotation_col_name = "Group",
-#' title = "Heatmap.png")
+#' cyt.heatmap(
+#'   data = data.df,
+#'   scale = "log2", # Optional scaling
+#'   annotation_col_name = "Group",
+#'   title = "Heatmap.png"
+#' )
 #' }
 #'
-
 cyt.heatmap <- function(data, scale = NULL, annotation_col_name = NULL, title) {
-
-  if(grepl(".pdf", title)){
+  if (grepl(".pdf", title)) {
     pdf(file = title)
-  }
-  else if(grepl(".png", title)){
+  } else if (grepl(".png", title)) {
     png(filename = title, res = 300, width = 2100, height = 2100, units = "px")
   }
   # Ensure data is a data frame and extract only numeric data
@@ -46,17 +45,17 @@ cyt.heatmap <- function(data, scale = NULL, annotation_col_name = NULL, title) {
 
   # Apply log2 transformation if requested
   if (!is.null(scale) && scale == "log2") {
-    numeric_data[numeric_data <= 0] <- NA  # Set non-positive values to NA
+    numeric_data[numeric_data <= 0] <- NA # Set non-positive values to NA
     numeric_data <- log2(numeric_data)
   }
   # Generate the annotation color bar v2
   side_colors <- NULL
-  palette_colors <- NULL  # Initialize a variable for palette colors
+  palette_colors <- NULL # Initialize a variable for palette colors
   if (!is.null(annotation_col_name) && annotation_col_name %in% names(data)) {
     ann_data <- as.factor(data[[annotation_col_name]])
     num_levels <- length(levels(ann_data))
-    palette_colors <- rainbow(num_levels)  # Generate colors
-    side_colors <- rainbow(num_levels)  # Use rainbow to generate a color for each level
+    palette_colors <- rainbow(num_levels) # Generate colors
+    side_colors <- rainbow(num_levels) # Use rainbow to generate a color for each level
     # Ensure the correct assignment of colors to the side bar
     side_colors <- side_colors[as.integer(ann_data[1:ncol(numeric_data)])]
   }
@@ -67,14 +66,15 @@ cyt.heatmap <- function(data, scale = NULL, annotation_col_name = NULL, title) {
 
   # Plot the heatmap using heatmap.2
   gplots::heatmap.2(as.matrix(numeric_data),
-                    distfun = function(x) dist(x, method = "euclidean"),
-                    hclustfun = function(x) hclust(x, method = "complete"),
-                    dendrogram = "both",
-                    #ColSideColors = as.vector(side_colors),
-                    #col = heatmap_colors,
-                    trace = "column",
-                    key = TRUE,
-                    cexCol = 1,
-                    margins = c(10,10))
+    distfun = function(x) dist(x, method = "euclidean"),
+    hclustfun = function(x) hclust(x, method = "complete"),
+    dendrogram = "both",
+    # ColSideColors = as.vector(side_colors),
+    # col = heatmap_colors,
+    trace = "column",
+    key = TRUE,
+    cexCol = 1,
+    margins = c(10, 10)
+  )
   dev.off()
 }

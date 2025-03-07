@@ -16,17 +16,16 @@
 #'
 #' @examples
 #' \dontrun{
-#' data.df <- cytodata[,-c(1,4)]
+#' data.df <- cytodata[, -c(1, 4)]
 #' cyt.bp2(data.df, Title = "boxplot2.test2.pdf", scale = "log2")
 #' }
 #' @export
 #' @import ggplot2
 
-cyt.bp2 <- function(data, Title, mfRow=c(1,1), scale = NULL, yLim=NULL) {
-
+cyt.bp2 <- function(data, Title, mfRow = c(1, 1), scale = NULL, yLim = NULL) {
   # Convert any character variables to factors
   cat_vars <- sapply(data, is.character)
-  if(any(cat_vars)){
+  if (any(cat_vars)) {
     data[cat_vars] <- lapply(data[cat_vars], as.factor)
   }
 
@@ -35,33 +34,35 @@ cyt.bp2 <- function(data, Title, mfRow=c(1,1), scale = NULL, yLim=NULL) {
   fac_cols <- sapply(data, is.factor)
 
   # Ensure there is at least one numeric and one factor column
-  if(!any(num_cols)) stop("Data must contain at least one numeric column")
-  if(!any(fac_cols)) stop("Data must contain at least one factor column")
+  if (!any(num_cols)) stop("Data must contain at least one numeric column")
+  if (!any(fac_cols)) stop("Data must contain at least one factor column")
 
   # Apply log2 transformation if log_scale is TRUE
-  if(!is.null(scale) && scale == "log2"){
+  if (!is.null(scale) && scale == "log2") {
     data[num_cols] <- lapply(data[num_cols], function(x) log2(x))
   }
 
   # Generate boxplots
-  pdf(file=Title)
-  par(mfrow=mfRow, cex.axis=0.75)
+  pdf(file = Title)
+  par(mfrow = mfRow, cex.axis = 0.75)
 
   # Loop through each numeric column
-  for(num_col in names(data)[num_cols]) {
+  for (num_col in names(data)[num_cols]) {
     # Loop through each factor column
-    for(fac_col in names(data)[fac_cols]) {
+    for (fac_col in names(data)[fac_cols]) {
       # Create the boxplot
       p <- ggplot(data, aes_string(x = fac_col, y = num_col, fill = fac_col)) +
         geom_boxplot(alpha = 0.5) +
         geom_jitter(width = 0.2, alpha = 0.5) +
-        labs(title = paste0(num_col, " by ", fac_col),
-             x = fac_col, y = paste0("Values of ", num_col)) +
+        labs(
+          title = paste0(num_col, " by ", fac_col),
+          x = fac_col, y = paste0("Values of ", num_col)
+        ) +
         theme_minimal() +
         theme(legend.position = "bottom", plot.title = element_text(hjust = 0.5)) +
         guides(fill = guide_legend(title = NULL))
 
-      if(!is.null(yLim)) {
+      if (!is.null(yLim)) {
         p <- p + ylim(yLim)
       }
 

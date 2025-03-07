@@ -42,9 +42,11 @@ computed statistics to the console.
 }
 \examples{
 \dontrun{
-data.df <- cytodata[,-c(1,3:4)]
-dfp <- cyt.dualflashplot(data.df, group_var = "Group", group1 = "T2D", group2 = "ND",
-ssmd_thresh = -0.2, log2fc_thresh = 1, top_labels = 10)
+data.df <- cytodata[, -c(1, 3:4)]
+dfp <- cyt.dualflashplot(data.df,
+  group_var = "Group", group1 = "T2D", group2 = "ND",
+  ssmd_thresh = -0.2, log2fc_thresh = 1, top_labels = 10
+)
 }
 
 }
