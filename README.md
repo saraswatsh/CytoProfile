@@ -33,7 +33,9 @@ devtools::install_github("saraswatsh/CytoProfile")
 ## Example
 
 Below are examples of using the functions provided in CytoProfile. Any
-saved files whether PDF or PNG is available in the output folder.
+saved or generated files that are PDF or PNG format will be found at in
+the [Output
+Folder](https://github.com/saraswatsh/CytoProfile/tree/main/output).
 
 ## 1. Data Loading and set up
 
@@ -70,7 +72,7 @@ library(CytoProfile)
 
 # Loading in data
 data("cytodata")
-data.df <- cytodata
+data_df <- cytodata
 
 ## Setting working directory to output folder to save the PDF files. 
 opts_knit$set(root.dir = "E:/Desktop/RA/R Package/CytoProfile/output")
@@ -82,26 +84,35 @@ opts_knit$set(root.dir = "E:/Desktop/RA/R Package/CytoProfile/output")
 
 ``` r
 # Generating boxplots to check for outliers for raw values
-cyt.bp(data.df[,-c(1:4)], Title = "Boxplot.byCytokine.Raw.pdf") # We are removing the first 4 columns as we only want the continuous variables. 
+# Generating boxplots to check for outliers for raw values
+cyt_bp(data_df[, -c(1:4)], 
+       pdf_title = "boxplot_by_cytokine_raw.pdf")  
 #> png 
 #>   2
+# Removing the first 4 columns to retain only continuous variables.
 
 # Generating boxplots to check for outliers for log2 values
-cyt.bp(log2(data.df[,-c(1:4)]), Title = "Boxplot.byCytokine.log2.pdf") # Make sure to use log2 to transform the cytokines and same reason as above for removing initial columns
+cyt_bp(log2(data_df[, -c(1:4)]), 
+       pdf_title = "boxplot_by_cytokine_log2.pdf")  
 #> png 
 #>   2
+# Using log2 transformation for cytokine values.
 ```
 
 ### Group-Specific Boxplots
 
 ``` r
-# Second function for generating boxplots
-# Raw values
-cyt.bp2(data.df[,-c(1,4)], Title = "Boxplot.byGroupandTreatment.raw.pdf", scale = NULL)
+# Raw values for group-specific boxplots
+cyt_bp2(data_df[, -c(1, 4)], 
+        pdf_title = "boxplot_by_group_and_treatment_raw.pdf", 
+        scale = NULL)
 #> png 
 #>   2
-# Log-2 transformation
-cyt.bp2(data.df[,-c(1,4)], Title = "Boxplot.byGroupandTreatment.log2.pdf", scale = "log2")
+
+# Log2-transformed group-specific boxplots
+cyt_bp2(data_df[, -c(1, 4)], 
+        pdf_title = "boxplot_by_group_and_treatment_log2.pdf", 
+        scale = "log2")
 #> png 
 #>   2
 ```
@@ -109,10 +120,15 @@ cyt.bp2(data.df[,-c(1,4)], Title = "Boxplot.byGroupandTreatment.log2.pdf", scale
 ## 3. Skewness and Kurtosis
 
 ``` r
-# Generating histograms for skewness and kurtosis based only on raw values and log2 transformation
-cyt.skku(data.df[,-c(1:4)], Title = "Skew and Kurtosis.pdf", group.cols = NULL)
-# Generating histograms for skewness and kurtosis based on raw values and log2 transformation with grouping column
-cyt.skku(cytodata[,-c(1,3,4)], Title = "Skew and Kurtosis 2.pdf", group.cols = c("Group"))
+# Histogram of skewness and kurtosis for raw data
+cyt_skku(data_df[, -c(1:4)], 
+         pdf_title = "skew_and_kurtosis.pdf", 
+         group_cols = NULL)
+
+# Histogram of skewness and kurtosis with grouping (e.g., "Group")
+cyt_skku(cytodata[, -c(1, 3, 4)], 
+         pdf_title = "skew_and_kurtosis_2.pdf", 
+         group_cols = c("Group"))
 ```
 
 ## 4. Error Bar Plots
@@ -120,17 +136,19 @@ cyt.skku(cytodata[,-c(1,3,4)], Title = "Skew and Kurtosis 2.pdf", group.cols = c
 ### Basic Error Bar Plot
 
 ``` r
-# Generating Error Bar Plot
-cytokine.mat <- cytodata[, -c(1:4)] # Extracting all cytokines to be stored in one object
-cytokineNames <- colnames(cytokine.mat) # Extracting the cytokine names
-nCytokine <- length(cytokineNames) # Obtaining the total number of cytokines
-results <- cyt.skku(cytodata[,-c(1,4)], printResLog = TRUE, group.cols = c("Group", "Treatment")) # Extracting values
-pdf( "barErrorPlot.pdf" )
-par(mfrow=c(2,2), mar=c(8.1,  4.1, 4.1, 2.1) )
-for( k in 1:nCytokine ) {
-  center.df <- data.frame( "name"=rownames(results[,,k]), results[,,k] )
-  cyt.errbp(center.df, pLab=FALSE, esLab=FALSE, classSymbol=TRUE,
-               ylab="Concentration in log2 scale",  main=cytokineNames[k] )
+# Generating basic error bar plots
+cytokine_mat <- cytodata[, -c(1:4)]  # Extract all cytokines
+cytokineNames <- colnames(cytokine_mat)  # Extract cytokine names
+nCytokine <- length(cytokineNames)  # Total number of cytokines
+results <- cyt_skku(cytodata[, -c(1,4)], print_res_log = TRUE, 
+                    group_cols = c("Group", "Treatment"))
+pdf("bar_error_plot.pdf")
+par(mfrow = c(2,2), mar = c(8.1, 4.1, 4.1, 2.1))
+for (k in 1:nCytokine) {
+  center_df <- data.frame(name = rownames(results[,,k]), results[,,k])
+  cyt_errbp(center_df,
+  p_lab = FALSE, es_lab = FALSE, class_symbol = TRUE,
+  y_lab = "Concentration in log2 scale", main = cytokineNames[k])
 }
 dev.off()
 #> png 
@@ -141,47 +159,52 @@ dev.off()
 
 ``` r
 # Generating Error Bar Plot enriched with p-value and effect size 
-data.df <- cytodata[,-1]
-cyt.mat <- log2(data.df[,-c(1:3)])
-data.df1 <- data.frame(data.df[,c(1:3)], cyt.mat)
-cytokineNames <- colnames(cyt.mat)
+data_df <- cytodata[, -1]
+cyt_mat <- log2(data_df[, -c(1:3)])
+data_df1 <- data.frame(data_df[, 1:3], cyt_mat)
+cytokineNames <- colnames(cyt_mat)
 nCytokine <- length(cytokineNames)
-condt <- !is.na(cyt.mat) & cyt.mat >0
-Cutoff <- min(cyt.mat[condt], na.rm=TRUE)/10
-# Creating a matrix for p-values from anova tests
-p.aov.mat <- matrix(NA, nrow=nCytokine, ncol=3)
-# Changing column names
-dimnames(p.aov.mat) <- list( cytokineNames, c("Group", "Treatment", "Interaction") )
-# Matrix to extract p-values from Tukey group comparison
-p.groupComp.mat <- matrix(NA, nrow=nCytokine, ncol=3)
-# Changing column names
-dimnames(p.groupComp.mat) <- list( cytokineNames, c("2-1", "3-1", "3-2") )
-# Matrix for SSMD same size as other matrices
-ssmd.groupComp.stm.mat <- mD.groupComp.stm.mat <- p.groupComp.stm.mat <- p.groupComp.mat
+condt <- !is.na(cyt_mat) & (cyt_mat > 0)
+Cutoff <- min(cyt_mat[condt], na.rm = TRUE) / 10
 
-for( i in 1:nCytokine ) {
-  Cytokine <- (cyt.mat[,i]+Cutoff)
-  cytokine.aov <- aov( Cytokine ~ Group * Treatment, data=data.df)
-  aov.table <- summary(cytokine.aov)[[1]]
-  p.aov.mat[i,] <- aov.table[1:3,5]
-  p.groupComp.mat[i,] <- TukeyHSD(cytokine.aov)$Group[1:3,4]
-  p.groupComp.stm.mat[i,] <- TukeyHSD(cytokine.aov)$`Group:Treatment`[c(1:3),4]
-  mD.groupComp.stm.mat[i,] <- TukeyHSD(cytokine.aov)$`Group:Treatment`[c(1:3),1]
-  ssmd.groupComp.stm.mat[i,]<-mD.groupComp.stm.mat[i,]/sqrt(2*aov.table["Residuals","Mean Sq"])
+# Create matrices for ANOVA and Tukey results
+p_aov_mat <- matrix(NA, nrow = nCytokine, ncol = 3)
+dimnames(p_aov_mat) <- list(cytokineNames, 
+                            c("Group", "Treatment", "Interaction"))
+p_groupComp_mat <- matrix(NA, nrow = nCytokine, ncol = 3)
+dimnames(p_groupComp_mat) <- list(cytokineNames, 
+                                  c("2-1", "3-1", "3-2"))
+ssmd_groupComp_stm_mat <- mD_groupComp_stm_mat <- p_groupComp_stm_mat <- 
+  p_groupComp_mat
+
+for (i in 1:nCytokine) {
+  Cytokine <- (cyt_mat[, i] + Cutoff)
+  cytokine_aov <- aov(Cytokine ~ Group * Treatment, data = data_df)
+  aov_table <- summary(cytokine_aov)[[1]]
+  p_aov_mat[i, ] <- aov_table[1:3, 5]
+  p_groupComp_mat[i, ] <- TukeyHSD(cytokine_aov)$Group[1:3, 4]
+  p_groupComp_stm_mat[i, ] <- TukeyHSD(cytokine_aov)$`Group:Treatment`[1:3, 4]
+  mD_groupComp_stm_mat[i, ] <- TukeyHSD(cytokine_aov)$`Group:Treatment`[1:3, 1]
+  ssmd_groupComp_stm_mat[i, ] <- mD_groupComp_stm_mat[i, ] / 
+    sqrt(2 * aov_table["Residuals", "Mean Sq"])
 }
 
-results <- cyt.skku(cytodata[,-c(1,4)], printResLog = TRUE, group.cols = c("Group", "Treatment"))
-pdf( "barErrorPlot.enriched.pdf" )
-par(mfrow=c(2,3), mar=c(8.1,  4.1, 4.1, 2.1) )
-for( k in 1:nCytokine ) {
-  result.mat <- results[1:9,,k]
-  center.df <-
-    data.frame( "name"=rownames(result.mat), result.mat[, c("center", "spread")],
-                "p.value"= c(1,p.groupComp.stm.mat[k,1:2]),
-                "effect.size"=c(0,ssmd.groupComp.stm.mat[k,1:2])
-    )
-  cyt.errbp(center.df, pLab=TRUE, esLab=TRUE, classSymbol=TRUE,
-               ylab="Concentration in log2 scale", main=cytokineNames[k])
+results <- cyt_skku(cytodata[, -c(1,4)], print_res_log = TRUE, 
+                    group_cols = c("Group", "Treatment"))
+pdf("bar_error_plot_enriched.pdf")
+par(mfrow = c(2,3), mar = c(8.1, 4.1, 4.1, 2.1))
+for (k in 1:nCytokine) {
+  result_mat <- results[1:9, , k]
+  center_df <- data.frame(
+    name = rownames(result_mat),
+    result_mat[, c("center", "spread")],
+    p.value = c(1, p_groupComp_stm_mat[k, 1:2]),
+    effect.size = c(0, ssmd_groupComp_stm_mat[k, 1:2])
+  )
+  cyt_errbp(center_df, p_lab = TRUE, es_lab = TRUE, 
+            class_symbol = TRUE,
+            y_lab = "Concentration in log2 scale", 
+            main = cytokineNames[k])
 }
 dev.off()
 #> png 
@@ -194,16 +217,16 @@ dev.off()
 
 ``` r
 # Performing Two Sample T-test and Mann Whitney U Test
-data.df <- cytodata[,-c(1,4)]
-data.df <- filter(data.df, Group != "ND", Treatment != "Unstimulated")
+data_df <- cytodata[, -c(1,4)]
+data_df <- filter(data_df, Group != "ND", Treatment != "Unstimulated")
 # Two sample T-test
-cyt.ttest(data.df[, c(1:2, 5:6)], scale = "log2")
+cyt_ttest(data_df[, c(1:2, 5:6)], scale = "log2")
 #> T-test p-value for PreT2D vs T2D on IFN.G: 0.02082
 #> T-test p-value for PreT2D vs T2D on IL.10: 0.02484
 #> T-test p-value for CD3/CD28 vs LPS on IFN.G: 7.31e-22
 #> T-test p-value for CD3/CD28 vs LPS on IL.10: 0.0001402
-# Mann Whitney U Test
-cyt.ttest(data.df[, c(1:2, 5:6)])
+# Mann-Whitney U Test
+cyt_ttest(data_df[, c(1:2, 5:6)])
 #> Mann-Whitney U test p-value for PreT2D vs T2D on IFN.G: 0.008462
 #> Mann-Whitney U test p-value for PreT2D vs T2D on IL.10: 0.01191
 #> Mann-Whitney U test p-value for CD3/CD28 vs LPS on IFN.G: 5.915e-19
@@ -213,8 +236,8 @@ cyt.ttest(data.df[, c(1:2, 5:6)])
 ### ANOVA Comparisons Test
 
 ``` r
-# Performing ANOVA comparisons test for univariate analysis
-cyt.anova(data.df[,c(1:2,5:6)]) # This only considers 2 cytokines for this example only
+# Perform ANOVA comparisons test (example with 2 cytokines)
+cyt_anova(data_df[, c(1:2, 5:6)])
 #> $IFN.G_Group
 #> [1] 0.00356939
 #> 
@@ -237,94 +260,25 @@ cyt.anova(data.df[,c(1:2,5:6)]) # This only considers 2 cytokines for this examp
 # we will also print out the confusion matrix based on classification. 
 # Note this takes into account all groups and treatment and all values are log transformed through 
 # cyt.plsda function. 
-data.df <- cytodata
-cyt.plsda(data.df[,-c(1,4)], title = "Example PLS-DA Analysis.pdf", 
+data_df <- cytodata
+cyt_splsda(data_df[, -c(1,4)], 
+          pdf_title = "example_spls_da_analysis.pdf", 
           colors = c("black", "purple", "red2"),
           bg = TRUE, scale = "log2", 
-          conf.mat = TRUE, var.num = 25, 
-          cv.opt = "loocv",
-          comp.num = 3, pch.values = c(16, 4, 3), style = "3d", 
-          group.col = "Group", trt.col = "Treatment", roc = TRUE) 
+          conf_mat = TRUE, var_num = 25, 
+          cv_opt = "loocv",
+          comp_num = 3, pch_values = c(16, 4, 3), 
+          style = "3d", 
+          group_col = "Group", trt_col = "Treatment", 
+          roc = TRUE)
 #> [1] "Results based on log2 transformation:"
 #> [1] "CD3/CD28 LOOCV Accuracy: 49%"
 #> [1] "CD3/CD28 LOOCV Accuracy (VIP>1): 52%"
-#> CD3/CD28 Confusion Matrix for PLS-DA Comparison
-#>           Reference
-#> Prediction ND PreT2D T2D
-#>     ND      0      0   1
-#>     PreT2D 15     28   5
-#>     T2D    18      5  27
-#> Accuracy: 0.56 
-#> 
-#> Per-Class Sensitivity:
-#>     Class: ND Class: PreT2D    Class: T2D 
-#>          0.00          0.85          0.82 
-#> 
-#> Per-Class Specificity:
-#>     Class: ND Class: PreT2D    Class: T2D 
-#>          0.98          0.70          0.65 
-#> 
-#> Macro-Averaged Sensitivity: 0.56 
-#> Macro-Averaged Specificity: 0.78 
-#> CD3/CD28 Confusion Matrix for PLS-DA Comparison with VIP Score > 1
-#>           Reference
-#> Prediction ND PreT2D T2D
-#>     ND      0      0   1
-#>     PreT2D 17     27   7
-#>     T2D    16      6  25
-#> Accuracy: 0.53 
-#> 
-#> Per-Class Sensitivity:
-#>     Class: ND Class: PreT2D    Class: T2D 
-#>          0.00          0.82          0.76 
-#> 
-#> Per-Class Specificity:
-#>     Class: ND Class: PreT2D    Class: T2D 
-#>          0.98          0.64          0.67 
-#> 
-#> Macro-Averaged Sensitivity: 0.53 
-#> Macro-Averaged Specificity: 0.76
 #> [1] "LPS LOOCV Accuracy: 44%"
 #> [1] "LPS LOOCV Accuracy (VIP>1): 44%"
-#> LPS Confusion Matrix for PLS-DA Comparison
-#>           Reference
-#> Prediction ND PreT2D T2D
-#>     ND     13      4   9
-#>     PreT2D 12     21   5
-#>     T2D     8      8  19
-#> Accuracy: 0.54 
-#> 
-#> Per-Class Sensitivity:
-#>     Class: ND Class: PreT2D    Class: T2D 
-#>          0.39          0.64          0.58 
-#> 
-#> Per-Class Specificity:
-#>     Class: ND Class: PreT2D    Class: T2D 
-#>          0.80          0.74          0.76 
-#> 
-#> Macro-Averaged Sensitivity: 0.54 
-#> Macro-Averaged Specificity: 0.77 
-#> LPS Confusion Matrix for PLS-DA Comparison with VIP Score > 1
-#>           Reference
-#> Prediction ND PreT2D T2D
-#>     ND     13      4   7
-#>     PreT2D 14     22   5
-#>     T2D     6      7  21
-#> Accuracy: 0.57 
-#> 
-#> Per-Class Sensitivity:
-#>     Class: ND Class: PreT2D    Class: T2D 
-#>          0.39          0.67          0.64 
-#> 
-#> Per-Class Specificity:
-#>     Class: ND Class: PreT2D    Class: T2D 
-#>          0.83          0.71          0.80 
-#> 
-#> Macro-Averaged Sensitivity: 0.57 
-#> Macro-Averaged Specificity: 0.78
 #> [1] "Unstimulated LOOCV Accuracy: 34%"
 #> [1] "Unstimulated LOOCV Accuracy (VIP>1): 42%"
-#> Unstimulated Confusion Matrix for PLS-DA Comparison
+#> Overall Confusion Matrix for PLS-DA Comparison
 #>           Reference
 #> Prediction ND PreT2D T2D
 #>     ND      6      4   6
@@ -342,7 +296,7 @@ cyt.plsda(data.df[,-c(1,4)], title = "Example PLS-DA Analysis.pdf",
 #> 
 #> Macro-Averaged Sensitivity: 0.52 
 #> Macro-Averaged Specificity: 0.76 
-#> Unstimulated Confusion Matrix for PLS-DA Comparison with VIP Score > 1
+#> Overall Confusion Matrix for PLS-DA Comparison with VIP Score > 1
 #>           Reference
 #> Prediction ND PreT2D T2D
 #>     ND      8      4   7
@@ -367,13 +321,23 @@ cyt.plsda(data.df[,-c(1,4)], title = "Example PLS-DA Analysis.pdf",
 ## 7. Principal Component Analysis (PCA)
 
 ``` r
-data <- cytodata[,-c(1,4, 24)]
-data.df <- filter(data, Group != "ND" & Treatment != "Unstimulated")
-cyt.pca(data.df, title = "Example PCA Analysis.pdf" ,colors = c("black", "red2"), scale = "log2", comp.num = 3, pch.values = c(16,4), style = "3D", group.col = "Group", trt.col = "Treatment")
+data <- cytodata[, -c(1,4,24)]
+data_df <- filter(data, Group != "ND" & Treatment != "Unstimulated")
+cyt_pca(data_df, 
+        pdf_title = "example_pca_analysis.pdf", 
+        colors = c("black", "red2"), 
+        scale = "log2", 
+        comp_num = 3, pch_values = c(16, 4), 
+        style = "3D", group_col = "Group", trt_col = "Treatment")
 #> [1] "Results based on log2 transformation:"
 #> png 
 #>   2
-cyt.pca(data.df, title = "Example PCA Analysis 2.pdf" ,colors = c("black", "red2"), scale = "log2", comp.num = 2, pch.values = c(16,4), group.col = "Group")
+cyt_pca(data_df, 
+        pdf_title = "example_pca_analysis_2.pdf", 
+        colors = c("black", "red2"), 
+        scale = "log2", 
+        comp_num = 2, pch_values = c(16, 4), 
+        group_col = "Group")
 #> [1] "Results based on log2 transformation:"
 #> png 
 #>   2
@@ -383,9 +347,12 @@ cyt.pca(data.df, title = "Example PCA Analysis 2.pdf" ,colors = c("black", "red2
 
 ``` r
 # Generating Volcano Plot
-data.df <- cytodata[,-4]
-volc_plot <- cyt.volc(data.df, "Group", cond1 = "T2D", cond2 = "ND", fold_change_thresh = 2.0, top_labels= 15)
-#>                    Cytokine      FC_Log      P_Log Significant
+data_df <- cytodata[, -4]
+volc_plot <- cyt_volc(data_df, group_col = "Group", 
+                      cond1 = "T2D", cond2 = "ND", 
+                      fold_change_thresh = 2.0, 
+                      top_labels = 15)
+#>                    cytokine      fc_log      p_log significant
 #> IL.12.P70         IL.12.P70 -2.60117683 2.18641971        TRUE
 #> IL.6                   IL.6 -0.95013174 3.94758527       FALSE
 #> IL.27                 IL.27 -0.67878724 2.33099419       FALSE
@@ -411,11 +378,11 @@ volc_plot <- cyt.volc(data.df, "Group", cond1 = "T2D", cond2 = "ND", fold_change
 #> IFN.G                 IFN.G -0.09088794 0.06221451       FALSE
 #> TNF.B                 TNF.B  0.07037796 0.05224667       FALSE
 #> IL.33                 IL.33  0.01213249 0.01719622       FALSE
-ggsave("VolcanoPlot.png", plot = volc_plot$`T2D vs ND`, dpi = 300)
-
-# Printing table (This is usually printed by default when the function is called and not saved as an object.)
+ggsave("volcano_plot.png", plot = volc_plot$`T2D vs ND`, 
+       dpi = 300)
+# Print the final plot data (excluding the label column)
 print(volc_plot$`T2D vs ND`$data)
-#>                    Cytokine      FC_Log      P_Log Significant         Label
+#>                    cytokine      fc_log      p_log significant         label
 #> IL.12.P70         IL.12.P70 -2.60117683 2.18641971        TRUE     IL.12.P70
 #> IL.6                   IL.6 -0.95013174 3.94758527       FALSE          IL.6
 #> IL.27                 IL.27 -0.67878724 2.33099419       FALSE         IL.27
@@ -447,10 +414,10 @@ print(volc_plot$`T2D vs ND`$data)
 
 ``` r
 # Generating Heat map
-cyt.heatmap(data = data.df,
-                    scale = "log2",        # Optional scaling
-                    annotation_col_name = "Group",
-                    title = "Heatmap.png")
+cyt_heatmap(data = data_df,
+            scale = "log2",        # Optional scaling
+            annotation_col_name = "Group",
+            title = "heatmap.png")
 #> png 
 #>   2
 ```
@@ -459,10 +426,11 @@ cyt.heatmap(data = data.df,
 
 ``` r
 # Generating dual flashlights plot
-data.df <- cytodata[,-c(1,3:4)]
-
-dfp <- cyt.dualflashplot(data.df, group_var = "Group", group1 = "T2D", group2 = "ND", 
-                  ssmd_thresh = -0.2, log2fc_thresh = 1, top_labels = 10)
+data_df <- cytodata[, -c(1,3:4)]
+dfp <- cyt_dualflashplot(data_df, group_var = "Group", 
+                         group1 = "T2D", group2 = "ND", 
+                         ssmd_thresh = -0.2, log2fc_thresh = 1, 
+                         top_labels = 10)
 #> # A tibble: 25 × 11
 #>    cytokine         mean_ND mean_PreT2D   mean_T2D variance_ND variance_PreT2D
 #>    <chr>              <dbl>       <dbl>      <dbl>       <dbl>           <dbl>
@@ -493,9 +461,9 @@ dfp <- cyt.dualflashplot(data.df, group_var = "Group", group1 = "T2D", group2 = 
 #> 25 TNF.B             0.641       0.709      0.610     2.37e+ 0         2.76e+0
 #> # ℹ 5 more variables: variance_T2D <dbl>, ssmd <dbl>, log2FC <dbl>,
 #> #   SSMD_Category <chr>, Significant <lgl>
-ggsave("DualFlashlightPlot.png", plot = dfp$plot_env$p, dpi = 300, width = 3000, height = 2000, units = "px")
-
-# Printing table (This is usually printed by default when the function is called and not saved as an object.)
+ggsave("dual_flashlight_plot.png", plot = dfp$plot_env$p, dpi = 300, 
+       width = 3000, height = 2000, units = "px")
+# Print the table data used for plotting
 print(dfp$data)
 #> # A tibble: 25 × 11
 #>    cytokine         mean_ND mean_PreT2D mean_T2D variance_ND variance_PreT2D
@@ -520,16 +488,17 @@ print(dfp$data)
 ### Using XGBoost for classification
 
 ``` r
-data.df0 <- cytodata
-data.df <- data.frame(data.df0[,1:4], log2(data.df0[,-c(1:4)]))
-data.df <- data.df[,-c(1,3,4)]
-data.df <- filter(data.df, Group != "ND")
+# Using XGBoost for classification
+data_df0 <- cytodata
+data_df <- data.frame(data_df0[, 1:4], log2(data_df0[, -c(1:4)]))
+data_df <- data_df[, -c(1,3,4)]
+data_df <- filter(data_df, Group != "ND")
 
-xgb.results <- cyt.xgb(data = data.df, group_col = 'Group',
-                   nrounds = 500, max_depth = 4, eta = 0.05,
-                   nfold = 5, cv = TRUE, eval_metric = "mlogloss",
-                   early_stopping_rounds = NULL, top_n_features = 10,
-                   verbose = 0, plot_roc = TRUE)
+xgb_results <- cyt_xgb(data = data_df, group_col = "Group",
+                       nrounds = 500, max_depth = 4, eta = 0.05,
+                       nfold = 5, cv = TRUE, eval_metric = "mlogloss",
+                       early_stopping_rounds = NULL, top_n_features = 10,
+                       verbose = 0, plot_roc = TRUE)
 #> 
 #> ### Group to Numeric Label Mapping ###
 #> PreT2D    T2D 
@@ -545,7 +514,7 @@ xgb.results <- cyt.xgb(data = data.df, group_col = 'Group',
 #> AUC:  0.9155767
 ```
 
-<img src="man/figures/ML 1-1.png" width="100%" />
+<img src="output/ML 1-1.png" width="100%" />
 
     #> 
     #> ### Confusion Matrix on Test Set ###
@@ -591,7 +560,7 @@ xgb.results <- cyt.xgb(data = data.df, group_col = 'Group',
     #>  9: CCL.20.MIP.3A 0.03678675 0.05623800 0.05287356
     #> 10:         IL.13 0.02785650 0.02633047 0.03678161
 
-<img src="man/figures/ML 1-2.png" width="100%" />
+<img src="output/ML 1-2.png" width="100%" />
 
     #> 
     #> ### CROSS-VALIDATION USING XGBOOST ###
@@ -636,13 +605,15 @@ xgb.results <- cyt.xgb(data = data.df, group_col = 'Group',
 ### Using Random Forest for classification
 
 ``` r
-rf.results <- cyt.rf(data = data.df, group_col = 'Group', k_folds = 5,
-                  ntree = 1000, mtry = 4, run_rfcv = TRUE, plot_roc = TRUE)
+# Using Random Forest for classification
+rf_results <- cyt_rf(data = data_df, group_col = "Group", k_folds = 5,
+                     ntree = 1000, mtry = 4, run_rfcv = TRUE,
+                     plot_roc = TRUE)
 #> 
 #> ### RANDOM FOREST RESULTS ON TRAINING SET ###
 #> 
 #> Call:
-#>  randomForest(formula = formula, data = train_data, ntree = ntree,      mtry = mtry, importance = TRUE) 
+#>  randomForest(formula = formula_rf, data = train_data, ntree = ntree,      mtry = mtry, importance = TRUE) 
 #>                Type of random forest: classification
 #>                      Number of trees: 1000
 #> No. of variables tried at each split: 4
@@ -682,11 +653,12 @@ rf.results <- cyt.rf(data = data.df, group_col = 'Group', k_folds = 5,
 #> AUC:  0.9298454
 ```
 
-<img src="man/figures/ML 2-1.png" width="100%" /><img src="man/figures/ML 2-2.png" width="100%" />
+<img src="output/ML 2-1.png" width="100%" /><img src="output/ML 2-2.png" width="100%" />
 
     #> 
     #> ### RANDOM FOREST CROSS-VALIDATION FOR FEATURE SELECTION ###
 
-<img src="man/figures/ML 2-3.png" width="100%" />
+<img src="output/ML 2-3.png" width="100%" />
 
-    #> Random Forest CV completed for feature selection. Check the plot for error vs. number of variables.
+    #> Random Forest CV completed for feature selection.
+    #>         Check the plot for error vs. number of variables.

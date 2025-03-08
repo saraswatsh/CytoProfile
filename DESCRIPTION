@@ -2,8 +2,10 @@ Package: CytoProfile
 Title: Cytokine Profiling Analysis Tool
 Version: 0.0.0.9000
 Authors@R: c(
-    person("Shubh", "Saraswat", email = "shubh.saraswat00@gmail.com", role = c("cre", "aut", "cph")),
-    person("Xiaohua Douglas", "Zhang", email = "douglas.zhang@uky.edu", role = "aut"))
+    person("Shubh", "Saraswat", email = "shubh.saraswat00@gmail.com", role = c("cre", "aut", "cph"),
+    comment = c(ORCID = "0009-0009-2359-1484")),
+    person("Xiaohua Douglas", "Zhang", email = "douglas.zhang@uky.edu", role = "aut",
+    comment = c(ORCID = "0000-0002-2486-7931")))
 Description: CytoProfile is a comprehensive tool for cytokine profiling analysis. 
   It supports quality control using biologically meaningful cutoffs on raw cytokine 
   measurements and tests for distributional symmetry to suggest appropriate transformations. 

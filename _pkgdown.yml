@@ -28,25 +28,25 @@ reference:
     Functions for exploring raw data, summarizing statistics,
     and visualizing key patterns.
   contents:
-  - cyt.anova
-  - cyt.ttest
-  - cyt.bp
-  - cyt.bp2
-  - cyt.errbp
-  - cyt.skku
-  - cyt.volc
-  - cyt.heatmap
-  - cyt.dualflashplot
+  - cyt_anova
+  - cyt_ttest
+  - cyt_bp
+  - cyt_bp2
+  - cyt_errbp
+  - cyt_skku
+  - cyt_volc
+  - cyt_heatmap
+  - cyt_dualflashplot
 - title: Multivariate Analysis
   description: |
     Functions for deeper multivariate insights.
   contents:
-  - cyt.plsda
-  - cyt.pca
+  - cyt_splsda
+  - cyt_pca
 - title: Machine Learning Methods
   contents:
-  - cyt.rf
-  - cyt.xgb
+  - cyt_rf
+  - cyt_xgb
 - title: Datasets
   contents: cytodata
 footer:
