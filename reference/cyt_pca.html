@@ -81,7 +81,7 @@ data and handles analyses based treatment groups.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">cyt_pca</span><span class="op">(</span></span>
 <span>  <span class="va">data</span>,</span>
 <span>  group_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  trt_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  group_col2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  colors <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">pdf_title</span>,</span>
 <span>  ellipse <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -104,14 +104,14 @@ column representing treatment or stimulation.</p></dd>
 
 <dt id="arg-group-col">group_col<a class="anchor" aria-label="anchor" href="#arg-group-col"></a></dt>
 <dd><p>Character. The name of the column containing the
-grouping information. If not specified and <code>trt_col</code> is provided, the
-treatment column will be used as the grouping variable.</p></dd>
+first grouping column If not specified and <code>group_col2</code> is provided, the
+second grouping column will be used as the grouping variable.</p></dd>
 
 
-<dt id="arg-trt-col">trt_col<a class="anchor" aria-label="anchor" href="#arg-trt-col"></a></dt>
+<dt id="arg-group-col-">group_col2<a class="anchor" aria-label="anchor" href="#arg-group-col-"></a></dt>
 <dd><p>Character. The name of the column containing the
-treatment information. If not specified and <code>group_col</code> is provided,
-the grouping column will be used as the treatment variable.</p></dd>
+second grouping column. If not specified and <code>group_col</code> is provided,
+the first grouping column will be used.</p></dd>
 
 
 <dt id="arg-colors">colors<a class="anchor" aria-label="anchor" href="#arg-colors"></a></dt>
@@ -159,10 +159,10 @@ a 3D scatter plot is generated using the plot3D package. Default is NULL.</p></d
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Load sample data</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"cytodata"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"ExampleData1"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Subset data to exclude columns 1, 4, and 24, then filter out rows</span></span></span>
 <span class="r-in"><span><span class="co"># where Group is "ND" and Treatment is "Unstimulated"</span></span></span>
-<span class="r-in"><span><span class="va">data_subset</span> <span class="op">&lt;-</span> <span class="va">cytodata</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span>, <span class="fl">24</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">data_subset</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">23</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data_subset</span>,</span></span>
 <span class="r-in"><span><span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span> <span class="op">&amp;</span> <span class="va">Treatment</span> <span class="op">!=</span> <span class="st">"Unstimulated"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Run PCA analysis and save plots to a PDF file</span></span></span>
@@ -175,7 +175,7 @@ a 3D scatter plot is generated using the plot3D package. Default is NULL.</p></d
 <span class="r-in"><span>  pch_values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">4</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  style <span class="op">=</span> <span class="st">"3D"</span>,</span></span>
 <span class="r-in"><span>  group_col <span class="op">=</span> <span class="st">"Group"</span>,</span></span>
-<span class="r-in"><span>  trt_col <span class="op">=</span> <span class="st">"Treatment"</span>,</span></span>
+<span class="r-in"><span>  group_col2 <span class="op">=</span> <span class="st">"Treatment"</span>,</span></span>
 <span class="r-in"><span>  ellipse <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Results based on log2 transformation:"</span>

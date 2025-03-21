@@ -1,11 +1,15 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://saraswatsh.github.io/CytoProfile/404.html</loc></url>
+<url><loc>https://saraswatsh.github.io/CytoProfile/CODE_OF_CONDUCT.html</loc></url>
 <url><loc>https://saraswatsh.github.io/CytoProfile/LICENSE.html</loc></url>
 <url><loc>https://saraswatsh.github.io/CytoProfile/articles/getting_started.html</loc></url>
 <url><loc>https://saraswatsh.github.io/CytoProfile/articles/index.html</loc></url>
 <url><loc>https://saraswatsh.github.io/CytoProfile/authors.html</loc></url>
 <url><loc>https://saraswatsh.github.io/CytoProfile/index.html</loc></url>
 <url><loc>https://saraswatsh.github.io/CytoProfile/reference/CytoProfile-package.html</loc></url>
+<url><loc>https://saraswatsh.github.io/CytoProfile/reference/ExampleData1.html</loc></url>
+<url><loc>https://saraswatsh.github.io/CytoProfile/reference/ExampleData2.html</loc></url>
+<url><loc>https://saraswatsh.github.io/CytoProfile/reference/ExampleData3.html</loc></url>
 <url><loc>https://saraswatsh.github.io/CytoProfile/reference/cyt_anova.html</loc></url>
 <url><loc>https://saraswatsh.github.io/CytoProfile/reference/cyt_bp.html</loc></url>
 <url><loc>https://saraswatsh.github.io/CytoProfile/reference/cyt_bp2.html</loc></url>
@@ -19,7 +23,6 @@
 <url><loc>https://saraswatsh.github.io/CytoProfile/reference/cyt_ttest.html</loc></url>
 <url><loc>https://saraswatsh.github.io/CytoProfile/reference/cyt_volc.html</loc></url>
 <url><loc>https://saraswatsh.github.io/CytoProfile/reference/cyt_xgb.html</loc></url>
-<url><loc>https://saraswatsh.github.io/CytoProfile/reference/cytodata.html</loc></url>
 <url><loc>https://saraswatsh.github.io/CytoProfile/reference/index.html</loc></url>
 </urlset>
 
