@@ -24,6 +24,7 @@ feature importance."></head><body>
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../index.html">Home</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/saraswatsh/CytoProfile/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -215,7 +216,7 @@ features using <code>xgb.ggplot.importance()</code>.</p>
 <span class="r-in"><span><span class="fu">cyt_xgb</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  data <span class="op">=</span> <span class="va">data_df</span>, group_col <span class="op">=</span> <span class="st">"Group"</span>,</span></span>
 <span class="r-in"><span>  nrounds <span class="op">=</span> <span class="fl">500</span>, max_depth <span class="op">=</span> <span class="fl">4</span>, eta <span class="op">=</span> <span class="fl">0.05</span>,</span></span>
-<span class="r-in"><span>  nfold <span class="op">=</span> <span class="fl">5</span>, cv <span class="op">=</span> <span class="cn">TRUE</span>, eval_metric <span class="op">=</span> <span class="st">"mlogloss"</span>,</span></span>
+<span class="r-in"><span>  nfold <span class="op">=</span> <span class="fl">5</span>, cv <span class="op">=</span> <span class="cn">FALSE</span>, eval_metric <span class="op">=</span> <span class="st">"mlogloss"</span>,</span></span>
 <span class="r-in"><span>  early_stopping_rounds <span class="op">=</span> <span class="cn">NULL</span>, top_n_features <span class="op">=</span> <span class="fl">10</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="fl">0</span>, plot_roc <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
@@ -280,45 +281,6 @@ features using <code>xgb.ggplot.importance()</code>.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 10:         IL.13 0.02785650 0.02633047 0.03678161</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>A shallow copy of this data.table was taken so that := can add or remove 1 columns by reference. At an earlier point, this data.table was copied by R (or was created manually using structure() or similar). Avoid names&lt;- and attr&lt;- which in R currently (and oddly) may copy the whole data.table. Use set* syntax instead to avoid copying: ?set, ?setnames and ?setattr. It's also not unusual for data.table-agnostic packages to produce tables affected by this issue. If this message doesn't help, please report your use case to the data.table issue tracker so the root cause can be fixed or this message improved.</span>
 <span class="r-plt img"><img src="cyt_xgb-2.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ### CROSS-VALIDATION USING XGBOOST ###</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Best iteration from cross-validation:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     iter train_mlogloss_mean train_mlogloss_std test_mlogloss_mean</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    &lt;num&gt;               &lt;num&gt;              &lt;num&gt;              &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:    45           0.1664957         0.01796909           0.457419</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    test_mlogloss_std</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:        0.08743712</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Confusion Matrix and Statistics</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           Reference</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Prediction  0  1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          0 57 13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          1 13 57</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                Accuracy : 0.8143         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  95% CI : (0.7398, 0.875)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     No Information Rate : 0.5            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     P-Value [Acc &gt; NIR] : 1.212e-14      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   Kappa : 0.6286         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Mcnemar's Test P-Value : 1              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             Sensitivity : 0.8143         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             Specificity : 0.8143         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          Pos Pred Value : 0.8143         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          Neg Pred Value : 0.8143         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              Prevalence : 0.5000         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          Detection Rate : 0.4071         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Detection Prevalence : 0.5000         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       Balanced Accuracy : 0.8143         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        'Positive' Class : 0              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Cross-Validation Accuracy:  0.8142857 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ##### xgb.Booster</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> raw: 967.1 Kb </span>
@@ -392,33 +354,7 @@ features using <code>xgb.ggplot.importance()</code>.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      0      1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $cv_results</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ##### xgb.cv 5-folds</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   iter train_mlogloss_mean train_mlogloss_std test_mlogloss_mean</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  &lt;num&gt;               &lt;num&gt;              &lt;num&gt;              &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      1          0.66118824       0.0016350457          0.6718371</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      2          0.63216750       0.0029992580          0.6527711</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      3          0.60527694       0.0042290589          0.6354687</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      4          0.58028809       0.0054248606          0.6197094</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      5          0.55716458       0.0067193247          0.6052474</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    ---                 ---                ---                ---</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    496          0.01632210       0.0002500071          0.5157307</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    497          0.01630973       0.0002529693          0.5158459</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    498          0.01629449       0.0002489291          0.5159143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    499          0.01628328       0.0002447905          0.5161349</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    500          0.01627088       0.0002448070          0.5160299</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  test_mlogloss_std</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        0.003028619</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        0.006121022</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        0.008843093</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        0.011255274</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        0.014485353</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                ---</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        0.131957095</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        0.131977829</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        0.131971949</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        0.132187287</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        0.131974011</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $plot</span>
 <span class="r-plt img"><img src="cyt_xgb-3.png" alt="" width="700" height="433"></span>
