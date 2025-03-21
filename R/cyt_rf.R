@@ -60,7 +60,7 @@
 #' @import ggplot2
 #' @importFrom pROC roc auc ggroc
 #' @export
-
+#'
 
 cyt_rf <- function(data, group_col, ntree = 500, mtry = 5,
                    train_fraction = 0.7, plot_roc = FALSE,

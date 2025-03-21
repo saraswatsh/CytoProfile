@@ -114,7 +114,7 @@ data_df <- dplyr::filter(data_df, Group != "ND")
 cyt_xgb(
   data = data_df, group_col = "Group",
   nrounds = 500, max_depth = 4, eta = 0.05,
-  nfold = 5, cv = TRUE, eval_metric = "mlogloss",
+  nfold = 5, cv = FALSE, eval_metric = "mlogloss",
   early_stopping_rounds = NULL, top_n_features = 10,
   verbose = 0, plot_roc = TRUE
 )

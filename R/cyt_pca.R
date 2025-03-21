@@ -71,6 +71,7 @@
 #'   ellipse = FALSE
 #' )
 #'
+
 cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
                     colors = NULL, pdf_title, ellipse = FALSE,
                     comp_num = 2, scale = NULL, pch_values = NULL,

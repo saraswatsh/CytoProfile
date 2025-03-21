@@ -19,6 +19,8 @@ navbar:
     href: reference/index.html
   - text: Articles
     href: articles/index.html
+  - text: News
+    href: news/index.html
 articles:
 - title: Getting Started
   contents: getting_started

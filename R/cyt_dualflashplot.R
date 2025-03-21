@@ -9,7 +9,7 @@
 #' the average log2 fold change and the y-axis represents the SSMD.
 #' Additionally, the function prints the computed statistics to the console.
 #'
-##' @param data A data frame containing the input data.
+#' @param data A data frame containing the input data.
 #' @param group_var A string specifying the name of the grouping
 #' column in the data.
 #' @param group1 A string representing the name of the first group

@@ -56,13 +56,14 @@
 #'
 #' @examples
 #' # Loading Sample Data
-#' data.df <- ExampleData1
+#' data_df <- ExampleData1[,-c(3)]
+#' data_df <- dplyr::filter(data_df, Group != "T2D", Treatment != "Unstimulated")
 #'
-#' cyt_splsda(data.df[,-c(3)], pdf_title = "Example sPLS-DA Analysis.pdf",
-#' colors = c("black", "purple", "red2"), bg = TRUE, scale = "log2",
-#' conf_mat = TRUE, var_num = 25, cv_opt = "loocv", comp_num = 3,
-#' pch_values = c(16, 4, 3), style = "3d",
-#' group_col = "Group", group_col2 = "Treatment", roc = TRUE)
+#' cyt_splsda(data_df, pdf_title = "Example sPLS-DA Analysis.pdf",
+#' colors = c("black", "purple"), bg = FALSE, scale = "log2",
+#' conf_mat = FALSE, var_num = 25, cv_opt = NULL, comp_num = 3,
+#' pch_values = c(16, 4), style = "3d", ellipse = TRUE,
+#' group_col = "Group", group_col2 = "Treatment", roc = FALSE)
 #'
 #' @export
 #' @importFrom mixOmics splsda background.predict perf vip auroc plotIndiv plotLoadings

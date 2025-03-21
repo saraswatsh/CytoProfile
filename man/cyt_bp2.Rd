@@ -37,8 +37,8 @@ each factor variable.
 }
 \examples{
 # Loading data
-data_df <- ExampleData1[, -c(3)]
-
+data_df <- ExampleData1[, -c(3, 4:27)]
+data_df <- dplyr::filter(data_df, Group == "T2D", Treatment == "Unstimulated")
 cyt_bp2(data_df, pdf_title = "boxplot2_test2.pdf", scale = "log2")
 
 }

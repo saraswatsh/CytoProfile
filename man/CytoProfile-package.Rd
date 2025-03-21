@@ -6,7 +6,7 @@
 \alias{CytoProfile-package}
 \title{CytoProfile: Cytokine Profiling Analysis Tool}
 \description{
-CytoProfile is a comprehensive tool for cytokine profiling analysis. It supports quality control using biologically meaningful cutoffs on raw cytokine measurements and tests for distributional symmetry to suggest appropriate transformations. The package offers exploratory data analysis with summary statistics, enhanced boxplots, and barplots, along with both univariate and multivariate analysis capabilities for in-depth cytokine profiling.
+Provides comprehensive cytokine profiling analysis through quality control using biologically meaningful cutoffs on raw cytokine measurements and by testing for distributional symmetry to recommend appropriate transformations. Offers exploratory data analysis with summary statistics, enhanced boxplots, and barplots, along with univariate and multivariate analytical capabilities for in-depth cytokine profiling such as PCA, sPLS-DA, Random Forest and XGBoost.
 }
 \seealso{
 Useful links:

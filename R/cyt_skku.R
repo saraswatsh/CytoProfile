@@ -61,7 +61,7 @@
 #' @importFrom e1071 skewness kurtosis
 #' @import ggplot2
 #' @importFrom gridExtra grid.arrange
-
+#'
 
 cyt_skku <- function(data, group_cols = NULL, pdf_title = NULL,
                      print_res_raw = FALSE, print_res_log = FALSE) {
