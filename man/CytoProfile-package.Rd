@@ -13,6 +13,7 @@ Useful links:
 \itemize{
   \item \url{https://github.com/saraswatsh/CytoProfile}
   \item \url{https://saraswatsh.github.io/CytoProfile/}
+  \item Report bugs at \url{https://github.com/saraswatsh/CytoProfile/issues}
 }
 
 }

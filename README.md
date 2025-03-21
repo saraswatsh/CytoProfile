@@ -30,6 +30,12 @@ You can install the development version of CytoProfile from
 devtools::install_github("saraswatsh/CytoProfile")
 ```
 
+Install CytoProfile from CRAN with:
+
+``` r
+install.packages("CytoProfile")
+```
+
 ## Example
 
 Below are examples of using the functions provided in CytoProfile. Any

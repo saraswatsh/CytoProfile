@@ -51,12 +51,8 @@
 #'
 #' @examples
 #' # Load sample data
-#' data("ExampleData1")
-#' # Subset data to exclude columns 1, 4, and 24, then filter out rows
-#' # where Group is "ND" and Treatment is "Unstimulated"
-#' data_subset <- ExampleData1[, -c(3, 23)]
-#' data_df <- dplyr::filter(data_subset,
-#' Group != "ND" & Treatment != "Unstimulated")
+#' data <- ExampleData1[, -c(3,23)]
+#' data_df <- dplyr::filter(data, Group != "ND" & Treatment != "Unstimulated")
 #' # Run PCA analysis and save plots to a PDF file
 #' cyt_pca(
 #'   data = data_df,
@@ -79,13 +75,11 @@ cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
   # If one factor is missing, use the provided column for both grouping
   # and treatment.
   if (is.null(group_col) && !is.null(group_col2)) {
-    message("No first grouping column provided; using the second group
-            column as the first grouping column variable.")
+    message("No first grouping column provided; performing overall analysis.")
     group_col <- group_col2
   }
   if (is.null(group_col2) && !is.null(group_col)) {
-    message("No second grouping column provided; using the first group
-            column as the second grouping column variable.")
+    message("No second grouping column provided; performing overall analysis.")
     group_col2 <- group_col
   }
   if (is.null(group_col) && is.null(group_col2)) {
@@ -116,6 +110,23 @@ cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
   group_col <- tolower(group_col)
   group_col2 <- tolower(group_col2)
 
+  # Extract the grouping variable from your data (using group_col or group_col2)
+  # Extract grouping variable(s)
+  if (group_col == group_col2) {
+    group_vec <- data[[group_col]]
+  } else {
+    # Combine the two grouping columns into a composite factor
+    group_vec <- data[[group_col2]]
+  }
+
+  # Now perform the check for pch_values:
+  if (is.null(pch_values)) {
+    stop("Please enter a vector of pch values, e.g. c(16, 4).")
+  } else if (length(pch_values) < length(unique(group_vec))) {
+    stop("Please ensure the number of pch values provided (", length(pch_values),
+         ") is at least equal to the number of unique groups (", length(unique(group_vec)),
+         ") from the grouping column.")
+  }
   # Generate a color palette if not provided (based on the
   # grouping variable levels)
   if (is.null(colors)) {
@@ -144,7 +155,7 @@ cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
       center = TRUE, scale = TRUE
     )
 
-    group_factors <- sort(unique(the_groups))
+    group_factors <- seq_len(length(levels(factor(the_groups))))
 
     # Plot PCA individuals plot
     plotIndiv(cytokine_pca,
@@ -267,7 +278,7 @@ cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
         center = TRUE, scale = TRUE
       )
 
-      group_factors <- sort(unique(the_groups))
+      group_factors <- seq_len(length(levels(factor(the_groups))))
 
       # PCA individuals plot for current treatment level
       mixOmics::plotIndiv(cytokine_pca,
@@ -370,3 +381,4 @@ cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
 
   if (dev.cur() > 1) dev.off()
 }
+

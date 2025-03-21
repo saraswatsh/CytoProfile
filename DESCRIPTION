@@ -43,3 +43,4 @@ NeedsCompilation: no
 License: GPL (>= 2)
 LazyData: true
 VignetteBuilder: knitr
+BugReports: https://github.com/saraswatsh/CytoProfile/issues

@@ -107,6 +107,7 @@ cyt_dualflashplot <- function(data, group_var, group1, group2, ssmd_thresh = 1,
       legend.text = element_text(color = "black")
     )
 
-  print(stats, n = nrow(stats), na.print = "", quote = FALSE)
+  print(stats, n = nrow(stats), naprint = "", quote = FALSE)
   return(p)
 }
+

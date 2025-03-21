@@ -97,11 +97,11 @@ analyzes each treatment level separately.
 \examples{
 # Loading Sample Data
 data_df <- ExampleData1[,-c(3)]
-data_df <- dplyr::filter(data_df, Group != "T2D", Treatment != "Unstimulated")
+data_df <- dplyr::filter(data_df, Group != "ND", Treatment != "Unstimulated")
 
 cyt_splsda(data_df, pdf_title = "Example sPLS-DA Analysis.pdf",
 colors = c("black", "purple"), bg = FALSE, scale = "log2",
-conf_mat = FALSE, var_num = 25, cv_opt = NULL, comp_num = 3,
+conf_mat = FALSE, var_num = 25, cv_opt = NULL, comp_num = 2,
 pch_values = c(16, 4), style = "3d", ellipse = TRUE,
 group_col = "Group", group_col2 = "Treatment", roc = FALSE)
 

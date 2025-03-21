@@ -74,12 +74,8 @@ data and handles analyses based treatment groups.
 }
 \examples{
 # Load sample data
-data("ExampleData1")
-# Subset data to exclude columns 1, 4, and 24, then filter out rows
-# where Group is "ND" and Treatment is "Unstimulated"
-data_subset <- ExampleData1[, -c(3, 23)]
-data_df <- dplyr::filter(data_subset,
-Group != "ND" & Treatment != "Unstimulated")
+data <- ExampleData1[, -c(3,23)]
+data_df <- dplyr::filter(data, Group != "ND" & Treatment != "Unstimulated")
 # Run PCA analysis and save plots to a PDF file
 cyt_pca(
   data = data_df,

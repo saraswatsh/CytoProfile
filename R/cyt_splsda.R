@@ -57,11 +57,11 @@
 #' @examples
 #' # Loading Sample Data
 #' data_df <- ExampleData1[,-c(3)]
-#' data_df <- dplyr::filter(data_df, Group != "T2D", Treatment != "Unstimulated")
+#' data_df <- dplyr::filter(data_df, Group != "ND", Treatment != "Unstimulated")
 #'
 #' cyt_splsda(data_df, pdf_title = "Example sPLS-DA Analysis.pdf",
 #' colors = c("black", "purple"), bg = FALSE, scale = "log2",
-#' conf_mat = FALSE, var_num = 25, cv_opt = NULL, comp_num = 3,
+#' conf_mat = FALSE, var_num = 25, cv_opt = NULL, comp_num = 2,
 #' pch_values = c(16, 4), style = "3d", ellipse = TRUE,
 #' group_col = "Group", group_col2 = "Treatment", roc = FALSE)
 #'
@@ -79,13 +79,11 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
   # If one factor is missing, use the provided column for
   # both grouping and treatment.
   if (is.null(group_col) && !is.null(group_col2)) {
-    message("No first grouping column provided; using the second group
-            column as the first grouping column variable.")
+    message("No first grouping column provided; performing overall analysis.")
     group_col <- group_col2
   }
   if (is.null(group_col2) && !is.null(group_col)) {
-    message("No second grouping column provided; using the first group
-            column as the second grouping column variable.")
+    message("No second grouping column provided; performing overall analysis.")
     group_col2 <- group_col
   }
   if (is.null(group_col) && is.null(group_col2)) {
@@ -108,7 +106,23 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
     tolower(names(data)[names(data) %in% c(group_col, group_col2)])
   group_col <- tolower(group_col)
   group_col2 <- tolower(group_col2)
+  # Extract the grouping variable from your data (using group_col or group_col2)
+  # Extract grouping variable(s)
+  if (group_col == group_col2) {
+    group_vec <- data[[group_col]]
+  } else {
+    # Combine the two grouping columns into a composite factor
+    group_vec <- data[[group_col2]]
+  }
 
+  # Now perform the check for pch_values:
+  if (is.null(pch_values)) {
+    stop("Please enter a vector of pch values, e.g. c(16, 4).")
+  } else if (length(pch_values) < length(unique(group_vec))) {
+    stop("Please ensure the number of pch values provided (", length(pch_values),
+         ") is at least equal to the number of unique groups (", length(unique(group_vec)),
+         ") from the grouping column.")
+  }
   # Generate a color palette if not provided (based on the
   # grouping variable levels in the entire dataset)
   if (is.null(colors)) {
@@ -147,7 +161,7 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
       comp.predicted = 2,
       dist = "max.dist"
     )
-    group_factors <- sort(unique(the_groups))
+    group_factors <- seq_len(length(levels(factor(the_groups))))
 
     plot_args <- list(cytokine_splsda,
       ind.names = NA, legend = TRUE, col = colors,
@@ -517,7 +531,7 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
         comp.predicted = 2,
         dist = "max.dist"
       )
-      group_factors <- sort(unique(the_groups))
+      group_factors <- seq_len(length(levels(factor(the_groups))))
 
       plot_args <- list(cytokine_splsda,
         ind.names = NA, legend = TRUE, col = colors,
