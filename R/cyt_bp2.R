@@ -24,7 +24,7 @@
 #'
 #' @examples
 #' # Loading data
-#' data_df <- cytodata[, -c(1, 4)]
+#' data_df <- ExampleData1[, -c(3)]
 #'
 #' cyt_bp2(data_df, pdf_title = "boxplot2_test2.pdf", scale = "log2")
 #'
@@ -61,18 +61,18 @@ cyt_bp2 <- function(data, pdf_title, mf_row = c(1, 1),
     # Loop through each factor column
     for (fac_col in names(data)[fac_cols]) {
       # Create the boxplot
-      p <- ggplot(data, aes_string(x = fac_col,
+      p <- ggplot2::ggplot(data, aes_string(x = fac_col,
                                    y = num_col, fill = fac_col)) +
-        geom_boxplot(alpha = 0.5) +
-        geom_jitter(width = 0.2, alpha = 0.5) +
-        labs(
+        ggplot2::geom_boxplot(alpha = 0.5) +
+        ggplot2::geom_jitter(width = 0.2, alpha = 0.5) +
+        ggplot2::labs(
           title = paste0(num_col, " by ", fac_col),
           x = fac_col, y = paste0("Values of ", num_col)
         ) +
-        theme_minimal() +
-        theme(legend.position = "bottom",
+        ggplot2::theme_minimal() +
+        ggplot2::theme(legend.position = "bottom",
               plot.title = element_text(hjust = 0.5)) +
-        guides(fill = guide_legend(title = NULL))
+        ggplot2::guides(fill = guide_legend(title = NULL))
 
       if (!is.null(y_lim)) {
         p <- p + ylim(y_lim)

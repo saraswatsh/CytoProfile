@@ -27,9 +27,9 @@ conducted and the adjusted p-values for pairwise comparisons are extracted.
 }
 \examples{
 # Loading data
-data("cytodata")
+data("ExampleData1")
 # Perform ANOVA on selected columns of the cytodata dataset
-anova_results <- cyt_anova(cytodata[, c(2:4, 5:6)])
+anova_results <- cyt_anova(ExampleData1[, c(1:2, 5:6)])
 print(anova_results)
 
 }

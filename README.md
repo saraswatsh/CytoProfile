@@ -55,7 +55,7 @@ library(reshape2)    # For data transformation (e.g., melt) in cross-validation 
 
 # Statistical analysis
 library(mixOmics)    # For multivariate analyses (PCA, sPLS-DA, etc.).
-library(moments)     # For computing skewness and kurtosis.
+library(e1071)     # For computing skewness and kurtosis.
 library(pROC)        # For ROC curve generation in machine learning model evaluation.
 
 # Machine learning
@@ -71,8 +71,8 @@ library(devtools)    # For installing the development version of the package fro
 library(CytoProfile)
 
 # Loading in data
-data("cytodata")
-data_df <- cytodata
+data("ExampleData1")
+data_df <- ExampleData1
 
 ## Setting working directory to output folder to save the PDF files. 
 opts_knit$set(root.dir = "E:/Desktop/RA/R Package/CytoProfile/output")
@@ -85,14 +85,14 @@ opts_knit$set(root.dir = "E:/Desktop/RA/R Package/CytoProfile/output")
 ``` r
 # Generating boxplots to check for outliers for raw values
 # Generating boxplots to check for outliers for raw values
-cyt_bp(data_df[, -c(1:4)], 
+cyt_bp(data_df[, -c(1:3)], 
        pdf_title = "boxplot_by_cytokine_raw.pdf")  
 #> png 
 #>   2
 # Removing the first 4 columns to retain only continuous variables.
 
 # Generating boxplots to check for outliers for log2 values
-cyt_bp(log2(data_df[, -c(1:4)]), 
+cyt_bp(log2(data_df[, -c(1:3)]), 
        pdf_title = "boxplot_by_cytokine_log2.pdf")  
 #> png 
 #>   2
@@ -103,14 +103,14 @@ cyt_bp(log2(data_df[, -c(1:4)]),
 
 ``` r
 # Raw values for group-specific boxplots
-cyt_bp2(data_df[, -c(1, 4)], 
+cyt_bp2(data_df[, -c(3)], 
         pdf_title = "boxplot_by_group_and_treatment_raw.pdf", 
         scale = NULL)
 #> png 
 #>   2
 
 # Log2-transformed group-specific boxplots
-cyt_bp2(data_df[, -c(1, 4)], 
+cyt_bp2(data_df[, -c(3)], 
         pdf_title = "boxplot_by_group_and_treatment_log2.pdf", 
         scale = "log2")
 #> png 
@@ -121,12 +121,12 @@ cyt_bp2(data_df[, -c(1, 4)],
 
 ``` r
 # Histogram of skewness and kurtosis for raw data
-cyt_skku(data_df[, -c(1:4)], 
+cyt_skku(data_df[, -c(1:3)], 
          pdf_title = "skew_and_kurtosis.pdf", 
          group_cols = NULL)
 
 # Histogram of skewness and kurtosis with grouping (e.g., "Group")
-cyt_skku(cytodata[, -c(1, 3, 4)], 
+cyt_skku(ExampleData1[, -c(2:3)], 
          pdf_title = "skew_and_kurtosis_2.pdf", 
          group_cols = c("Group"))
 ```
@@ -137,10 +137,10 @@ cyt_skku(cytodata[, -c(1, 3, 4)],
 
 ``` r
 # Generating basic error bar plots
-cytokine_mat <- cytodata[, -c(1:4)]  # Extract all cytokines
+cytokine_mat <- ExampleData1[, -c(1:3)]  # Extract all cytokines
 cytokineNames <- colnames(cytokine_mat)  # Extract cytokine names
 nCytokine <- length(cytokineNames)  # Total number of cytokines
-results <- cyt_skku(cytodata[, -c(1,4)], print_res_log = TRUE, 
+results <- cyt_skku(ExampleData1[, -c(3)], print_res_log = TRUE, 
                     group_cols = c("Group", "Treatment"))
 pdf("bar_error_plot.pdf")
 par(mfrow = c(2,2), mar = c(8.1, 4.1, 4.1, 2.1))
@@ -159,9 +159,9 @@ dev.off()
 
 ``` r
 # Generating Error Bar Plot enriched with p-value and effect size 
-data_df <- cytodata[, -1]
-cyt_mat <- log2(data_df[, -c(1:3)])
-data_df1 <- data.frame(data_df[, 1:3], cyt_mat)
+data_df <- ExampleData1[, -3]
+cyt_mat <- log2(data_df[, -c(1:2)])
+data_df1 <- data.frame(data_df[, 1:2], cyt_mat)
 cytokineNames <- colnames(cyt_mat)
 nCytokine <- length(cytokineNames)
 condt <- !is.na(cyt_mat) & (cyt_mat > 0)
@@ -189,7 +189,7 @@ for (i in 1:nCytokine) {
     sqrt(2 * aov_table["Residuals", "Mean Sq"])
 }
 
-results <- cyt_skku(cytodata[, -c(1,4)], print_res_log = TRUE, 
+results <- cyt_skku(ExampleData1[, -c(3)], print_res_log = TRUE, 
                     group_cols = c("Group", "Treatment"))
 pdf("bar_error_plot_enriched.pdf")
 par(mfrow = c(2,3), mar = c(8.1, 4.1, 4.1, 2.1))
@@ -217,7 +217,7 @@ dev.off()
 
 ``` r
 # Performing Two Sample T-test and Mann Whitney U Test
-data_df <- cytodata[, -c(1,4)]
+data_df <- ExampleData1[, -c(3)]
 data_df <- filter(data_df, Group != "ND", Treatment != "Unstimulated")
 # Two sample T-test
 cyt_ttest(data_df[, c(1:2, 5:6)], scale = "log2")
@@ -260,8 +260,8 @@ cyt_anova(data_df[, c(1:2, 5:6)])
 # we will also print out the confusion matrix based on classification. 
 # Note this takes into account all groups and treatment and all values are log transformed through 
 # cyt.plsda function. 
-data_df <- cytodata
-cyt_splsda(data_df[, -c(1,4)], 
+data_df <- ExampleData1
+cyt_splsda(data_df[, -c(3)], 
           pdf_title = "example_spls_da_analysis.pdf", 
           colors = c("black", "purple", "red2"),
           bg = TRUE, scale = "log2", 
@@ -269,7 +269,7 @@ cyt_splsda(data_df[, -c(1,4)],
           cv_opt = "loocv",
           comp_num = 3, pch_values = c(16, 4, 3), 
           style = "3d", 
-          group_col = "Group", trt_col = "Treatment", 
+          group_col = "Group", group_col2 = "Treatment", 
           roc = TRUE)
 #> [1] "Results based on log2 transformation:"
 #> [1] "CD3/CD28 LOOCV Accuracy: 49%"
@@ -321,14 +321,14 @@ cyt_splsda(data_df[, -c(1,4)],
 ## 7. Principal Component Analysis (PCA)
 
 ``` r
-data <- cytodata[, -c(1,4,24)]
+data <- ExampleData1[, -c(3,23)]
 data_df <- filter(data, Group != "ND" & Treatment != "Unstimulated")
 cyt_pca(data_df, 
         pdf_title = "example_pca_analysis.pdf", 
         colors = c("black", "red2"), 
         scale = "log2", 
         comp_num = 3, pch_values = c(16, 4), 
-        style = "3D", group_col = "Group", trt_col = "Treatment")
+        style = "3D", group_col = "Group", group_col2 = "Treatment")
 #> [1] "Results based on log2 transformation:"
 #> png 
 #>   2
@@ -347,7 +347,7 @@ cyt_pca(data_df,
 
 ``` r
 # Generating Volcano Plot
-data_df <- cytodata[, -4]
+data_df <- ExampleData1[, -c(2:3)]
 volc_plot <- cyt_volc(data_df, group_col = "Group", 
                       cond1 = "T2D", cond2 = "ND", 
                       fold_change_thresh = 2.0, 
@@ -426,7 +426,7 @@ cyt_heatmap(data = data_df,
 
 ``` r
 # Generating dual flashlights plot
-data_df <- cytodata[, -c(1,3:4)]
+data_df <- ExampleData1[, -c(2:3)]
 dfp <- cyt_dualflashplot(data_df, group_var = "Group", 
                          group1 = "T2D", group2 = "ND", 
                          ssmd_thresh = -0.2, log2fc_thresh = 1, 
@@ -489,9 +489,9 @@ print(dfp$data)
 
 ``` r
 # Using XGBoost for classification
-data_df0 <- cytodata
-data_df <- data.frame(data_df0[, 1:4], log2(data_df0[, -c(1:4)]))
-data_df <- data_df[, -c(1,3,4)]
+data_df0 <- ExampleData1
+data_df <- data.frame(data_df0[, 1:3], log2(data_df0[, -c(1:3)]))
+data_df <- data_df[, -c(2:3)]
 data_df <- filter(data_df, Group != "ND")
 
 xgb_results <- cyt_xgb(data = data_df, group_col = "Group",
@@ -514,7 +514,7 @@ xgb_results <- cyt_xgb(data = data_df, group_col = "Group",
 #> AUC:  0.9155767
 ```
 
-<img src="output/ML 1-1.png" width="100%" />
+<img src="output/ML1-1.png" width="100%" />
 
     #> 
     #> ### Confusion Matrix on Test Set ###
@@ -560,7 +560,7 @@ xgb_results <- cyt_xgb(data = data_df, group_col = "Group",
     #>  9: CCL.20.MIP.3A 0.03678675 0.05623800 0.05287356
     #> 10:         IL.13 0.02785650 0.02633047 0.03678161
 
-<img src="output/ML 1-2.png" width="100%" />
+<img src="output/ML1-2.png" width="100%" />
 
     #> 
     #> ### CROSS-VALIDATION USING XGBOOST ###
@@ -653,12 +653,12 @@ rf_results <- cyt_rf(data = data_df, group_col = "Group", k_folds = 5,
 #> AUC:  0.9298454
 ```
 
-<img src="output/ML 2-1.png" width="100%" /><img src="output/ML 2-2.png" width="100%" />
+<img src="output/ML2-1.png" width="100%" /><img src="output/ML2-2.png" width="100%" />
 
     #> 
     #> ### RANDOM FOREST CROSS-VALIDATION FOR FEATURE SELECTION ###
 
-<img src="output/ML 2-3.png" width="100%" />
+<img src="output/ML2-3.png" width="100%" />
 
     #> Random Forest CV completed for feature selection.
     #>         Check the plot for error vs. number of variables.

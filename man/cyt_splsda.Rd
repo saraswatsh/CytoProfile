@@ -8,7 +8,7 @@
 cyt_splsda(
   data,
   group_col = NULL,
-  trt_col = NULL,
+  group_col2 = NULL,
   colors = NULL,
   pdf_title,
   ellipse = FALSE,
@@ -26,14 +26,14 @@ cyt_splsda(
 }
 \arguments{
 \item{data}{A matrix or data frame containing the variables. Columns not
-specified by \code{group_col} or \code{trt_col} are assumed to be continuous
+specified by \code{group_col} or \code{group_col2} are assumed to be continuous
 variables for analysis.}
 
-\item{group_col}{A string specifying the column name that contains group
-information. If \code{trt_col} is not provided, it will be used for both
+\item{group_col}{A string specifying the column name that contains the first group
+information. If \code{group_col2} is not provided, it will be used for both
 grouping and treatment.}
 
-\item{trt_col}{A string specifying the column name for treatments. Default is
+\item{group_col2}{A string specifying the second grouping column. Default is
 \code{NULL}.}
 
 \item{colors}{A vector of colors for the groups or treatments. If
@@ -85,23 +85,23 @@ produced if requested.
 \description{
 This function conducts Sparse Partial Least Squares Discriminant Analysis
 (sPLS-DA) on the provided data. It uses the specified \code{group_col} (and
-optionally \code{trt_col}) to define class labels while assuming the remaining
+optionally \code{group_col2}) to define class labels while assuming the remaining
 columns contain continuous variables. The function supports a log2
 transformation via the \code{scale} parameter and generates a series of plots,
 including classification plots, scree plots, loadings plots, and VIP score
 plots. Optionally, ROC curves are produced when \code{roc} is \code{TRUE}.
 Additionally, cross-validation is supported via LOOCV or Mfold methods. When
-both \code{group_col} and \code{trt_col} are provided and differ, the function
+both \code{group_col} and \code{group_col2} are provided and differ, the function
 analyzes each treatment level separately.
 }
 \examples{
 # Loading Sample Data
-data.df <- cytodata
+data.df <- ExampleData1
 
-cyt_splsda(data.df[,-c(1,4)], pdf_title = "Example sPLS-DA Analysis.pdf",
+cyt_splsda(data.df[,-c(3)], pdf_title = "Example sPLS-DA Analysis.pdf",
 colors = c("black", "purple", "red2"), bg = TRUE, scale = "log2",
 conf_mat = TRUE, var_num = 25, cv_opt = "loocv", comp_num = 3,
 pch_values = c(16, 4, 3), style = "3d",
-group_col = "Group", trt_col = "Treatment", roc = TRUE)
+group_col = "Group", group_col2 = "Treatment", roc = TRUE)
 
 }

@@ -4,11 +4,11 @@
 #' least one column representing grouping information and optionally a second
 #' column representing treatment or stimulation.
 #' @param group_col Character. The name of the column containing the
-#'  grouping information. If not specified and \code{trt_col} is provided, the
-#'   treatment column will be used as the grouping variable.
-#' @param trt_col Character. The name of the column containing the
-#' treatment information. If not specified and \code{group_col} is provided,
-#'  the grouping column will be used as the treatment variable.
+#'   first grouping column If not specified and \code{group_col2} is provided, the
+#'   second grouping column will be used as the grouping variable.
+#' @param group_col2 Character. The name of the column containing the
+#' second grouping column. If not specified and \code{group_col} is provided,
+#'  the first grouping column will be used.
 #' @param colors A vector of colors corresponding to the groups.
 #'  If set to NULL, a palette is generated using \code{rainbow()} based on the
 #'   number of unique groups.
@@ -45,16 +45,16 @@
 #' @return A PDF file containing the PCA plots is generated and saved.
 #'
 #' @export
-#' @import mixOmics
+#' @importFrom mixOmics pca plotIndiv plotLoadings plotVar
 #' @import ggplot2
-#' @import plot3D
+#' @importFrom plot3D scatter3D
 #'
 #' @examples
 #' # Load sample data
-#' data("cytodata")
+#' data("ExampleData1")
 #' # Subset data to exclude columns 1, 4, and 24, then filter out rows
 #' # where Group is "ND" and Treatment is "Unstimulated"
-#' data_subset <- cytodata[, -c(1, 4, 24)]
+#' data_subset <- ExampleData1[, -c(3, 23)]
 #' data_df <- dplyr::filter(data_subset,
 #' Group != "ND" & Treatment != "Unstimulated")
 #' # Run PCA analysis and save plots to a PDF file
@@ -67,27 +67,27 @@
 #'   pch_values = c(16, 4),
 #'   style = "3D",
 #'   group_col = "Group",
-#'   trt_col = "Treatment",
+#'   group_col2 = "Treatment",
 #'   ellipse = FALSE
 #' )
 #'
-cyt_pca <- function(data, group_col = NULL, trt_col = NULL,
+cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
                     colors = NULL, pdf_title, ellipse = FALSE,
                     comp_num = 2, scale = NULL, pch_values = NULL,
                     style = NULL) {
   # If one factor is missing, use the provided column for both grouping
   # and treatment.
-  if (is.null(group_col) && !is.null(trt_col)) {
-    message("No group column provided; using the treatment column as
-            the grouping variable.")
-    group_col <- trt_col
+  if (is.null(group_col) && !is.null(group_col2)) {
+    message("No first grouping column provided; using the second group
+            column as the first grouping column variable.")
+    group_col <- group_col2
   }
-  if (is.null(trt_col) && !is.null(group_col)) {
-    message("No treatment column provided; using the group column as
-            the treatment variable.")
-    trt_col <- group_col
+  if (is.null(group_col2) && !is.null(group_col)) {
+    message("No second grouping column provided; using the first group
+            column as the second grouping column variable.")
+    group_col2 <- group_col
   }
-  if (is.null(group_col) && is.null(trt_col)) {
+  if (is.null(group_col) && is.null(group_col2)) {
     stop("At least one factor column must be provided.")
   }
 
@@ -96,12 +96,12 @@ cyt_pca <- function(data, group_col = NULL, trt_col = NULL,
     # Identify numeric columns not corresponding to the factor columns
     numeric_idx <- sapply(data, is.numeric)
     # Exclude the group and treatment columns (if present, even if numeric)
-    numeric_idx[names(data) %in% unique(c(group_col, trt_col))] <- FALSE
+    numeric_idx[names(data) %in% unique(c(group_col, group_col2))] <- FALSE
     if (sum(numeric_idx) == 0) {
       warning("No numeric columns available for log2 transformation.")
     }
     data <- data.frame(
-      data[, unique(c(group_col, trt_col)), drop = FALSE],
+      data[, unique(c(group_col, group_col2)), drop = FALSE],
       log2(data[, numeric_idx, drop = FALSE])
     )
     print("Results based on log2 transformation:")
@@ -110,10 +110,10 @@ cyt_pca <- function(data, group_col = NULL, trt_col = NULL,
   }
 
   # Convert factor column names to lowercase for consistency
-  names(data)[names(data) %in% unique(c(group_col, trt_col))] <-
-    tolower(names(data)[names(data) %in% unique(c(group_col, trt_col))])
+  names(data)[names(data) %in% unique(c(group_col, group_col2))] <-
+    tolower(names(data)[names(data) %in% unique(c(group_col, group_col2))])
   group_col <- tolower(group_col)
-  trt_col <- tolower(trt_col)
+  group_col2 <- tolower(group_col2)
 
   # Generate a color palette if not provided (based on the
   # grouping variable levels)
@@ -125,11 +125,11 @@ cyt_pca <- function(data, group_col = NULL, trt_col = NULL,
   pdf(file = pdf_title, width = 8.5, height = 8)
 
   # Case 1: Overall PCA when both factors are the same.
-  if (group_col == trt_col) {
+  if (group_col == group_col2) {
     overall_analysis <- "Overall Analysis"
 
     # Remove the factor column(s) from predictors and keep only numeric columns
-    the_data_df <- data[, !(names(data) %in% unique(c(group_col, trt_col)))]
+    the_data_df <- data[, !(names(data) %in% unique(c(group_col, group_col2)))]
     the_data_df <- the_data_df[, sapply(the_data_df, is.numeric)]
 
     the_groups <- as.vector(data[[group_col]])
@@ -176,32 +176,32 @@ cyt_pca <- function(data, group_col = NULL, trt_col = NULL,
       Cumulative = cumulative_variances
     )
 
-    scree_plot <- ggplot(scree_data, aes(x = Component)) +
-      geom_line(aes(y = Variance, color = "Individual"), size = 1) +
-      geom_point(aes(y = Variance, color = "Individual"), size = 2) +
-      geom_line(aes(y = Cumulative, color = "Cumulative"),
+    scree_plot <- ggplot2::ggplot(scree_data, aes(x = Component)) +
+      ggplot2::geom_line(aes(y = Variance, color = "Individual"), size = 1) +
+      ggplot2::geom_point(aes(y = Variance, color = "Individual"), size = 2) +
+      ggplot2::geom_line(aes(y = Cumulative, color = "Cumulative"),
         size = 1, linetype = "dashed"
       ) +
-      geom_point(aes(y = Cumulative, color = "Cumulative"), size = 2) +
-      scale_color_manual(values = c(
+      ggplot2::geom_point(aes(y = Cumulative, color = "Cumulative"), size = 2) +
+      ggplot2::scale_color_manual(values = c(
         "Individual" = "blue",
         "Cumulative" = "green"
       )) +
-      labs(
+      ggplot2::labs(
         title = paste("Scree Plot:", overall_analysis),
         x = "Principal Components",
         y = "Explained Variance", color = "Variance Type"
       ) +
-      theme_minimal() +
-      scale_x_continuous(breaks = 1:comp_num) +
-      geom_text(
+      ggplot2::theme_minimal() +
+      ggplot2::scale_x_continuous(breaks = 1:comp_num) +
+      ggplot2::geom_text(
         aes(y = Variance, label = paste0(
           round(Variance * 100, 1),
           "%"
         )),
         vjust = -1.5, hjust = 0.5, size = 4
       ) +
-      geom_text(
+      ggplot2::geom_text(
         aes(y = Cumulative, label = paste0(
           round(Cumulative * 100, 1),
           "%"
@@ -213,7 +213,7 @@ cyt_pca <- function(data, group_col = NULL, trt_col = NULL,
 
     # Plot loadings for each component
     for (comp in 1:comp_num) {
-      plotLoadings(cytokine_pca,
+      mixOmics::plotLoadings(cytokine_pca,
         comp = comp, size.names = 1, size.legend = 1, col = "grey",
         legend.color = colors, title = paste(
           "Loadings Component", comp, ":",
@@ -243,15 +243,15 @@ cyt_pca <- function(data, group_col = NULL, trt_col = NULL,
     )
   } else {
     # Case 2: When grouping and treatment columns differ
-    levels_vec <- unique(data[[trt_col]])
+    levels_vec <- unique(data[[group_col2]])
     for (i in seq_along(levels_vec)) {
       current_level <- levels_vec[i]
       title_sub <- current_level
-      condt <- data[[trt_col]] == current_level
+      condt <- data[[group_col2]] == current_level
 
       the_data_df <- data[condt, !(names(data) %in% unique(c(
         group_col,
-        trt_col
+        group_col2
       )))]
       the_data_df <- the_data_df[, sapply(the_data_df, is.numeric)]
       the_groups <- as.vector(data[condt, group_col])
@@ -269,7 +269,7 @@ cyt_pca <- function(data, group_col = NULL, trt_col = NULL,
       group_factors <- sort(unique(the_groups))
 
       # PCA individuals plot for current treatment level
-      plotIndiv(cytokine_pca,
+      mixOmics::plotIndiv(cytokine_pca,
         group = the_groups, ind.names = FALSE, legend = TRUE,
         col = colors, title = paste("PCA:", title_sub),
         ellipse = ellipse, pch = pch_values, pch.levels = group_factors
@@ -299,32 +299,32 @@ cyt_pca <- function(data, group_col = NULL, trt_col = NULL,
         Cumulative = cumulative_variances
       )
 
-      scree_plot <- ggplot(scree_data, aes(x = Component)) +
-        geom_line(aes(y = Variance, color = "Individual"), size = 1) +
-        geom_point(aes(y = Variance, color = "Individual"), size = 2) +
-        geom_line(aes(y = Cumulative, color = "Cumulative"),
+      scree_plot <- ggplot2::ggplot(scree_data, aes(x = Component)) +
+        ggplot2::geom_line(aes(y = Variance, color = "Individual"), size = 1) +
+        ggplot2::geom_point(aes(y = Variance, color = "Individual"), size = 2) +
+        ggplot2::geom_line(aes(y = Cumulative, color = "Cumulative"),
           size = 1, linetype = "dashed"
         ) +
-        geom_point(aes(y = Cumulative, color = "Cumulative"), size = 2) +
-        scale_color_manual(values = c(
+        ggplot2::geom_point(aes(y = Cumulative, color = "Cumulative"), size = 2) +
+        ggplot2::scale_color_manual(values = c(
           "Individual" = "blue",
           "Cumulative" = "green"
         )) +
-        labs(
+        ggplot2::labs(
           title = paste("Scree Plot:", current_level),
           x = "Principal Components", y = "Explained Variance",
           color = "Variance Type"
         ) +
-        theme_minimal() +
-        scale_x_continuous(breaks = 1:comp_num) +
-        geom_text(
+        ggplot2::theme_minimal() +
+        ggplot2::scale_x_continuous(breaks = 1:comp_num) +
+        ggplot2::geom_text(
           aes(y = Variance, label = paste0(
             round(Variance * 100, 1),
             "%"
           )),
           vjust = -1.5, hjust = 0.5, size = 4
         ) +
-        geom_text(
+        ggplot2::geom_text(
           aes(y = Cumulative, label = paste0(
             round(Cumulative * 100, 1),
             "%"
@@ -336,7 +336,7 @@ cyt_pca <- function(data, group_col = NULL, trt_col = NULL,
 
       # Plot loadings for each component
       for (comp in 1:comp_num) {
-        plotLoadings(cytokine_pca,
+        mixOmics::plotLoadings(cytokine_pca,
           comp = comp, size.names = 1, size.legend = 1, col = "grey",
           legend.color = colors, title = paste(
             "Loadings Component", comp, ":",

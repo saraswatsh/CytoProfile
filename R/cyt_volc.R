@@ -31,12 +31,12 @@
 #'
 #' @export
 #' @import ggplot2
-#' @import dplyr
-#' @import ggrepel
+#' @importFrom dplyr arrange mutate desc row_number
+#' @importFrom ggrepel geom_text_repel
 #'
 #' @examples
 #' # Loading data
-#' data_df <- cytodata[,-4]
+#' data_df <- ExampleData1[,-c(2:3)]
 #'
 #' volc_plot <- cyt_volc(data_df, "Group", cond1 = "T2D", cond2 = "ND",
 #' fold_change_thresh = 2.0, top_labels= 15)
@@ -94,28 +94,28 @@ cyt_volc <- function(data, group_col, cond1 = NULL, cond2 = NULL,
 
     # Order data by significance and p_log, then add labels for top points
     plot_data <- plot_data %>%
-      arrange(desc(significant), desc(p_log)) %>%
-      mutate(label = ifelse(row_number() <= top_labels,
+      dplyr::arrange(dplyr::desc(significant), dplyr::desc(p_log)) %>%
+      dplyr::mutate(label = ifelse(dplyr::row_number() <= top_labels,
                             as.character(cytokine), ""))
 
     # Create the volcano plot with labels for top significant points
-    volcano_plot <- ggplot(plot_data, aes(x = fc_log, y = p_log, label = label,
+    volcano_plot <- ggplot2::ggplot(plot_data, aes(x = fc_log, y = p_log, label = label,
                                           color = significant)) +
-      geom_point(alpha = 1, size = 2) +
-      geom_vline(xintercept = c(log2(fold_change_thresh),
+      ggplot2::geom_point(alpha = 1, size = 2) +
+      ggplot2::geom_vline(xintercept = c(log2(fold_change_thresh),
                                 -log2(fold_change_thresh)),
                  linetype = "dashed", color = "blue") +
-      geom_hline(yintercept = -log10(p_value_thresh),
+      ggplot2::geom_hline(yintercept = -log10(p_value_thresh),
                  linetype = "dashed", color = "blue") +
       ggrepel::geom_text_repel(aes(label = label), size = 3,
                                vjust = 1.5, hjust = 0.5,
                                show.legend = FALSE) +
-      scale_color_manual(values = c("grey2", "red")) +
-      labs(x = "Log2 Fold Change", y = "-Log10 P-Value",
+      ggplot2::scale_color_manual(values = c("grey2", "red")) +
+      ggplot2::labs(x = "Log2 Fold Change", y = "-Log10 P-Value",
            title = paste("Volcano Plot of Cytokine Levels:",
                          cond1, "vs", cond2)) +
-      theme_minimal() +
-      theme(
+      ggplot2::theme_minimal() +
+      ggplot2::theme(
         panel.background = element_rect(fill = "white", colour = "white"),
         plot.background = element_rect(fill = "white", colour = "white"),
         legend.background = element_rect(fill = "white", colour = "white"),

@@ -31,8 +31,8 @@ variables in the provided data. If the number of columns in \code{data} exceeds
 }
 \examples{
 # Loading data
-data.df <- cytodata
+data.df <- ExampleData1
 # Generate box plots for log2-transformed values to check for outliers:
-cyt_bp(log2(data.df[, -c(1:4)]), pdf_title = "boxplot_by_cytokine_log2.pdf")
+cyt_bp(log2(data.df[, -c(1:3)]), pdf_title = "boxplot_by_cytokine_log2.pdf")
 
 }

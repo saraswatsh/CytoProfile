@@ -106,9 +106,9 @@ features using \code{xgb.ggplot.importance()}.
 }
 \examples{
 # Example usage:
-data_df0 <- cytodata
-data_df <- data.frame(data_df0[, 1:4], log2(data_df0[, -c(1:4)]))
-data_df <- data_df[, -c(1, 3, 4)]
+data_df0 <- ExampleData1
+data_df <- data.frame(data_df0[, 1:3], log2(data_df0[, -c(1:3)]))
+data_df <- data_df[, -c(2,3)]
 data_df <- dplyr::filter(data_df, Group != "ND")
 
 cyt_xgb(

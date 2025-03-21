@@ -61,9 +61,9 @@
 #'
 #' @examples
 #' # Example usage:
-#' data_df0 <- cytodata
-#' data_df <- data.frame(data_df0[, 1:4], log2(data_df0[, -c(1:4)]))
-#' data_df <- data_df[, -c(1, 3, 4)]
+#' data_df0 <- ExampleData1
+#' data_df <- data.frame(data_df0[, 1:3], log2(data_df0[, -c(1:3)]))
+#' data_df <- data_df[, -c(2,3)]
 #' data_df <- dplyr::filter(data_df, Group != "ND")
 #'
 #' cyt_xgb(
@@ -74,10 +74,10 @@
 #'   verbose = 0, plot_roc = TRUE
 #' )
 #'
-#' @import xgboost
-#' @import caret
+#' @importFrom xgboost xgb.DMatrix xgb.train xgb.importance xgb.ggplot.importance xgb.cv getinfo
+#' @importFrom caret createDataPartition confusionMatrix
 #' @import ggplot2
-#' @import pROC
+#' @importFrom pROC roc auc ggroc
 #' @export
 #'
 cyt_xgb <- function(data, group_col, train_fraction = 0.7,
@@ -107,15 +107,15 @@ cyt_xgb <- function(data, group_col, train_fraction = 0.7,
 
   # Split the data into training and testing sets
   set.seed(123)
-  train_indices <- createDataPartition(y, p = train_fraction, list = FALSE)
+  train_indices <- caret::createDataPartition(y, p = train_fraction, list = FALSE)
   X_train <- X[train_indices, ]
   y_train <- y[train_indices]
   X_test <- X[-train_indices, ]
   y_test <- y[-train_indices]
 
   # Prepare the DMatrix objects for xgboost
-  dtrain <- xgb.DMatrix(data = X_train, label = y_train)
-  dtest <- xgb.DMatrix(data = X_test, label = y_test)
+  dtrain <- xgboost::xgb.DMatrix(data = X_train, label = y_train)
+  dtest <- xgboost::xgb.DMatrix(data = X_test, label = y_test)
 
   # Set parameters for xgboost
   params <- list(
@@ -132,7 +132,7 @@ cyt_xgb <- function(data, group_col, train_fraction = 0.7,
 
   # Train the XGBoost model
   cat("\n### TRAINING XGBOOST MODEL ###\n")
-  xgb_model <- xgb.train(
+  xgb_model <- xgboost::xgb.train(
     params = params, data = dtrain, nrounds = nrounds,
     watchlist = list(train = dtrain, test = dtest),
     early_stopping_rounds = early_stopping_rounds, verbose = verbose
@@ -160,11 +160,11 @@ cyt_xgb <- function(data, group_col, train_fraction = 0.7,
       cat("The length of predicted probabilities does not match the length of
           true labels.")
     }
-    roc_obj <- roc(y_test, xgb_prob)
-    auc_value <- auc(roc_obj)
+    roc_obj <- pROC::roc(y_test, xgb_prob)
+    auc_value <- pROC::auc(roc_obj)
     cat("\nAUC: ", auc_value, "\n")
 
-    roc_plot <- ggroc(roc_obj,
+    roc_plot <- pROC::ggroc(roc_obj,
       color = "blue", linewidth = 1.5,
       legacy.axes = TRUE
     ) +
@@ -193,11 +193,11 @@ cyt_xgb <- function(data, group_col, train_fraction = 0.7,
 
   # Confusion matrix on test set
   cat("\n### Confusion Matrix on Test Set ###\n")
-  confusion_mat <- confusionMatrix(as.factor(pred_labels), as.factor(y_test))
+  confusion_mat <- caret::confusionMatrix(as.factor(pred_labels), as.factor(y_test))
   print(confusion_mat)
 
   # Feature importance - show only top_n features
-  importance <- xgb.importance(
+  importance <- xgboost::xgb.importance(
     feature_names = colnames(X_train),
     model = xgb_model
   )
@@ -205,7 +205,7 @@ cyt_xgb <- function(data, group_col, train_fraction = 0.7,
   cat("\n### Top", top_n_features, "Important Features ###\n")
   print(top_features)
 
-  ggplot_imp <- xgb.ggplot.importance(
+  ggplot_imp <- xgboost::xgb.ggplot.importance(
     importance_matrix = top_features,
     top_n = top_n_features
   )
@@ -229,7 +229,7 @@ cyt_xgb <- function(data, group_col, train_fraction = 0.7,
   # Cross-Validation (optional)
   if (cv) {
     cat("\n### CROSS-VALIDATION USING XGBOOST ###\n")
-    xgb_cv <- xgb.cv(
+    xgb_cv <- xgboost::xgb.cv(
       params = params, data = dtrain, nrounds = nrounds, nfold = nfold,
       early_stopping_rounds = early_stopping_rounds, verbose = verbose,
       prediction = TRUE
@@ -249,8 +249,8 @@ cyt_xgb <- function(data, group_col, train_fraction = 0.7,
       cv_pred_labels <- max.col(cv_preds) - 1
     }
 
-    actual_labels <- getinfo(dtrain, "label")
-    cv_confusion_mat <- confusionMatrix(
+    actual_labels <- xgboost::getinfo(dtrain, "label")
+    cv_confusion_mat <- caret::confusionMatrix(
       as.factor(cv_pred_labels),
       as.factor(actual_labels)
     )

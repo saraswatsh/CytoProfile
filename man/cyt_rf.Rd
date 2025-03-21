@@ -72,9 +72,9 @@ classification, it can also plot the ROC curve and compute the AUC. If
 number of features.
 }
 \examples{
-data.df0 <- cytodata
-data.df <- data.frame(data.df0[, 1:4], log2(data.df0[, -c(1:4)]))
-data.df <- data.df[, -c(1, 3, 4)]
+data.df0 <- ExampleData1
+data.df <- data.frame(data.df0[, 1:3], log2(data.df0[, -c(1:3)]))
+data.df <- data.df[, -c(2:3)]
 data.df <- dplyr::filter(data.df, Group != "ND")
 
 results <- cyt_rf(

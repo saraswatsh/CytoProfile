@@ -48,7 +48,10 @@ reference:
   - cyt_rf
   - cyt_xgb
 - title: Datasets
-  contents: cytodata
+  contents:
+  - ExampleData1
+  - ExampleData2
+  - ExampleData3
 footer:
   left: © 2025 Shubh Saraswat
   right: Built with pkgdown

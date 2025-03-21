@@ -7,7 +7,7 @@
 cyt_pca(
   data,
   group_col = NULL,
-  trt_col = NULL,
+  group_col2 = NULL,
   colors = NULL,
   pdf_title,
   ellipse = FALSE,
@@ -23,12 +23,12 @@ least one column representing grouping information and optionally a second
 column representing treatment or stimulation.}
 
 \item{group_col}{Character. The name of the column containing the
-grouping information. If not specified and \code{trt_col} is provided, the
-treatment column will be used as the grouping variable.}
+first grouping column If not specified and \code{group_col2} is provided, the
+second grouping column will be used as the grouping variable.}
 
-\item{trt_col}{Character. The name of the column containing the
-treatment information. If not specified and \code{group_col} is provided,
-the grouping column will be used as the treatment variable.}
+\item{group_col2}{Character. The name of the column containing the
+second grouping column. If not specified and \code{group_col} is provided,
+the first grouping column will be used.}
 
 \item{colors}{A vector of colors corresponding to the groups.
 If set to NULL, a palette is generated using \code{rainbow()} based on the
@@ -74,10 +74,10 @@ data and handles analyses based treatment groups.
 }
 \examples{
 # Load sample data
-data("cytodata")
+data("ExampleData1")
 # Subset data to exclude columns 1, 4, and 24, then filter out rows
 # where Group is "ND" and Treatment is "Unstimulated"
-data_subset <- cytodata[, -c(1, 4, 24)]
+data_subset <- ExampleData1[, -c(3, 23)]
 data_df <- dplyr::filter(data_subset,
 Group != "ND" & Treatment != "Unstimulated")
 # Run PCA analysis and save plots to a PDF file
@@ -90,7 +90,7 @@ cyt_pca(
   pch_values = c(16, 4),
   style = "3D",
   group_col = "Group",
-  trt_col = "Treatment",
+  group_col2 = "Treatment",
   ellipse = FALSE
 )
 

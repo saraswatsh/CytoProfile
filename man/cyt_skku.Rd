@@ -14,24 +14,24 @@ cyt_skku(
 }
 \arguments{
 \item{data}{A matrix or data frame containing the raw data. If
-\code{group.cols} is specified, the columns with names in \code{group.cols} are
+\code{group_cols} is specified, the columns with names in \code{group_cols} are
 treated as grouping variables and all other columns are assumed to be
 numeric measurement variables.}
 
-\item{group.cols}{A character vector specifying the names of the grouping
+\item{group_cols}{A character vector specifying the names of the grouping
 columns. When provided, the first element is treated as the treatment
 variable and the second as the group variable. If not provided, the
 entire data set is treated as one group.}
 
-\item{Title}{A character string specifying the file name for the PDF file in
+\item{pdf_title}{A character string specifying the file name for the PDF file in
 which the histograms will be saved. If omitted, the plots are generated on
 the current graphics device.}
 
-\item{printResRaw}{Logical. If \code{TRUE}, the function returns and prints
+\item{print_res_raw}{Logical. If \code{TRUE}, the function returns and prints
 the computed summary statistics for the raw data. Default is
 \code{FALSE}.}
 
-\item{printResLog}{Logical. If \code{TRUE}, the function returns and prints
+\item{print_res_log}{Logical. If \code{TRUE}, the function returns and prints
 the computed summary statistics for the log2-transformed data. Default is
 \code{FALSE}.}
 }
@@ -46,7 +46,7 @@ data frames.
 This function computes summary statistics --- including sample
 size, mean, standard error, skewness, and kurtosis --- for each numeric
 measurement column in a data set. If grouping columns are provided via
-\code{group.cols}, the function computes the metrics separately for each group
+\code{group_cols}, the function computes the metrics separately for each group
 defined by the combination of these columns (using the first element as
 the treatment variable and the second as the grouping variable, or
 the same column for both if only one is given). When no grouping columns
@@ -61,19 +61,19 @@ name is provided.
 A cutoff is computed as one-tenth of the minimum positive value
 among all numeric measurement columns to avoid taking logarithms of zero.
 When rouping columns are provided, the function loops over unique
-treatmentlevels (using the first element of \code{group.cols} as treatment and
+treatmentlevels (using the first element of \code{group_cols} as treatment and
 the second as group, if available) and computes the metrics for each
 measurement column within each subgroup. Without grouping columns, the
 entire data set is analyzed as one overall group.
 }
 \examples{
 # Example with grouping columns (e.g., "Group" and "Treatment")
-data(cytodata)
-cyt_skku(cytodata[, -c(1, 3, 4)], pdf_title = "Skew_and_Kurtosis.pdf",
+data(ExampleData1)
+cyt_skku(ExampleData1[, -c(2:3)], pdf_title = "Skew_and_Kurtosis.pdf",
   group_cols = c("Group")
 )
 
 # Example without grouping columns (analyzes the entire data set)
-cyt_skku(cytodata[, -c(1:4)], pdf_title = "Skew_and_Kurtosis_Overall.pdf")
+cyt_skku(ExampleData1[, -c(1:3)], pdf_title = "Skew_and_Kurtosis_Overall.pdf")
 
 }

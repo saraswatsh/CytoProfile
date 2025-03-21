@@ -3,7 +3,7 @@
 #' @description This function computes summary statistics --- including sample
 #'   size, mean, standard error, skewness, and kurtosis --- for each numeric
 #'   measurement column in a data set. If grouping columns are provided via
-#'   `group.cols`, the function computes the metrics separately for each group
+#'   `group_cols`, the function computes the metrics separately for each group
 #'   defined by the combination of these columns (using the first element as
 #'   the treatment variable and the second as the grouping variable, or
 #'   the same column for both if only one is given). When no grouping columns
@@ -15,20 +15,20 @@
 #'   name is provided.
 #'
 #' @param data A matrix or data frame containing the raw data. If
-#'   `group.cols` is specified, the columns with names in `group.cols` are
+#'   `group_cols` is specified, the columns with names in `group_cols` are
 #'   treated as grouping variables and all other columns are assumed to be
 #'   numeric measurement variables.
-#' @param group.cols A character vector specifying the names of the grouping
+#' @param group_cols A character vector specifying the names of the grouping
 #'   columns. When provided, the first element is treated as the treatment
 #'   variable and the second as the group variable. If not provided, the
 #'   entire data set is treated as one group.
-#' @param Title A character string specifying the file name for the PDF file in
+#' @param pdf_title A character string specifying the file name for the PDF file in
 #'   which the histograms will be saved. If omitted, the plots are generated on
 #'   the current graphics device.
-#' @param printResRaw Logical. If \code{TRUE}, the function returns and prints
+#' @param print_res_raw Logical. If \code{TRUE}, the function returns and prints
 #'   the computed summary statistics for the raw data. Default is
 #'   \code{FALSE}.
-#' @param printResLog Logical. If \code{TRUE}, the function returns and prints
+#' @param print_res_log Logical. If \code{TRUE}, the function returns and prints
 #'   the computed summary statistics for the log2-transformed data. Default is
 #'   \code{FALSE}.
 #'
@@ -41,26 +41,26 @@
 #' @details A cutoff is computed as one-tenth of the minimum positive value
 #'   among all numeric measurement columns to avoid taking logarithms of zero.
 #'   When rouping columns are provided, the function loops over unique
-#'   treatmentlevels (using the first element of `group.cols` as treatment and
+#'   treatmentlevels (using the first element of `group_cols` as treatment and
 #'   the second as group, if available) and computes the metrics for each
 #'   measurement column within each subgroup. Without grouping columns, the
 #'   entire data set is analyzed as one overall group.
 #'
 #' @examples
 #' # Example with grouping columns (e.g., "Group" and "Treatment")
-#' data(cytodata)
-#' cyt_skku(cytodata[, -c(1, 3, 4)], pdf_title = "Skew_and_Kurtosis.pdf",
+#' data(ExampleData1)
+#' cyt_skku(ExampleData1[, -c(2:3)], pdf_title = "Skew_and_Kurtosis.pdf",
 #'   group_cols = c("Group")
 #' )
 #'
 #' # Example without grouping columns (analyzes the entire data set)
-#' cyt_skku(cytodata[, -c(1:4)], pdf_title = "Skew_and_Kurtosis_Overall.pdf")
+#' cyt_skku(ExampleData1[, -c(1:3)], pdf_title = "Skew_and_Kurtosis_Overall.pdf")
 #'
 #' @export
 #'
-#' @import e1071
+#' @importFrom e1071 skewness kurtosis
 #' @import ggplot2
-#' @import gridExtra
+#' @importFrom gridExtra grid.arrange
 
 
 cyt_skku <- function(data, group_cols = NULL, pdf_title = NULL,
@@ -85,8 +85,8 @@ cyt_skku <- function(data, group_cols = NULL, pdf_title = NULL,
     center <- tapply(Y, groups, mean, na.rm = TRUE)
     spread <- tapply(Y, groups,
                      function(x) sd(x, na.rm = TRUE) / sqrt(sum(!is.na(x))))
-    skew <- tapply(Y, groups, skewness, na.rm = TRUE)
-    kurt <- tapply(Y, groups, kurtosis, na.rm = TRUE)
+    skew <- tapply(Y, groups, e1071::skewness, na.rm = TRUE)
+    kurt <- tapply(Y, groups, e1071::kurtosis, na.rm = TRUE)
 
     data.frame(
       group = names(n),
@@ -167,9 +167,6 @@ cyt_skku <- function(data, group_cols = NULL, pdf_title = NULL,
   # If a pdf title is provided, generate histograms using ggplot2.
   if (!is.null(pdf_title)) {
     pdf(file = pdf_title)
-    library(ggplot2)
-    library(gridExtra)
-
     df_skew <- rbind(
       data.frame(value = raw_results$skewness, transformation = "Raw"),
       data.frame(value = log_results$skewness, transformation = "Log2")
@@ -179,17 +176,17 @@ cyt_skku <- function(data, group_cols = NULL, pdf_title = NULL,
       data.frame(value = log_results$kurtosis, transformation = "Log2")
     )
 
-    p_skew <- ggplot(df_skew, aes(x = value, fill = transformation)) +
-      geom_histogram(bins = 30, alpha = 0.7, position = "identity") +
-      labs(x = "Skewness", title = "Distribution of Skewness") +
-      theme_minimal()
+    p_skew <- ggplot2::ggplot(df_skew, aes(x = value, fill = transformation)) +
+      ggplot2::geom_histogram(bins = 30, alpha = 0.7, position = "identity") +
+      ggplot2::labs(x = "Skewness", title = "Distribution of Skewness") +
+      ggplot2::theme_minimal()
 
-    p_kurt <- ggplot(df_kurt, aes(x = value, fill = transformation)) +
-      geom_histogram(bins = 30, alpha = 0.7, position = "identity") +
-      labs(x = "Kurtosis", title = "Distribution of Kurtosis") +
-      theme_minimal()
+    p_kurt <- ggplot2::ggplot(df_kurt, aes(x = value, fill = transformation)) +
+      ggplot2::geom_histogram(bins = 30, alpha = 0.7, position = "identity") +
+      ggplot2::labs(x = "Kurtosis", title = "Distribution of Kurtosis") +
+      ggplot2::theme_minimal()
 
-    grid.arrange(p_skew, p_kurt, ncol = 1)
+    gridExtra::grid.arrange(p_skew, p_kurt, ncol = 1)
     dev.off()
   }
 

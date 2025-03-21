@@ -9,3 +9,10 @@
 ^doc$
 ^Meta$
 ^LICENSE\.md$
+^cytokine_stock\.jpeg$
+^logo_full_hex\.png$
+^output$
+^.lintr
+^CytoProfile_0\.0\.0\.9000\.pdf$
+^index\.md$
+^index\.html$

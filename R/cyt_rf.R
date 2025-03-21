@@ -45,9 +45,9 @@
 #' number of features.
 #'
 #' @examples
-#' data.df0 <- cytodata
-#' data.df <- data.frame(data.df0[, 1:4], log2(data.df0[, -c(1:4)]))
-#' data.df <- data.df[, -c(1, 3, 4)]
+#' data.df0 <- ExampleData1
+#' data.df <- data.frame(data.df0[, 1:3], log2(data.df0[, -c(1:3)]))
+#' data.df <- data.df[, -c(2:3)]
 #' data.df <- dplyr::filter(data.df, Group != "ND")
 #'
 #' results <- cyt_rf(
@@ -55,10 +55,10 @@
 #'   mtry = 4, run_rfcv = TRUE, plot_roc = TRUE
 #' )
 #'
-#' @import randomForest
-#' @import caret
+#' @importFrom randomForest randomForest rfcv importance
+#' @importFrom caret createDataPartition confusionMatrix
 #' @import ggplot2
-#' @import pROC
+#' @importFrom pROC roc auc ggroc
 #' @export
 
 
@@ -70,7 +70,7 @@ cyt_rf <- function(data, group_col, ntree = 500, mtry = 5,
 
   # Split the data into training and testing sets
   set.seed(123) # For reproducibility
-  train_indices <- createDataPartition(data[[group_col]],
+  train_indices <- caret::createDataPartition(data[[group_col]],
                                        p = train_fraction, list = FALSE)
   train_data <- data[train_indices, ]
   test_data <- data[-train_indices, ]
@@ -81,7 +81,7 @@ cyt_rf <- function(data, group_col, ntree = 500, mtry = 5,
                                  paste(predictors, collapse = "+")))
 
   # Fit the Random Forest model on training data
-  rf_model <- randomForest(formula_rf, data = train_data, ntree = ntree,
+  rf_model <- randomForest::randomForest(formula_rf, data = train_data, ntree = ntree,
                            mtry = mtry, importance = TRUE)
 
   # Print basic Random Forest results with descriptive text
@@ -120,7 +120,7 @@ cyt_rf <- function(data, group_col, ntree = 500, mtry = 5,
 
   # Confusion matrix on test set
   cat("\n### PREDICTIONS ON TEST SET ###\n")
-  confusion_mat <- confusionMatrix(rf_pred, test_data[[group_col]])
+  confusion_mat <- caret::confusionMatrix(rf_pred, test_data[[group_col]])
   print(confusion_mat$table)
 
   # Additional metrics from confusion matrix
@@ -165,24 +165,24 @@ cyt_rf <- function(data, group_col, ntree = 500, mtry = 5,
     rf_prob <- predict(rf_model, newdata = test_data, type = "prob")[, 2]
 
     # Compute ROC and AUC using pROC package
-    roc_obj <- roc(test_data[[group_col]], rf_prob)
-    auc_value <- auc(roc_obj)
+    roc_obj <- pROC::roc(test_data[[group_col]], rf_prob)
+    auc_value <- pROC::auc(roc_obj)
     cat("\nAUC: ", auc_value, "\n")
 
     # Create the ROC plot using ggroc()
-    roc_plot <- ggroc(roc_obj, color = "blue", linewidth = 1.5,
+    roc_plot <- pROC::ggroc(roc_obj, color = "blue", linewidth = 1.5,
                       legacy.axes = TRUE) +
-      geom_abline(linetype = "dashed", color = "red", linewidth = 1) +
-      labs(
+      ggplot2::geom_abline(linetype = "dashed", color = "red", linewidth = 1) +
+      ggplot2::labs(
         title = "ROC Curve (Test Set)",
         x = "1 - Specificity",
         y = "Sensitivity"
       ) +
-      annotate("text", x = 0.75, y = 0.25, label = paste("AUC =",
+      ggplot2::annotate("text", x = 0.75, y = 0.25, label = paste("AUC =",
                                                          round(auc_value, 3)),
                size = 5, color = "blue") +
-      theme_minimal() +
-      theme(
+      ggplot2::theme_minimal() +
+      ggplot2::theme(
         panel.background = element_rect(fill = "white", color = NA),
         plot.background  = element_rect(fill = "white", color = NA),
         panel.grid.major = element_line(color = "grey90"),
@@ -193,19 +193,19 @@ cyt_rf <- function(data, group_col, ntree = 500, mtry = 5,
 
   # Extract variable importance based on Mean Decrease Gini
   # and plot with ggplot2
-  importance_data <- data.frame(Variable = rownames(importance(rf_model)),
-                                Gini = (importance(rf_model)
+  importance_data <- data.frame(Variable = rownames(randomForest::importance(rf_model)),
+                                Gini = (randomForest::importance(rf_model)
                                         [, "MeanDecreaseGini"]))
 
-  vip_plot <- ggplot(importance_data, aes(x = reorder(Variable, Gini),
+  vip_plot <- ggplot2::ggplot(importance_data, aes(x = reorder(Variable, Gini),
                                           y = Gini)) +
-    geom_bar(stat = "identity", fill = "red2") +
-    coord_flip() +
-    ggtitle("Variable Importance Plot (Mean Decrease in Gini)") +
-    xlab("Features") +
-    ylab("Importance (Gini Index)") +
-    theme_minimal() +
-    theme(
+    ggplot2::geom_bar(stat = "identity", fill = "red2") +
+    ggplot2::coord_flip() +
+    ggplot2::ggtitle("Variable Importance Plot (Mean Decrease in Gini)") +
+    ggplot2::xlab("Features") +
+    ggplot2::ylab("Importance (Gini Index)") +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(
       legend.position = "none",
       panel.background = element_rect(fill = "white", colour = "white"),
       plot.background = element_rect(fill = "white", colour = "white"),
@@ -221,21 +221,21 @@ cyt_rf <- function(data, group_col, ntree = 500, mtry = 5,
     cat("\n### RANDOM FOREST CROSS-VALIDATION FOR FEATURE SELECTION ###\n")
     x_train <- train_data[, predictors]
     y_train <- train_data[[group_col]]
-    rfcv_result <- rfcv(x_train, y_train, cv.fold = k_folds, step = step)
+    rfcv_result <- randomForest::rfcv(x_train, y_train, cv.fold = k_folds, step = step)
 
     # Convert rfcv results to a data frame for ggplot
     rfcv_data <- data.frame(Variables = rfcv_result$n.var,
                             Error = rfcv_result$error.cv)
 
-    rfcv_plot <- ggplot(rfcv_data, aes(x = Variables, y = Error)) +
-      geom_line(color = "blue") +
-      geom_point(color = "blue") +
-      ggtitle("Cross-Validation Error vs. Number of Variables") +
-      xlab("Number of Variables") +
-      ylab("Cross-Validation Error") +
-      scale_x_continuous(breaks = 1:(ncol(train_data) - 1)) +
-      theme_minimal() +
-      theme(
+    rfcv_plot <- ggplot2::ggplot(rfcv_data, aes(x = Variables, y = Error)) +
+      ggplot2::geom_line(color = "blue") +
+      ggplot2::geom_point(color = "blue") +
+      ggplot2::ggtitle("Cross-Validation Error vs. Number of Variables") +
+      ggplot2::xlab("Number of Variables") +
+      ggplot2::ylab("Cross-Validation Error") +
+      ggplot2::scale_x_continuous(breaks = 1:(ncol(train_data) - 1)) +
+      ggplot2::theme_minimal() +
+      ggplot2::theme(
         panel.background = element_rect(fill = "white", color = NA),
         plot.background  = element_rect(fill = "white", color = NA),
         panel.grid.major = element_line(color = "grey90"),

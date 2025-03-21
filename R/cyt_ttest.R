@@ -23,7 +23,7 @@
 #' @export
 #'
 #' @examples
-#' data_df <- cytodata[, -c(1, 4)]
+#' data_df <- ExampleData1[, -c(3)]
 #' data_df <- dplyr::filter(data_df, Group != "ND", Treatment != "Unstimulated")
 #' # Two sample T-test
 #' cyt_ttest(data_df[, c(1, 2, 5:6)], scale = "log2")

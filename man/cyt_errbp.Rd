@@ -54,9 +54,9 @@ either as symbols or numeric values.
 }
 \examples{
 # Load sample data
-data_df <- cytodata[, -1]
-cyt_mat <- log2(data_df[, -c(1:3)])
-data_df1 <- data.frame(data_df[, 1:3], cyt_mat)
+data_df <- ExampleData1[,-c(3)]
+cyt_mat <- log2(data_df[, -c(1:2)])
+data_df1 <- data.frame(data_df[, 1:2], cyt_mat)
 cytokineNames <- colnames(cyt_mat)
 nCytokine <- length(cytokineNames)
 condt <- !is.na(cyt_mat) & (cyt_mat > 0)
@@ -83,7 +83,7 @@ ssmd_groupComp_stm_mat[i, ] <- mD_groupComp_stm_mat[i, ] / sqrt(2 *
 aov_table["Residuals", "Mean Sq"])
 }
 
-results <- cyt_skku(cytodata[, -c(1,4)], print_res_log = TRUE,
+results <- cyt_skku(ExampleData1[, -c(3)], print_res_log = TRUE,
                  group_cols = c("Group", "Treatment"))
 pdf("bar_error_plot_enriched.pdf")
 par(mfrow = c(2,3), mar = c(8.1, 4.1, 4.1, 2.1))

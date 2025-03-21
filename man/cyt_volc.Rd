@@ -55,7 +55,7 @@ the specified \code{group_col} for comparisons.
 }
 \examples{
 # Loading data
-data_df <- cytodata[,-4]
+data_df <- ExampleData1[,-c(2:3)]
 
 volc_plot <- cyt_volc(data_df, "Group", cond1 = "T2D", cond2 = "ND",
 fold_change_thresh = 2.0, top_labels= 15)

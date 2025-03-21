@@ -37,7 +37,7 @@ each factor variable.
 }
 \examples{
 # Loading data
-data_df <- cytodata[, -c(1, 4)]
+data_df <- ExampleData1[, -c(3)]
 
 cyt_bp2(data_df, pdf_title = "boxplot2_test2.pdf", scale = "log2")
 

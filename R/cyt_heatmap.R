@@ -25,12 +25,12 @@
 #'
 #' @examples
 #' # Load sample data
-#' data("cytodata")
-#' data_df <- cytodata
+#' data("ExampleData1")
+#' data_df <- ExampleData1
 #' # Generate a heatmap with log2 scaling and annotation based on
 #' # the "Group" column
 #' cyt_heatmap(
-#'   data = data_df[, -c(1,3,4)],
+#'   data = data_df[, -c(2:3)],
 #'   scale = "log2",  # Optional scaling
 #'   annotation_col_name = "Group",
 #'   title = "Heatmap.png"

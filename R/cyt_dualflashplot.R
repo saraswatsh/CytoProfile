@@ -31,12 +31,12 @@
 #'
 #' @export
 #' @import dplyr
-#' @import tidyr
+#' @importFrom tidyr pivot_longer pivot_wider
 #' @import ggplot2
 #'
 #' @examples
 #' # Loading data
-#' data_df <- cytodata[, -c(1, 3:4)]
+#' data_df <- ExampleData1[, -c(2:3)]
 #'
 #' dfp <- cyt_dualflashplot(
 #'   data_df,
@@ -56,7 +56,7 @@ cyt_dualflashplot <- function(data, group_var, group1, group2, ssmd_thresh = 1,
   }
 
   data_long <- data %>%
-    pivot_longer(cols = -all_of(group_var), names_to = "cytokine",
+    tidyr::pivot_longer(cols = -all_of(group_var), names_to = "cytokine",
                  values_to = "level")
 
   stats <- data_long %>%
@@ -66,7 +66,7 @@ cyt_dualflashplot <- function(data, group_var, group1, group2, ssmd_thresh = 1,
       mean = mean(level, na.rm = TRUE),
       variance = var(level, na.rm = TRUE)
     ) %>%
-    pivot_wider(names_from = .data[[group_var]],
+    tidyr::pivot_wider(names_from = .data[[group_var]],
                 values_from = c(mean, variance)) %>%
     mutate(
       ssmd = (get(paste0("mean_", group1)) - get(paste0("mean_", group2))) /
@@ -82,23 +82,23 @@ cyt_dualflashplot <- function(data, group_var, group1, group2, ssmd_thresh = 1,
       Significant = (abs(ssmd) >= ssmd_thresh) & (abs(log2FC) >= log2fc_thresh)
     )
 
-  p <- ggplot(stats, aes(x = log2FC, y = ssmd, label = cytokine)) +
-    geom_point(aes(color = SSMD_Category, shape = Significant)) +
-    geom_text(data = top_n(stats, top_labels, abs(ssmd)), vjust = 1.5,
+  p <- ggplot2::ggplot(stats, aes(x = log2FC, y = ssmd, label = cytokine)) +
+    ggplot2::geom_point(aes(color = SSMD_Category, shape = Significant)) +
+    ggplot2::geom_text(data = top_n(stats, top_labels, abs(ssmd)), vjust = 1.5,
               hjust = 1.1, check_overlap = TRUE) +
-    scale_color_manual(values = c("Strong Effect" = "red",
+    ggplot2::scale_color_manual(values = c("Strong Effect" = "red",
                                   "Moderate Effect" = "orange",
                                   "Weak Effect" = "blue")) +
-    scale_shape_manual(values = c(`FALSE` = 16, `TRUE` = 17)) +
-    geom_hline(yintercept = 0, linetype = "dashed") +
-    geom_vline(xintercept = c(log2fc_thresh, -log2fc_thresh),
+    ggplot2::scale_shape_manual(values = c(`FALSE` = 16, `TRUE` = 17)) +
+    ggplot2::geom_hline(yintercept = 0, linetype = "dashed") +
+    ggplot2::geom_vline(xintercept = c(log2fc_thresh, -log2fc_thresh),
                linetype = "dashed", color = "blue") +
-    labs(
+    ggplot2::labs(
       x = "Average log2 Fold Change", y = "SSMD",
       title = paste0("SSMD vs log2FC for ", group1, " vs ", group2)
     ) +
-    theme_minimal() +
-    theme(
+    ggplot2::theme_minimal() +
+    ggplot2::theme(
       panel.background = element_rect(fill = "white", colour = "white"),
       plot.background = element_rect(fill = "white", colour = "white"),
       legend.background = element_rect(fill = "white", colour = "white"),

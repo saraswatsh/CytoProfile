@@ -54,7 +54,7 @@ Additionally, the function prints the computed statistics to the console.
 }
 \examples{
 # Loading data
-data_df <- cytodata[, -c(1, 3:4)]
+data_df <- ExampleData1[, -c(2:3)]
 
 dfp <- cyt_dualflashplot(
   data_df,
