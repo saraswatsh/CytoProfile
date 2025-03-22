@@ -109,8 +109,8 @@ variables for analysis.</p></dd>
 
 <dt id="arg-group-col">group_col<a class="anchor" aria-label="anchor" href="#arg-group-col"></a></dt>
 <dd><p>A string specifying the column name that contains the first group
-information. If <code>group_col2</code> is not provided, it will be used for both
-grouping and treatment.</p></dd>
+information. If <code>group_col2</code> is not provided, an overall analysis will
+be performed.</p></dd>
 
 
 <dt id="arg-group-col-">group_col2<a class="anchor" aria-label="anchor" href="#arg-group-col-"></a></dt>
@@ -203,7 +203,7 @@ produced if requested.</p>
 <span class="r-in"><span>conf_mat <span class="op">=</span> <span class="cn">FALSE</span>, var_num <span class="op">=</span> <span class="fl">25</span>, cv_opt <span class="op">=</span> <span class="cn">NULL</span>, comp_num <span class="op">=</span> <span class="fl">2</span>,</span></span>
 <span class="r-in"><span>pch_values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">4</span><span class="op">)</span>, style <span class="op">=</span> <span class="st">"3d"</span>, ellipse <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>group_col <span class="op">=</span> <span class="st">"Group"</span>, group_col2 <span class="op">=</span> <span class="st">"Treatment"</span>, roc <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Results based on log2 transformation:"</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Results based on log2 transformation:</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>the standard deviation is zero</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>the standard deviation is zero</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> pdf </span>
