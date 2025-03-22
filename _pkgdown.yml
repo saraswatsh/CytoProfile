@@ -20,7 +20,9 @@ navbar:
   - text: Articles
     href: articles/index.html
   - text: News
-    href: news/index.htmls
+    menu:
+    - text: Changelog
+      href: news/index.html
 articles:
 - title: Getting Started
   contents: getting_started
