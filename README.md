@@ -1,5 +1,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- badges: start -->
+
+[![R-CMD-check](https://github.com/saraswatsh/CytoProfile/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/saraswatsh/CytoProfile/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
 
 # CytoProfile
 
@@ -277,7 +281,6 @@ cyt_splsda(data_df[, -c(3)],
           style = "3d", 
           group_col = "Group", group_col2 = "Treatment", 
           roc = TRUE)
-#> [1] "Results based on log2 transformation:"
 #> [1] "CD3/CD28 LOOCV Accuracy: 49%"
 #> [1] "CD3/CD28 LOOCV Accuracy (VIP>1): 52%"
 #> [1] "LPS LOOCV Accuracy: 44%"

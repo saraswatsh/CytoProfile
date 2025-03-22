@@ -30,8 +30,8 @@ specified by \code{group_col} or \code{group_col2} are assumed to be continuous
 variables for analysis.}
 
 \item{group_col}{A string specifying the column name that contains the first group
-information. If \code{group_col2} is not provided, it will be used for both
-grouping and treatment.}
+information. If \code{group_col2} is not provided, an overall analysis will
+be performed.}
 
 \item{group_col2}{A string specifying the second grouping column. Default is
 \code{NULL}.}

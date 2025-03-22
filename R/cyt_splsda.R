@@ -5,8 +5,8 @@
 #'   specified by \code{group_col} or \code{group_col2} are assumed to be continuous
 #'   variables for analysis.
 #' @param group_col A string specifying the column name that contains the first group
-#'   information. If \code{group_col2} is not provided, it will be used for both
-#'   grouping and treatment.
+#'   information. If \code{group_col2} is not provided, an overall analysis will
+#'   be performed.
 #' @param group_col2 A string specifying the second grouping column. Default is
 #'   \code{NULL}.
 #' @param colors A vector of colors for the groups or treatments. If
@@ -78,16 +78,15 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
                       comp_num = 2, pch_values, style = NULL, roc = FALSE) {
   # If one factor is missing, use the provided column for
   # both grouping and treatment.
-  if (is.null(group_col) && !is.null(group_col2)) {
-    message("No first grouping column provided; performing overall analysis.")
-    group_col <- group_col2
-  }
-  if (is.null(group_col2) && !is.null(group_col)) {
+  if (!is.null(group_col) && is.null(group_col2)) {
     message("No second grouping column provided; performing overall analysis.")
     group_col2 <- group_col
   }
+  if(is.null(group_col) && !is.null(group_col2)) {
+    stop("No first grouping column provided; must provide the first grouping column.")
+  }
   if (is.null(group_col) && is.null(group_col2)) {
-    stop("At least one factor column must be provided.")
+    stop("At least one grouping column must be provided.")
   }
 
   # Optionally apply log2 transformation
@@ -96,9 +95,9 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
       data[, c(group_col, group_col2)],
       log2(data[, !(names(data) %in% c(group_col, group_col2))])
     )
-    print("Results based on log2 transformation:")
+    message("Results based on log2 transformation:")
   } else if (is.null(scale)) {
-    print("Results based on no transformation:")
+    message("Results based on no transformation:")
   }
 
   # Convert factor column names to lowercase for consistency
@@ -357,7 +356,15 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
         theta = 20, phi = 30, bty = "g", colkey = FALSE
       )
     }
-
+    # Loadings plot for each component with VIP > 1
+    for (comp in 1:comp_num) {
+      mixOmics::plotLoadings(cytokine_splsda2,
+                             comp = comp, contrib = "max", method = "mean",
+                             size.name = 1, size.legend = 1, legend.color = colors,
+                             title = paste("Component", comp, "VIP > 1:", overall_analysis),
+                             size.title = 1, legend.title = group_col
+      )
+    }
     if (!is.null(cv_opt)) {
       if (cv_opt == "loocv") {
         set.seed(123)
@@ -643,6 +650,7 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
         }
       }
 
+      # Loadings plot for each component
       for (comp in 1:comp_num) {
         mixOmics::plotLoadings(cytokine_splsda,
           comp = comp, contrib = "max", method = "mean",
@@ -726,7 +734,16 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
           theta = 20, phi = 30, bty = "g", colkey = FALSE
         )
       }
-
+      # Loadings plot for each component with VIP > 1
+      # Loadings plot for each component
+      for (comp in 1:comp_num) {
+        mixOmics::plotLoadings(cytokine_splsda2,
+                               comp = comp, contrib = "max", method = "mean",
+                               size.name = 1, size.legend = 1, legend.color = colors,
+                               title = paste("Component", comp, ":", overall_analysis),
+                               size.title = 1, legend.title = group_col
+        )
+      }
       if (roc) {
         roc_obj2 <- auroc(
           object = cytokine_splsda2, newdata = the_data_mat,

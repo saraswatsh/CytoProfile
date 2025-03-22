@@ -3,12 +3,11 @@
 #' @param data A data frame containing cytokine data. It should include at
 #' least one column representing grouping information and optionally a second
 #' column representing treatment or stimulation.
-#' @param group_col Character. The name of the column containing the
-#'   first grouping column If not specified and \code{group_col2} is provided, the
-#'   second grouping column will be used as the grouping variable.
-#' @param group_col2 Character. The name of the column containing the
-#' second grouping column. If not specified and \code{group_col} is provided,
-#'  the first grouping column will be used.
+#' @param group_col A string specifying the column name that contains the first group
+#'   information. If \code{group_col2} is not provided, an overall analysis will
+#'   be performed.
+#' @param group_col2 A string specifying the second grouping column. Default is
+#'   \code{NULL}.
 #' @param colors A vector of colors corresponding to the groups.
 #'  If set to NULL, a palette is generated using \code{rainbow()} based on the
 #'   number of unique groups.
@@ -74,16 +73,15 @@ cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
                     style = NULL) {
   # If one factor is missing, use the provided column for both grouping
   # and treatment.
-  if (is.null(group_col) && !is.null(group_col2)) {
-    message("No first grouping column provided; performing overall analysis.")
-    group_col <- group_col2
-  }
-  if (is.null(group_col2) && !is.null(group_col)) {
+  if (!is.null(group_col) && is.null(group_col2)) {
     message("No second grouping column provided; performing overall analysis.")
     group_col2 <- group_col
   }
+  if(is.null(group_col) && !is.null(group_col2)) {
+    stop("No first grouping column provided; must provide the first grouping column.")
+  }
   if (is.null(group_col) && is.null(group_col2)) {
-    stop("At least one factor column must be provided.")
+    stop("At least one grouping column must be provided.")
   }
 
   # Optionally apply log2 transformation only to numeric columns

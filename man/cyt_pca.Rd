@@ -22,13 +22,12 @@ cyt_pca(
 least one column representing grouping information and optionally a second
 column representing treatment or stimulation.}
 
-\item{group_col}{Character. The name of the column containing the
-first grouping column If not specified and \code{group_col2} is provided, the
-second grouping column will be used as the grouping variable.}
+\item{group_col}{A string specifying the column name that contains the first group
+information. If \code{group_col2} is not provided, an overall analysis will
+be performed.}
 
-\item{group_col2}{Character. The name of the column containing the
-second grouping column. If not specified and \code{group_col} is provided,
-the first grouping column will be used.}
+\item{group_col2}{A string specifying the second grouping column. Default is
+\code{NULL}.}
 
 \item{colors}{A vector of colors corresponding to the groups.
 If set to NULL, a palette is generated using \code{rainbow()} based on the

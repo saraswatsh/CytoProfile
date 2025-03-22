@@ -17,3 +17,4 @@
 ^index\.md$
 ^index\.html$
 ^cran-comments\.md$
+^README_cache/
