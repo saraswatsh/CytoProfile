@@ -32,6 +32,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Install XQuartz on macOS only
+      - name: Install XQuartz
+        if: runner.os == 'macOS'
+        run: brew install --cask xquartz
+
+      # Set up Xvfb on Linux (Ubuntu) to provide a virtual display
+      - name: Set up virtual display (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+          nohup Xvfb :99 -screen 0 1024x768x16 &
+          echo "DISPLAY=:99.0" >> $GITHUB_ENV
+
       - uses: r-lib/actions/setup-pandoc@v2
 
       - uses: r-lib/actions/setup-r@v2
