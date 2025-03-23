@@ -1,11 +1,12 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# CytoProfile <a href="https://saraswatsh.github.io/CytoProfile/"><img src="man/figures/logo.png" align="right" height="150" alt="CytoProfile website" /></a>
+
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/saraswatsh/CytoProfile/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/saraswatsh/CytoProfile/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
-
-# CytoProfile
 
 The goal of CytoProfile is to conduct quality control using biological
 meaningful cutoff on raw measured values of cytokines. Specifically,
@@ -65,7 +66,7 @@ library(reshape2)    # For data transformation (e.g., melt) in cross-validation 
 
 # Statistical analysis
 library(mixOmics)    # For multivariate analyses (PCA, sPLS-DA, etc.).
-library(e1071)     # For computing skewness and kurtosis.
+library(e1071)       # For computing skewness and kurtosis.
 library(pROC)        # For ROC curve generation in machine learning model evaluation.
 
 # Machine learning

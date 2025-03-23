@@ -6,6 +6,9 @@ inst/doc
 /Meta/
 .lintr
 cytokine_stock.jpeg
-logo_full_hex.png
+cytoprofile_logo.png
+cytoprofile_logo2.png
 cran-comments.md
 README_cache/
+vignettes/getting_started_cache/
+pkgdown/favicon

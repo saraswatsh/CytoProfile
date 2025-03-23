@@ -53,7 +53,7 @@ Below are examples of using the functions provided in CytoProfile. Any saved or 
 
 ## 1. Data Loading and set up
 
-```{r, setup, echo=TRUE, warning=FALSE, message=FALSE}
+```{r, setup, echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE}
 # Loading all packages required
 # Data manipulation and reshaping
 library(dplyr)       # For data filtering, grouping, and summarising.
@@ -94,7 +94,7 @@ data_df <- ExampleData1
 
 ### Boxplots
 
-```{r, EDA 1,  echo=TRUE, warning=FALSE, message=FALSE}
+```{r, EDA 1,  echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE}
 # Generating boxplots to check for outliers for raw values
 # Generating boxplots to check for outliers for raw values
 cyt_bp(data_df[, -c(1:3)], 
@@ -110,7 +110,7 @@ cyt_bp(log2(data_df[, -c(1:3)]),
 
 ### Group-Specific Boxplots
 
-```{r, EDA 2, echo=TRUE, warning=FALSE, message=FALSE}
+```{r, EDA 2, echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE}
 # Raw values for group-specific boxplots
 cyt_bp2(data_df[, -c(3)], 
         pdf_title = "boxplot_by_group_and_treatment_raw.pdf", 
@@ -125,7 +125,7 @@ cyt_bp2(data_df[, -c(3)],
 
 ## 3. Skewness and Kurtosis 
 
-```{r, EDA 3, echo=TRUE, warning=FALSE, message=FALSE}
+```{r, EDA 3, echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE}
 # Histogram of skewness and kurtosis for overall raw data
 cyt_skku(data_df[, -c(1:3)], 
          pdf_title = "skew_and_kurtosis.pdf", 
@@ -141,7 +141,7 @@ cyt_skku(ExampleData1[, -c(2:3)],
 
 ### Basic Error Bar Plot
 
-```{r,EDA 4,  echo=TRUE, warning=FALSE, message=FALSE}
+```{r,EDA 4,  echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE}
 # Generating basic error bar plots
 cytokine_mat <- ExampleData1[, -c(1:3)]  # Extract all cytokines
 cytokineNames <- colnames(cytokine_mat)  # Extract cytokine names
@@ -161,7 +161,7 @@ dev.off()
 
 ### Enriched Error Bar Plot with p-values and Effect Sizes
 
-```{r, EDA 5,  echo=TRUE, warning=FALSE, message=FALSE}
+```{r, EDA 5,  echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE}
 # Generating Error Bar Plot enriched with p-value and effect size 
 data_df <- ExampleData1[, -3]
 cyt_mat <- log2(data_df[, -c(1:2)])
@@ -217,7 +217,7 @@ dev.off()
 
 ### Two Sample T-test and Mann Whitney U Test
 
-```{r, Univariate 1,  echo=TRUE, warning=FALSE, message=FALSE}
+```{r, Univariate 1,  echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE}
 # Performing Two Sample T-test and Mann Whitney U Test
 data_df <- ExampleData1[, -c(3)]
 data_df <- dplyr::filter(data_df, Group != "ND", Treatment != "Unstimulated")
@@ -229,7 +229,7 @@ cyt_ttest(data_df[, c(1:2, 5:6)])
 
 ### ANOVA Comparisons Test
 
-```{r,Univariate 2,  echo=TRUE, warning=FALSE, message=FALSE}
+```{r,Univariate 2,  echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE}
 # Perform ANOVA comparisons test (example with 2 cytokines)
 cyt_anova(data_df[, c(1:2, 5:6)])
 ```
@@ -238,7 +238,7 @@ cyt_anova(data_df[, c(1:2, 5:6)])
 
 ### Partial Least Squares Discriminant Analysis (PLS-DA) 
 
-```{r, Multivariate 1, echo=TRUE, warning=FALSE, message=FALSE}
+```{r, Multivariate 1, echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE}
 # In this code, we will have background predict to be turned on to see the classification areas and 
 # we will also print out the confusion matrix based on classification. 
 # Note this takes into account all groups and treatment and all values are log transformed through 
@@ -258,7 +258,7 @@ cyt_splsda(data_df,
 
 ## 7. Principal Component Analysis (PCA)
 
-```{r, Multivariate 2, echo=TRUE, warning=FALSE, message=FALSE}
+```{r, Multivariate 2, echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE}
 data <- ExampleData1[, -c(3,23)]
 data_df <- dplyr::filter(data, Group != "ND" & Treatment != "Unstimulated")
 cyt_pca(data_df, 
@@ -277,7 +277,7 @@ cyt_pca(data_df,
 
 ## 8. Volcano Plot
 
-```{r, EDA 6, echo=TRUE, warning=FALSE, message=FALSE}
+```{r, EDA 6, echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE}
 # Generating Volcano Plot
 data_df <- ExampleData1[, -c(2:3)]
 volc_plot <- cyt_volc(data_df, group_col = "Group", 
@@ -292,7 +292,7 @@ print(volc_plot$`T2D vs ND`$data)
 
 ## 9. Heatmap
 
-```{r,EDA 7, echo=TRUE, warning=FALSE, message=FALSE}
+```{r,EDA 7, echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE}
 # Generating Heat map
 cyt_heatmap(data = data_df,
             scale = "log2",        # Optional scaling
@@ -302,7 +302,7 @@ cyt_heatmap(data = data_df,
 
 ## 10. Dual Flashlight Plot
 
-```{r,EDA 8, echo=TRUE, warning=FALSE, message=FALSE}
+```{r,EDA 8, echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE}
 # Generating dual flashlights plot
 data_df <- ExampleData1[, -c(2:3)]
 dfp <- cyt_dualflashplot(data_df, group_var = "Group", 
@@ -319,7 +319,7 @@ print(dfp$data)
 
 ### Using XGBoost for classification
 
-```{r, ML1, echo=TRUE, warning=FALSE, message=FALSE}
+```{r, ML1, echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE}
 # Using XGBoost for classification
 data_df0 <- ExampleData1
 data_df <- data.frame(data_df0[, 1:3], log2(data_df0[, -c(1:3)]))
@@ -336,7 +336,7 @@ xgb_results <- cyt_xgb(data = data_df, group_col = "Group",
 
 ### Using Random Forest for classification
 
-```{r,ML2, echo=TRUE, warning=FALSE, message=FALSE}
+```{r,ML2, echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE}
 # Using Random Forest for classification
 rf_results <- cyt_rf(data = data_df, group_col = "Group", k_folds = 5,
                      ntree = 1000, mtry = 4, run_rfcv = TRUE,
