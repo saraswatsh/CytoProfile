@@ -117,11 +117,22 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
   # Now perform the check for pch_values:
   if (is.null(pch_values)) {
     stop("Please enter a vector of pch values, e.g. c(16, 4).")
-  } else if (length(pch_values) < length(unique(group_vec))) {
-    stop("Please ensure the number of pch values provided (", length(pch_values),
-         ") is at least equal to the number of unique groups (", length(unique(group_vec)),
-         ") from the grouping column.")
   }
+  if (group_col == group_col2) {
+    if (length(pch_values) < length(unique(data[[group_col]]))) {
+      stop("Please ensure the number of pch values provided (", length(pch_values),
+           ") is at least equal to the number of unique groups (", length(unique(data[[group_col]])),
+           ") from the grouping column.")
+    }
+  } else {
+    # When group_col and group_col2 differ, use the levels of group_col for pch
+    if (length(pch_values) < length(unique(data[[group_col]]))) {
+      stop("Please ensure the number of pch values provided (", length(pch_values),
+           ") is at least equal to the number of unique groups (", length(unique(data[[group_col]])),
+           ") from the first grouping column.")
+    }
+  }
+
   # Generate a color palette if not provided (based on the
   # grouping variable levels in the entire dataset)
   if (is.null(colors)) {
@@ -157,8 +168,10 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
     acc1 <- 100 * signif(accuracy1, digits = 2)
 
     bg_maxdist <- mixOmics::background.predict(cytokine_splsda,
-      comp.predicted = 2,
-      dist = "max.dist"
+                                                comp.predicted = 2,
+                                                dist = "max.dist",
+                                                xlim = c(-15,15),
+                                                ylim = c(-15,15)
     )
     group_factors <- seq_len(length(levels(factor(the_groups))))
 
@@ -327,9 +340,25 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
                     length(prediction2[, 1]))
     acc2 <- 100 * signif(accuracy2, digits = 2)
 
+    # Ensuring shaded background displays
+    # Extract X scores
+    scores <- cytokine_splsda2$variates$X
+
+    # Get the range of component 1 and component 2
+    range_x <- range(scores[, 1], na.rm = TRUE)
+    range_y <- range(scores[, 2], na.rm = TRUE)
+
+    # Add a small buffer to pad the edges
+    buffer <- 0.5
+    range_x <- c(range_x[1] - buffer, range_x[2] + buffer)
+    range_y <- c(range_y[1] - buffer, range_y[2] + buffer)
+
+    # Create a grid of values
     bg_maxdist2 <- mixOmics::background.predict(cytokine_splsda2,
-      comp.predicted = 2,
-      dist = "max.dist"
+                                                comp.predicted = 2,
+                                                dist = "max.dist",
+                                                xlim = c(-15,15),
+                                                ylim = c(-15,15)
     )
 
     plot_args2 <- list(cytokine_splsda2,
@@ -534,15 +563,32 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
                       length(prediction1[, 1]))
       acc1 <- 100 * signif(accuracy1, digits = 2)
 
+      # Ensuring shaded background displays
+      # Extract X scores
+      scores <- cytokine_splsda$variates$X
+
+      # Get the range of component 1 and component 2
+      range_x <- range(scores[, 1], na.rm = TRUE)
+      range_y <- range(scores[, 2], na.rm = TRUE)
+
+      # Add a small buffer to pad the edges
+      buffer <- 0.5
+      range_x <- c(range_x[1] - buffer, range_x[2] + buffer)
+      range_y <- c(range_y[1] - buffer, range_y[2] + buffer)
+
+      # Create a grid of values
       bg_maxdist <- mixOmics::background.predict(cytokine_splsda,
-        comp.predicted = 2,
-        dist = "max.dist"
+                                                 comp.predicted = 2,
+                                                 dist = "max.dist",
+                                                 xlim = c(-15,15),
+                                                 ylim = c(-15,15)
       )
+
       group_factors <- seq_len(length(levels(factor(the_groups))))
 
       plot_args <- list(cytokine_splsda,
         ind.names = NA, legend = TRUE, col = colors,
-        pch = pch_values, pch.levels = group_factors,
+        pch = pch_values[group_factors], pch.levels = pch_values[group_factors],
         title = paste(
           overall_analysis, "With Accuracy:",
           acc1, "%"
@@ -705,14 +751,30 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
                       length(prediction2[, 1]))
       acc2 <- 100 * signif(accuracy2, digits = 2)
 
+      # Ensuring shaded background displays
+      # Extract X scores
+      scores <- cytokine_splsda2$variates$X
+
+      # Get the range of component 1 and component 2
+      range_x <- range(scores[, 1], na.rm = TRUE)
+      range_y <- range(scores[, 2], na.rm = TRUE)
+
+      # Add a small buffer to pad the edges
+      buffer <- 0.5
+      range_x <- c(range_x[1] - buffer, range_x[2] + buffer)
+      range_y <- c(range_y[1] - buffer, range_y[2] + buffer)
+
+      # Create a grid of values
       bg_maxdist2 <- mixOmics::background.predict(cytokine_splsda2,
-        comp.predicted = 2,
-        dist = "max.dist"
+                                                 comp.predicted = 2,
+                                                 dist = "max.dist",
+                                                 xlim = c(-15,15),
+                                                 ylim = c(-15,15)
       )
 
       plot_args2 <- list(cytokine_splsda2,
         ind.names = NA, legend = TRUE, col = colors,
-        pch = pch_values, pch.levels = group_factors,
+        pch = pch_values[group_factors], pch.levels = pch_values[group_factors],
         title = paste(
           overall_analysis, "(VIP>1)",
           "With Accuracy:", acc2, "%"
@@ -720,7 +782,7 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
         legend.title = group_col
       )
       if (ellipse) plot_args2$ellipse <- TRUE
-      if (bg) plot_args2$background <- bg_maxdist
+      if (bg) plot_args2$background <- bg_maxdist2
       do.call(mixOmics::plotIndiv, plot_args2)
 
       if (!is.null(style) && comp_num == 3 && (tolower(style) == "3d")) {
@@ -745,7 +807,7 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
         )
       }
       if (roc) {
-        roc_obj2 <- auroc(
+        roc_obj2 <- mixOmics::auroc(
           object = cytokine_splsda2, newdata = the_data_mat,
           outcome.test = the_groups,
           plot = TRUE, roc.comp = comp_num,
@@ -833,57 +895,56 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
           print(a)
         }
       }
-    }
-    if (conf_mat == TRUE) {
-      cat("Overall Confusion Matrix for PLS-DA Comparison\n")
+      if (conf_mat == TRUE) {
+        cat(paste0("Confusion Matrix for PLS-DA Comparison: ", current_level, "\n"))
 
-      # Confusion Matrix for main model
-      cm <- caret::confusionMatrix(
-        data = as.factor(prediction1[, 3]), # predicted
-        reference = as.factor(prediction1[, 1]) # actual
-      )
-      print(cm$table)
-      cat("Accuracy:", signif(cm$overall["Accuracy"], 2), "\n")
+        # Confusion Matrix for main model
+        cm <- caret::confusionMatrix(
+          data = as.factor(prediction1[, 3]), # predicted
+          reference = as.factor(prediction1[, 1]) # actual
+        )
+        print(cm$table)
+        cat("Accuracy:", signif(cm$overall["Accuracy"], 2), "\n")
 
-      # Check if binary or multi-class
-      if (nlevels(as.factor(prediction1[, 1])) == 2) {
-        cat("Sensitivity:", signif(cm$byClass["Sensitivity"], 2), "\n")
-        cat("Specificity:", signif(cm$byClass["Specificity"], 2), "\n")
-      } else {
-        cat("\nPer-Class Sensitivity:\n")
-        print(signif(cm$byClass[, "Sensitivity"], 2))
-        cat("\nPer-Class Specificity:\n")
-        print(signif(cm$byClass[, "Specificity"], 2))
-        macro_sens <- mean(cm$byClass[, "Sensitivity"], na.rm = TRUE)
-        macro_spec <- mean(cm$byClass[, "Specificity"], na.rm = TRUE)
-        cat("\nMacro-Averaged Sensitivity:", signif(macro_sens, 2), "\n")
-        cat("Macro-Averaged Specificity:", signif(macro_spec, 2), "\n")
-      }
+        # Check if binary or multi-class
+        if (nlevels(as.factor(prediction1[, 1])) == 2) {
+          cat("Sensitivity:", signif(cm$byClass["Sensitivity"], 2), "\n")
+          cat("Specificity:", signif(cm$byClass["Specificity"], 2), "\n")
+        } else {
+          cat("\nPer-Class Sensitivity:\n")
+          print(signif(cm$byClass[, "Sensitivity"], 2))
+          cat("\nPer-Class Specificity:\n")
+          print(signif(cm$byClass[, "Specificity"], 2))
+          macro_sens <- mean(cm$byClass[, "Sensitivity"], na.rm = TRUE)
+          macro_spec <- mean(cm$byClass[, "Specificity"], na.rm = TRUE)
+          cat("\nMacro-Averaged Sensitivity:", signif(macro_sens, 2), "\n")
+          cat("Macro-Averaged Specificity:", signif(macro_spec, 2), "\n")
+        }
 
-      cat("Overall Confusion Matrix for PLS-DA Comparison with VIP Score > 1\n")
+        cat(paste0("Confusion Matrix for PLS-DA Comparison with VIP > 1: ", current_level, "\n"))
 
-      # Confusion Matrix for VIP>1 model
-      cm_vip <- caret::confusionMatrix(
-        data = as.factor(prediction2[, 3]), # predicted
-        reference = as.factor(prediction2[, 1]) # actual
-      )
-      print(cm_vip$table)
-      cat("Accuracy:", signif(cm_vip$overall["Accuracy"], 2), "\n")
-      if (nlevels(as.factor(prediction2[, 1])) == 2) {
-        cat("Sensitivity:", signif(cm_vip$byClass["Sensitivity"], 2), "\n")
-        cat("Specificity:", signif(cm_vip$byClass["Specificity"], 2), "\n")
-      } else {
-        cat("\nPer-Class Sensitivity:\n")
-        print(signif(cm_vip$byClass[, "Sensitivity"], 2))
-        cat("\nPer-Class Specificity:\n")
-        print(signif(cm_vip$byClass[, "Specificity"], 2))
-        macro_sens_vip <- mean(cm_vip$byClass[, "Sensitivity"], na.rm = TRUE)
-        macro_spec_vip <- mean(cm_vip$byClass[, "Specificity"], na.rm = TRUE)
-        cat("\nMacro-Averaged Sensitivity:", signif(macro_sens_vip, 2), "\n")
-        cat("Macro-Averaged Specificity:", signif(macro_spec_vip, 2), "\n")
+        # Confusion Matrix for VIP>1 model
+        cm_vip <- caret::confusionMatrix(
+          data = as.factor(prediction2[, 3]), # predicted
+          reference = as.factor(prediction2[, 1]) # actual
+        )
+        print(cm_vip$table)
+        cat("Accuracy:", signif(cm_vip$overall["Accuracy"], 2), "\n")
+        if (nlevels(as.factor(prediction2[, 1])) == 2) {
+          cat("Sensitivity:", signif(cm_vip$byClass["Sensitivity"], 2), "\n")
+          cat("Specificity:", signif(cm_vip$byClass["Specificity"], 2), "\n")
+        } else {
+          cat("\nPer-Class Sensitivity:\n")
+          print(signif(cm_vip$byClass[, "Sensitivity"], 2))
+          cat("\nPer-Class Specificity:\n")
+          print(signif(cm_vip$byClass[, "Specificity"], 2))
+          macro_sens_vip <- mean(cm_vip$byClass[, "Sensitivity"], na.rm = TRUE)
+          macro_spec_vip <- mean(cm_vip$byClass[, "Specificity"], na.rm = TRUE)
+          cat("\nMacro-Averaged Sensitivity:", signif(macro_sens_vip, 2), "\n")
+          cat("Macro-Averaged Specificity:", signif(macro_spec_vip, 2), "\n")
+        }
       }
     }
   }
-
   dev.off()
 }
