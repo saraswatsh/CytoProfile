@@ -102,6 +102,9 @@ BiocManager and mix0mics packages using:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"saraswatsh/CytoProfile"</span><span class="op">)</span></span></code></pre></div>
+<p>Install CytoProfile from CRAN with:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"CytoProfile"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
@@ -114,7 +117,7 @@ Folder</a>.</p>
 <div class="section level3">
 <h3 id="data-loading-and-set-up">1. Data Loading and set up<a class="anchor" aria-label="anchor" href="#data-loading-and-set-up"></a>
 </h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Loading all packages required</span></span>
 <span><span class="co"># Data manipulation and reshaping</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>       <span class="co"># For data filtering, grouping, and summarising.</span></span>
@@ -155,7 +158,7 @@ Folder</a>.</p>
 <div class="section level4">
 <h4 id="boxplots">Boxplots<a class="anchor" aria-label="anchor" href="#boxplots"></a>
 </h4>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generating boxplots to check for outliers for raw values</span></span>
 <span><span class="co"># Generating boxplots to check for outliers for raw values</span></span>
 <span><span class="fu"><a href="../reference/cyt_bp.html">cyt_bp</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, </span>
@@ -174,7 +177,7 @@ Folder</a>.</p>
 <div class="section level4">
 <h4 id="group-specific-boxplots">Group-Specific Boxplots<a class="anchor" aria-label="anchor" href="#group-specific-boxplots"></a>
 </h4>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Raw values for group-specific boxplots</span></span>
 <span><span class="fu"><a href="../reference/cyt_bp2.html">cyt_bp2</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, </span>
 <span>        pdf_title <span class="op">=</span> <span class="st">"boxplot_by_group_and_treatment_raw.pdf"</span>, </span>
@@ -193,7 +196,7 @@ Folder</a>.</p>
 <div class="section level3">
 <h3 id="skewness-and-kurtosis">3. Skewness and Kurtosis<a class="anchor" aria-label="anchor" href="#skewness-and-kurtosis"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Histogram of skewness and kurtosis for overall raw data</span></span>
 <span><span class="fu"><a href="../reference/cyt_skku.html">cyt_skku</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, </span>
 <span>         pdf_title <span class="op">=</span> <span class="st">"skew_and_kurtosis.pdf"</span>, </span>
@@ -210,7 +213,7 @@ Folder</a>.</p>
 <div class="section level4">
 <h4 id="basic-error-bar-plot">Basic Error Bar Plot<a class="anchor" aria-label="anchor" href="#basic-error-bar-plot"></a>
 </h4>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generating basic error bar plots</span></span>
 <span><span class="va">cytokine_mat</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>  <span class="co"># Extract all cytokines</span></span>
 <span><span class="va">cytokineNames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">cytokine_mat</span><span class="op">)</span>  <span class="co"># Extract cytokine names</span></span>
@@ -232,7 +235,7 @@ Folder</a>.</p>
 <div class="section level4">
 <h4 id="enriched-error-bar-plot-with-p-values-and-effect-sizes">Enriched Error Bar Plot with p-values and Effect Sizes<a class="anchor" aria-label="anchor" href="#enriched-error-bar-plot-with-p-values-and-effect-sizes"></a>
 </h4>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generating Error Bar Plot enriched with p-value and effect size </span></span>
 <span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fl">3</span><span class="op">]</span></span>
 <span><span class="va">cyt_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log2</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
@@ -292,7 +295,7 @@ Folder</a>.</p>
 <div class="section level4">
 <h4 id="two-sample-t-test-and-mann-whitney-u-test">Two Sample T-test and Mann Whitney U Test<a class="anchor" aria-label="anchor" href="#two-sample-t-test-and-mann-whitney-u-test"></a>
 </h4>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Performing Two Sample T-test and Mann Whitney U Test</span></span>
 <span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data_df</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span>, <span class="va">Treatment</span> <span class="op">!=</span> <span class="st">"Unstimulated"</span><span class="op">)</span></span>
@@ -312,7 +315,7 @@ Folder</a>.</p>
 <div class="section level4">
 <h4 id="anova-comparisons-test">ANOVA Comparisons Test<a class="anchor" aria-label="anchor" href="#anova-comparisons-test"></a>
 </h4>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Perform ANOVA comparisons test (example with 2 cytokines)</span></span>
 <span><span class="fu"><a href="../reference/cyt_anova.html">cyt_anova</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $IFN.G_Group</span></span>
@@ -334,7 +337,7 @@ Folder</a>.</p>
 <div class="section level4">
 <h4 id="partial-least-squares-discriminant-analysis-pls-da">Partial Least Squares Discriminant Analysis (PLS-DA)<a class="anchor" aria-label="anchor" href="#partial-least-squares-discriminant-analysis-pls-da"></a>
 </h4>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># In this code, we will have background predict to be turned on to see the classification areas and </span></span>
 <span><span class="co"># we will also print out the confusion matrix based on classification. </span></span>
 <span><span class="co"># Note this takes into account all groups and treatment and all values are log transformed through </span></span>
@@ -361,7 +364,7 @@ Folder</a>.</p>
 <div class="section level3">
 <h3 id="principal-component-analysis-pca">7. Principal Component Analysis (PCA)<a class="anchor" aria-label="anchor" href="#principal-component-analysis-pca"></a>
 </h3>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>,<span class="fl">23</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span> <span class="op">&amp;</span> <span class="va">Treatment</span> <span class="op">!=</span> <span class="st">"Unstimulated"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/cyt_pca.html">cyt_pca</a></span><span class="op">(</span><span class="va">data_df</span>, </span>
@@ -386,7 +389,7 @@ Folder</a>.</p>
 <div class="section level3">
 <h3 id="volcano-plot">8. Volcano Plot<a class="anchor" aria-label="anchor" href="#volcano-plot"></a>
 </h3>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generating Volcano Plot</span></span>
 <span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">volc_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cyt_volc.html">cyt_volc</a></span><span class="op">(</span><span class="va">data_df</span>, group_col <span class="op">=</span> <span class="st">"Group"</span>, </span>
@@ -453,7 +456,7 @@ Folder</a>.</p>
 <div class="section level3">
 <h3 id="heatmap">9. Heatmap<a class="anchor" aria-label="anchor" href="#heatmap"></a>
 </h3>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generating Heat map</span></span>
 <span><span class="fu"><a href="../reference/cyt_heatmap.html">cyt_heatmap</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">data_df</span>,</span>
 <span>            scale <span class="op">=</span> <span class="st">"log2"</span>,        <span class="co"># Optional scaling</span></span>
@@ -465,7 +468,7 @@ Folder</a>.</p>
 <div class="section level3">
 <h3 id="dual-flashlight-plot">10. Dual Flashlight Plot<a class="anchor" aria-label="anchor" href="#dual-flashlight-plot"></a>
 </h3>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generating dual flashlights plot</span></span>
 <span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">dfp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cyt_dualflashplot.html">cyt_dualflashplot</a></span><span class="op">(</span><span class="va">data_df</span>, group_var <span class="op">=</span> <span class="st">"Group"</span>, </span>
@@ -529,7 +532,7 @@ Folder</a>.</p>
 <div class="section level4">
 <h4 id="using-xgboost-for-classification">Using XGBoost for classification<a class="anchor" aria-label="anchor" href="#using-xgboost-for-classification"></a>
 </h4>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Using XGBoost for classification</span></span>
 <span><span class="va">data_df0</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span></span>
 <span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">data_df0</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log2</a></span><span class="op">(</span><span class="va">data_df0</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
@@ -640,7 +643,7 @@ Folder</a>.</p>
 <div class="section level4">
 <h4 id="using-random-forest-for-classification">Using Random Forest for classification<a class="anchor" aria-label="anchor" href="#using-random-forest-for-classification"></a>
 </h4>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Using Random Forest for classification</span></span>
 <span><span class="va">rf_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cyt_rf.html">cyt_rf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">data_df</span>, group_col <span class="op">=</span> <span class="st">"Group"</span>, k_folds <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>                     ntree <span class="op">=</span> <span class="fl">1000</span>, mtry <span class="op">=</span> <span class="fl">4</span>, run_rfcv <span class="op">=</span> <span class="cn">TRUE</span>,</span>
