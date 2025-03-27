@@ -162,12 +162,15 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
                     length(prediction1[, 1]))
     acc1 <- 100 * signif(accuracy1, digits = 2)
 
-    bg_maxdist <- mixOmics::background.predict(cytokine_splsda,
-                                                comp.predicted = 2,
-                                                dist = "max.dist",
-                                                xlim = c(-15,15),
-                                                ylim = c(-15,15)
-    )
+    if(bg){
+      bg_maxdist <- mixOmics::background.predict(cytokine_splsda,
+                                               comp.predicted = 2,
+                                               dist = "max.dist",
+                                               xlim = c(-15,15),
+                                               ylim = c(-15,15),
+                                               resolution = 200
+                                               )
+    }
     group_factors <- seq_len(length(levels(factor(the_groups))))
 
     plot_args <- list(cytokine_splsda,
@@ -336,12 +339,15 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
     acc2 <- 100 * signif(accuracy2, digits = 2)
 
     # Create a grid of values
-    bg_maxdist2 <- mixOmics::background.predict(cytokine_splsda2,
-                                                comp.predicted = 2,
-                                                dist = "max.dist",
-                                                xlim = c(-15,15),
-                                                ylim = c(-15,15)
-    )
+    if(bg){
+      bg_maxdist2 <- mixOmics::background.predict(cytokine_splsda2,
+                                                 comp.predicted = 2,
+                                                 dist = "max.dist",
+                                                 xlim = c(-15,15),
+                                                 ylim = c(-15,15),
+                                                 resolution = 200
+      )
+    }
 
     plot_args2 <- list(cytokine_splsda2,
       ind.names = NA, legend = TRUE, col = colors,
@@ -546,12 +552,15 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
       acc1 <- 100 * signif(accuracy1, digits = 2)
 
       # Create a grid of values
-      bg_maxdist <- mixOmics::background.predict(cytokine_splsda,
-                                                 comp.predicted = 2,
-                                                 dist = "max.dist",
-                                                 xlim = c(-15,15),
-                                                 ylim = c(-15,15)
-      )
+      if(bg){
+        bg_maxdist <- mixOmics::background.predict(cytokine_splsda,
+                                                   comp.predicted = 2,
+                                                   dist = "max.dist",
+                                                   xlim = c(-15,15),
+                                                   ylim = c(-15,15),
+                                                   resolution = 200
+        )
+      }
 
       group_factors <- seq_len(length(levels(factor(the_groups))))
 
@@ -721,12 +730,15 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
       acc2 <- 100 * signif(accuracy2, digits = 2)
 
       # Create a grid of values
-      bg_maxdist2 <- mixOmics::background.predict(cytokine_splsda2,
-                                                 comp.predicted = 2,
-                                                 dist = "max.dist",
-                                                 xlim = c(-15,15),
-                                                 ylim = c(-15,15)
-      )
+      if(bg){
+        bg_maxdist2 <- mixOmics::background.predict(cytokine_splsda2,
+                                                   comp.predicted = 2,
+                                                   dist = "max.dist",
+                                                   xlim = c(-15,15),
+                                                   ylim = c(-15,15),
+                                                   resolution = 200
+        )
+      }
 
       plot_args2 <- list(cytokine_splsda2,
         ind.names = NA, legend = TRUE, col = colors,

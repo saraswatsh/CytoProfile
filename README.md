@@ -95,18 +95,14 @@ opts_knit$set(root.dir = "E:/Desktop/RA/R Package/CytoProfile/output")
 
 ``` r
 # Generating boxplots to check for outliers for raw values
-# Generating boxplots to check for outliers for raw values
 cyt_bp(data_df[, -c(1:3)], 
        pdf_title = "boxplot_by_cytokine_raw.pdf")  
-#> png 
-#>   2
-# Removing the first 4 columns to retain only continuous variables.
+# Removing the first 3 columns to retain only continuous variables.
 
 # Generating boxplots to check for outliers for log2 values
-cyt_bp(log2(data_df[, -c(1:3)]), 
-       pdf_title = "boxplot_by_cytokine_log2.pdf")  
-#> png 
-#>   2
+cyt_bp(data_df[, -c(1:3)], 
+       pdf_title = "boxplot_by_cytokine_log2.pdf",
+       scale = "log2")  
 # Using log2 transformation for cytokine values.
 ```
 
@@ -267,63 +263,37 @@ cyt_anova(data_df[, c(1:2, 5:6)])
 ### Partial Least Squares Discriminant Analysis (PLS-DA)
 
 ``` r
-# In this code, we will have background predict to be turned on to see the classification areas and 
-# we will also print out the confusion matrix based on classification. 
-# Note this takes into account all groups and treatment and all values are log transformed through 
 # cyt.plsda function. 
-data_df <- ExampleData1
-cyt_splsda(data_df[, -c(3)], 
+data <- ExampleData1[, -c(3)]
+data_df <- dplyr::filter(data, Group != "ND" & Treatment == "CD3/CD28")
+cyt_splsda(data_df, 
           pdf_title = "example_spls_da_analysis.pdf", 
-          colors = c("black", "purple", "red2"),
-          bg = TRUE, scale = "log2", 
+          colors = c("black", "purple"),
+          bg = FALSE, scale = "log2", ellipse = TRUE,
           conf_mat = TRUE, var_num = 25, 
           cv_opt = "loocv",
-          comp_num = 3, pch_values = c(16, 4, 3), 
+          comp_num = 3, pch_values = c(16, 4), 
           style = "3d", 
           group_col = "Group", group_col2 = "Treatment", 
           roc = TRUE)
-#> [1] "CD3/CD28 LOOCV Accuracy: 49%"
-#> [1] "CD3/CD28 LOOCV Accuracy (VIP>1): 52%"
-#> [1] "LPS LOOCV Accuracy: 44%"
-#> [1] "LPS LOOCV Accuracy (VIP>1): 44%"
-#> [1] "Unstimulated LOOCV Accuracy: 34%"
-#> [1] "Unstimulated LOOCV Accuracy (VIP>1): 42%"
-#> Overall Confusion Matrix for PLS-DA Comparison
+#> [1] "CD3/CD28 LOOCV Accuracy: 77%"
+#> [1] "CD3/CD28 LOOCV Accuracy (VIP>1): 77%"
+#> Confusion Matrix for PLS-DA Comparison: CD3/CD28
 #>           Reference
-#> Prediction ND PreT2D T2D
-#>     ND      6      4   6
-#>     PreT2D 13     27   9
-#>     T2D    14      2  18
-#> Accuracy: 0.52 
-#> 
-#> Per-Class Sensitivity:
-#>     Class: ND Class: PreT2D    Class: T2D 
-#>          0.18          0.82          0.55 
-#> 
-#> Per-Class Specificity:
-#>     Class: ND Class: PreT2D    Class: T2D 
-#>          0.85          0.67          0.76 
-#> 
-#> Macro-Averaged Sensitivity: 0.52 
-#> Macro-Averaged Specificity: 0.76 
-#> Overall Confusion Matrix for PLS-DA Comparison with VIP Score > 1
+#> Prediction PreT2D T2D
+#>     PreT2D     28   7
+#>     T2D         5  26
+#> Accuracy: 0.82 
+#> Sensitivity: 0.85 
+#> Specificity: 0.79 
+#> Confusion Matrix for PLS-DA Comparison with VIP > 1: CD3/CD28
 #>           Reference
-#> Prediction ND PreT2D T2D
-#>     ND      8      4   7
-#>     PreT2D 12     22   5
-#>     T2D    13      7  21
-#> Accuracy: 0.52 
-#> 
-#> Per-Class Sensitivity:
-#>     Class: ND Class: PreT2D    Class: T2D 
-#>          0.24          0.67          0.64 
-#> 
-#> Per-Class Specificity:
-#>     Class: ND Class: PreT2D    Class: T2D 
-#>          0.83          0.74          0.70 
-#> 
-#> Macro-Averaged Sensitivity: 0.52 
-#> Macro-Averaged Specificity: 0.76
+#> Prediction PreT2D T2D
+#>     PreT2D     27   6
+#>     T2D         6  27
+#> Accuracy: 0.82 
+#> Sensitivity: 0.82 
+#> Specificity: 0.82
 #> png 
 #>   2
 ```

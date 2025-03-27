@@ -6,8 +6,6 @@ home:
   title: Welcome to CytoProfile
   tagline: An R package for Advanced Cytokine Data Analysis
   links:
-  - text: Report a bug
-    href: https://github.com/saraswatsh/CytoProfile/issues
   - text: Read more
     href: articles/getting_started.html
 navbar:

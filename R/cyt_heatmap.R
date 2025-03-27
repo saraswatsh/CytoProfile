@@ -21,7 +21,7 @@
 #' @return The function does not return a value. It saves the heatmap to a file.
 #'
 #' @export
-#' @import gplots
+#' @importFrom gplots heatmap.2
 #'
 #' @examples
 #' # Load sample data

@@ -4,7 +4,14 @@
 \alias{cyt_bp}
 \title{Boxtplots for Overall Comparisons by Continous Variables.}
 \usage{
-cyt_bp(data, pdf_title, bin_size = 25, mf_row = c(1, 1), y_lim = NULL)
+cyt_bp(
+  data,
+  pdf_title,
+  bin_size = 25,
+  mf_row = c(1, 1),
+  y_lim = NULL,
+  scale = NULL
+)
 }
 \arguments{
 \item{data}{A matrix or data frame containing the raw data to be plotted.}
@@ -20,6 +27,9 @@ display on a single page.}
 
 \item{y_lim}{An optional numeric vector defining the y-axis limits
 for the plots.}
+
+\item{scale}{An optional character string. If set to "log2",
+numeric columns are log2-transformed.}
 }
 \value{
 A PDF file containing the box plots for the continuous variables.
@@ -33,6 +43,7 @@ variables in the provided data. If the number of columns in \code{data} exceeds
 # Loading data
 data.df <- ExampleData1
 # Generate box plots for log2-transformed values to check for outliers:
-cyt_bp(log2(data.df[, -c(1:3)]), pdf_title = "boxplot_by_cytokine_log2.pdf")
+cyt_bp(data.df[,-c(1:3)], pdf_title = "boxplot_by_cytokine_log2.pdf",
+scale = "log2")
 
 }
