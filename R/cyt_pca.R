@@ -102,12 +102,6 @@ cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
     print("Results based on no transformation:")
   }
 
-  # Convert factor column names to lowercase for consistency
-  names(data)[names(data) %in% unique(c(group_col, group_col2))] <-
-    tolower(names(data)[names(data) %in% unique(c(group_col, group_col2))])
-  group_col <- tolower(group_col)
-  group_col2 <- tolower(group_col2)
-
   # Extract the grouping variable from your data (using group_col or group_col2)
   # Extract grouping variable(s)
   if (group_col == group_col2) {
@@ -159,7 +153,8 @@ cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
     plotIndiv(cytokine_pca,
       group = the_groups, ind.names = FALSE, legend = TRUE,
       col = colors, title = paste("PCA:", overall_analysis), ellipse = ellipse,
-      pch = pch_values, pch.levels = group_factors
+      pch = pch_values, pch.levels = group_factors,
+      legend.title = group_col
     )
 
     # 3D Plot if requested and exactly three components are used
@@ -282,7 +277,8 @@ cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
       mixOmics::plotIndiv(cytokine_pca,
         group = the_groups, ind.names = FALSE, legend = TRUE,
         col = colors, title = paste("PCA:", title_sub),
-        ellipse = ellipse, pch = pch_values, pch.levels = group_factors
+        ellipse = ellipse, pch = pch_values, pch.levels = group_factors,
+        legend.title = group_col
       )
 
       # 3D Plot if applicable

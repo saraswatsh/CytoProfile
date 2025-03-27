@@ -100,11 +100,6 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
     message("Results based on no transformation:")
   }
 
-  # Convert factor column names to lowercase for consistency
-  names(data)[names(data) %in% c(group_col, group_col2)] <-
-    tolower(names(data)[names(data) %in% c(group_col, group_col2)])
-  group_col <- tolower(group_col)
-  group_col2 <- tolower(group_col2)
   # Extract the grouping variable from your data (using group_col or group_col2)
   # Extract grouping variable(s)
   if (group_col == group_col2) {
@@ -340,19 +335,6 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
                     length(prediction2[, 1]))
     acc2 <- 100 * signif(accuracy2, digits = 2)
 
-    # Ensuring shaded background displays
-    # Extract X scores
-    scores <- cytokine_splsda2$variates$X
-
-    # Get the range of component 1 and component 2
-    range_x <- range(scores[, 1], na.rm = TRUE)
-    range_y <- range(scores[, 2], na.rm = TRUE)
-
-    # Add a small buffer to pad the edges
-    buffer <- 0.5
-    range_x <- c(range_x[1] - buffer, range_x[2] + buffer)
-    range_y <- c(range_y[1] - buffer, range_y[2] + buffer)
-
     # Create a grid of values
     bg_maxdist2 <- mixOmics::background.predict(cytokine_splsda2,
                                                 comp.predicted = 2,
@@ -390,7 +372,7 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
       mixOmics::plotLoadings(cytokine_splsda2,
                              comp = comp, contrib = "max", method = "mean",
                              size.name = 1, size.legend = 1, legend.color = colors,
-                             title = paste("Component", comp, "VIP > 1:", overall_analysis),
+                             title = paste("Component", comp, "(VIP > 1):", overall_analysis),
                              size.title = 1, legend.title = group_col
       )
     }
@@ -562,19 +544,6 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
       accuracy1 <- (sum(prediction1[, 1] == prediction1[, 3]) /
                       length(prediction1[, 1]))
       acc1 <- 100 * signif(accuracy1, digits = 2)
-
-      # Ensuring shaded background displays
-      # Extract X scores
-      scores <- cytokine_splsda$variates$X
-
-      # Get the range of component 1 and component 2
-      range_x <- range(scores[, 1], na.rm = TRUE)
-      range_y <- range(scores[, 2], na.rm = TRUE)
-
-      # Add a small buffer to pad the edges
-      buffer <- 0.5
-      range_x <- c(range_x[1] - buffer, range_x[2] + buffer)
-      range_y <- c(range_y[1] - buffer, range_y[2] + buffer)
 
       # Create a grid of values
       bg_maxdist <- mixOmics::background.predict(cytokine_splsda,
@@ -751,19 +720,6 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
                       length(prediction2[, 1]))
       acc2 <- 100 * signif(accuracy2, digits = 2)
 
-      # Ensuring shaded background displays
-      # Extract X scores
-      scores <- cytokine_splsda2$variates$X
-
-      # Get the range of component 1 and component 2
-      range_x <- range(scores[, 1], na.rm = TRUE)
-      range_y <- range(scores[, 2], na.rm = TRUE)
-
-      # Add a small buffer to pad the edges
-      buffer <- 0.5
-      range_x <- c(range_x[1] - buffer, range_x[2] + buffer)
-      range_y <- c(range_y[1] - buffer, range_y[2] + buffer)
-
       # Create a grid of values
       bg_maxdist2 <- mixOmics::background.predict(cytokine_splsda2,
                                                  comp.predicted = 2,
@@ -802,7 +758,7 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
         mixOmics::plotLoadings(cytokine_splsda2,
                                comp = comp, contrib = "max", method = "mean",
                                size.name = 1, size.legend = 1, legend.color = colors,
-                               title = paste("Component", comp, ":", overall_analysis),
+                               title = paste("Component", comp, "(VIP > 1):", overall_analysis),
                                size.title = 1, legend.title = group_col
         )
       }
