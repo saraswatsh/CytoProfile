@@ -1,3 +1,11 @@
+# CytoProfile 0.1.0 
+
+* Initial CRAN submission.
+
+Since this is our initial submission, our NEWS.md contains a single entry 
+indicating the initial release. We plan to provide more detailed change 
+logs in subsequent versions.
+
 # CytoProfile 0.0.0.9000 (Development Version) 
 
 * Preparation For Initial CRAN Submission
@@ -19,15 +27,3 @@ Volcano Plot, and Extreme Gradient Boosting (XGBoost).
 - Examples from the documentation are now working as expected.
 - 'cyt_splsda' is now able to use one grouping column to run analysis. 
 - 'cyt_skku' now prints the output in readable format.
-
-
-# CytoProfile 0.1.0 
-
-* Initial CRAN submission.
-
-Since this is our initial submission, our NEWS.md contains a single entry 
-indicating the initial release. We plan to provide more detailed change 
-logs in subsequent versions.
-
-
-
