@@ -114,8 +114,8 @@ entire data set is treated as one group.</p></dd>
 
 <dt id="arg-pdf-title">pdf_title<a class="anchor" aria-label="anchor" href="#arg-pdf-title"></a></dt>
 <dd><p>A character string specifying the file name for the PDF file in
-which the histograms will be saved. If omitted, the plots are generated on
-the current graphics device.</p></dd>
+which the histograms will be saved. If <code>NULL</code>, the histograms are
+displayed on the current graphics device. Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-print-res-raw">print_res_raw<a class="anchor" aria-label="anchor" href="#arg-print-res-raw"></a></dt>
@@ -142,9 +142,8 @@ data frames.</p>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>A cutoff is computed as one-tenth of the minimum positive value
 among all numeric measurement columns to avoid taking logarithms of zero.
-When rouping columns are provided, the function loops over unique
-treatmentlevels (using the first element of <code>group_cols</code> as treatment and
-the second as group, if available) and computes the metrics for each
+When grouping columns are provided, the function loops over unique
+grouping columns and computes the metrics for each
 measurement column within each subgroup. Without grouping columns, the
 entire data set is analyzed as one overall group.</p>
     </div>
@@ -153,14 +152,16 @@ entire data set is analyzed as one overall group.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Example with grouping columns (e.g., "Group" and "Treatment")</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ExampleData1</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">cyt_skku</span><span class="op">(</span><span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, pdf_title <span class="op">=</span> <span class="st">"Skew_and_Kurtosis.pdf"</span>,</span></span>
+<span class="r-in"><span><span class="fu">cyt_skku</span><span class="op">(</span><span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, pdf_title <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
 <span class="r-in"><span>  group_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Group"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 2 rows containing non-finite outside the scale range (`stat_bin()`).</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 2 rows containing non-finite outside the scale range (`stat_bin()`).</span>
+<span class="r-plt img"><img src="cyt_skku-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example without grouping columns (analyzes the entire data set)</span></span></span>
-<span class="r-in"><span><span class="fu">cyt_skku</span><span class="op">(</span><span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, pdf_title <span class="op">=</span> <span class="st">"Skew_and_Kurtosis_Overall.pdf"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">cyt_skku</span><span class="op">(</span><span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, pdf_title <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="cyt_skku-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

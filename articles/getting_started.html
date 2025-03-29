@@ -466,36 +466,84 @@ Folder</a>.</p>
 <span>                         group1 <span class="op">=</span> <span class="st">"T2D"</span>, group2 <span class="op">=</span> <span class="st">"ND"</span>, </span>
 <span>                         ssmd_thresh <span class="op">=</span> <span class="op">-</span><span class="fl">0.2</span>, log2fc_thresh <span class="op">=</span> <span class="fl">1</span>, </span>
 <span>                         top_labels <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 25 × 11</span></span></span>
-<span><span class="co">#&gt;    cytokine         mean_ND mean_PreT2D   mean_T2D variance_ND variance_PreT2D</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> CCL.20.MIP.3A   634.        404.       887.        6.72<span style="color: #949494;">e</span>+ 5         2.74<span style="color: #949494;">e</span>+5</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> GM.CSF            2.65        3.11       1.92      2.63<span style="color: #949494;">e</span>+ 1         3.14<span style="color: #949494;">e</span>+1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> IFN.G         <span style="text-decoration: underline;">57</span>730.      <span style="text-decoration: underline;">18</span>303.     <span style="text-decoration: underline;">61</span>484.        2.86<span style="color: #949494;">e</span>+10         2.30<span style="color: #949494;">e</span>+9</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> IL.10           979.        836.      <span style="text-decoration: underline;">1</span>366.        1.99<span style="color: #949494;">e</span>+ 6         1.19<span style="color: #949494;">e</span>+6</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> IL.12.P70        13.0        39.1       78.9       4.15<span style="color: #949494;">e</span>+ 2         2.56<span style="color: #949494;">e</span>+4</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> IL.13          <span style="text-decoration: underline;">1</span>064.       <span style="text-decoration: underline;">1</span>543.      <span style="text-decoration: underline;">1</span>122.        5.60<span style="color: #949494;">e</span>+ 6         1.11<span style="color: #949494;">e</span>+7</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> IL.15             7.92        4.29       8.22      3.54<span style="color: #949494;">e</span>+ 1         2.58<span style="color: #949494;">e</span>+1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> IL.17A          352.        653.       615.        9.40<span style="color: #949494;">e</span>+ 5         2.88<span style="color: #949494;">e</span>+6</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> IL.17E.IL.25      0.010<span style="text-decoration: underline;">1</span>      0.016<span style="text-decoration: underline;">3</span>     0.01      1.01<span style="color: #949494;">e</span><span style="color: #BB0000;">- 6</span>         3.88<span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> IL.17F            1.63        2.35       3.11      1.56<span style="color: #949494;">e</span>+ 1         3.37<span style="color: #949494;">e</span>+1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> IL.1B          <span style="text-decoration: underline;">2</span>806.       <span style="text-decoration: underline;">2</span>977.      <span style="text-decoration: underline;">4</span>299.        6.63<span style="color: #949494;">e</span>+ 7         3.76<span style="color: #949494;">e</span>+7</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> IL.2           <span style="text-decoration: underline;">9</span>227.      <span style="text-decoration: underline;">10</span>718.     <span style="text-decoration: underline;">16</span>129.        2.60<span style="color: #949494;">e</span>+ 8         4.10<span style="color: #949494;">e</span>+8</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span> IL.21           205.        210.       316.        3.15<span style="color: #949494;">e</span>+ 5         2.49<span style="color: #949494;">e</span>+5</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span> IL.22             0.051<span style="text-decoration: underline;">3</span>      0.068<span style="text-decoration: underline;">4</span>     0.063<span style="text-decoration: underline;">3</span>    4.58<span style="color: #949494;">e</span><span style="color: #BB0000;">- 3</span>         4.51<span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">15</span> IL.23             0.147       0.243      0.269     3.13<span style="color: #949494;">e</span><span style="color: #BB0000;">- 2</span>         9.37<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">16</span> IL.27             0.066<span style="text-decoration: underline;">2</span>      0.083<span style="text-decoration: underline;">4</span>     0.106     6.18<span style="color: #949494;">e</span><span style="color: #BB0000;">- 3</span>         5.66<span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">17</span> IL.28A            0.053<span style="text-decoration: underline;">7</span>      0.071<span style="text-decoration: underline;">0</span>     0.066<span style="text-decoration: underline;">6</span>    2.45<span style="color: #949494;">e</span><span style="color: #BB0000;">- 3</span>         5.10<span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">18</span> IL.31             0.040<span style="text-decoration: underline;">9</span>      0.090<span style="text-decoration: underline;">5</span>     0.035<span style="text-decoration: underline;">4</span>    6.62<span style="color: #949494;">e</span><span style="color: #BB0000;">- 3</span>         4.88<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">19</span> IL.33             1.17        1.43       1.16      2.09<span style="color: #949494;">e</span>+ 0         2.71<span style="color: #949494;">e</span>+0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">20</span> IL.4              0.344       0.707      0.297     4.24<span style="color: #949494;">e</span><span style="color: #BB0000;">- 1</span>         2.96<span style="color: #949494;">e</span>+0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">21</span> IL.5            134.        340.       155.        1.09<span style="color: #949494;">e</span>+ 5         9.88<span style="color: #949494;">e</span>+5</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">22</span> IL.6           <span style="text-decoration: underline;">4</span>620.       <span style="text-decoration: underline;">5</span>197.      <span style="text-decoration: underline;">8</span>925.        2.86<span style="color: #949494;">e</span>+ 7         5.72<span style="color: #949494;">e</span>+7</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">23</span> IL.9            203.        256.       254.        1.34<span style="color: #949494;">e</span>+ 5         2.11<span style="color: #949494;">e</span>+5</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">24</span> TNF.A          <span style="text-decoration: underline;">5</span>046.       <span style="text-decoration: underline;">3</span>069.      <span style="text-decoration: underline;">5</span>624.        7.02<span style="color: #949494;">e</span>+ 7         1.63<span style="color: #949494;">e</span>+7</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">25</span> TNF.B             0.641       0.709      0.610     2.37<span style="color: #949494;">e</span>+ 0         2.76<span style="color: #949494;">e</span>+0</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 5 more variables: variance_T2D &lt;dbl&gt;, ssmd &lt;dbl&gt;, log2FC &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   SSMD_Category &lt;chr&gt;, Significant &lt;lgl&gt;</span></span></span>
+<span><span class="co">#&gt;         cytokine      mean_ND  mean_PreT2D     mean_T2D  variance_ND</span></span>
+<span><span class="co">#&gt; 1  CCL.20.MIP.3A 6.335988e+02 4.035826e+02 8.872060e+02 6.723886e+05</span></span>
+<span><span class="co">#&gt; 2         GM.CSF 2.645960e+00 3.110162e+00 1.923838e+00 2.628551e+01</span></span>
+<span><span class="co">#&gt; 3          IFN.G 5.773049e+04 1.830264e+04 6.148444e+04 2.863836e+10</span></span>
+<span><span class="co">#&gt; 4          IL.10 9.788124e+02 8.362581e+02 1.366340e+03 1.988757e+06</span></span>
+<span><span class="co">#&gt; 5      IL.12.P70 1.300202e+01 3.905242e+01 7.889384e+01 4.154092e+02</span></span>
+<span><span class="co">#&gt; 6          IL.13 1.063981e+03 1.542979e+03 1.122447e+03 5.601743e+06</span></span>
+<span><span class="co">#&gt; 7          IL.15 7.924545e+00 4.286364e+00 8.221010e+00 3.543352e+01</span></span>
+<span><span class="co">#&gt; 8         IL.17A 3.521896e+02 6.529712e+02 6.149678e+02 9.399629e+05</span></span>
+<span><span class="co">#&gt; 9   IL.17E.IL.25 1.010101e-02 1.626263e-02 1.000000e-02 1.010101e-06</span></span>
+<span><span class="co">#&gt; 10        IL.17F 1.630606e+00 2.354747e+00 3.107273e+00 1.563497e+01</span></span>
+<span><span class="co">#&gt; 11         IL.1B 2.805961e+03 2.976948e+03 4.299424e+03 6.627093e+07</span></span>
+<span><span class="co">#&gt; 12          IL.2 9.226578e+03 1.071787e+04 1.612881e+04 2.602854e+08</span></span>
+<span><span class="co">#&gt; 13         IL.21 2.054537e+02 2.099691e+02 3.163148e+02 3.149527e+05</span></span>
+<span><span class="co">#&gt; 14         IL.22 5.131313e-02 6.838384e-02 6.333333e-02 4.582952e-03</span></span>
+<span><span class="co">#&gt; 15         IL.23 1.470707e-01 2.425253e-01 2.693939e-01 3.125766e-02</span></span>
+<span><span class="co">#&gt; 16         IL.27 6.619192e-02 8.339394e-02 1.059596e-01 6.181769e-03</span></span>
+<span><span class="co">#&gt; 17        IL.28A 5.369697e-02 7.098990e-02 6.660606e-02 2.452275e-03</span></span>
+<span><span class="co">#&gt; 18         IL.31 4.090909e-02 9.050505e-02 3.535354e-02 6.622635e-03</span></span>
+<span><span class="co">#&gt; 19         IL.33 1.170000e+00 1.426162e+00 1.160202e+00 2.093643e+00</span></span>
+<span><span class="co">#&gt; 20          IL.4 3.435354e-01 7.074747e-01 2.966667e-01 4.243537e-01</span></span>
+<span><span class="co">#&gt; 21          IL.5 1.342252e+02 3.396195e+02 1.550502e+02 1.087858e+05</span></span>
+<span><span class="co">#&gt; 22          IL.6 4.619515e+03 5.197266e+03 8.925129e+03 2.863599e+07</span></span>
+<span><span class="co">#&gt; 23          IL.9 2.025448e+02 2.557497e+02 2.541647e+02 1.337711e+05</span></span>
+<span><span class="co">#&gt; 24         TNF.A 5.045597e+03 3.069403e+03 5.623625e+03 7.022355e+07</span></span>
+<span><span class="co">#&gt; 25         TNF.B 6.407071e-01 7.093939e-01 6.102020e-01 2.369019e+00</span></span>
+<span><span class="co">#&gt;    variance_PreT2D variance_T2D         ssmd      log2FC   SSMD_Category</span></span>
+<span><span class="co">#&gt; 1     2.741372e+05 8.015263e+05  0.295420299  0.48569948     Weak Effect</span></span>
+<span><span class="co">#&gt; 2     3.135480e+01 1.078529e+01 -0.167729355 -0.45980342     Weak Effect</span></span>
+<span><span class="co">#&gt; 3     2.297700e+09 2.062221e+10  0.023919607  0.09088794     Weak Effect</span></span>
+<span><span class="co">#&gt; 4     1.185786e+06 3.325080e+06  0.237746262  0.48121242     Weak Effect</span></span>
+<span><span class="co">#&gt; 5     2.564349e+04 5.522021e+04  0.395066324  2.60117683     Weak Effect</span></span>
+<span><span class="co">#&gt; 6     1.113808e+07 4.933465e+06  0.025474096  0.07717527     Weak Effect</span></span>
+<span><span class="co">#&gt; 7     2.576746e+01 5.564913e+01  0.043930898  0.05298748     Weak Effect</span></span>
+<span><span class="co">#&gt; 8     2.878270e+06 1.942894e+06  0.218873306  0.80415853     Weak Effect</span></span>
+<span><span class="co">#&gt; 9     3.882828e-03 0.000000e+00 -0.142133811 -0.01449957     Weak Effect</span></span>
+<span><span class="co">#&gt; 10    3.365324e+01 4.814175e+01  0.261496797  0.93024059     Weak Effect</span></span>
+<span><span class="co">#&gt; 11    3.762171e+07 3.763120e+07  0.207203618  0.61564856     Weak Effect</span></span>
+<span><span class="co">#&gt; 12    4.096423e+08 1.042666e+09  0.270421185  0.80577278     Weak Effect</span></span>
+<span><span class="co">#&gt; 13    2.493670e+05 8.250469e+05  0.146839155  0.62254771     Weak Effect</span></span>
+<span><span class="co">#&gt; 14    4.509606e-03 1.069184e-02  0.137543211  0.30363695     Weak Effect</span></span>
+<span><span class="co">#&gt; 15    9.370478e-02 1.921160e-01  0.366022692  0.87320747     Weak Effect</span></span>
+<span><span class="co">#&gt; 16    5.660588e-03 1.287739e-02  0.407374084  0.67878724     Weak Effect</span></span>
+<span><span class="co">#&gt; 17    5.100112e-03 3.724527e-03  0.232289102  0.31081278     Weak Effect</span></span>
+<span><span class="co">#&gt; 18    4.882525e-02 5.596557e-03 -0.071075717 -0.21056699     Weak Effect</span></span>
+<span><span class="co">#&gt; 19    2.706103e+00 1.907414e+00 -0.006927303 -0.01213249     Weak Effect</span></span>
+<span><span class="co">#&gt; 20    2.958295e+00 4.733041e-01 -0.069958805 -0.21161574     Weak Effect</span></span>
+<span><span class="co">#&gt; 21    9.881060e+05 1.241351e+05  0.061023447  0.20808037     Weak Effect</span></span>
+<span><span class="co">#&gt; 22    5.718504e+07 8.826681e+07  0.563167605  0.95013174 Moderate Effect</span></span>
+<span><span class="co">#&gt; 23    2.112652e+05 1.936383e+05  0.127581171  0.32752255     Weak Effect</span></span>
+<span><span class="co">#&gt; 24    1.626215e+07 5.980747e+07  0.071687047  0.15647551     Weak Effect</span></span>
+<span><span class="co">#&gt; 25    2.763518e+00 2.153316e+00 -0.020286418 -0.07037796     Weak Effect</span></span>
+<span><span class="co">#&gt;    Significant</span></span>
+<span><span class="co">#&gt; 1        FALSE</span></span>
+<span><span class="co">#&gt; 2        FALSE</span></span>
+<span><span class="co">#&gt; 3        FALSE</span></span>
+<span><span class="co">#&gt; 4        FALSE</span></span>
+<span><span class="co">#&gt; 5         TRUE</span></span>
+<span><span class="co">#&gt; 6        FALSE</span></span>
+<span><span class="co">#&gt; 7        FALSE</span></span>
+<span><span class="co">#&gt; 8        FALSE</span></span>
+<span><span class="co">#&gt; 9        FALSE</span></span>
+<span><span class="co">#&gt; 10       FALSE</span></span>
+<span><span class="co">#&gt; 11       FALSE</span></span>
+<span><span class="co">#&gt; 12       FALSE</span></span>
+<span><span class="co">#&gt; 13       FALSE</span></span>
+<span><span class="co">#&gt; 14       FALSE</span></span>
+<span><span class="co">#&gt; 15       FALSE</span></span>
+<span><span class="co">#&gt; 16       FALSE</span></span>
+<span><span class="co">#&gt; 17       FALSE</span></span>
+<span><span class="co">#&gt; 18       FALSE</span></span>
+<span><span class="co">#&gt; 19       FALSE</span></span>
+<span><span class="co">#&gt; 20       FALSE</span></span>
+<span><span class="co">#&gt; 21       FALSE</span></span>
+<span><span class="co">#&gt; 22       FALSE</span></span>
+<span><span class="co">#&gt; 23       FALSE</span></span>
+<span><span class="co">#&gt; 24       FALSE</span></span>
+<span><span class="co">#&gt; 25       FALSE</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggsave</a></span><span class="op">(</span><span class="st">"dual_flashlight_plot.png"</span>, plot <span class="op">=</span> <span class="va">dfp</span><span class="op">$</span><span class="va">plot_env</span><span class="op">$</span><span class="va">p</span>, dpi <span class="op">=</span> <span class="fl">300</span>, </span>
 <span>       width <span class="op">=</span> <span class="fl">3000</span>, height <span class="op">=</span> <span class="fl">2000</span>, units <span class="op">=</span> <span class="st">"px"</span><span class="op">)</span></span>
 <span><span class="co"># Print the table data used for plotting</span></span>
