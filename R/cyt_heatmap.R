@@ -9,7 +9,8 @@
 #' \code{data} to be used for generating annotation colors. Default is NULL.
 #' @param title Character. The title of the heatmap and the file name for
 #' saving the plot. The file extension (".pdf" or ".png") determines the
-#' output format.
+#' output format. If \code{NULL}, the plot is generated on the current
+#' graphics device. Default is \code{NULL}.
 #'
 #' @description
 #' This function creates a heatmap using the numeric columns from the
@@ -33,16 +34,18 @@
 #'   data = data_df[, -c(2:3)],
 #'   scale = "log2",  # Optional scaling
 #'   annotation_col_name = "Group",
-#'   title = "Heatmap.png"
+#'   title = NULL
 #' )
 #'
 cyt_heatmap <- function(data, scale = NULL, annotation_col_name = NULL, title) {
-  if (grepl("\\.pdf$", title, ignore.case = TRUE)) {
-    pdf(file = title)
-  } else if (grepl("\\.png$", title, ignore.case = TRUE)) {
-    png(filename = title, res = 300, width = 2100, height = 2100, units = "px")
-  } else {
-    stop("Title must end with .pdf or .png")
+  if (!is.null(title)){
+    if (grepl("\\.pdf$", title, ignore.case = TRUE)) {
+      pdf(file = title)
+    } else if (grepl("\\.png$", title, ignore.case = TRUE)) {
+      png(filename = title, res = 300, width = 2100, height = 2100, units = "px")
+    } else {
+      stop("Title must end with .pdf or .png")
+    }
   }
 
   # Ensure data is a data frame and extract only numeric data
@@ -97,5 +100,7 @@ cyt_heatmap <- function(data, scale = NULL, annotation_col_name = NULL, title) {
   }
 
   do.call(gplots::heatmap.2, heatmap_args)
-  if (dev.cur() > 1) dev.off()
+  if(!is.null(title)){
+    if (dev.cur() > 1) dev.off()
+  }
 }

@@ -82,11 +82,10 @@
 #'
 #' results <- cyt_skku(ExampleData1[, -c(3)], print_res_log = TRUE,
 #'                  group_cols = c("Group", "Treatment"))
-#' pdf("bar_error_plot_enriched.pdf")
 #' par(mfrow = c(2,3), mar = c(8.1, 4.1, 4.1, 2.1))
 #' for (k in 1:nCytokine) {
 #' result_mat <- results[1:9, , k]
-#'center_df <- data.frame(
+#' center_df <- data.frame(
 #'  name = rownames(result_mat),
 #'  result_mat[, c("center", "spread")],
 #'  p.value = c(1, p_groupComp_stm_mat[k, 1:2]),
@@ -97,7 +96,8 @@
 #'          y_lab = "Concentration in log2 scale",
 #'          main = cytokineNames[k])
 #' }
-#' dev.off()
+#' # Reset the graphics parameters
+#' par(mfrow = c(1, 1), mar = c(5.1, 4.1, 4.1, 2.1))
 cyt_errbp <- function(data, p_lab = TRUE, es_lab = TRUE, class_symbol = TRUE,
                       x_lab = "", y_lab = "", main = "") {
   # Significance mark function

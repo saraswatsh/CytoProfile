@@ -19,7 +19,8 @@ set to NA). Default is NULL.}
 
 \item{title}{Character. The title of the heatmap and the file name for
 saving the plot. The file extension (".pdf" or ".png") determines the
-output format.}
+output format. If \code{NULL}, the plot is generated on the current
+graphics device. Default is \code{NULL}.}
 }
 \value{
 The function does not return a value. It saves the heatmap to a file.
@@ -41,7 +42,7 @@ cyt_heatmap(
   data = data_df[, -c(2:3)],
   scale = "log2",  # Optional scaling
   annotation_col_name = "Group",
-  title = "Heatmap.png"
+  title = NULL
 )
 
 }

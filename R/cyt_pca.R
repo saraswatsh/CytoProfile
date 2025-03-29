@@ -12,7 +12,8 @@
 #'  If set to NULL, a palette is generated using \code{rainbow()} based on the
 #'   number of unique groups.
 #' @param pdf_title A string specifying the file name of the PDF where the
-#'  PCA plots will be saved.
+#'  PCA plots will be saved. If \code{NULL}, the plots are generated on the current
+#'  graphics device. Default is \code{NULL}.
 #' @param ellipse Logical. If TRUE, a 95% confidence ellipse is drawn on the
 #'  PCA individuals plot. Default is FALSE.
 #' @param comp_num Numeric. The number of principal components to compute and
@@ -30,7 +31,7 @@
 #' and generates several types of plots,
 #' including:
 #' \itemize{
-#'   \item 2D PCA plots using mixOmics's \code{plotIndiv} function,
+#'   \item 2D PCA plots using mixOmics' \code{plotIndiv} function,
 #'   \item 3D scatter plots (if \code{style} is "3d" or "3D" and
 #'   \code{comp_num} is 3) via the plot3D package,
 #'   \item Scree plots showing both individual and cumulative
@@ -55,7 +56,7 @@
 #' # Run PCA analysis and save plots to a PDF file
 #' cyt_pca(
 #'   data = data_df,
-#'   pdf_title = "Example_PCA_Analysis.pdf",
+#'   pdf_title = NULL,
 #'   colors = c("black", "red2"),
 #'   scale = "log2",
 #'   comp_num = 3,
@@ -126,7 +127,9 @@ cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
     colors <- rainbow(num_groups)
   }
 
-  pdf(file = pdf_title, width = 8.5, height = 8)
+  if(!is.null(pdf_title)){
+    pdf(file = pdf_title, width = 8.5, height = 8)
+  }
 
   # Case 1: Overall PCA when both factors are the same.
   if (group_col == group_col2) {
@@ -372,7 +375,8 @@ cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
       )
     }
   }
-
-  if (dev.cur() > 1) dev.off()
+  if(!is.null(pdf_title)){
+    if (dev.cur() > 1) dev.off()
+  }
 }
 

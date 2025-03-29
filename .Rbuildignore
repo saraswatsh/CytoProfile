@@ -12,7 +12,6 @@
 ^cytokine_stock\.jpeg$
 ^output$
 ^.lintr
-^CytoProfile_0\.0\.0\.9000\.pdf$
 ^index\.md$
 ^index\.html$
 ^cran-comments\.md$
@@ -21,3 +20,4 @@
 ^cytoprofile_logo2\.png$
 ^vignettes/getting_started_cache/
 ^CRAN-SUBMISSION$
+^CytoProfile_0\.1\.0\.pdf$

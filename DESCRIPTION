@@ -11,7 +11,7 @@ Description: Provides comprehensive cytokine profiling analysis through quality
   testing for distributional symmetry to recommend appropriate transformations. Offers 
   exploratory data analysis with summary statistics, enhanced boxplots, and barplots, 
   along with univariate and multivariate analytical capabilities for in-depth cytokine 
-  profiling such as PCA, sPLS-DA, Random Forest and XGBoost.
+  profiling such as 'PCA', 'sPLS-DA', 'Random Forest' and 'XGBoost'.
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
@@ -32,7 +32,8 @@ Imports:
     ggrepel, 
     gridExtra,
     reshape2
-Suggests: 
+Suggests:
+    spelling, 
     BiocManager,
     testthat,
     knitr,
@@ -44,3 +45,4 @@ License: GPL (>= 2)
 LazyData: true
 VignetteBuilder: knitr
 BugReports: https://github.com/saraswatsh/CytoProfile/issues
+Language: en-US

@@ -10,23 +10,24 @@
 #'
 #' @param data A matrix or data frame of raw data.
 #' @param pdf_title A string representing the title
-#' (and filename) of the PDF file.
+#' (and filename) of the PDF file. If \code{NULL}, the boxplots are displayed on the
+#' current graphics device. Defaults to \code{NULL}.
 #' @param mf_row A numeric vector of length two specifying the layout
 #' (rows and columns) for the plots on each page.
 #' Defaults to c(1, 1).
 #' @param scale Transformation option for continuous variables.
 #' Options are NULL (default) and "log2". When set to "log2",
 #' numeric columns are transformed using the log2 function.
-#' @param y_lim An optional numeric vector defining the y-axis l
-#' imits for the plots.
+#' @param y_lim An optional numeric vector defining the y-axis limits
+#' for the plots.
 #'
 #' @return A PDF file containing the boxplots.
 #'
 #' @examples
 #' # Loading data
-#' data_df <- ExampleData1[, -c(3, 4:27)]
+#' data_df <- ExampleData1[, -c(3, 5:28)]
 #' data_df <- dplyr::filter(data_df, Group == "T2D", Treatment == "Unstimulated")
-#' cyt_bp2(data_df, pdf_title = "boxplot2_test2.pdf", scale = "log2")
+#' cyt_bp2(data_df, pdf_title = NULL, scale = "log2")
 #'
 #' @export
 #' @import ggplot2
@@ -53,7 +54,10 @@ cyt_bp2 <- function(data, pdf_title, mf_row = c(1, 1),
   }
 
   # Generate boxplots
-  pdf(file = pdf_title)
+  if(!is.null(pdf_title)){
+    pdf(file = pdf_title)
+  }
+
   par(mfrow = mf_row, cex.axis = 0.75)
 
   # Loop through each numeric column
@@ -82,5 +86,7 @@ cyt_bp2 <- function(data, pdf_title, mf_row = c(1, 1),
     }
   }
 
-  dev.off()
+  if(!is.null(pdf_title)){
+    dev.off()
+  }
 }

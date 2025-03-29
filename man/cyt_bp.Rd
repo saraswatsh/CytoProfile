@@ -2,7 +2,7 @@
 % Please edit documentation in R/cyt_bp.R
 \name{cyt_bp}
 \alias{cyt_bp}
-\title{Boxtplots for Overall Comparisons by Continous Variables.}
+\title{Boxplots for Overall Comparisons by Continuous Variables.}
 \usage{
 cyt_bp(
   data,
@@ -17,7 +17,8 @@ cyt_bp(
 \item{data}{A matrix or data frame containing the raw data to be plotted.}
 
 \item{pdf_title}{A string representing the name of the PDF file to
-be created.}
+be created. If set to \code{NULL}, the box plots are displayed on the current
+graphics device. Default is \code{NULL}.}
 
 \item{bin_size}{An integer specifying the maximum number of box plots to
 display on a single page.}
@@ -43,7 +44,6 @@ variables in the provided data. If the number of columns in \code{data} exceeds
 # Loading data
 data.df <- ExampleData1
 # Generate box plots for log2-transformed values to check for outliers:
-cyt_bp(data.df[,-c(1:3)], pdf_title = "boxplot_by_cytokine_log2.pdf",
-scale = "log2")
+cyt_bp(data.df[,-c(1:3)], pdf_title = NULL, scale = "log2")
 
 }

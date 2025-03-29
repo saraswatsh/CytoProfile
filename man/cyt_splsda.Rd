@@ -40,7 +40,8 @@ be performed.}
 \code{NULL}, a random palette (using \code{rainbow}) is generated based on
 the number of groups.}
 
-\item{pdf_title}{A string specifying the file name for saving the PDF output.}
+\item{pdf_title}{A string specifying the file name for saving the PDF output.
+Default is \code{NULL} which generates figures in the current graphics device.}
 
 \item{ellipse}{Logical. Whether to draw a 95\\% confidence ellipse on the
 figures. Default is \code{FALSE}.}
@@ -99,7 +100,7 @@ analyzes each treatment level separately.
 data_df <- ExampleData1[,-c(3)]
 data_df <- dplyr::filter(data_df, Group != "ND", Treatment != "Unstimulated")
 
-cyt_splsda(data_df, pdf_title = "Example sPLS-DA Analysis.pdf",
+cyt_splsda(data_df, pdf_title = NULL,
 colors = c("black", "purple"), bg = FALSE, scale = "log2",
 conf_mat = FALSE, var_num = 25, cv_opt = NULL, comp_num = 2,
 pch_values = c(16, 4), style = "3d", ellipse = TRUE,

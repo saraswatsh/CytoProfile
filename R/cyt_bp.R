@@ -1,4 +1,4 @@
-#' Boxtplots for Overall Comparisons by Continous Variables.
+#' Boxplots for Overall Comparisons by Continuous Variables.
 #'
 #' @description
 #' This function creates a PDF file containing box plots for the continuous
@@ -7,7 +7,8 @@
 #'
 #' @param data A matrix or data frame containing the raw data to be plotted.
 #' @param pdf_title A string representing the name of the PDF file to
-#' be created.
+#' be created. If set to \code{NULL}, the box plots are displayed on the current
+#' graphics device. Default is \code{NULL}.
 #' @param bin_size An integer specifying the maximum number of box plots to
 #' display on a single page.
 #' @param mf_row A numeric vector of length two specifying the layout
@@ -24,8 +25,7 @@
 #' # Loading data
 #' data.df <- ExampleData1
 #' # Generate box plots for log2-transformed values to check for outliers:
-#' cyt_bp(data.df[,-c(1:3)], pdf_title = "boxplot_by_cytokine_log2.pdf",
-#' scale = "log2")
+#' cyt_bp(data.df[,-c(1:3)], pdf_title = NULL, scale = "log2")
 #'
 #' @import ggplot2
 #' @importFrom reshape2 melt
@@ -75,13 +75,16 @@ cyt_bp <- function(data, pdf_title, bin_size = 25, mf_row = c(1, 1), y_lim = NUL
   }
 
   # Write all plots to the PDF
-  pdf(file = pdf_title, width = 7, height = 5)
+  if(!is.null(pdf_title)){
+    pdf(file = pdf_title, width = 7, height = 5)
+  }
   old_par <- par(mfrow = mf_row)
   on.exit(par(old_par), add = TRUE)
   for (p in plot_list) {
     print(p)
   }
-  dev.off()
-
+  if(!is.null(pdf_title)){
+    dev.off()
+  }
   invisible(NULL)
 }

@@ -10,7 +10,8 @@ cyt_bp2(data, pdf_title, mf_row = c(1, 1), scale = NULL, y_lim = NULL)
 \item{data}{A matrix or data frame of raw data.}
 
 \item{pdf_title}{A string representing the title
-(and filename) of the PDF file.}
+(and filename) of the PDF file. If \code{NULL}, the boxplots are displayed on the
+current graphics device. Defaults to \code{NULL}.}
 
 \item{mf_row}{A numeric vector of length two specifying the layout
 (rows and columns) for the plots on each page.
@@ -20,8 +21,8 @@ Defaults to c(1, 1).}
 Options are NULL (default) and "log2". When set to "log2",
 numeric columns are transformed using the log2 function.}
 
-\item{y_lim}{An optional numeric vector defining the y-axis l
-imits for the plots.}
+\item{y_lim}{An optional numeric vector defining the y-axis limits
+for the plots.}
 }
 \value{
 A PDF file containing the boxplots.
@@ -37,8 +38,8 @@ each factor variable.
 }
 \examples{
 # Loading data
-data_df <- ExampleData1[, -c(3, 4:27)]
+data_df <- ExampleData1[, -c(3, 5:28)]
 data_df <- dplyr::filter(data_df, Group == "T2D", Treatment == "Unstimulated")
-cyt_bp2(data_df, pdf_title = "boxplot2_test2.pdf", scale = "log2")
+cyt_bp2(data_df, pdf_title = NULL, scale = "log2")
 
 }

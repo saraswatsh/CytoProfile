@@ -24,8 +24,8 @@ variable and the second as the group variable. If not provided, the
 entire data set is treated as one group.}
 
 \item{pdf_title}{A character string specifying the file name for the PDF file in
-which the histograms will be saved. If omitted, the plots are generated on
-the current graphics device.}
+which the histograms will be saved. If \code{NULL}, the histograms are
+displayed on the current graphics device. Default is \code{NULL}.}
 
 \item{print_res_raw}{Logical. If \code{TRUE}, the function returns and prints
 the computed summary statistics for the raw data. Default is
@@ -60,20 +60,19 @@ name is provided.
 \details{
 A cutoff is computed as one-tenth of the minimum positive value
 among all numeric measurement columns to avoid taking logarithms of zero.
-When rouping columns are provided, the function loops over unique
-treatmentlevels (using the first element of \code{group_cols} as treatment and
-the second as group, if available) and computes the metrics for each
+When grouping columns are provided, the function loops over unique
+grouping columns and computes the metrics for each
 measurement column within each subgroup. Without grouping columns, the
 entire data set is analyzed as one overall group.
 }
 \examples{
 # Example with grouping columns (e.g., "Group" and "Treatment")
 data(ExampleData1)
-cyt_skku(ExampleData1[, -c(2:3)], pdf_title = "Skew_and_Kurtosis.pdf",
+cyt_skku(ExampleData1[, -c(2:3)], pdf_title = NULL,
   group_cols = c("Group")
 )
 
 # Example without grouping columns (analyzes the entire data set)
-cyt_skku(ExampleData1[, -c(1:3)], pdf_title = "Skew_and_Kurtosis_Overall.pdf")
+cyt_skku(ExampleData1[, -c(1:3)], pdf_title = NULL)
 
 }
