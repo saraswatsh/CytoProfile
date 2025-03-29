@@ -1,3 +1,13 @@
+# CytoProfile 0.1.1
+
+* Fixed some general CRAN automated test issues. 
+
+* Updated functions and examples to avoid generating PDF and PNG files during 
+checks.
+
+* Functions now also generated plots within RStudio graphics device and provides 
+the option to save the plots as PDF or PNG files depending on the function.
+
 # CytoProfile 0.1.0 
 
 * Initial CRAN submission.
