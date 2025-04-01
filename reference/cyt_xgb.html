@@ -77,7 +77,8 @@ feature importance.</p>
 <span>  top_n_features <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  plot_roc <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  print_results <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  print_results <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">123</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -178,6 +179,10 @@ and calculate the AUC for binary classification (default is <code>FALSE</code>).
 <dd><p>A logical value indicating whether to print the results
 of the model training and evaluation (default is <code>FALSE</code>). If set to <code>TRUE</code>,
 it will print the confusion matrix, feature importance, and other plots.</p></dd>
+
+
+<dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
+<dd><p>An integer specifying the seed for reproducibility (default is 123).</p></dd>
 
 </dl></div>
     <div class="section level2">
