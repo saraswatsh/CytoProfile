@@ -15,7 +15,7 @@ function also plots the ROC curve and computes the AUC."><meta property="og:imag
 
     <a class="navbar-brand me-2" href="../index.html">CytoProfile</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,7 +70,8 @@ function also plots the ROC curve and computes the AUC.</p>
 <span>  plot_roc <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  k_folds <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  step <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  run_rfcv <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  run_rfcv <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -123,6 +124,13 @@ at each step during cross-validation for feature selection (default is
 <dd><p>A logical value indicating whether to run Random Forest
 cross-validation for feature selection (default is TRUE).</p></dd>
 
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>A logical value indicating whether to print additional
+informational output to the console. When <code>TRUE</code>, the function will
+display progress messages, intermediate results, and plots; when
+<code>FALSE</code> (the default), it runs quietly.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -153,7 +161,9 @@ into training and test sets. It calculates performance metrics such as
 accuracy, sensitivity, and specificity for both sets. For binary
 classification, it can also plot the ROC curve and compute the AUC. If
 <code>run_rfcv</code> is TRUE, cross-validation is performed to select the optimal
-number of features.</p>
+number of features.
+If <code>verbose</code> is TRUE, the function prints additional information to the
+console, including training results, test results, and plots.</p>
     </div>
 
     <div class="section level2">
@@ -162,16 +172,17 @@ number of features.</p>
 <span class="r-in"><span><span class="va">data.df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">data.df0</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log2</a></span><span class="op">(</span><span class="va">data.df0</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">data.df</span> <span class="op">&lt;-</span> <span class="va">data.df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">data.df</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data.df</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">cyt_rf</span><span class="op">(</span></span></span>
+<span class="r-in"><span><span class="co"># Storing results in an object</span></span></span>
+<span class="r-in"><span><span class="va">rf_results</span> <span class="op">&lt;-</span> <span class="fu">cyt_rf</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  data <span class="op">=</span> <span class="va">data.df</span>, group_col <span class="op">=</span> <span class="st">"Group"</span>, k_folds <span class="op">=</span> <span class="fl">5</span>, ntree <span class="op">=</span> <span class="fl">1000</span>,</span></span>
-<span class="r-in"><span>  mtry <span class="op">=</span> <span class="fl">4</span>, run_rfcv <span class="op">=</span> <span class="cn">TRUE</span>, plot_roc <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span>  mtry <span class="op">=</span> <span class="fl">4</span>, run_rfcv <span class="op">=</span> <span class="cn">TRUE</span>, plot_roc <span class="op">=</span> <span class="cn">TRUE</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ### RANDOM FOREST RESULTS ON TRAINING SET ###</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Extracting Results and plots</span></span></span>
+<span class="r-in"><span><span class="va">rf_results</span><span class="op">$</span><span class="va">model</span> <span class="co"># Extracts the training model</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Call:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  randomForest(formula = formula_rf, data = train_data, ntree = ntree,      mtry = mtry, importance = TRUE) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  randomForest(formula = formula_rf, data = train_data, ntree = ntree,      mtry = mtry, importance = TRUE, do.trace = FALSE) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                Type of random forest: classification</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                      Number of trees: 1000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> No. of variables tried at each split: 4</span>
@@ -181,43 +192,38 @@ number of features.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        PreT2D T2D class.error</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> PreT2D     62   8   0.1142857</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> T2D         8  62   0.1142857</span>
+<span class="r-in"><span><span class="va">rf_results</span><span class="op">$</span><span class="va">confusion_matrix</span> <span class="co"># Extracts the confusion matrix from testing set</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Confusion Matrix and Statistics</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Accuracy on training set:  0.8857143 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Class 'PreT2D' metrics:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Sensitivity:  0.886 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Specificity:  0.886 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Class 'T2D' metrics:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Sensitivity:  0.886 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Specificity:  0.886 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ### PREDICTIONS ON TEST SET ###</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           Reference</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Prediction PreT2D T2D</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     PreT2D     25   7</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     T2D         4  22</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Accuracy on test set:  0.8103448 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Sensitivity by class:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Class: PreT2D: 0.862</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Class: T2D: 0.241</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Specificity by class:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Class: T2D: 0.759</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Class: PreT2D: 0.138</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting levels: control = PreT2D, case = T2D</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Setting direction: controls &lt; cases</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AUC:  0.9298454 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                Accuracy : 0.8103          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  95% CI : (0.6859, 0.9013)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     No Information Rate : 0.5             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     P-Value [Acc &gt; NIR] : 1.016e-06       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   Kappa : 0.6207          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Mcnemar's Test P-Value : 0.5465          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             Sensitivity : 0.8621          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             Specificity : 0.7586          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          Pos Pred Value : 0.7812          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          Neg Pred Value : 0.8462          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              Prevalence : 0.5000          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          Detection Rate : 0.4310          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Detection Prevalence : 0.5517          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       Balanced Accuracy : 0.8103          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        'Positive' Class : PreT2D          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                           </span>
+<span class="r-in"><span><span class="va">rf_results</span><span class="op">$</span><span class="va">importance_plot</span> <span class="co"># Extracts the variable importance plot</span></span></span>
 <span class="r-plt img"><img src="cyt_rf-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="va">rf_results</span><span class="op">$</span><span class="va">rfcv_plot</span><span class="co"># Extracts the cross-validation plot.</span></span></span>
 <span class="r-plt img"><img src="cyt_rf-2.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ### RANDOM FOREST CROSS-VALIDATION FOR FEATURE SELECTION ###</span>
-<span class="r-plt img"><img src="cyt_rf-3.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Random Forest CV completed for feature selection.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         Check the plot for error vs. number of variables.</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

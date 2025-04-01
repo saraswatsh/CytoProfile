@@ -25,7 +25,7 @@ analyzes each treatment level separately."><meta property="og:image" content="ht
 
     <a class="navbar-brand me-2" href="../index.html">CytoProfile</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -92,7 +92,8 @@ analyzes each treatment level separately.</p>
 <span>  comp_num <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  <span class="va">pch_values</span>,</span>
 <span>  style <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  roc <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  roc <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -183,13 +184,26 @@ model. Default is 2.</p></dd>
 <dd><p>Logical. Whether to compute and plot the ROC curve for the model.
 Default is <code>FALSE</code>.</p></dd>
 
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>A logical value indicating whether to print additional
+informational output to the console. When <code>TRUE</code>, the function will
+display progress messages, intermediate results, and plots; when
+<code>FALSE</code> (the default), it runs quietly.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A PDF file containing the classification figures, component figures
+    <p>Plots consisting of the classification figures, component figures
 with Variable of Importance in Projection (VIP) scores, and classifications
 based on VIP scores greater than 1. ROC curves and confusion matrices are also
 produced if requested.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>When <code>verbose</code> is set to <code>TRUE</code>, additional diagnostic plots (e.g., VIP plots, ROC Plots, Cross-Validation Plots)
+are printed to the console. These plots provide extra insight into the model's performance
+but can be suppressed by keeping <code>verbose = FALSE</code>.</p>
     </div>
 
     <div class="section level2">
@@ -201,9 +215,8 @@ produced if requested.</p>
 <span class="r-in"><span><span class="fu">cyt_splsda</span><span class="op">(</span><span class="va">data_df</span>, pdf_title <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
 <span class="r-in"><span>colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"purple"</span><span class="op">)</span>, bg <span class="op">=</span> <span class="cn">FALSE</span>, scale <span class="op">=</span> <span class="st">"log2"</span>,</span></span>
 <span class="r-in"><span>conf_mat <span class="op">=</span> <span class="cn">FALSE</span>, var_num <span class="op">=</span> <span class="fl">25</span>, cv_opt <span class="op">=</span> <span class="cn">NULL</span>, comp_num <span class="op">=</span> <span class="fl">2</span>,</span></span>
-<span class="r-in"><span>pch_values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">4</span><span class="op">)</span>, style <span class="op">=</span> <span class="st">"3d"</span>, ellipse <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>group_col <span class="op">=</span> <span class="st">"Group"</span>, group_col2 <span class="op">=</span> <span class="st">"Treatment"</span>, roc <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Results based on log2 transformation:</span>
+<span class="r-in"><span>pch_values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">4</span><span class="op">)</span>, style <span class="op">=</span> <span class="cn">NULL</span>, ellipse <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>group_col <span class="op">=</span> <span class="st">"Group"</span>, group_col2 <span class="op">=</span> <span class="st">"Treatment"</span>, roc <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>the standard deviation is zero</span>
 <span class="r-plt img"><img src="cyt_splsda-1.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="cyt_splsda-2.png" alt="" width="700" height="433"></span>
@@ -211,17 +224,13 @@ produced if requested.</p>
 <span class="r-plt img"><img src="cyt_splsda-4.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="cyt_splsda-5.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="cyt_splsda-6.png" alt="" width="700" height="433"></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>the standard deviation is zero</span>
 <span class="r-plt img"><img src="cyt_splsda-7.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="cyt_splsda-8.png" alt="" width="700" height="433"></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>the standard deviation is zero</span>
 <span class="r-plt img"><img src="cyt_splsda-9.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="cyt_splsda-10.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="cyt_splsda-11.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="cyt_splsda-12.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="cyt_splsda-13.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="cyt_splsda-14.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="cyt_splsda-15.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="cyt_splsda-16.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
