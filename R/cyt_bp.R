@@ -11,8 +11,6 @@
 #' graphics device. Default is \code{NULL}.
 #' @param bin_size An integer specifying the maximum number of box plots to
 #' display on a single page.
-#' @param mf_row A numeric vector of length two specifying the layout
-#'  (rows and columns) for the plots on each page.
 #' @param y_lim An optional numeric vector defining the y-axis limits
 #' for the plots.
 #' @param scale An optional character string. If set to "log2",
@@ -30,7 +28,7 @@
 #' @import ggplot2
 #' @importFrom reshape2 melt
 #' @export
-cyt_bp <- function(data, pdf_title, bin_size = 25, mf_row = c(1, 1), y_lim = NULL, scale = NULL) {
+cyt_bp <- function(data, pdf_title, bin_size = 25, y_lim = NULL, scale = NULL) {
   # Ensure data is a data frame
   data <- as.data.frame(data)
 
@@ -60,12 +58,12 @@ cyt_bp <- function(data, pdf_title, bin_size = 25, mf_row = c(1, 1), y_lim = NUL
                              variable.name = "Variable",
                              value.name = "Value")
 
-    p <- ggplot(melted, aes(x = Variable, y = Value)) +
+    p <- ggplot2::ggplot(melted, ggplot2::aes(x = Variable, y = Value)) +
       ggplot2::geom_boxplot() +
-      ggplot2::labs(title = paste("Boxplots for Variables:"),
-           x = "Variable", y = "Value") +
+      ggplot2::labs(title = "Boxplots for Variables:",
+                    x = "Variable", y = "Value") +
       ggplot2::theme_minimal() +
-      ggplot2::theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust = 1))
 
     if (!is.null(y_lim)) {
       p <- p + ggplot2::coord_cartesian(ylim = y_lim)
@@ -74,17 +72,15 @@ cyt_bp <- function(data, pdf_title, bin_size = 25, mf_row = c(1, 1), y_lim = NUL
     plot_list[[i]] <- p
   }
 
-  # Write all plots to the PDF
-  if(!is.null(pdf_title)){
+  # Write all plots to the PDF if a filename is provided; each plot goes on a new page.
+  if (!is.null(pdf_title)) {
     pdf(file = pdf_title, width = 7, height = 5)
+    on.exit(dev.off(), add = TRUE)
   }
-  old_par <- par(mfrow = mf_row)
-  on.exit(par(old_par), add = TRUE)
+
   for (p in plot_list) {
     print(p)
   }
-  if(!is.null(pdf_title)){
-    dev.off()
-  }
+
   invisible(NULL)
 }

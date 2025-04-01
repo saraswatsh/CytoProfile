@@ -4,7 +4,7 @@
 \alias{cyt_bp2}
 \title{Boxplot Function Enhanced for Specific Group Comparisons.}
 \usage{
-cyt_bp2(data, pdf_title, mf_row = c(1, 1), scale = NULL, y_lim = NULL)
+cyt_bp2(data, pdf_title, scale = NULL, y_lim = NULL)
 }
 \arguments{
 \item{data}{A matrix or data frame of raw data.}
@@ -12,10 +12,6 @@ cyt_bp2(data, pdf_title, mf_row = c(1, 1), scale = NULL, y_lim = NULL)
 \item{pdf_title}{A string representing the title
 (and filename) of the PDF file. If \code{NULL}, the boxplots are displayed on the
 current graphics device. Defaults to \code{NULL}.}
-
-\item{mf_row}{A numeric vector of length two specifying the layout
-(rows and columns) for the plots on each page.
-Defaults to c(1, 1).}
 
 \item{scale}{Transformation option for continuous variables.
 Options are NULL (default) and "log2". When set to "log2",

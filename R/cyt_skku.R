@@ -166,6 +166,7 @@ cyt_skku <- function(data, group_cols = NULL, pdf_title = NULL,
   # If a pdf title is provided, generate histograms using ggplot2.
   if (!is.null(pdf_title)) {
     pdf(file = pdf_title)
+    on.exit(dev.off(), add = TRUE)
   }
     df_skew <- rbind(
       data.frame(value = raw_results$skewness, transformation = "Raw"),
@@ -187,10 +188,6 @@ cyt_skku <- function(data, group_cols = NULL, pdf_title = NULL,
       ggplot2::theme_minimal()
 
     gridExtra::grid.arrange(p_skew, p_kurt, ncol = 1)
-
-  if (!is.null(pdf_title)) {
-    dev.off()
-  }
 
   # Return results based on flags.
   if (print_res_raw && print_res_log) {

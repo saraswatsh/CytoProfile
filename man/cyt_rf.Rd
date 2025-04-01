@@ -13,7 +13,9 @@ cyt_rf(
   plot_roc = FALSE,
   k_folds = 5,
   step = 0.5,
-  run_rfcv = TRUE
+  run_rfcv = TRUE,
+  verbose = FALSE,
+  seed = 123
 )
 }
 \arguments{
@@ -44,6 +46,13 @@ at each step during cross-validation for feature selection (default is
 
 \item{run_rfcv}{A logical value indicating whether to run Random Forest
 cross-validation for feature selection (default is TRUE).}
+
+\item{verbose}{A logical value indicating whether to print additional
+informational output to the console. When \code{TRUE}, the function will
+display progress messages, intermediate results, and plots; when
+\code{FALSE} (the default), it runs quietly.}
+
+\item{seed}{An integer specifying the seed for reproducibility (default is 123).}
 }
 \value{
 A list containing:
@@ -70,16 +79,24 @@ accuracy, sensitivity, and specificity for both sets. For binary
 classification, it can also plot the ROC curve and compute the AUC. If
 \code{run_rfcv} is TRUE, cross-validation is performed to select the optimal
 number of features.
+If \code{verbose} is TRUE, the function prints additional information to the
+console, including training results, test results, and plots.
 }
 \examples{
 data.df0 <- ExampleData1
 data.df <- data.frame(data.df0[, 1:3], log2(data.df0[, -c(1:3)]))
 data.df <- data.df[, -c(2:3)]
 data.df <- dplyr::filter(data.df, Group != "ND")
-
-results <- cyt_rf(
+# Storing results in an object
+rf_results <- cyt_rf(
   data = data.df, group_col = "Group", k_folds = 5, ntree = 1000,
-  mtry = 4, run_rfcv = TRUE, plot_roc = TRUE
+  mtry = 4, run_rfcv = TRUE, plot_roc = TRUE, verbose = FALSE
 )
+
+# Extracting Results and plots
+rf_results$model # Extracts the training model
+rf_results$confusion_matrix # Extracts the confusion matrix from testing set
+rf_results$importance_plot # Extracts the variable importance plot
+rf_results$rfcv_plot# Extracts the cross-validation plot.
 
 }

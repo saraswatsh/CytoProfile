@@ -11,7 +11,8 @@ cyt_volc(
   cond2 = NULL,
   fold_change_thresh = 2,
   p_value_thresh = 0.05,
-  top_labels = 10
+  top_labels = 10,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -34,6 +35,9 @@ Default is \code{0.05}.}
 
 \item{top_labels}{An integer specifying the number of top variables to label
 on the plot. Default is \code{10}.}
+
+\item{verbose}{A logical indicating whether to print the computed statistics
+to the console. Default is \code{FALSE}.}
 }
 \value{
 A list of volcano plots (as \code{ggplot} objects) for each pairwise

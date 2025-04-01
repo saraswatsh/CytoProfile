@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Provides comprehensive cytokine profiling analysis through quality control using biologically meaningful cutoffs on raw cytokine measurements and by testing for distributional symmetry to recommend appropriate transformations. Offers exploratory data analysis with summary statistics, enhanced boxplots, and barplots, along with univariate and multivariate analytical capabilities for in-depth cytokine profiling such as 'PCA', 'sPLS-DA', 'Random Forest' and 'XGBoost'.
+Provides comprehensive cytokine profiling analysis through quality control using biologically meaningful cutoffs on raw cytokine measurements and by testing for distributional symmetry to recommend appropriate transformations. Offers exploratory data analysis with summary statistics, enhanced boxplots, and barplots, along with univariate and multivariate analytical capabilities for in-depth cytokine profiling such as Principal Component Analysis based on Andrzej Maćkiewicz and Waldemar Ratajczak (1993) \doi{10.1016/0098-3004(93)90090-R}, Sparse Partial Least Squares Discriminant Analysis based on Lê Cao K-A, Boitard S, and Besse P (2011) \doi{10.1186/1471-2105-12-253}, Random Forest based on Breiman, L. (2001) \doi{10.1023/A:1010933404324}, and Extreme Gradient Boosting based on Tianqi Chen and Carlos Guestrin (2016) \doi{10.1145/2939672.2939785}.
 }
 \seealso{
 Useful links:

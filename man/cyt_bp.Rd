@@ -4,14 +4,7 @@
 \alias{cyt_bp}
 \title{Boxplots for Overall Comparisons by Continuous Variables.}
 \usage{
-cyt_bp(
-  data,
-  pdf_title,
-  bin_size = 25,
-  mf_row = c(1, 1),
-  y_lim = NULL,
-  scale = NULL
-)
+cyt_bp(data, pdf_title, bin_size = 25, y_lim = NULL, scale = NULL)
 }
 \arguments{
 \item{data}{A matrix or data frame containing the raw data to be plotted.}
@@ -22,9 +15,6 @@ graphics device. Default is \code{NULL}.}
 
 \item{bin_size}{An integer specifying the maximum number of box plots to
 display on a single page.}
-
-\item{mf_row}{A numeric vector of length two specifying the layout
-(rows and columns) for the plots on each page.}
 
 \item{y_lim}{An optional numeric vector defining the y-axis limits
 for the plots.}

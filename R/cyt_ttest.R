@@ -7,6 +7,8 @@
 #'   \code{scale = "log2"}, a log2 transformation is applied and a two-sample
 #'   t-test is used; when \code{scale} is \code{NULL}, a Mann-Whitney U test is
 #'   performed.
+#' @param verbose A logical indicating whether to print the p-values of the
+#'  statistical tests. Default is \code{FALSE}.
 #'
 #' @description This function performs pairwise comparisons between two groups
 #' for each combination of a categorical predictor (with exactly two levels)
@@ -26,11 +28,11 @@
 #' data_df <- ExampleData1[, -c(3)]
 #' data_df <- dplyr::filter(data_df, Group != "ND", Treatment != "Unstimulated")
 #' # Two sample T-test
-#' cyt_ttest(data_df[, c(1, 2, 5:6)], scale = "log2")
+#' cyt_ttest(data_df[, c(1, 2, 5:6)], scale = "log2", verbose = TRUE)
 #' # Mann-Whitney U Test
-#' cyt_ttest(data_df[, c(1, 2, 5:6)])
+#' cyt_ttest(data_df[, c(1, 2, 5:6)], verbose = TRUE)
 
-cyt_ttest <- function(data, scale = NULL) {
+cyt_ttest <- function(data, scale = NULL, verbose = FALSE) {
   # Take input and store it as its own data frame
   x1_df <- data
 
@@ -69,11 +71,11 @@ cyt_ttest <- function(data, scale = NULL) {
                                        levels(x1_df[[cat_var]])[2]]
 
           if (length(group1) < 2 || length(group2) < 2) {
-            cat("Skipping test due to insufficient data
+            warning("Skipping test due to insufficient data
                 in one of the groups\n")
             next
           } else if (sd(group1) == 0 || sd(group2) == 0) {
-            cat("Skipping test due to low variance in", outcome, "\n")
+            warning("Skipping test due to low variance in", outcome, "\n")
             next
           }
 
@@ -84,14 +86,17 @@ cyt_ttest <- function(data, scale = NULL) {
           if (!is.null(scale) && scale == "log2") {
             # Perform two-sample t-test
             test_result <- t.test(test_formula, data = x1_df)
-            cat(paste0("T-test p-value for ", comparison_name, " on ",
-                       outcome, ": ", signif(test_result$p.value, 4), "\n"))
+            if (verbose) {
+              cat(paste0("T-test p-value for ", comparison_name, " on ", outcome, ": ",
+                         signif(test_result$p.value, 4), "\n"))
+            }
           } else if (is.null(scale)) {
             # Perform Mann-Whitney U test
             test_result <- wilcox.test(test_formula, data = x1_df)
-            cat(paste0("Mann-Whitney U test p-value for ", comparison_name,
-                       " on ", outcome, ": ", signif(test_result$p.value, 4),
-                       "\n"))
+            if (verbose) {
+              cat(paste0("Mann-Whitney U test p-value for ", comparison_name, " on ", outcome, ": ",
+                         signif(test_result$p.value, 4), "\n"))
+            }
           }
 
           # Extract p-value and store in results list

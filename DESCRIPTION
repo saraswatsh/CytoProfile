@@ -1,12 +1,12 @@
 Package: CytoProfile
 Title: Cytokine Profiling Analysis Tool
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: c(
     person("Shubh", "Saraswat", email = "shubh.saraswat00@gmail.com", role = c("cre", "aut", "cph"),
     comment = c(ORCID = "0009-0009-2359-1484")),
     person("Xiaohua Douglas", "Zhang", email = "douglas.zhang@uky.edu", role = "aut",
     comment = c(ORCID = "0000-0002-2486-7931")))
-Description: Provides comprehensive cytokine profiling analysis through quality control using biologically meaningful cutoffs on raw cytokine measurements and by testing for distributional symmetry to recommend appropriate transformations. Offers exploratory data analysis with summary statistics, enhanced boxplots, and barplots, along with univariate and multivariate analytical capabilities for in-depth cytokine profiling such as 'PCA', 'sPLS-DA', 'Random Forest' and 'XGBoost'.
+Description: Provides comprehensive cytokine profiling analysis through quality control using biologically meaningful cutoffs on raw cytokine measurements and by testing for distributional symmetry to recommend appropriate transformations. Offers exploratory data analysis with summary statistics, enhanced boxplots, and barplots, along with univariate and multivariate analytical capabilities for in-depth cytokine profiling such as Principal Component Analysis based on Andrzej Maćkiewicz and Waldemar Ratajczak (1993) <doi:10.1016/0098-3004(93)90090-R>, Sparse Partial Least Squares Discriminant Analysis based on Lê Cao K-A, Boitard S, and Besse P (2011) <doi:10.1186/1471-2105-12-253>, Random Forest based on Breiman, L. (2001) <doi:10.1023/A:1010933404324>, and Extreme Gradient Boosting based on Tianqi Chen and Carlos Guestrin (2016) <doi:10.1145/2939672.2939785>.
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2

@@ -13,6 +13,8 @@
 #'   Default is \code{0.05}.
 #' @param top_labels An integer specifying the number of top variables to label
 #'   on the plot. Default is \code{10}.
+#' @param verbose A logical indicating whether to print the computed statistics
+#'  to the console. Default is \code{FALSE}.
 #'
 #' @description This function subsets the numeric columns from the input data
 #'   and compares them based on a selected grouping column. It computes the fold
@@ -44,7 +46,8 @@
 
 cyt_volc <- function(data, group_col, cond1 = NULL, cond2 = NULL,
                      fold_change_thresh = 2,
-                     p_value_thresh = 0.05, top_labels = 10) {
+                     p_value_thresh = 0.05, top_labels = 10,
+                     verbose = FALSE) {
   # Determine the pairs of conditions to compare
   if (!is.null(cond1) && !is.null(cond2)) {
     condition_pairs <- list(c(cond1, cond2))
@@ -128,7 +131,9 @@ cyt_volc <- function(data, group_col, cond1 = NULL, cond2 = NULL,
   }
 
   # Print the final plot data (excluding the label column)
-  print(plot_data[, -which(names(plot_data) == "label")],
-        n = nrow(plot_data), na.print = "", quote = FALSE)
+  if(verbose){
+    print(plot_data[, -which(names(plot_data) == "label")],
+          n = nrow(plot_data), na.print = "", quote = FALSE)
+  }
   return(plots)
 }

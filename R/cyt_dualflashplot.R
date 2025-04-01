@@ -23,8 +23,9 @@
 #' used to determine significance.
 #'   Default is 1.
 #' @param top_labels An integer specifying the number of top variables
-#' (based on absolute SSMD)
-#'   to label in the plot. Default is 15.
+#' (based on absolute SSMD) to label in the plot. Default is 15.
+#' @param verbose A logical indicating whether to print the computed
+#'  statistics to the console. Default is \code{FALSE}.
 #'
 #' @return A ggplot object representing the dual flash plot for the
 #' comparisons between group1 and group2.
@@ -38,19 +39,19 @@
 #' # Loading data
 #' data_df <- ExampleData1[, -c(2:3)]
 #'
-#' dfp <- cyt_dualflashplot(
+#' cyt_dualflashplot(
 #'   data_df,
 #'   group_var = "Group",
 #'   group1 = "T2D",
 #'   group2 = "ND",
 #'   ssmd_thresh = -0.2,
 #'   log2fc_thresh = 1,
-#'   top_labels = 10
+#'   top_labels = 10,
+#'   verbose = FALSE
 #' )
-#' print(dfp)
 #'
 cyt_dualflashplot <- function(data, group_var, group1, group2, ssmd_thresh = 1,
-                              log2fc_thresh = 1, top_labels = 15) {
+                              log2fc_thresh = 1, top_labels = 15, verbose = FALSE) {
   if (!is.data.frame(data)) {
     stop("Input must be a data frame.")
   }
@@ -107,7 +108,9 @@ cyt_dualflashplot <- function(data, group_var, group1, group2, ssmd_thresh = 1,
       legend.text = element_text(color = "black")
     )
 
-  print(as.data.frame(stats), n = nrow(stats), na.print = "", quote = FALSE)
+  if(verbose){
+    print(as.data.frame(stats), n = nrow(stats), na.print = "", quote = FALSE)
+  }
   return(p)
 }
 

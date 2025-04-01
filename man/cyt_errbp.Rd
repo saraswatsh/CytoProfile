@@ -85,7 +85,11 @@ aov_table["Residuals", "Mean Sq"])
 
 results <- cyt_skku(ExampleData1[, -c(3)], print_res_log = TRUE,
                  group_cols = c("Group", "Treatment"))
+
+oldpar <- par(no.readonly = TRUE)
+on.exit(par(oldpar))
 par(mfrow = c(2,3), mar = c(8.1, 4.1, 4.1, 2.1))
+
 for (k in 1:nCytokine) {
 result_mat <- results[1:9, , k]
 center_df <- data.frame(
@@ -99,6 +103,5 @@ cyt_errbp(center_df, p_lab = TRUE, es_lab = TRUE,
          y_lab = "Concentration in log2 scale",
          main = cytokineNames[k])
 }
-# Reset the graphics parameters
-par(mfrow = c(1, 1), mar = c(5.1, 4.1, 4.1, 2.1))
+
 }

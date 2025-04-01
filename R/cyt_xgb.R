@@ -39,7 +39,11 @@
 #' @param verbose An integer specifying the verbosity of the training
 #' process (default is 1).
 #' @param plot_roc A logical value indicating whether to plot the ROC curve
-#' and calculate the AUC for binary classification (default is FALSE).
+#' and calculate the AUC for binary classification (default is \code{FALSE}).
+#' @param print_results A logical value indicating whether to print the results
+#'  of the model training and evaluation (default is \code{FALSE}). If set to \code{TRUE},
+#'  it will print the confusion matrix, feature importance, and other plots.
+#' @param seed An integer specifying the seed for reproducibility (default is 123).
 #'
 #' @return A list containing:
 #' \item{model}{The trained XGBoost model.}
@@ -66,13 +70,21 @@
 #' data_df <- data_df[, -c(2,3)]
 #' data_df <- dplyr::filter(data_df, Group != "ND")
 #'
-#' cyt_xgb(
+#' xgb_results <- cyt_xgb(
 #'   data = data_df, group_col = "Group",
 #'   nrounds = 500, max_depth = 4, eta = 0.05,
 #'   nfold = 5, cv = FALSE, eval_metric = "mlogloss",
 #'   early_stopping_rounds = NULL, top_n_features = 10,
-#'   verbose = 0, plot_roc = TRUE
+#'   verbose = 0, plot_roc = TRUE, print_results = FALSE
 #' )
+#' # To check for class mapping
+#' xgb_results$class_mapping
+#' # To view confusion matrix on testing set
+#' xgb_results$confusion_matrix
+#' # To view feature importance plot
+#' xgb_results$importance_plot
+#' # To view cross-validation confusion matrix
+#' xgb_results$cv_results
 #'
 #' @importFrom xgboost xgb.DMatrix xgb.train xgb.importance xgb.ggplot.importance xgb.cv getinfo
 #' @importFrom caret createDataPartition confusionMatrix
@@ -87,15 +99,19 @@ cyt_xgb <- function(data, group_col, train_fraction = 0.7,
                     eval_metric = "mlogloss",
                     gamma = 0, colsample_bytree = 1, subsample = 1,
                     min_child_weight = 1,
-                    top_n_features = 10, verbose = 1, plot_roc = FALSE) {
+                    top_n_features = 10, verbose = 1, plot_roc = FALSE,
+                    print_results = FALSE,
+                    seed = 123) {
   # Ensure the grouping variable is a factor
   data[[group_col]] <- as.factor(data[[group_col]])
 
   # Create a mapping from group names to numeric labels
   class_labels <- levels(data[[group_col]])
   class_mapping <- setNames(0:(length(class_labels) - 1), class_labels)
-  cat("\n### Group to Numeric Label Mapping ###\n")
-  print(class_mapping)
+  if(print_results){
+    cat("\nGroup to Numeric Label Mapping\n")
+    print(class_mapping)
+  }
 
   # Convert group column to numeric values using the
   # mapping (starting from 0 for xgboost)
@@ -106,7 +122,7 @@ cyt_xgb <- function(data, group_col, train_fraction = 0.7,
   y <- data[[group_col]] # Numeric class values: 0, 1, 2, ..., n-1
 
   # Split the data into training and testing sets
-  set.seed(123)
+  set.seed(seed)
   train_indices <- caret::createDataPartition(y, p = train_fraction, list = FALSE)
   X_train <- X[train_indices, ]
   y_train <- y[train_indices]
@@ -131,7 +147,9 @@ cyt_xgb <- function(data, group_col, train_fraction = 0.7,
   )
 
   # Train the XGBoost model
-  cat("\n### TRAINING XGBOOST MODEL ###\n")
+  if(print_results){
+    cat("\nTRAINING XGBOOST MODEL\n")
+  }
   xgb_model <- xgboost::xgb.train(
     params = params, data = dtrain, nrounds = nrounds,
     watchlist = list(train = dtrain, test = dtest),
@@ -140,10 +158,12 @@ cyt_xgb <- function(data, group_col, train_fraction = 0.7,
 
   # Determine the evaluation column name dynamically (e.g., "test_mlogloss")
   eval_col_name <- paste0("test_", eval_metric)
-  cat("\nBest iteration from training (based on", eval_metric, "):\n")
-  print(xgb_model$evaluation_log[which.min(
-    xgb_model$evaluation_log[[eval_col_name]]
-  ), ])
+  if(print_results){
+    cat("\nBest iteration from training (based on", eval_metric, "):\n")
+    print(xgb_model$evaluation_log[which.min(
+      xgb_model$evaluation_log[[eval_col_name]]
+    ), ])
+  }
 
   # Make predictions on the test set
   preds <- predict(xgb_model, X_test)
@@ -157,13 +177,16 @@ cyt_xgb <- function(data, group_col, train_fraction = 0.7,
     preds_matrix <- matrix(preds, ncol = 2, byrow = TRUE)
     xgb_prob <- preds_matrix[, 2]
     if (length(xgb_prob) != length(y_test)) {
-      cat("The length of predicted probabilities does not match the length of
+      if(print_results){
+        cat("The length of predicted probabilities does not match the length of
           true labels.")
+      }
     }
-    roc_obj <- pROC::roc(y_test, xgb_prob)
+    roc_obj <- pROC::roc(y_test, xgb_prob, quiet = TRUE)
     auc_value <- pROC::auc(roc_obj)
-    cat("\nAUC: ", auc_value, "\n")
-
+    if(print_results) {
+      cat("\nAUC: ", round(auc_value, 3), "\n")
+    }
     roc_plot <- pROC::ggroc(roc_obj,
       color = "blue", linewidth = 1.5,
       legacy.axes = TRUE
@@ -186,24 +209,34 @@ cyt_xgb <- function(data, group_col, train_fraction = 0.7,
         panel.grid.major = element_line(color = "grey90"),
         panel.grid.minor = element_line(color = "grey95")
       )
-    print(roc_plot)
-  } else {
-    cat("ROC curve is only available for binary classification.")
+    if(print_results) {
+      print(roc_plot)
+      }
+    } else {
+      if(print_results){
+        cat("ROC curve is only available for binary classification.")
+      }
   }
 
   # Confusion matrix on test set
-  cat("\n### Confusion Matrix on Test Set ###\n")
+  if(print_results){
+    cat("\nConfusion Matrix on Test Set\n")
+  }
   confusion_mat <- caret::confusionMatrix(as.factor(pred_labels), as.factor(y_test))
-  print(confusion_mat)
-
+  if(print_results){
+    print(confusion_mat)
+    }
   # Feature importance - show only top_n features
   importance <- xgboost::xgb.importance(
     feature_names = colnames(X_train),
     model = xgb_model
   )
   top_features <- head(importance, top_n_features)
-  cat("\n### Top", top_n_features, "Important Features ###\n")
-  print(top_features)
+
+  if(print_results){
+    cat("\nTop", top_n_features, "Important Features\n")
+    print(top_features)
+  }
 
   ggplot_imp <- xgboost::xgb.ggplot.importance(
     importance_matrix = top_features,
@@ -224,22 +257,29 @@ cyt_xgb <- function(data, group_col, train_fraction = 0.7,
       legend.title = element_text(color = "black", size = 10, face = "bold"),
       legend.text = element_text(color = "black")
     )
-  print(ggplot_imp)
+  if(print_results){
+    print(ggplot_imp)
+  }
 
   # Cross-Validation (optional)
   if (cv) {
-    cat("\n### CROSS-VALIDATION USING XGBOOST ###\n")
+    if(print_results){
+      cat("\nCROSS-VALIDATION USING XGBOOST\n")
+    }
+
     xgb_cv <- xgboost::xgb.cv(
       params = params, data = dtrain, nrounds = nrounds, nfold = nfold,
       early_stopping_rounds = early_stopping_rounds, verbose = verbose,
       prediction = TRUE
     )
 
-    cat("\nBest iteration from cross-validation:\n")
-    eval_col_name_cv <- paste0("test_", eval_metric, "_mean")
-    print(xgb_cv$evaluation_log[which.min(
-      xgb_cv$evaluation_log[[eval_col_name_cv]]
-    ), ])
+    if(print_results){
+      cat("\nBest iteration from cross-validation:\n")
+      eval_col_name_cv <- paste0("test_", eval_metric, "_mean")
+      print(xgb_cv$evaluation_log[which.min(
+        xgb_cv$evaluation_log[[eval_col_name_cv]]
+      ), ])
+    }
 
     cv_preds <- xgb_cv$pred
     num_class <- length(unique(y))
@@ -254,10 +294,14 @@ cyt_xgb <- function(data, group_col, train_fraction = 0.7,
       as.factor(cv_pred_labels),
       as.factor(actual_labels)
     )
-    print(cv_confusion_mat)
-
+    if(print_results){
+      cat("\nCross-Validation Confusion Matrix\n")
+      print(cv_confusion_mat)
+    }
     cv_accuracy <- sum(cv_pred_labels == actual_labels) / length(actual_labels)
-    cat("\nCross-Validation Accuracy: ", cv_accuracy, "\n")
+    if(print_results){
+    cat("\nCross-Validation Accuracy: ", round(cv_accuracy, 3), "\n")
+    }
   }
 
   return(list(
@@ -265,7 +309,8 @@ cyt_xgb <- function(data, group_col, train_fraction = 0.7,
     confusion_matrix = confusion_mat,
     importance = top_features,
     class_mapping = class_mapping,
-    cv_results = if (cv) xgb_cv else NULL,
-    plot = ggplot_imp
+    cv_results = if (cv) cv_confusion_mat else NULL,
+    cv_accuracy = if (cv) cv_accuracy else NULL,
+    importance_plot = ggplot_imp
   ))
 }

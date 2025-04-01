@@ -4,7 +4,7 @@
 \alias{cyt_ttest}
 \title{Two Sample T-test Comparisons.}
 \usage{
-cyt_ttest(data, scale = NULL)
+cyt_ttest(data, scale = NULL, verbose = FALSE)
 }
 \arguments{
 \item{data}{A matrix or data frame containing continuous variables and
@@ -15,6 +15,9 @@ variables. Options are \code{NULL} (default) and \code{"log2"}. When
 \code{scale = "log2"}, a log2 transformation is applied and a two-sample
 t-test is used; when \code{scale} is \code{NULL}, a Mann-Whitney U test is
 performed.}
+
+\item{verbose}{A logical indicating whether to print the p-values of the
+statistical tests. Default is \code{FALSE}.}
 }
 \value{
 A list of p-values from the statistical tests for each
@@ -34,7 +37,7 @@ if a categorical variable does not have exactly two levels.
 data_df <- ExampleData1[, -c(3)]
 data_df <- dplyr::filter(data_df, Group != "ND", Treatment != "Unstimulated")
 # Two sample T-test
-cyt_ttest(data_df[, c(1, 2, 5:6)], scale = "log2")
+cyt_ttest(data_df[, c(1, 2, 5:6)], scale = "log2", verbose = TRUE)
 # Mann-Whitney U Test
-cyt_ttest(data_df[, c(1, 2, 5:6)])
+cyt_ttest(data_df[, c(1, 2, 5:6)], verbose = TRUE)
 }

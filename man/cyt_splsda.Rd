@@ -21,7 +21,9 @@ cyt_splsda(
   comp_num = 2,
   pch_values,
   style = NULL,
-  roc = FALSE
+  roc = FALSE,
+  verbose = FALSE,
+  seed = 123
 )
 }
 \arguments{
@@ -76,9 +78,16 @@ model. Default is 2.}
 
 \item{roc}{Logical. Whether to compute and plot the ROC curve for the model.
 Default is \code{FALSE}.}
+
+\item{verbose}{A logical value indicating whether to print additional
+informational output to the console. When \code{TRUE}, the function will
+display progress messages, intermediate results, and plots; when
+\code{FALSE} (the default), it runs quietly.}
+
+\item{seed}{An integer specifying the seed for reproducibility (default is 123).}
 }
 \value{
-A PDF file containing the classification figures, component figures
+Plots consisting of the classification figures, component figures
 with Variable of Importance in Projection (VIP) scores, and classifications
 based on VIP scores greater than 1. ROC curves and confusion matrices are also
 produced if requested.
@@ -95,6 +104,11 @@ Additionally, cross-validation is supported via LOOCV or Mfold methods. When
 both \code{group_col} and \code{group_col2} are provided and differ, the function
 analyzes each treatment level separately.
 }
+\details{
+When \code{verbose} is set to \code{TRUE}, additional diagnostic plots (e.g., VIP plots, ROC Plots, Cross-Validation Plots)
+are printed to the console. These plots provide extra insight into the model's performance
+but can be suppressed by keeping \code{verbose = FALSE}.
+}
 \examples{
 # Loading Sample Data
 data_df <- ExampleData1[,-c(3)]
@@ -103,7 +117,7 @@ data_df <- dplyr::filter(data_df, Group != "ND", Treatment != "Unstimulated")
 cyt_splsda(data_df, pdf_title = NULL,
 colors = c("black", "purple"), bg = FALSE, scale = "log2",
 conf_mat = FALSE, var_num = 25, cv_opt = NULL, comp_num = 2,
-pch_values = c(16, 4), style = "3d", ellipse = TRUE,
-group_col = "Group", group_col2 = "Treatment", roc = FALSE)
+pch_values = c(16, 4), style = NULL, ellipse = TRUE,
+group_col = "Group", group_col2 = "Treatment", roc = FALSE, verbose = FALSE)
 
 }

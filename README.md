@@ -78,7 +78,7 @@ library(caret)       # For cross-validation and other machine learning utilities
 library(knitr)       # For knitting RMarkdown files and setting chunk options.
 library(devtools)    # For installing the development version of the package from GitHub.
 
-# devtools::install_github("saraswatsh/CytoProfile")
+# Load in the CytoProfile package
 library(CytoProfile)
 
 # Loading in data
@@ -198,8 +198,16 @@ for (i in 1:nCytokine) {
 
 results <- cyt_skku(ExampleData1[, -c(3)], print_res_log = TRUE, 
                     group_cols = c("Group", "Treatment"))
+```
+
+<img src="output/EDA 5-1.png" width="100%" />
+
+``` r
 pdf("bar_error_plot_enriched.pdf")
+oldpar <- par(no.readonly = TRUE)
+on.exit(par(oldpar))
 par(mfrow = c(2,3), mar = c(8.1, 4.1, 4.1, 2.1))
+
 for (k in 1:nCytokine) {
   result_mat <- results[1:9, , k]
   center_df <- data.frame(

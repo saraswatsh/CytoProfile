@@ -12,9 +12,6 @@
 #' @param pdf_title A string representing the title
 #' (and filename) of the PDF file. If \code{NULL}, the boxplots are displayed on the
 #' current graphics device. Defaults to \code{NULL}.
-#' @param mf_row A numeric vector of length two specifying the layout
-#' (rows and columns) for the plots on each page.
-#' Defaults to c(1, 1).
 #' @param scale Transformation option for continuous variables.
 #' Options are NULL (default) and "log2". When set to "log2",
 #' numeric columns are transformed using the log2 function.
@@ -32,7 +29,7 @@
 #' @export
 #' @import ggplot2
 
-cyt_bp2 <- function(data, pdf_title, mf_row = c(1, 1),
+cyt_bp2 <- function(data, pdf_title,
                     scale = NULL, y_lim = NULL) {
   # Convert any character variables to factors
   cat_vars <- sapply(data, is.character)
@@ -53,12 +50,11 @@ cyt_bp2 <- function(data, pdf_title, mf_row = c(1, 1),
     data[num_cols] <- lapply(data[num_cols], function(x) log2(x))
   }
 
-  # Generate boxplots
-  if(!is.null(pdf_title)){
+  # Open PDF device if pdf_title is provided and ensure it's closed when function exits
+  if (!is.null(pdf_title)) {
     pdf(file = pdf_title)
+    on.exit(dev.off(), add = TRUE)
   }
-
-  par(mfrow = mf_row, cex.axis = 0.75)
 
   # Loop through each numeric column
   for (num_col in names(data)[num_cols]) {
@@ -84,9 +80,5 @@ cyt_bp2 <- function(data, pdf_title, mf_row = c(1, 1),
 
       print(p)
     }
-  }
-
-  if(!is.null(pdf_title)){
-    dev.off()
   }
 }
