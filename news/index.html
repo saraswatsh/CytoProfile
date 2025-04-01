@@ -50,6 +50,7 @@
 <li><p>Have removed the arguments for changing graphical parameters in ‘cyt_bp’, and ‘cyt_bp2’ so it no longer changes the user’s graphical parameters.</p></li>
 <li><p>Updated examples from graphical parameters changing without resetting properly to now the graphical parameters reverting to original using ‘on.exit()’ after the execution of code.</p></li>
 <li><p>Updated ‘getting_started.Rmd’ vignette where the files created and saved are now saved to a temporary directory using ‘tempdir()’ to avoid creating files in the user’s working directory. Additionally, the vignette now uses ‘on.exit()’ to revert to original graphical parameters for the ‘cyt_errbp’ examples shown.</p></li>
+<li><p>‘cyt_rf’, ‘cyt_splsda’, and ‘cyt_xgb’ now has a ‘seed’ argument to set the seed for reproducibility.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.1" id="cytoprofile-011">CytoProfile 0.1.1<a class="anchor" aria-label="anchor" href="#cytoprofile-011"></a></h2>
