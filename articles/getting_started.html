@@ -225,10 +225,10 @@ Folder</a>.</p>
 <span>            p_lab <span class="op">=</span> <span class="cn">FALSE</span>, es_lab <span class="op">=</span> <span class="cn">FALSE</span>, class_symbol <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>            y_lab <span class="op">=</span> <span class="st">"Concentration in log2 scale"</span>, main <span class="op">=</span> <span class="va">cytokineNames</span><span class="op">[</span><span class="va">k</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html" class="external-link">dev.cur</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html" class="external-link">dev.off</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; agg_png </span></span>
-<span><span class="co">#&gt;       2</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">#&gt;       2</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="enriched-error-bar-plot-with-p-values-and-effect-sizes">Enriched Error Bar Plot with p-values and Effect Sizes<a class="anchor" aria-label="anchor" href="#enriched-error-bar-plot-with-p-values-and-effect-sizes"></a>
@@ -278,10 +278,10 @@ Folder</a>.</p>
 <span>            class_symbol <span class="op">=</span> <span class="cn">TRUE</span>, y_lab <span class="op">=</span> <span class="st">"Concentration in log2 scale"</span>, </span>
 <span>            main <span class="op">=</span> <span class="va">cytokineNames</span><span class="op">[</span><span class="va">k</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html" class="external-link">dev.cur</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html" class="external-link">dev.off</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; agg_png </span></span>
-<span><span class="co">#&gt;       2</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">oldpar</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">#&gt;       2</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level3">
@@ -295,18 +295,12 @@ Folder</a>.</p>
 <span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data_df</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span>, <span class="va">Treatment</span> <span class="op">!=</span> <span class="st">"Unstimulated"</span><span class="op">)</span></span>
 <span><span class="co"># Two sample T-test</span></span>
-<span><span class="fu"><a href="../reference/cyt_ttest.html">cyt_ttest</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">]</span>, scale <span class="op">=</span> <span class="st">"log2"</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; $IFN.G_Group</span></span>
-<span><span class="co">#&gt; [1] 0.0208</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $IL.10_Group</span></span>
-<span><span class="co">#&gt; [1] 0.0248</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $IFN.G_Treatment</span></span>
-<span><span class="co">#&gt; [1] 0</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $IL.10_Treatment</span></span>
-<span><span class="co">#&gt; [1] 1e-04</span></span>
+<span><span class="fu"><a href="../reference/cyt_ttest.html">cyt_ttest</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">]</span>, scale <span class="op">=</span> <span class="st">"log2"</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, format_output <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   Outcome Categorical      Comparison P_value</span></span>
+<span><span class="co">#&gt; 1   IFN.G       Group   PreT2D vs T2D  0.0208</span></span>
+<span><span class="co">#&gt; 2   IL.10       Group   PreT2D vs T2D  0.0248</span></span>
+<span><span class="co">#&gt; 3   IFN.G   Treatment CD3/CD28 vs LPS  0.0000</span></span>
+<span><span class="co">#&gt; 4   IL.10   Treatment CD3/CD28 vs LPS  0.0001</span></span>
 <span><span class="co"># Mann-Whitney U Test</span></span>
 <span><span class="fu"><a href="../reference/cyt_ttest.html">cyt_ttest</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">]</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $IFN.G_Group</span></span>
@@ -326,18 +320,9 @@ Folder</a>.</p>
 </h4>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Perform ANOVA comparisons test (example with 2 cytokines)</span></span>
-<span><span class="fu"><a href="../reference/cyt_anova.html">cyt_anova</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt; $IFN.G_Group</span></span>
-<span><span class="co">#&gt; [1] 0.0036</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $IL.10_Group</span></span>
-<span><span class="co">#&gt; [1] 0.0033</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $IFN.G_Treatment</span></span>
-<span><span class="co">#&gt; [1] 0</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $IL.10_Treatment</span></span>
-<span><span class="co">#&gt; [1] 2e-04</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/cyt_anova.html">cyt_anova</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">]</span>, format_output <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] Outcome     Categorical Comparison  P_adj      </span></span>
+<span><span class="co">#&gt; &lt;0 rows&gt; (or 0-length row.names)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level3">
@@ -390,11 +375,11 @@ Folder</a>.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generating Volcano Plot</span></span>
 <span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="va">volc_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cyt_volc.html">cyt_volc</a></span><span class="op">(</span><span class="va">data_df</span>, group_col <span class="op">=</span> <span class="st">"Group"</span>, </span>
+<span><span class="fu"><a href="../reference/cyt_volc.html">cyt_volc</a></span><span class="op">(</span><span class="va">data_df</span>, group_col <span class="op">=</span> <span class="st">"Group"</span>, </span>
 <span>                      cond1 <span class="op">=</span> <span class="st">"T2D"</span>, cond2 <span class="op">=</span> <span class="st">"ND"</span>, </span>
 <span>                      fold_change_thresh <span class="op">=</span> <span class="fl">2.0</span>, </span>
 <span>                      top_labels <span class="op">=</span> <span class="fl">15</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">volc_plot</span><span class="op">$</span><span class="va">`T2D vs ND`</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">#&gt; $`T2D vs ND`</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="heatmap">9. Heatmap<a class="anchor" aria-label="anchor" href="#heatmap"></a>
@@ -450,162 +435,20 @@ Folder</a>.</p>
 <span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data_df</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">xgb_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cyt_xgb.html">cyt_xgb</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">data_df</span>, group_col <span class="op">=</span> <span class="st">"Group"</span>,</span>
+<span><span class="fu"><a href="../reference/cyt_xgb.html">cyt_xgb</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">data_df</span>, group_col <span class="op">=</span> <span class="st">"Group"</span>,</span>
 <span>                       nrounds <span class="op">=</span> <span class="fl">500</span>, max_depth <span class="op">=</span> <span class="fl">4</span>, eta <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>                       nfold <span class="op">=</span> <span class="fl">5</span>, cv <span class="op">=</span> <span class="cn">TRUE</span>, eval_metric <span class="op">=</span> <span class="st">"mlogloss"</span>,</span>
 <span>                       early_stopping_rounds <span class="op">=</span> <span class="cn">NULL</span>, top_n_features <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>                       verbose <span class="op">=</span> <span class="fl">0</span>, plot_roc <span class="op">=</span> <span class="cn">TRUE</span>, print_results <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Group to Numeric Label Mapping</span></span>
-<span><span class="co">#&gt; PreT2D    T2D </span></span>
-<span><span class="co">#&gt;      0      1 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; TRAINING XGBOOST MODEL</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Best iteration from training (based on mlogloss ):</span></span>
-<span><span class="co">#&gt;     iter train_mlogloss test_mlogloss</span></span>
-<span><span class="co">#&gt;    &lt;num&gt;          &lt;num&gt;         &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:   313     0.01860717     0.4529601</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; AUC:  0.916</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Confusion Matrix on Test Set</span></span>
-<span><span class="co">#&gt; Confusion Matrix and Statistics</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;           Reference</span></span>
-<span><span class="co">#&gt; Prediction  0  1</span></span>
-<span><span class="co">#&gt;          0 25  7</span></span>
-<span><span class="co">#&gt;          1  4 22</span></span>
-<span><span class="co">#&gt;                                           </span></span>
-<span><span class="co">#&gt;                Accuracy : 0.8103          </span></span>
-<span><span class="co">#&gt;                  95% CI : (0.6859, 0.9013)</span></span>
-<span><span class="co">#&gt;     No Information Rate : 0.5             </span></span>
-<span><span class="co">#&gt;     P-Value [Acc &gt; NIR] : 1.016e-06       </span></span>
-<span><span class="co">#&gt;                                           </span></span>
-<span><span class="co">#&gt;                   Kappa : 0.6207          </span></span>
-<span><span class="co">#&gt;                                           </span></span>
-<span><span class="co">#&gt;  Mcnemar's Test P-Value : 0.5465          </span></span>
-<span><span class="co">#&gt;                                           </span></span>
-<span><span class="co">#&gt;             Sensitivity : 0.8621          </span></span>
-<span><span class="co">#&gt;             Specificity : 0.7586          </span></span>
-<span><span class="co">#&gt;          Pos Pred Value : 0.7812          </span></span>
-<span><span class="co">#&gt;          Neg Pred Value : 0.8462          </span></span>
-<span><span class="co">#&gt;              Prevalence : 0.5000          </span></span>
-<span><span class="co">#&gt;          Detection Rate : 0.4310          </span></span>
-<span><span class="co">#&gt;    Detection Prevalence : 0.5517          </span></span>
-<span><span class="co">#&gt;       Balanced Accuracy : 0.8103          </span></span>
-<span><span class="co">#&gt;                                           </span></span>
-<span><span class="co">#&gt;        'Positive' Class : 0               </span></span>
-<span><span class="co">#&gt;                                           </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Top 10 Important Features</span></span>
-<span><span class="co">#&gt;           Feature       Gain      Cover  Frequency</span></span>
-<span><span class="co">#&gt;            &lt;char&gt;      &lt;num&gt;      &lt;num&gt;      &lt;num&gt;</span></span>
-<span><span class="co">#&gt;  1:         TNF.A 0.18457678 0.10535233 0.09103448</span></span>
-<span><span class="co">#&gt;  2:         IL.22 0.15117263 0.16064281 0.09885057</span></span>
-<span><span class="co">#&gt;  3:     IL.12.P70 0.09955532 0.12855158 0.12321839</span></span>
-<span><span class="co">#&gt;  4:         IL.33 0.09384522 0.08514973 0.07908046</span></span>
-<span><span class="co">#&gt;  5:         IL.1B 0.07717208 0.03835908 0.05149425</span></span>
-<span><span class="co">#&gt;  6:          IL.9 0.07554566 0.06955229 0.07080460</span></span>
-<span><span class="co">#&gt;  7:         IL.15 0.04705740 0.05853239 0.03310345</span></span>
-<span><span class="co">#&gt;  8:         IL.23 0.04440949 0.02533791 0.02988506</span></span>
-<span><span class="co">#&gt;  9: CCL.20.MIP.3A 0.03678675 0.05623800 0.05287356</span></span>
-<span><span class="co">#&gt; 10:         IL.13 0.02785650 0.02633047 0.03678161</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; CROSS-VALIDATION USING XGBOOST</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Best iteration from cross-validation:</span></span>
-<span><span class="co">#&gt;     iter train_mlogloss_mean train_mlogloss_std test_mlogloss_mean</span></span>
-<span><span class="co">#&gt;    &lt;num&gt;               &lt;num&gt;              &lt;num&gt;              &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:    45           0.1664957         0.01796909           0.457419</span></span>
-<span><span class="co">#&gt;    test_mlogloss_std</span></span>
-<span><span class="co">#&gt;                &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:        0.08743712</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Cross-Validation Confusion Matrix</span></span>
-<span><span class="co">#&gt; Confusion Matrix and Statistics</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;           Reference</span></span>
-<span><span class="co">#&gt; Prediction  0  1</span></span>
-<span><span class="co">#&gt;          0 57 13</span></span>
-<span><span class="co">#&gt;          1 13 57</span></span>
-<span><span class="co">#&gt;                                          </span></span>
-<span><span class="co">#&gt;                Accuracy : 0.8143         </span></span>
-<span><span class="co">#&gt;                  95% CI : (0.7398, 0.875)</span></span>
-<span><span class="co">#&gt;     No Information Rate : 0.5            </span></span>
-<span><span class="co">#&gt;     P-Value [Acc &gt; NIR] : 1.212e-14      </span></span>
-<span><span class="co">#&gt;                                          </span></span>
-<span><span class="co">#&gt;                   Kappa : 0.6286         </span></span>
-<span><span class="co">#&gt;                                          </span></span>
-<span><span class="co">#&gt;  Mcnemar's Test P-Value : 1              </span></span>
-<span><span class="co">#&gt;                                          </span></span>
-<span><span class="co">#&gt;             Sensitivity : 0.8143         </span></span>
-<span><span class="co">#&gt;             Specificity : 0.8143         </span></span>
-<span><span class="co">#&gt;          Pos Pred Value : 0.8143         </span></span>
-<span><span class="co">#&gt;          Neg Pred Value : 0.8143         </span></span>
-<span><span class="co">#&gt;              Prevalence : 0.5000         </span></span>
-<span><span class="co">#&gt;          Detection Rate : 0.4071         </span></span>
-<span><span class="co">#&gt;    Detection Prevalence : 0.5000         </span></span>
-<span><span class="co">#&gt;       Balanced Accuracy : 0.8143         </span></span>
-<span><span class="co">#&gt;                                          </span></span>
-<span><span class="co">#&gt;        'Positive' Class : 0              </span></span>
-<span><span class="co">#&gt;                                          </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Cross-Validation Accuracy:  0.814</span></span></code></pre></div>
+<span>                       verbose <span class="op">=</span> <span class="fl">0</span>, plot_roc <span class="op">=</span> <span class="cn">TRUE</span>, print_results <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="using-random-forest-for-classification">Using Random Forest for classification<a class="anchor" aria-label="anchor" href="#using-random-forest-for-classification"></a>
 </h4>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Using Random Forest for classification</span></span>
-<span><span class="va">rf_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cyt_rf.html">cyt_rf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">data_df</span>, group_col <span class="op">=</span> <span class="st">"Group"</span>, k_folds <span class="op">=</span> <span class="fl">5</span>,</span>
+<span><span class="fu"><a href="../reference/cyt_rf.html">cyt_rf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">data_df</span>, group_col <span class="op">=</span> <span class="st">"Group"</span>, k_folds <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>                     ntree <span class="op">=</span> <span class="fl">1000</span>, mtry <span class="op">=</span> <span class="fl">4</span>, run_rfcv <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                     plot_roc <span class="op">=</span> <span class="cn">TRUE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ### RANDOM FOREST RESULTS ON TRAINING SET ###</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Call:</span></span>
-<span><span class="co">#&gt;  randomForest(formula = formula_rf, data = train_data, ntree = ntree,      mtry = mtry, importance = TRUE, do.trace = FALSE) </span></span>
-<span><span class="co">#&gt;                Type of random forest: classification</span></span>
-<span><span class="co">#&gt;                      Number of trees: 1000</span></span>
-<span><span class="co">#&gt; No. of variables tried at each split: 4</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;         OOB estimate of  error rate: 11.43%</span></span>
-<span><span class="co">#&gt; Confusion matrix:</span></span>
-<span><span class="co">#&gt;        PreT2D T2D class.error</span></span>
-<span><span class="co">#&gt; PreT2D     62   8   0.1142857</span></span>
-<span><span class="co">#&gt; T2D         8  62   0.1142857 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Accuracy on training set:  0.886 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Training set - Class 'PreT2D' metrics:</span></span>
-<span><span class="co">#&gt;   Sensitivity:  0.886 </span></span>
-<span><span class="co">#&gt;   Specificity:  0.886 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Training set - Class 'T2D' metrics:</span></span>
-<span><span class="co">#&gt;   Sensitivity:  0.886 </span></span>
-<span><span class="co">#&gt;   Specificity:  0.886 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ### PREDICTIONS ON TEST SET ###</span></span>
-<span><span class="co">#&gt;           Reference</span></span>
-<span><span class="co">#&gt; Prediction PreT2D T2D</span></span>
-<span><span class="co">#&gt;     PreT2D     25   7</span></span>
-<span><span class="co">#&gt;     T2D         4  22 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Accuracy on test set:  0.81 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Sensitivity by class:</span></span>
-<span><span class="co">#&gt; Class: PreT2D: 0.862</span></span>
-<span><span class="co">#&gt; Class: T2D: 0.241</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Specificity by class:</span></span>
-<span><span class="co">#&gt; Class: T2D: 0.759</span></span>
-<span><span class="co">#&gt; Class: PreT2D: 0.138</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; AUC:  0.93</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ### RANDOM FOREST CROSS-VALIDATION FOR FEATURE SELECTION ###</span></span>
-<span><span class="co">#&gt; Random Forest CV completed for feature selection. Check the plot for error vs. number of variables.</span></span></code></pre></div>
+<span>                     plot_roc <span class="op">=</span> <span class="cn">TRUE</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 </div>
