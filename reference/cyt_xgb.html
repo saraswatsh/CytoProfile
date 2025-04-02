@@ -178,7 +178,7 @@ and calculate the AUC for binary classification (default is <code>FALSE</code>).
 <dt id="arg-print-results">print_results<a class="anchor" aria-label="anchor" href="#arg-print-results"></a></dt>
 <dd><p>A logical value indicating whether to print the results
 of the model training and evaluation (default is <code>FALSE</code>). If set to <code>TRUE</code>,
-it will print the confusion matrix, feature importance, and other plots.</p></dd>
+it will print the confusion matrix, and feature importance.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
@@ -227,53 +227,16 @@ features using <code>xgb.ggplot.importance()</code>.</p>
 <span class="r-in"><span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data_df</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">xgb_results</span> <span class="op">&lt;-</span> <span class="fu">cyt_xgb</span><span class="op">(</span></span></span>
+<span class="r-in"><span><span class="fu">cyt_xgb</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  data <span class="op">=</span> <span class="va">data_df</span>, group_col <span class="op">=</span> <span class="st">"Group"</span>,</span></span>
 <span class="r-in"><span>  nrounds <span class="op">=</span> <span class="fl">500</span>, max_depth <span class="op">=</span> <span class="fl">4</span>, eta <span class="op">=</span> <span class="fl">0.05</span>,</span></span>
 <span class="r-in"><span>  nfold <span class="op">=</span> <span class="fl">5</span>, cv <span class="op">=</span> <span class="cn">FALSE</span>, eval_metric <span class="op">=</span> <span class="st">"mlogloss"</span>,</span></span>
 <span class="r-in"><span>  early_stopping_rounds <span class="op">=</span> <span class="cn">NULL</span>, top_n_features <span class="op">=</span> <span class="fl">10</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="fl">0</span>, plot_roc <span class="op">=</span> <span class="cn">TRUE</span>, print_results <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>A shallow copy of this data.table was taken so that := can add or remove 1 columns by reference. At an earlier point, this data.table was copied by R (or was created manually using structure() or similar). Avoid names&lt;- and attr&lt;- which in R currently (and oddly) may copy the whole data.table. Use set* syntax instead to avoid copying: ?set, ?setnames and ?setattr. It's also not unusual for data.table-agnostic packages to produce tables affected by this issue. If this message doesn't help, please report your use case to the data.table issue tracker so the root cause can be fixed or this message improved.</span>
-<span class="r-in"><span><span class="co"># To check for class mapping</span></span></span>
-<span class="r-in"><span><span class="va">xgb_results</span><span class="op">$</span><span class="va">class_mapping</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> PreT2D    T2D </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      0      1 </span>
-<span class="r-in"><span><span class="co"># To view confusion matrix on testing set</span></span></span>
-<span class="r-in"><span><span class="va">xgb_results</span><span class="op">$</span><span class="va">confusion_matrix</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Confusion Matrix and Statistics</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           Reference</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Prediction  0  1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          0 25  7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          1  4 22</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                Accuracy : 0.8103          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  95% CI : (0.6859, 0.9013)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     No Information Rate : 0.5             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     P-Value [Acc &gt; NIR] : 1.016e-06       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   Kappa : 0.6207          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Mcnemar's Test P-Value : 0.5465          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             Sensitivity : 0.8621          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             Specificity : 0.7586          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          Pos Pred Value : 0.7812          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          Neg Pred Value : 0.8462          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              Prevalence : 0.5000          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          Detection Rate : 0.4310          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Detection Prevalence : 0.5517          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       Balanced Accuracy : 0.8103          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        'Positive' Class : 0               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                           </span>
-<span class="r-in"><span><span class="co"># To view feature importance plot</span></span></span>
-<span class="r-in"><span><span class="va">xgb_results</span><span class="op">$</span><span class="va">importance_plot</span></span></span>
 <span class="r-plt img"><img src="cyt_xgb-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="co"># To view cross-validation confusion matrix</span></span></span>
-<span class="r-in"><span><span class="va">xgb_results</span><span class="op">$</span><span class="va">cv_results</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>A shallow copy of this data.table was taken so that := can add or remove 1 columns by reference. At an earlier point, this data.table was copied by R (or was created manually using structure() or similar). Avoid names&lt;- and attr&lt;- which in R currently (and oddly) may copy the whole data.table. Use set* syntax instead to avoid copying: ?set, ?setnames and ?setattr. It's also not unusual for data.table-agnostic packages to produce tables affected by this issue. If this message doesn't help, please report your use case to the data.table issue tracker so the root cause can be fixed or this message improved.</span>
+<span class="r-plt img"><img src="cyt_xgb-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
