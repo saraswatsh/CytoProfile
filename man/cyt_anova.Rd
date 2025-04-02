@@ -4,32 +4,33 @@
 \alias{cyt_anova}
 \title{ANOVA Analysis on Continuous Variables.}
 \usage{
-cyt_anova(data)
+cyt_anova(data, format_output = FALSE)
 }
 \arguments{
-\item{data}{A data frame or matrix containing both categorical and
-continuous variables. Character columns will be converted to factors and
-used as predictors, while numeric columns will be used as continuous outcomes.}
+\item{data}{A data frame or matrix containing both categorical and continuous variables.
+Character columns will be converted to factors and used as predictors, while numeric columns
+will be used as continuous outcomes.}
+
+\item{format_output}{Logical. If TRUE, returns the results as a tidy data frame instead of a list.
+Default is FALSE.}
 }
 \value{
-A list of adjusted p-values from Tukey's HSD tests for each
-combination of continuous outcome and categorical predictor. List
-elements are named in the format "outcome_predictor".
+If \code{format_output} is FALSE (default), a list of adjusted p-values from Tukey's HSD tests
+for each combination of continuous outcome and categorical predictor. List elements are named
+in the format "Outcome_Categorical".
+If \code{format_output} is TRUE, a data frame in a tidy format.
 }
 \description{
 This function performs an analysis of variance (ANOVA) for each continuous
 variable against every categorical predictor in the input data. Character
 columns are automatically converted to factors; all factor columns are used
 as predictors while numeric columns are used as continuous outcomes.
-For each valid predictor (i.e., with more than one level and no more
-than 10 levels), Tukey's Honest Significant Difference (HSD) test is
-conducted and the adjusted p-values for pairwise comparisons are extracted.
+For each valid predictor (i.e., with more than one level and no more than 10 levels),
+Tukey's Honest Significant Difference (HSD) test is conducted and the adjusted
+p-values for pairwise comparisons are extracted.
 }
 \examples{
-# Loading data
 data("ExampleData1")
-# Perform ANOVA on selected columns of the cytodata dataset
-anova_results <- cyt_anova(ExampleData1[, c(1:2, 5:6)])
-print(anova_results)
+cyt_anova(ExampleData1[, c(1:2, 5:6)], format_output = TRUE)
 
 }

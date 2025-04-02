@@ -39,7 +39,7 @@
 #'   Default is \code{FALSE}.
 #' @param verbose A logical value indicating whether to print additional
 #'   informational output to the console. When \code{TRUE}, the function will
-#'   display progress messages, intermediate results, and plots; when
+#'   display progress messages, and intermediate results when
 #'   \code{FALSE} (the default), it runs quietly.
 #' @param seed An integer specifying the seed for reproducibility (default is 123).
 #' @description
@@ -89,7 +89,7 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
   # If one factor is missing, use the provided column for
   # both grouping and treatment.
   if (!is.null(group_col) && is.null(group_col2)) {
-    if (verbose) cat("No second grouping column provided; performing overall analysis.")
+    if (verbose) cat("No second grouping column provided; performing overall analysis.\n")
     group_col2 <- group_col
   }
   if(is.null(group_col) && !is.null(group_col2)) {
@@ -105,9 +105,9 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
       data[, c(group_col, group_col2)],
       log2(data[, !(names(data) %in% c(group_col, group_col2))])
     )
-    if (verbose) cat("Results based on log2 transformation:")
+    if (verbose) cat("Results based on log2 transformation:\n")
   } else if (is.null(scale)) {
-    if (verbose) cat("Results based on no transformation:")
+    if (verbose) cat("Results based on no transformation:\n")
   }
 
   # Extract the grouping variable from your data (using group_col or group_col2)
@@ -240,8 +240,6 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
           variable.name = "Distance",
           value.name = "ErrorRate"
         )
-
-        if (verbose) {
           a <- ggplot2::ggplot(error_df, ggplot2::aes(x = Component, y = ErrorRate,
                                                       color = Distance, group = 1)) +
             ggplot2::geom_line() +
@@ -252,7 +250,6 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
             ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)) +
             ggplot2::scale_color_manual(values = "red", labels = "max.dist")
           print(a)
-        }
       } else if (cv_opt == "Mfold") {
         set.seed(seed)
         fold_results <- mixOmics::perf(cytokine_splsda,
@@ -274,8 +271,6 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
           variable.name = "Distance",
           value.name = "ErrorRate"
         )
-
-        if (verbose) {
           a <- ggplot2::ggplot(error_df, ggplot2::aes(x = Component, y = ErrorRate,
                                                       color = Distance, group = 1)) +
             ggplot2::geom_line() +
@@ -286,7 +281,6 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
             ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)) +
             ggplot2::scale_color_manual(values = "red", labels = "max.dist")
           print(a)
-        }
       }
     }
 
@@ -309,7 +303,6 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
       bar <- vscore[, c("metabo", "comp")]
       bar <- bar[order(bar$comp, decreasing = TRUE), ]
 
-      if (verbose) {
         a <- ggplot2::ggplot(bar, ggplot2::aes(x = metabo, y = comp)) +
           ggplot2::geom_bar(stat = "identity", position = "dodge") +
           ggplot2::scale_y_continuous(limits = c(0, max(bar$comp))) +
@@ -320,8 +313,7 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
           ggplot2::ggtitle(paste("Component", comp)) +
           ggplot2::theme(panel.grid = ggplot2::element_blank(),
                          panel.background = ggplot2::element_rect(color = "black", fill = "transparent"))
-        a
-      }
+        print(a)
     }
 
     # PLS-DA on VIP > 1: Subset predictors with VIP > 1
@@ -405,7 +397,6 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
           value.name = "ErrorRate"
         )
 
-        if (verbose) {
           a <- ggplot2::ggplot(error_df2, ggplot2::aes(x = Component, y = ErrorRate,
                                                        color = Distance, group = 1)) +
             ggplot2::geom_line() +
@@ -416,7 +407,6 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
             ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)) +
             ggplot2::scale_color_manual(values = "red", labels = "max.dist")
           print(a)
-        }
       } else if (cv_opt == "Mfold") {
         set.seed(seed)
         fold_results2 <- mixOmics::perf(cytokine_splsda2,
@@ -439,7 +429,6 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
           value.name = "ErrorRate"
         )
 
-        if (verbose) {
           a <- ggplot2::ggplot(error_df2, ggplot2::aes(x = Component, y = ErrorRate,
                                                        color = Distance, group = 1)) +
             ggplot2::geom_line() +
@@ -450,7 +439,6 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
             ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)) +
             ggplot2::scale_color_manual(values = "red", labels = "max.dist")
           print(a)
-        }
       }
     }
 
@@ -619,8 +607,6 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
             variable.name = "Distance",
             value.name = "ErrorRate"
           )
-
-          if (verbose) {
             a <- ggplot2::ggplot(error_df, ggplot2::aes(x = Component, y = ErrorRate,
                                                         color = Distance, group = 1)) +
               ggplot2::geom_line() +
@@ -631,7 +617,6 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
               ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)) +
               ggplot2::scale_color_manual(values = "red", labels = "max.dist")
             print(a)
-          }
         } else if (cv_opt == "Mfold") {
           set.seed(seed)
           fold_results <- mixOmics::perf(cytokine_splsda,
@@ -654,7 +639,6 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
             value.name = "ErrorRate"
           )
 
-          if (verbose) {
             a <- ggplot2::ggplot(error_df, ggplot2::aes(x = Component, y = ErrorRate,
                                                         color = Distance, group = 1)) +
               ggplot2::geom_line() +
@@ -665,7 +649,6 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
               ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)) +
               ggplot2::scale_color_manual(values = "red", labels = "max.dist")
             print(a)
-          }
         }
       }
 
@@ -687,7 +670,6 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
         bar <- vscore[, c("metabo", "comp")]
         bar <- bar[order(bar$comp, decreasing = TRUE), ]
 
-        if(verbose){
           a <- ggplot2::ggplot(bar, aes(x = metabo, y = comp)) +
             ggplot2::geom_bar(stat = "identity", position = "dodge") +
             ggplot2::scale_y_continuous(limits = c(0, max(bar$comp))) +
@@ -704,7 +686,6 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
               )
             )
           print(a)
-        }
       }
 
       condt_variable <- all_vip_scores[, 1] > 1
@@ -799,7 +780,6 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
             variable.name = "Distance",
             value.name = "ErrorRate"
           )
-          if(verbose){
             a <- ggplot2::ggplot(error_df2, aes(
               x = Component, y = ErrorRate,
               color = Distance, group = 1
@@ -815,7 +795,6 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
               ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
               ggplot2::scale_color_manual(values = "red", labels = "max.dist")
             print(a)
-          }
 
         } else if (cv_opt == "Mfold") {
           set.seed(seed)
@@ -838,7 +817,6 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
             variable.name = "Distance",
             value.name = "ErrorRate"
           )
-          if (verbose) {
             a <- ggplot2::ggplot(error_df2, aes(
               x = Component, y = ErrorRate,
               color = Distance, group = 1
@@ -854,7 +832,6 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
               ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
               ggplot2::scale_color_manual(values = "red", labels = "max.dist")
             print(a)
-          }
         }
       }
       if (conf_mat == TRUE) {

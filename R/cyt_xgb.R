@@ -42,7 +42,7 @@
 #' and calculate the AUC for binary classification (default is \code{FALSE}).
 #' @param print_results A logical value indicating whether to print the results
 #'  of the model training and evaluation (default is \code{FALSE}). If set to \code{TRUE},
-#'  it will print the confusion matrix, feature importance, and other plots.
+#'  it will print the confusion matrix, and feature importance.
 #' @param seed An integer specifying the seed for reproducibility (default is 123).
 #'
 #' @return A list containing:
@@ -70,21 +70,13 @@
 #' data_df <- data_df[, -c(2,3)]
 #' data_df <- dplyr::filter(data_df, Group != "ND")
 #'
-#' xgb_results <- cyt_xgb(
+#' cyt_xgb(
 #'   data = data_df, group_col = "Group",
 #'   nrounds = 500, max_depth = 4, eta = 0.05,
 #'   nfold = 5, cv = FALSE, eval_metric = "mlogloss",
 #'   early_stopping_rounds = NULL, top_n_features = 10,
 #'   verbose = 0, plot_roc = TRUE, print_results = FALSE
 #' )
-#' # To check for class mapping
-#' xgb_results$class_mapping
-#' # To view confusion matrix on testing set
-#' xgb_results$confusion_matrix
-#' # To view feature importance plot
-#' xgb_results$importance_plot
-#' # To view cross-validation confusion matrix
-#' xgb_results$cv_results
 #'
 #' @importFrom xgboost xgb.DMatrix xgb.train xgb.importance xgb.ggplot.importance xgb.cv getinfo
 #' @importFrom caret createDataPartition confusionMatrix
@@ -173,50 +165,49 @@ cyt_xgb <- function(data, group_col, train_fraction = 0.7,
   )) - 1
 
   # For binary classification, reshape predictions and compute ROC/AUC
-  if (length(unique(y_test)) == 2) {
-    preds_matrix <- matrix(preds, ncol = 2, byrow = TRUE)
-    xgb_prob <- preds_matrix[, 2]
-    if (length(xgb_prob) != length(y_test)) {
-      if(print_results){
-        cat("The length of predicted probabilities does not match the length of
+  if(plot_roc){
+    if (length(unique(y_test)) == 2) {
+      preds_matrix <- matrix(preds, ncol = 2, byrow = TRUE)
+      xgb_prob <- preds_matrix[, 2]
+      if (length(xgb_prob) != length(y_test)) {
+        if(print_results){
+          cat("The length of predicted probabilities does not match the length of
           true labels.")
+        }
       }
-    }
-    roc_obj <- pROC::roc(y_test, xgb_prob, quiet = TRUE)
-    auc_value <- pROC::auc(roc_obj)
-    if(print_results) {
-      cat("\nAUC: ", round(auc_value, 3), "\n")
-    }
-    roc_plot <- pROC::ggroc(roc_obj,
-      color = "blue", linewidth = 1.5,
-      legacy.axes = TRUE
-    ) +
-      geom_abline(linetype = "dashed", color = "red", linewidth = 1) +
-      labs(
-        title = "ROC Curve (Test Set)",
-        x = "1 - Specificity",
-        y = "Sensitivity"
+      roc_obj <- pROC::roc(y_test, xgb_prob, quiet = TRUE)
+      auc_value <- pROC::auc(roc_obj)
+      if(print_results) {
+        cat("\nAUC: ", round(auc_value, 3), "\n")
+      }
+      roc_plot <- pROC::ggroc(roc_obj,
+                              color = "blue", linewidth = 1.5,
+                              legacy.axes = TRUE
       ) +
-      annotate("text",
-        x = 0.75, y = 0.25,
-        label = paste("AUC =", round(auc_value, 3)),
-        size = 5, color = "blue"
-      ) +
-      theme_minimal() +
-      theme(
-        panel.background = element_rect(fill = "white", color = NA),
-        plot.background  = element_rect(fill = "white", color = NA),
-        panel.grid.major = element_line(color = "grey90"),
-        panel.grid.minor = element_line(color = "grey95")
-      )
-    if(print_results) {
+        geom_abline(linetype = "dashed", color = "red", linewidth = 1) +
+        labs(
+          title = "ROC Curve (Test Set)",
+          x = "1 - Specificity",
+          y = "Sensitivity"
+        ) +
+        annotate("text",
+                 x = 0.75, y = 0.25,
+                 label = paste("AUC =", round(auc_value, 3)),
+                 size = 5, color = "blue"
+        ) +
+        theme_minimal() +
+        theme(
+          panel.background = element_rect(fill = "white", color = NA),
+          plot.background  = element_rect(fill = "white", color = NA),
+          panel.grid.major = element_line(color = "grey90"),
+          panel.grid.minor = element_line(color = "grey95")
+        )
       print(roc_plot)
-      }
     } else {
-      if(print_results){
-        cat("ROC curve is only available for binary classification.")
-      }
+      warning("ROC curve is only available for binary classification.")
+    }
   }
+
 
   # Confusion matrix on test set
   if(print_results){
@@ -257,9 +248,7 @@ cyt_xgb <- function(data, group_col, train_fraction = 0.7,
       legend.title = element_text(color = "black", size = 10, face = "bold"),
       legend.text = element_text(color = "black")
     )
-  if(print_results){
-    print(ggplot_imp)
-  }
+  print(ggplot_imp)
 
   # Cross-Validation (optional)
   if (cv) {
@@ -303,14 +292,4 @@ cyt_xgb <- function(data, group_col, train_fraction = 0.7,
     cat("\nCross-Validation Accuracy: ", round(cv_accuracy, 3), "\n")
     }
   }
-
-  return(list(
-    model = xgb_model,
-    confusion_matrix = confusion_mat,
-    importance = top_features,
-    class_mapping = class_mapping,
-    cv_results = if (cv) cv_confusion_mat else NULL,
-    cv_accuracy = if (cv) cv_accuracy else NULL,
-    importance_plot = ggplot_imp
-  ))
 }

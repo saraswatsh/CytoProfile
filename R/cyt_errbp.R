@@ -84,7 +84,6 @@
 #'                  group_cols = c("Group", "Treatment"))
 #'
 #' oldpar <- par(no.readonly = TRUE)
-#' on.exit(par(oldpar))
 #' par(mfrow = c(2,3), mar = c(8.1, 4.1, 4.1, 2.1))
 #'
 #' for (k in 1:nCytokine) {
@@ -100,6 +99,7 @@
 #'          y_lab = "Concentration in log2 scale",
 #'          main = cytokineNames[k])
 #' }
+#' par(oldpar)
 #'
 cyt_errbp <- function(data, p_lab = TRUE, es_lab = TRUE, class_symbol = TRUE,
                       x_lab = "", y_lab = "", main = "") {

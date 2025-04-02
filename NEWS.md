@@ -6,12 +6,16 @@
 
 * 'cyt_xgb' has a new logical argument called 'print_results' that works the same as the 'verbose' argument in other functions mentioned above. 
 
-* Have removed the arguments for changing graphical parameters in 'cyt_bp', and 'cyt_bp2' so it no longer changes the user's graphical parameters. 
+* Reverted the previous 'verbose' conditionals on plots from the functions mentioned above as they are essential to the output. For example, after creating a ggplot2 object of the plots, I have left 'print(a)' without a 'verbose' conditional statement. 
 
-* Updated examples from graphical parameters changing without resetting properly to now the graphical parameters reverting to original using 'on.exit()' after the execution of code.
+* Have removed the arguments for changing graphical parameters in 'cyt_bp', and 'cyt_bp2' so it no longer requires changes to the user's graphical parameters.
+
+* Updated examples from graphical parameters changing without resetting properly to now the graphical parameters reverting to original using 'oldpar <- par(no.readonly = TRUE)' in the beginning and par(oldpar) after execution of code.
 
 * Updated 'getting_started.Rmd' vignette where the files created and saved are now saved to a temporary directory using 'tempdir()' to avoid creating files in the user's working directory. Additionally, 
-the vignette now uses 'on.exit()' to revert to original graphical parameters for the 'cyt_errbp' examples shown.
+the vignette now uses 'oldpar <- par(no.readonly = TRUE)' in the beginning and par(oldpar) after code execution to revert to original graphical parameters for the 'cyt_errbp' examples shown.
+
+* Added a new 'format_output' argument to 'cyt_anova' and 'cyt_ttest' to format the output as a data frame which can be printed to show neat format, however still dependent on whether 'verbose' equals TRUE or FALSE. 
 
 * 'cyt_rf', 'cyt_splsda', and 'cyt_xgb' now has a 'seed' argument to set the seed for reproducibility. 
 

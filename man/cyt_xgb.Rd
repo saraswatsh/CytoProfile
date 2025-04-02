@@ -83,7 +83,7 @@ and calculate the AUC for binary classification (default is \code{FALSE}).}
 
 \item{print_results}{A logical value indicating whether to print the results
 of the model training and evaluation (default is \code{FALSE}). If set to \code{TRUE},
-it will print the confusion matrix, feature importance, and other plots.}
+it will print the confusion matrix, and feature importance.}
 
 \item{seed}{An integer specifying the seed for reproducibility (default is 123).}
 }
@@ -119,20 +119,12 @@ data_df <- data.frame(data_df0[, 1:3], log2(data_df0[, -c(1:3)]))
 data_df <- data_df[, -c(2,3)]
 data_df <- dplyr::filter(data_df, Group != "ND")
 
-xgb_results <- cyt_xgb(
+cyt_xgb(
   data = data_df, group_col = "Group",
   nrounds = 500, max_depth = 4, eta = 0.05,
   nfold = 5, cv = FALSE, eval_metric = "mlogloss",
   early_stopping_rounds = NULL, top_n_features = 10,
   verbose = 0, plot_roc = TRUE, print_results = FALSE
 )
-# To check for class mapping
-xgb_results$class_mapping
-# To view confusion matrix on testing set
-xgb_results$confusion_matrix
-# To view feature importance plot
-xgb_results$importance_plot
-# To view cross-validation confusion matrix
-xgb_results$cv_results
 
 }

@@ -87,7 +87,6 @@ results <- cyt_skku(ExampleData1[, -c(3)], print_res_log = TRUE,
                  group_cols = c("Group", "Treatment"))
 
 oldpar <- par(no.readonly = TRUE)
-on.exit(par(oldpar))
 par(mfrow = c(2,3), mar = c(8.1, 4.1, 4.1, 2.1))
 
 for (k in 1:nCytokine) {
@@ -103,5 +102,6 @@ cyt_errbp(center_df, p_lab = TRUE, es_lab = TRUE,
          y_lab = "Concentration in log2 scale",
          main = cytokineNames[k])
 }
+par(oldpar)
 
 }

@@ -27,7 +27,7 @@
 #'   cross-validation for feature selection (default is TRUE).
 #' @param verbose A logical value indicating whether to print additional
 #'   informational output to the console. When \code{TRUE}, the function will
-#'   display progress messages, intermediate results, and plots; when
+#'   display progress messages, and intermediate results when
 #'   \code{FALSE} (the default), it runs quietly.
 #' @param seed An integer specifying the seed for reproducibility (default is 123).
 #'
@@ -56,17 +56,11 @@
 #' data.df <- data.frame(data.df0[, 1:3], log2(data.df0[, -c(1:3)]))
 #' data.df <- data.df[, -c(2:3)]
 #' data.df <- dplyr::filter(data.df, Group != "ND")
-#' # Storing results in an object
-#' rf_results <- cyt_rf(
+#'
+#' cyt_rf(
 #'   data = data.df, group_col = "Group", k_folds = 5, ntree = 1000,
 #'   mtry = 4, run_rfcv = TRUE, plot_roc = TRUE, verbose = FALSE
 #' )
-#'
-#' # Extracting Results and plots
-#' rf_results$model # Extracts the training model
-#' rf_results$confusion_matrix # Extracts the confusion matrix from testing set
-#' rf_results$importance_plot # Extracts the variable importance plot
-#' rf_results$rfcv_plot# Extracts the cross-validation plot.
 #'
 #' @importFrom randomForest randomForest rfcv importance
 #' @importFrom caret createDataPartition confusionMatrix
@@ -189,9 +183,7 @@ cyt_rf <- function(data, group_col, ntree = 500, mtry = 5,
         panel.grid.major = ggplot2::element_line(color = "grey90"),
         panel.grid.minor = ggplot2::element_line(color = "grey95")
       )
-    if (verbose) {
-      print(roc_plot)
-    }
+    print(roc_plot)
   }
 
   # Extract variable importance and generate plot
@@ -213,9 +205,7 @@ cyt_rf <- function(data, group_col, ntree = 500, mtry = 5,
       legend.title = ggplot2::element_text(color = "black", size = 10, face = "bold"),
       legend.text = ggplot2::element_text(color = "black")
     )
-  if (verbose) {
-    print(vip_plot)
-  }
+  print(vip_plot)
 
   # Optional: Random Forest Cross-Validation for Feature Selection
   rfcv_data <- NULL
@@ -243,21 +233,21 @@ cyt_rf <- function(data, group_col, ntree = 500, mtry = 5,
         panel.grid.major = ggplot2::element_line(color = "grey90"),
         panel.grid.minor = ggplot2::element_line(color = "grey95")
       )
+    print(rfcv_plot)
     if (verbose) {
-      print(rfcv_plot)
       cat("Random Forest CV completed for feature selection. Check the plot for error vs. number of variables.\n")
     }
   }
 
-  return(list(
-    model = rf_model,
-    confusion_matrix = confusion_mat,
-    importance_plot = vip_plot,
-    rfcv_result = rfcv_result,
-    rfcv_plot = rfcv_plot,
-    importance_data = importance_data,
-    rfcv_data = rfcv_data,
-    roc_plot = roc_plot
-  ))
+  # return(list(
+  #   model = rf_model,
+  #   confusion_matrix = confusion_mat,
+  #   importance_plot = vip_plot,
+  #   rfcv_result = rfcv_result,
+  #   rfcv_plot = rfcv_plot,
+  #   importance_data = importance_data,
+  #   rfcv_data = rfcv_data,
+  #   roc_plot = roc_plot
+  # ))
 }
 

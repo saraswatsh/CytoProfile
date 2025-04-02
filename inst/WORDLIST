@@ -46,6 +46,7 @@ XD
 XGBoost
 Xiaohua
 Zukowski
+anova
 bp
 cyt
 cytokine
@@ -62,9 +63,11 @@ metformin
 mixOmics
 mlogloss
 oby
+oldpar
 pch
 png
 preprocess
+readonly
 reproducibility
 rf
 sPLS

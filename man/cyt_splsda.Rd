@@ -81,7 +81,7 @@ Default is \code{FALSE}.}
 
 \item{verbose}{A logical value indicating whether to print additional
 informational output to the console. When \code{TRUE}, the function will
-display progress messages, intermediate results, and plots; when
+display progress messages, and intermediate results when
 \code{FALSE} (the default), it runs quietly.}
 
 \item{seed}{An integer specifying the seed for reproducibility (default is 123).}
