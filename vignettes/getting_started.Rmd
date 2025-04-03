@@ -251,7 +251,7 @@ cyt_anova(data_df[, c(1:2, 5:6)], format_output = TRUE)
 ### Partial Least Squares Discriminant Analysis (PLS-DA) 
 
 ```{r, Multivariate 1, echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE}
-# cyt.plsda function. 
+# cyt_plsda function. 
 data <- ExampleData1[, -c(3)]
 data_df <- dplyr::filter(data, Group != "ND" & Treatment == "CD3/CD28")
 cyt_splsda(data_df, 

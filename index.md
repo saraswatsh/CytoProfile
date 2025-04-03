@@ -27,6 +27,12 @@ devtools::install_github("saraswatsh/CytoProfile")
 
 ```
 
+Install CytoProfile from CRAN with:
+
+``` r
+install.packages("CytoProfile")
+```
+
 ## Learn More
 
 - [Getting Started](articles/getting_started.html): A detailed tutorial to help you start using CytoProfile.
