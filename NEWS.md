@@ -1,8 +1,10 @@
 # CytoProfile 0.1.2.9000 (development version)
 
+Work in progress, will update changelog once new changes are made. 
+
 # CytoProfile 0.1.2
 
-* Added references in description field of the DESCRIPTION file to the multivariate methods mentioned in the format 'Authors (Year) <doi:...>'.
+## Major Changes
 
 * 'cyt_rf', 'cyt_splsda', 'cyt_ttest', 'cyt_dualflashplot', and 'cyt_volc' now have a logical 'verbose' argument to print the output if user wants to. This is to ensure printed output in console can be easily suppressed.
 
@@ -12,14 +14,19 @@
 
 * Have removed the arguments for changing graphical parameters in 'cyt_bp', and 'cyt_bp2' so it no longer requires changes to the user's graphical parameters.
 
+* Added a new 'format_output' argument to 'cyt_anova' and 'cyt_ttest' to format the output as a data frame which can be printed to show neat format, however still dependent on whether 'verbose' equals TRUE or FALSE. 
+
+* 'cyt_rf', 'cyt_splsda', and 'cyt_xgb' now has a 'seed' argument to set the seed for reproducibility. 
+
+## Minor Changes and Bug Fixes
+
+* Added references in description field of the DESCRIPTION file to the multivariate methods mentioned in the format 'Authors (Year) <doi:...>'.
+
 * Updated examples from graphical parameters changing without resetting properly to now the graphical parameters reverting to original using 'oldpar <- par(no.readonly = TRUE)' in the beginning and par(oldpar) after execution of code.
 
 * Updated 'getting_started.Rmd' vignette where the files created and saved are now saved to a temporary directory using 'tempdir()' to avoid creating files in the user's working directory. Additionally, 
 the vignette now uses 'oldpar <- par(no.readonly = TRUE)' in the beginning and par(oldpar) after code execution to revert to original graphical parameters for the 'cyt_errbp' examples shown.
 
-* Added a new 'format_output' argument to 'cyt_anova' and 'cyt_ttest' to format the output as a data frame which can be printed to show neat format, however still dependent on whether 'verbose' equals TRUE or FALSE. 
-
-* 'cyt_rf', 'cyt_splsda', and 'cyt_xgb' now has a 'seed' argument to set the seed for reproducibility. 
 
 # CytoProfile 0.1.1
 
