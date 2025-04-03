@@ -9,7 +9,7 @@ home:
   - text: Read more
     href: articles/getting_started.html
 navbar:
-  title: CytoProfiledev
+  title: CytoProfile
   left:
   - text: Home
     href: index.html
