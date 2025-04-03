@@ -1,0 +1,9 @@
+pandoc: 3.1.11
+pkgdown: 2.1.1
+pkgdown_sha: ~
+articles:
+  getting_started: getting_started.html
+last_built: 2025-04-03T16:07Z
+urls:
+  reference: https://saraswatsh.github.io/CytoProfile/reference
+  article: https://saraswatsh.github.io/CytoProfile/articles
