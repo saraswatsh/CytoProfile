@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">CytoProfile</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.2.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,7 +73,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Getting Started with CytoProfile</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/saraswatsh/CytoProfile/blob/v0.1.2/vignettes/getting_started.Rmd" class="external-link"><code>vignettes/getting_started.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/saraswatsh/CytoProfile/blob/main/vignettes/getting_started.Rmd" class="external-link"><code>vignettes/getting_started.Rmd</code></a></small>
       <div class="d-none name"><code>getting_started.Rmd</code></div>
     </div>
 
@@ -332,7 +332,7 @@ Folder</a>.</p>
 <h4 id="partial-least-squares-discriminant-analysis-pls-da">Partial Least Squares Discriminant Analysis (PLS-DA)<a class="anchor" aria-label="anchor" href="#partial-least-squares-discriminant-analysis-pls-da"></a>
 </h4>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># cyt.plsda function. </span></span>
+<code class="sourceCode R"><span><span class="co"># cyt_plsda function. </span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span> <span class="op">&amp;</span> <span class="va">Treatment</span> <span class="op">==</span> <span class="st">"CD3/CD28"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/cyt_splsda.html">cyt_splsda</a></span><span class="op">(</span><span class="va">data_df</span>, </span>
