@@ -1,3 +1,5 @@
+# CytoProfile 0.1.2.9000 (development version)
+
 # CytoProfile 0.1.2
 
 * Added references in description field of the DESCRIPTION file to the multivariate methods mentioned in the format 'Authors (Year) <doi:...>'.
