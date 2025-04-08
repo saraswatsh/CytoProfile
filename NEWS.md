@@ -1,6 +1,15 @@
 # CytoProfile 0.1.2.9000 (development version)
 
-Work in progress, will update changelog once new changes are made. 
+## Major Changes
+
+'cyt_errbp' will have an update to work ggplot2 instead of base R plot. 
+
+## Minor Changes and Bug Fixes
+
+* 'cyt_splsda': Fixed an error occurring when only one variable is VIP > 1 leading to not being able to conduct sPLS-DA analysis. Now, the function checks whether the number of VIP > 1 variables is below 2, if that is true the sPLS-DA model of VIP > 1 is skipped. 
+
+* Fixed some grammatical and spelling issues in the README file. 
+
 
 # CytoProfile 0.1.2
 

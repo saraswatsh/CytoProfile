@@ -27,7 +27,7 @@ and multivariate analysis for advance analysis.
 ## Installation
 
 Before installation of the CytoProfile package, make sure to install
-BiocManager and mix0mics packages using:
+BiocManager and mixOmics packages using:
 
 ``` r
 ## install BiocManager
