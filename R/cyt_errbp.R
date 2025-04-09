@@ -1,217 +1,247 @@
-##############################################################################
-## Function to draw an error-bar plot enriched with p-value                  #
-## and/or effect size for the comparison of each of selected                 #
-## groups to the baseline group                                              #
-## Author: Xiaohua Douglas Zhang, January 2022                               #
-## Arguments:                                                                #
-##   data: a data frame containing the following columns for each group:     #
-##            "name" for group names                                         #
-##            "center" for mean or median,                                   #
-##            "spread" for standard deviation, MAD or standard error,        #
-##            "p.value" for p-value,                                         #
-##            "effect.size" for effect size based on SSMD                    #
-##            note: the first column of data must be for the baseline group  #
-##   pLab: whether to label the p-value                                      #
-##   esLab: whether to label the effect size usually in SSMD                 #
-## Output:                                                                   #
-##   None                                                                    #
-##############################################################################
-
 #' Error-bar Plot.
 #'
-#' This function draws an error-bar plot for comparing groups to a
-#' baseline group. It creates a barplot of the central tendency
-#' (mean or median) and overlays error bars representing the
-#' spread (e.g., standard deviation, MAD, or standard error).
-#' Optionally, p-value and effect size labels (based on SSMD) are added,
-#' either as symbols or numeric values.
+#' This function generates an error-bar plot to visually compare different
+#' groups against a designated baseline group. It displays the central
+#' tendency (mean or median) as a bar and overlays error bars to represent
+#' the data's spread (e.g., standard deviation, MAD, or standard error).
+#' The plot can also include p-value and effect size labels (based on SSMD),
+#' presented either as symbols or numeric values, to highlight significant
+#' differences and the magnitude of effects.
 #'
-#' @param data A data frame containing the following columns for each group:
-#'   \itemize{
-#'     \item \code{name}: Group names.
-#'     \item \code{center}: Mean or median values.
-#'     \item \code{spread}: Standard deviation, MAD, or standard error.
-#'     \item \code{p.value}: P-value for the comparison.
-#'     \item \code{effect.size}: Effect size based on SSMD.
+#' @param data A data frame containing the data for each group. It should
+#'   include at least one numeric column for the measurements and a column
+#'   specifying the group membership.
+#' @param group_col Character. The name of the column in `data` that
+#'   specifies the group membership.
+#' @param p_lab Logical. If `TRUE`, p-values are displayed on the plot.
+#'   Default is `FALSE`.
+#' @param es_lab Logical. If `TRUE`, effect sizes (SSMD) are displayed on
+#'   the plot. Default is `FALSE`.
+#' @param class_symbol Logical. If `TRUE`, significance and effect size are
+#'   represented using symbolic notation (e.g., *, **, >, <<). If `FALSE`,
+#'   numeric values are used. Default is `TRUE`.
+#' @param x_lab Character. Label for the x-axis. If not provided, defaults
+#'   to the name of the `group_col` or "Group" if `group_col` is `NULL`.
+#' @param y_lab Character. Label for the y-axis. If not provided, defaults
+#'   to "Value".
+#' @param title Character. Title of the plot. If not provided, a default
+#'   title is generated based on the measured variables.
+#' @param log2 Logical. If `TRUE`, a log2 transformation (with a +1 offset)
+#'   is applied to all numeric columns before analysis. Default is `FALSE`.
+#' @param output_file Character. The file path to save the plot as a PDF.
+#'   If `NULL`, the plot is displayed but not saved. Default is `NULL`.
+#'
+#' @return An error-bar plot (a `ggplot` object) is produced and optionally
+#'   saved as a PDF. If `output_file` is specified, the function returns
+#'   returns the `ggplot` object.
+#' 
+#' @details
+#'   The function performs the following steps:
+#'   \enumerate{
+#'     \item Optionally applies a log2 transformation to numeric data.
+#'     \item Determines the baseline group (the first level of `group_col`).
+#'     \item Calculates summary statistics (sample size, mean, standard
+#'           deviation) for each group and each numeric variable.
+#'     \item Performs t-tests to compare each group against the baseline
+#'           for each numeric variable.
+#'     \item Computes effect sizes (SSMD) for each group compared to the
+#'           baseline.
+#'     \item Generates a faceted error-bar plot, with one facet per
+#'           numeric variable.
+#'     \item Optionally adds p-value and effect size labels to the plot.
+#'     \item Optionally saves the plot as a PDF.
 #'   }
-#'   Note: The first row of \code{data} must correspond to the baseline group.
-#' @param p_lab Logical. Whether to label the p-values on the plot.
-#' Default is \code{TRUE}.
-#' @param es_lab Logical. Whether to label the effect sizes on the plot.
-#' Default is \code{TRUE}.
-#' @param class_symbol Logical. Whether to use symbolic notation for
-#' significance and effect size.
-#'   Default is \code{TRUE}.
-#' @param x_lab Character. Label for the x-axis.
-#' @param y_lab Character. Label for the y-axis.
-#' @param main Character. Title of the graph.
-#'
-#' @return An error-bar plot is produced.
-#'
+#' @import dplyr
+#' @importFrom tidyr pivot_longer
+#' @import ggplot2
 #' @export
 #' @examples
-#' # Load sample data
-#' data_df <- ExampleData1[,-c(3)]
-#' cyt_mat <- log2(data_df[, -c(1:2)])
-#' data_df1 <- data.frame(data_df[, 1:2], cyt_mat)
-#' cytokineNames <- colnames(cyt_mat)
-#' nCytokine <- length(cytokineNames)
-#' condt <- !is.na(cyt_mat) & (cyt_mat > 0)
-#' Cutoff <- min(cyt_mat[condt], na.rm = TRUE) / 10
-#' # Create matrices for ANOVA and Tukey results
-#' p_aov_mat <- matrix(NA, nrow = nCytokine, ncol = 3)
-#' dimnames(p_aov_mat) <- list(cytokineNames,
-#'                          c("Group", "Treatment", "Interaction"))
-#' p_groupComp_mat <- matrix(NA, nrow = nCytokine, ncol = 3)
-#' dimnames(p_groupComp_mat) <- list(cytokineNames,
-#'                                  c("2-1", "3-1", "3-2"))
-#' ssmd_groupComp_stm_mat <- mD_groupComp_stm_mat <- p_groupComp_stm_mat <-
-#' p_groupComp_mat
-#'
-#' for (i in 1:nCytokine) {
-#' Cytokine <- (cyt_mat[, i] + Cutoff)
-#' cytokine_aov <- aov(Cytokine ~ Group * Treatment, data = data_df)
-#' aov_table <- summary(cytokine_aov)[[1]]
-#' p_aov_mat[i, ] <- aov_table[1:3, 5]
-#' p_groupComp_mat[i, ] <- TukeyHSD(cytokine_aov)$Group[1:3, 4]
-#' p_groupComp_stm_mat[i, ] <- TukeyHSD(cytokine_aov)$`Group:Treatment`[1:3, 4]
-#' mD_groupComp_stm_mat[i, ] <- TukeyHSD(cytokine_aov)$`Group:Treatment`[1:3, 1]
-#' ssmd_groupComp_stm_mat[i, ] <- mD_groupComp_stm_mat[i, ] / sqrt(2 *
-#' aov_table["Residuals", "Mean Sq"])
-#' }
-#'
-#' results <- cyt_skku(ExampleData1[, -c(3)], print_res_log = TRUE,
-#'                  group_cols = c("Group", "Treatment"))
-#'
-#' oldpar <- par(no.readonly = TRUE)
-#' par(mfrow = c(2,3), mar = c(8.1, 4.1, 4.1, 2.1))
-#'
-#' for (k in 1:nCytokine) {
-#' result_mat <- results[1:9, , k]
-#' center_df <- data.frame(
-#'  name = rownames(result_mat),
-#'  result_mat[, c("center", "spread")],
-#'  p.value = c(1, p_groupComp_stm_mat[k, 1:2]),
-#'  effect.size = c(0, ssmd_groupComp_stm_mat[k, 1:2])
-#'  )
-#' cyt_errbp(center_df, p_lab = TRUE, es_lab = TRUE,
-#'          class_symbol = TRUE,
-#'          y_lab = "Concentration in log2 scale",
-#'          main = cytokineNames[k])
-#' }
-#' par(oldpar)
-#'
-cyt_errbp <- function(data, p_lab = TRUE, es_lab = TRUE, class_symbol = TRUE,
-                      x_lab = "", y_lab = "", main = "") {
-  # Significance mark function
-  significance_mark_fn <- function(p_value) {
-    ###########################################################################
-    ## function to mark the significant level based on p-value
-    ## Input:
-    ##   p_value: a vector of p-values
-    ## Author: Xiaohua Douglas Zhang, 2022
-    ## Reference:
-    ##   Zhang XHD, 2011. Optimal High-Throughput Screening: Practical
-    ##   Experimental Design and Data Analysis for Genome-scale RNAi Research.
-    ##   Cambridge University Press, Cambridge, UK
-    ###########################################################################
-    significance_class_vec <- rep(NA, length(p_value))
-    significance_class_vec[p_value <= 0.05 & p_value > 0.01] <- "*"
-    significance_class_vec[p_value <= 0.01 & p_value > 0.001] <- "**"
-    significance_class_vec[p_value <= 0.001 & p_value > 0.0001] <- "***"
-    significance_class_vec[p_value <= 0.0001 & p_value > 0.00001] <- "****"
-    significance_class_vec[p_value <= 0.00001] <- "*****"
-    if (sum(is.na(p_value)) > 0)
-      significance_class_vec[is.na(p_value)] <- NA
-    significance_class_vec
+#' data <- ExampleData1
+#' 
+#' cyt_errbp(data[,c("Group", "CCL.20.MIP.3A", "IL.10")], group_col = "Group", 
+#' p_lab = TRUE, es_lab = TRUE, class_symbol = TRUE, x_lab = "Cytokines", 
+#' y_lab = "Concentrations in log2 scale", log2 = TRUE)
+
+cyt_errbp <- function(data, group_col = NULL,
+  p_lab = FALSE, es_lab = FALSE,
+  class_symbol = TRUE,
+  x_lab = "", y_lab = "", title = "",
+  log2 = FALSE,
+  output_file = NULL) {
+
+if (missing(group_col) || is.null(group_col)) {
+    stop("The 'group_col' argument is required. Please provide the name of the column containing group information.", call. = FALSE)
+}
+if (!is.character(group_col) || length(group_col) != 1) {
+    stop("'group_col' must be a single character string naming a column in 'data'.", call. = FALSE)
+}
+if (!group_col %in% names(data)) {
+    stop(paste0("The specified group_col '", group_col, "' was not found in the data frame."), call. = FALSE)
   }
+  
+# If log2 transformation is requested, transform all numeric columns (or a subset if desired)
+if (log2) {
+numeric_cols <- sapply(data, is.numeric)
+data[numeric_cols] <- lapply(data[numeric_cols], function(x) log2(x))
+}
+  
+# Convert the specified group column to a factor
+data[[group_col]] <- factor(data[[group_col]])
+  
+# Identify all numeric columns, excluding the grouping column.
+num_vars <- names(data)[sapply(data, is.numeric) & names(data) != group_col]
+if (length(num_vars) == 0)
+stop("No numeric columns found in the data.")
+if (y_lab == "") y_lab <- "Value"
 
-  # Effect size mark function
-  effect_size_mark_fn <- function(ssmd) {
-    ##########################################################################
-    ## function to mark SSMD-based effect size being large or beyond
-    ## Input:
-    ##   ssmd: a vector of SSMD values
-    ## Author: Xiaohua Douglas Zhang, 2022
-    ## Reference:
-    ##   Zhang XHD, 2011. Optimal High-Throughput Screening: Practical
-    ##   Experimental Design and Data Analysis for Genome-scale RNAi Research.
-    ##   Cambridge University Press, Cambridge, UK
-    ##########################################################################
-    effect_class_vec <- rep(NA, length(ssmd))
-    effect_class_vec[ssmd >= 5] <- ">>>>>"
-    effect_class_vec[ssmd >= 3 & ssmd < 5] <- ">>>>"
-    effect_class_vec[ssmd >= 1.645 & ssmd < 3] <- ">>>"
-    effect_class_vec[ssmd >= 1 & ssmd < 1.645] <- ">>"
-    effect_class_vec[ssmd > 0.25 & ssmd < 1] <- ">"
-    effect_class_vec[ssmd < 0.25 & ssmd > -0.25] <- " "
-    effect_class_vec[ssmd <= -0.25 & ssmd > -1] <- "<"
-    effect_class_vec[ssmd <= -1 & ssmd > -1.645] <- "<<"
-    effect_class_vec[ssmd <= -1.645 & ssmd > -3] <- "<<<"
-    effect_class_vec[ssmd <= -3 & ssmd > -5] <- "<<<<"
-    effect_class_vec[ssmd <= -5] <- "<<<<<"
-    if (sum(is.na(ssmd)) > 0)
-      effect_class_vec[is.na(ssmd)] <- NA
-    effect_class_vec
-  }
+# Reshape the data into long format (one row per numeric measurement)
+long_df <- data %>%
+dplyr::select(dplyr::all_of(c(group_col, num_vars))) %>%
+tidyr::pivot_longer(cols = dplyr::all_of(num_vars),
+names_to = "Measure",
+values_to = "Value")
 
-  center <- data[, "center"]
-  names(center) <- data[, "name"]
-  spread <- data[, "spread"]
-  mid <- barplot(center, plot = FALSE)
-  p_value <- data[-1, "p.value"]
-  effect_size <- data[-1, "effect.size"]
+# Calculate summary statistics (sample size, mean, standard deviation) per group and per measure.
+metrics <- long_df %>%
+dplyr::group_by(.data[[group_col]], Measure) %>%
+dplyr::summarize(
+n = sum(!is.na(Value)),
+center = mean(Value, na.rm = TRUE),
+sd = sd(Value, na.rm = TRUE),
+.groups = "drop"
+) %>%
+dplyr::mutate(spread = sd / sqrt(n))
 
-  # Plot barplot
-  y_lim0 <- c(
-    min(0, min(center - spread)),
-    max(0, max(center + spread))
-  ) * 1.4
-  y_range <- diff(y_lim0)
-  y_lim <- range(c(y_lim0, center[-1] +
-                     sign(center[-1]) * (spread[-1] + y_range / 8)))
-  barplot(center, ylim = y_lim, las = 2, xlab = x_lab,
-          ylab = y_lab, main = main)
+# Determine the baseline group: using the first level of the grouping variable.
+group_levels <- levels(data[[group_col]])
+baseline <- group_levels[1]
 
-  # Add error bars
-  arrows(x0 = mid, y0 = center, x1 = mid, y1 = center +
-           sign(center) * spread, code = 3, angle = 90, length = 0.1)
+# Initialize columns for p-value and effect size.
+metrics <- metrics %>%
+dplyr::mutate(p.value = NA_real_,
+effect.size = NA_real_)
 
-  # Add text for p-value
-  if (p_lab) {
-    if (class_symbol) {
-      text(
-        x = mid[-1],
-        y = center[-1] + sign(center[-1]) * (spread[-1] + y_range / 20),
-        labels = significance_mark_fn(p_value), cex = 1
-      )
-    } else {
-      text(
-        x = mid[-1],
-        y = center[-1] + sign(center[-1]) * (spread[-1] + y_range / 20),
-        labels = paste("p=", ifelse(p_value > 0.001, round(p_value, 3),
-                                    formatC(p_value, format = "e",
-                                            digits = 1)), sep = ""),
-        cex = 0.75
-      )
-    }
-  }
 
-  # Add text for effect size
-  if (es_lab) {
-    if (class_symbol) {
-      text(
-        x = mid[-1],
-        y = center[-1] + sign(center[-1]) * (spread[-1] + y_range / 8),
-        labels = effect_size_mark_fn(effect_size), cex = 1
-      )
-    } else {
-      text(
-        x = mid[-1],
-        y = center[-1] + sign(center[-1]) * (spread[-1] + y_range / 8),
-        labels = paste("s=", round(effect_size, 3), sep = ""),
-        cex = 0.75
-      )
-    }
+# For each measure, perform a t-test comparing each group against the baseline and compute an effect size.
+unique_measures <- unique(metrics$Measure)
+for (m in unique_measures) {
+baseline_row <- metrics %>% dplyr::filter(Measure == m, .data[[group_col]] == baseline)
+if (nrow(baseline_row) == 0) next
+base_mean <- baseline_row$center
+base_sd <- baseline_row$sd
+base_n <- baseline_row$n
+
+# Get indices for non-baseline groups in the measure m.
+non_base_idx <- which(metrics$Measure == m & metrics[[group_col]] != baseline)
+for (i in non_base_idx) {
+current_group <- metrics[[group_col]][i]
+baseline_data <- long_df %>% 
+dplyr::filter(Measure == m, .data[[group_col]] == baseline) %>% 
+dplyr::pull(Value)
+grp_data <- long_df %>% 
+dplyr::filter(Measure == m, .data[[group_col]] == current_group) %>% 
+dplyr::pull(Value)
+
+tt <- t.test(grp_data, baseline_data)
+metrics$p.value[i] <- tt$p.value
+
+grp_mean <- metrics$center[i]
+grp_sd <- metrics$sd[i]
+grp_n <- metrics$n[i]
+pooled_sd <- sqrt(((base_n - 1) * base_sd^2 + (grp_n - 1) * grp_sd^2) / (base_n + grp_n - 2))
+d <- (grp_mean - base_mean) / pooled_sd
+metrics$effect.size[i] <- d
+}
+}
+
+# Create labels for p-values and effect sizes according to class_symbol.
+if (p_lab) {
+if (class_symbol) {
+significance_mark_fn <- function(p_value) {
+if (is.na(p_value)) return(NA_character_)
+if (p_value <= 0.00001) return("*****")
+if (p_value <= 0.0001)  return("****")
+if (p_value <= 0.001)   return("***")
+if (p_value <= 0.01)    return("**")
+if (p_value <= 0.05)    return("*")
+return("")
+}
+metrics <- metrics %>%
+dplyr::mutate(p_label = sapply(p.value, significance_mark_fn))
+} else {
+metrics <- metrics %>%
+dplyr::mutate(p_label = paste0("p=", ifelse(p.value > 0.001, round(p.value, 3),
+                   formatC(p.value, format = "e", digits = 1))))
+}
+}
+
+if (es_lab) {
+if (class_symbol) {
+effect_size_mark_fn <- function(es) {
+if (is.na(es)) return(NA_character_)
+if (es >= 5) return(">>>>>")
+if (es >= 3) return(">>>>")
+if (es >= 1.645) return(">>>")
+if (es >= 1) return(">>")
+if (es > 0.25) return(">")
+if (es >= -0.25) return(" ")
+if (es > -1) return("<")
+if (es > -1.645) return("<<")
+if (es > -3) return("<<<")
+if (es > -5) return("<<<<")
+return("<<<<<")
+}
+metrics <- metrics %>%
+dplyr::mutate(es_label = sapply(effect.size, effect_size_mark_fn))
+} else {
+metrics <- metrics %>%
+dplyr::mutate(es_label = round(effect.size, 3))
+}
+}
+
+# Compute a rough y-range to position annotations.
+y_range <- diff(range(metrics$center + metrics$spread, na.rm = TRUE))
+metrics <- metrics %>%
+  dplyr::mutate(
+    p_text_y = center + ifelse(center >= 0, spread + y_range/20, -spread - y_range/20),
+    es_text_y = center + ifelse(center >= 0, spread + y_range/4, -spread - y_range/4)  # increased from y_range/8 to y_range/6
+  )
+
+# Set default axis labels and title if not provided.
+if (x_lab == "") x_lab <- group_col
+if (title == "") title <- paste("Error Bar Plots for", paste(unique_measures, collapse = ", "))
+
+# Build the faceted ggplot (one facet per numeric measure).
+p <- ggplot2::ggplot(metrics, aes_string(x = group_col, y = "center")) +
+  ggplot2::geom_bar(stat = "identity", fill = "gray", width = 0.7) +
+  ggplot2::geom_errorbar(aes(ymin = center - spread, ymax = center + spread), width = 0.2) +
+  ggplot2::facet_wrap(~ Measure, scales = "free_y") +
+  ggplot2::labs(x = x_lab, y = y_lab, title = title) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Add text annotations if requested.
+if (p_lab) {
+p <- p + ggplot2::geom_text(
+  data = metrics %>% dplyr::filter(.data[[group_col]] != baseline),
+  aes_string(x = group_col, y = "p_text_y", label = "p_label"),
+  size = 4, vjust = 0
+  )
+}
+if (es_lab) {
+    p <- p + ggplot2::geom_text(
+    data = metrics %>% dplyr::filter(.data[[group_col]] != baseline),
+    ggplot2::aes_string(x = group_col, y = "es_text_y", label = "es_label"),
+    size = 4, vjust = 0
+    )
+}
+
+if (!is.null(output_file)) {
+    pdf(file = output_file, width = 7, height = 5)
+    print(p)
+    dev.off()
+  } else {
+    return(p)
   }
 }
+  

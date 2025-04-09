@@ -61,15 +61,15 @@ cyt_dualflashplot <- function(data, group_var, group1, group2, ssmd_thresh = 1,
                  values_to = "level")
 
   stats <- data_long %>%
-    group_by(cytokine, .data[[group_var]]) %>%
-    summarise(
+    dplyr::group_by(cytokine, .data[[group_var]]) %>%
+    dplyr::summarise(
       .groups = "drop",
       mean = mean(level, na.rm = TRUE),
       variance = var(level, na.rm = TRUE)
     ) %>%
     tidyr::pivot_wider(names_from = .data[[group_var]],
                 values_from = c(mean, variance)) %>%
-    mutate(
+    dplyr::mutate(
       ssmd = (get(paste0("mean_", group1)) - get(paste0("mean_", group2))) /
         sqrt((get(paste0("variance_", group1)) +
                 get(paste0("variance_", group2))) / 2),

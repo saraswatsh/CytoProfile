@@ -75,7 +75,7 @@ cyt_bp2 <- function(data, pdf_title,
         ggplot2::guides(fill = guide_legend(title = NULL))
 
       if (!is.null(y_lim)) {
-        p <- p + ylim(y_lim)
+        p <- p + ggplot2::ylim(y_lim)
       }
 
       print(p)

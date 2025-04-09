@@ -36,7 +36,10 @@ jobs:
       - name: Install XQuartz
         if: runner.os == 'macOS'
         run: brew install --cask xquartz
-
+      # Fixing issues with macOS installation
+      - name: Install dependencies with pak
+        if: exists('.github/pkg.lock')
+        run: Rscript -e 'pak::lockfile_install(".github/pkg.lock")'
       # Set up Xvfb on Linux (Ubuntu) to provide a virtual display
       - name: Set up virtual display (Linux)
         if: runner.os == 'Linux'

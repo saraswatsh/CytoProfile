@@ -153,7 +153,7 @@ cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
     group_factors <- seq_len(length(levels(factor(the_groups))))
 
     # Plot PCA individuals plot
-    plotIndiv(cytokine_pca,
+    mixOmics::plotIndiv(cytokine_pca,
       group = the_groups, ind.names = FALSE, legend = TRUE,
       col = colors, title = paste("PCA:", overall_analysis), ellipse = ellipse,
       pch = pch_values, pch.levels = group_factors,
