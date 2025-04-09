@@ -63,13 +63,6 @@ jobs:
           fi
           nohup Xvfb :99 -screen 0 1024x768x16 &
           echo "DISPLAY=:99.0" >> $GITHUB_ENV
-      - name: Install mixOmics
-        run: |
-          Rscript -e 'if (!requireNamespace("BiocManager", quietly=TRUE)) install.packages("BiocManager"); BiocManager::install("mixOmics", ask=FALSE)'
-
-      - name: Install via lockfile
-        run: |
-          Rscript -e 'pak::lockfile_install(".github/pkg.lock")'
       - uses: r-hub/actions/checkout@v1
       - uses: r-hub/actions/platform-info@v1
         with:

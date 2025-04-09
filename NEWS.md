@@ -8,6 +8,8 @@
 
 * 'cyt_splsda': Fixed an error occurring when only one variable is VIP > 1 leading to not being able to conduct sPLS-DA analysis. Now, the function checks whether the number of VIP > 1 variables is below 2, if that is true the sPLS-DA model of VIP > 1 is skipped. 
 
+* Fixed a small issue with 'verbose' argument of 'cyt_splsda' not working in overall analysis. 
+
 * Fixed some grammatical and spelling issues in the README file. 
 
 
