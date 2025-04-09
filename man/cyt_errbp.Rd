@@ -6,102 +6,85 @@
 \usage{
 cyt_errbp(
   data,
-  p_lab = TRUE,
-  es_lab = TRUE,
+  group_col = NULL,
+  p_lab = FALSE,
+  es_lab = FALSE,
   class_symbol = TRUE,
   x_lab = "",
   y_lab = "",
-  main = ""
+  title = "",
+  log2 = FALSE,
+  output_file = NULL
 )
 }
 \arguments{
-\item{data}{A data frame containing the following columns for each group:
-\itemize{
-\item \code{name}: Group names.
-\item \code{center}: Mean or median values.
-\item \code{spread}: Standard deviation, MAD, or standard error.
-\item \code{p.value}: P-value for the comparison.
-\item \code{effect.size}: Effect size based on SSMD.
-}
-Note: The first row of \code{data} must correspond to the baseline group.}
+\item{data}{A data frame containing the data for each group. It should
+include at least one numeric column for the measurements and a column
+specifying the group membership.}
 
-\item{p_lab}{Logical. Whether to label the p-values on the plot.
-Default is \code{TRUE}.}
+\item{group_col}{Character. The name of the column in \code{data} that
+specifies the group membership.}
 
-\item{es_lab}{Logical. Whether to label the effect sizes on the plot.
-Default is \code{TRUE}.}
+\item{p_lab}{Logical. If \code{TRUE}, p-values are displayed on the plot.
+Default is \code{FALSE}.}
 
-\item{class_symbol}{Logical. Whether to use symbolic notation for
-significance and effect size.
-Default is \code{TRUE}.}
+\item{es_lab}{Logical. If \code{TRUE}, effect sizes (SSMD) are displayed on
+the plot. Default is \code{FALSE}.}
 
-\item{x_lab}{Character. Label for the x-axis.}
+\item{class_symbol}{Logical. If \code{TRUE}, significance and effect size are
+represented using symbolic notation (e.g., *, **, >, <<). If \code{FALSE},
+numeric values are used. Default is \code{TRUE}.}
 
-\item{y_lab}{Character. Label for the y-axis.}
+\item{x_lab}{Character. Label for the x-axis. If not provided, defaults
+to the name of the \code{group_col} or "Group" if \code{group_col} is \code{NULL}.}
 
-\item{main}{Character. Title of the graph.}
+\item{y_lab}{Character. Label for the y-axis. If not provided, defaults
+to "Value".}
+
+\item{title}{Character. Title of the plot. If not provided, a default
+title is generated based on the measured variables.}
+
+\item{log2}{Logical. If \code{TRUE}, a log2 transformation (with a +1 offset)
+is applied to all numeric columns before analysis. Default is \code{FALSE}.}
+
+\item{output_file}{Character. The file path to save the plot as a PDF.
+If \code{NULL}, the plot is displayed but not saved. Default is \code{NULL}.}
 }
 \value{
-An error-bar plot is produced.
+An error-bar plot (a \code{ggplot} object) is produced and optionally
+saved as a PDF. If \code{output_file} is specified, the function returns
+returns the \code{ggplot} object.
 }
 \description{
-This function draws an error-bar plot for comparing groups to a
-baseline group. It creates a barplot of the central tendency
-(mean or median) and overlays error bars representing the
-spread (e.g., standard deviation, MAD, or standard error).
-Optionally, p-value and effect size labels (based on SSMD) are added,
-either as symbols or numeric values.
+This function generates an error-bar plot to visually compare different
+groups against a designated baseline group. It displays the central
+tendency (mean or median) as a bar and overlays error bars to represent
+the data's spread (e.g., standard deviation, MAD, or standard error).
+The plot can also include p-value and effect size labels (based on SSMD),
+presented either as symbols or numeric values, to highlight significant
+differences and the magnitude of effects.
+}
+\details{
+The function performs the following steps:
+\enumerate{
+\item Optionally applies a log2 transformation to numeric data.
+\item Determines the baseline group (the first level of \code{group_col}).
+\item Calculates summary statistics (sample size, mean, standard
+deviation) for each group and each numeric variable.
+\item Performs t-tests to compare each group against the baseline
+for each numeric variable.
+\item Computes effect sizes (SSMD) for each group compared to the
+baseline.
+\item Generates a faceted error-bar plot, with one facet per
+numeric variable.
+\item Optionally adds p-value and effect size labels to the plot.
+\item Optionally saves the plot as a PDF.
+}
 }
 \examples{
-# Load sample data
-data_df <- ExampleData1[,-c(3)]
-cyt_mat <- log2(data_df[, -c(1:2)])
-data_df1 <- data.frame(data_df[, 1:2], cyt_mat)
-cytokineNames <- colnames(cyt_mat)
-nCytokine <- length(cytokineNames)
-condt <- !is.na(cyt_mat) & (cyt_mat > 0)
-Cutoff <- min(cyt_mat[condt], na.rm = TRUE) / 10
-# Create matrices for ANOVA and Tukey results
-p_aov_mat <- matrix(NA, nrow = nCytokine, ncol = 3)
-dimnames(p_aov_mat) <- list(cytokineNames,
-                         c("Group", "Treatment", "Interaction"))
-p_groupComp_mat <- matrix(NA, nrow = nCytokine, ncol = 3)
-dimnames(p_groupComp_mat) <- list(cytokineNames,
-                                 c("2-1", "3-1", "3-2"))
-ssmd_groupComp_stm_mat <- mD_groupComp_stm_mat <- p_groupComp_stm_mat <-
-p_groupComp_mat
+data <- ExampleData1
 
-for (i in 1:nCytokine) {
-Cytokine <- (cyt_mat[, i] + Cutoff)
-cytokine_aov <- aov(Cytokine ~ Group * Treatment, data = data_df)
-aov_table <- summary(cytokine_aov)[[1]]
-p_aov_mat[i, ] <- aov_table[1:3, 5]
-p_groupComp_mat[i, ] <- TukeyHSD(cytokine_aov)$Group[1:3, 4]
-p_groupComp_stm_mat[i, ] <- TukeyHSD(cytokine_aov)$`Group:Treatment`[1:3, 4]
-mD_groupComp_stm_mat[i, ] <- TukeyHSD(cytokine_aov)$`Group:Treatment`[1:3, 1]
-ssmd_groupComp_stm_mat[i, ] <- mD_groupComp_stm_mat[i, ] / sqrt(2 *
-aov_table["Residuals", "Mean Sq"])
-}
-
-results <- cyt_skku(ExampleData1[, -c(3)], print_res_log = TRUE,
-                 group_cols = c("Group", "Treatment"))
-
-oldpar <- par(no.readonly = TRUE)
-par(mfrow = c(2,3), mar = c(8.1, 4.1, 4.1, 2.1))
-
-for (k in 1:nCytokine) {
-result_mat <- results[1:9, , k]
-center_df <- data.frame(
- name = rownames(result_mat),
- result_mat[, c("center", "spread")],
- p.value = c(1, p_groupComp_stm_mat[k, 1:2]),
- effect.size = c(0, ssmd_groupComp_stm_mat[k, 1:2])
- )
-cyt_errbp(center_df, p_lab = TRUE, es_lab = TRUE,
-         class_symbol = TRUE,
-         y_lab = "Concentration in log2 scale",
-         main = cytokineNames[k])
-}
-par(oldpar)
-
+cyt_errbp(data[,c("Group", "CCL.20.MIP.3A", "IL.10")], group_col = "Group", 
+p_lab = TRUE, es_lab = TRUE, class_symbol = TRUE, x_lab = "Cytokines", 
+y_lab = "Concentrations in log2 scale", log2 = TRUE)
 }

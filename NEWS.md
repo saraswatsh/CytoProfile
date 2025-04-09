@@ -2,7 +2,7 @@
 
 ## Major Changes
 
-'cyt_errbp' will have an update to work ggplot2 instead of base R plot. 
+* 'cyt_errbp' now uses 'ggplot2' with 'facet_wrap' to create multiple error-bar plots where the p-value and effect size labels are based on t-test comparisons between the groups. 
 
 ## Minor Changes and Bug Fixes
 

@@ -184,19 +184,19 @@ cyt_xgb <- function(data, group_col, train_fraction = 0.7,
                               color = "blue", linewidth = 1.5,
                               legacy.axes = TRUE
       ) +
-        geom_abline(linetype = "dashed", color = "red", linewidth = 1) +
-        labs(
+        ggplot2::geom_abline(linetype = "dashed", color = "red", linewidth = 1) +
+          ggplot2::labs(
           title = "ROC Curve (Test Set)",
           x = "1 - Specificity",
           y = "Sensitivity"
         ) +
-        annotate("text",
+          ggplot2::annotate("text",
                  x = 0.75, y = 0.25,
                  label = paste("AUC =", round(auc_value, 3)),
                  size = 5, color = "blue"
         ) +
-        theme_minimal() +
-        theme(
+          ggplot2::theme_minimal() +
+            ggplot2::theme(
           panel.background = element_rect(fill = "white", color = NA),
           plot.background  = element_rect(fill = "white", color = NA),
           panel.grid.major = element_line(color = "grey90"),
@@ -234,12 +234,12 @@ cyt_xgb <- function(data, group_col, train_fraction = 0.7,
     top_n = top_n_features
   )
   ggplot_imp <- ggplot_imp +
-    geom_bar(stat = "identity", fill = "red2", show.legend = FALSE) +
-    ggtitle("Top Features by Gain") +
-    ylab("Importance (Gain)") +
-    xlab("Features") +
-    theme_minimal() +
-    theme(
+    ggplot2::geom_bar(stat = "identity", fill = "red2", show.legend = FALSE) +
+      ggplot2::ggtitle("Top Features by Gain") +
+        ggplot2::ylab("Importance (Gain)") +
+          ggplot2::xlab("Features") +
+            ggplot2::theme_minimal() +
+              ggplot2::theme(
       legend.position = "none",
       panel.background = element_rect(fill = "white", colour = "white"),
       plot.background = element_rect(fill = "white", colour = "white"),
