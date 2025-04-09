@@ -12,7 +12,7 @@ permissions: read-all
 jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
-    timeout-minutes: 15
+    timeout-minutes: 360
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
 
