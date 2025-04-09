@@ -11,8 +11,6 @@ status](https://www.r-pkg.org/badges/version/CytoProfile)](https://CRAN.R-projec
 [![CRAN
 checks](https://badges.cranchecks.info/summary/CytoProfile.svg)](https://cran.r-project.org/web/checks/check_results_CytoProfile.html)
 [![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/CytoProfile)](https://cran.r-project.org/package=CytoProfile)
-[![License: GPL (\>=
-2)](https://img.shields.io/badge/license-GPL%20(%3E=%202)-blue.svg)](https://cran.r-project.org/web/licenses/GPL%20(%3E=%202))
 [![Last
 Commit](https://img.shields.io/github/last-commit/saraswatsh/CytoProfile.svg)](https://github.com/saraswatsh/CytoProfile/commits/main)
 <!-- badges: end -->

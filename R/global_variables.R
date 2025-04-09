@@ -5,6 +5,8 @@ if (getRversion() >= "4.3") {
     "Variable", "Gini", "Variables", "Error",
     "value", "transformation",
     "ErrorRate", "Distance", "metabo",
-    "significant", "label", "Value"
+    "significant", "label", "Value",
+    "Measure", "p.value", "effect.size",
+    "center", "spread"
   ))
 }

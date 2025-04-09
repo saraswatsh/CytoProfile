@@ -26,8 +26,7 @@ Imports:
     ggplot2,
     ggrepel, 
     gridExtra,
-    reshape2,
-    prodlim
+    reshape2
 Suggests:
     spelling, 
     BiocManager,
@@ -35,7 +34,8 @@ Suggests:
     knitr,
     rmarkdown,
     devtools,
-    Ckmeans.1d.dp
+    Ckmeans.1d.dp,
+    prodlim
 NeedsCompilation: no
 License: GPL (>= 2)
 LazyData: true
