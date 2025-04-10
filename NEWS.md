@@ -2,15 +2,19 @@
 
 ## Major Changes
 
+* 'cyt_splsda': Fixed an error occurring when only one variable has VIP > 1 leading to not being able to conduct sPLS-DA analysis. Now, the function checks whether the number of VIP > 1 variables is below 2, if that is true the sPLS-DA model of VIP > 1 is skipped. 
+
+* Fixed an issue with the 'verbose' argument of 'cyt_splsda' not working in overall analysis due to calling the wrong object.
+
 * 'cyt_errbp' now uses 'ggplot2' with 'facet_wrap' to create multiple error-bar plots where the p-value and effect size labels are based on t-test comparisons between the groups. 
 
 ## Minor Changes and Bug Fixes
 
-* 'cyt_splsda': Fixed an error occurring when only one variable has VIP > 1 leading to not being able to conduct sPLS-DA analysis. Now, the function checks whether the number of VIP > 1 variables is below 2, if that is true the sPLS-DA model of VIP > 1 is skipped. 
-
-* Fixed a small issue with 'verbose' argument of 'cyt_splsda' not working in overall analysis. 
+* 'cyt_errbp', 'cyt_bp', 'cyt_bp2', and 'cyt_skku' received a minor theme update keeping the background white in scenarios where it may appear transparent due to using 'theme_minimal()'. 
 
 * Fixed some grammatical and spelling issues in the README file. 
+
+* Vignette for the package now show plots generated that aren't saved to PDF files. A temporary directory is not created anymore.
 
 
 # CytoProfile 0.1.2

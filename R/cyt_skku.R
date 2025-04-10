@@ -180,12 +180,26 @@ cyt_skku <- function(data, group_cols = NULL, pdf_title = NULL,
     p_skew <- ggplot2::ggplot(df_skew, aes(x = value, fill = transformation)) +
       ggplot2::geom_histogram(bins = 30, alpha = 0.7, position = "identity") +
       ggplot2::labs(x = "Skewness", title = "Distribution of Skewness") +
-      ggplot2::theme_minimal()
+      ggplot2::theme_minimal()+
+      ggplot2::theme(
+          panel.background = element_rect(fill = "white", colour = "white"),
+          plot.background = element_rect(fill = "white", colour = "white"),
+          legend.background = element_rect(fill = "white", colour = "white"),
+          axis.title = element_text(color = "black", size = 12, face = "bold"),
+          legend.title = element_text(color = "black", size = 10, face = "bold"),
+          legend.text = element_text(color = "black"))
 
     p_kurt <- ggplot2::ggplot(df_kurt, aes(x = value, fill = transformation)) +
       ggplot2::geom_histogram(bins = 30, alpha = 0.7, position = "identity") +
       ggplot2::labs(x = "Kurtosis", title = "Distribution of Kurtosis") +
-      ggplot2::theme_minimal()
+      ggplot2::theme_minimal()+
+      ggplot2::theme(
+          panel.background = element_rect(fill = "white", colour = "white"),
+          plot.background = element_rect(fill = "white", colour = "white"),
+          legend.background = element_rect(fill = "white", colour = "white"),
+          axis.title = element_text(color = "black", size = 12, face = "bold"),
+          legend.title = element_text(color = "black", size = 10, face = "bold"),
+          legend.text = element_text(color = "black"))
 
     gridExtra::grid.arrange(p_skew, p_kurt, ncol = 1)
 

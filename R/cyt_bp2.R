@@ -71,7 +71,13 @@ cyt_bp2 <- function(data, pdf_title,
         ) +
         ggplot2::theme_minimal() +
         ggplot2::theme(legend.position = "bottom",
-              plot.title = element_text(hjust = 0.5)) +
+              plot.title = element_text(hjust = 0.5),
+              panel.background = element_rect(fill = "white", colour = "white"),
+              plot.background = element_rect(fill = "white", colour = "white"),
+              legend.background = element_rect(fill = "white", colour = "white"),
+              axis.title = element_text(color = "black", size = 12, face = "bold"),
+              legend.title = element_text(color = "black", size = 10, face = "bold"),
+              legend.text = element_text(color = "black")) +
         ggplot2::guides(fill = guide_legend(title = NULL))
 
       if (!is.null(y_lim)) {

@@ -218,7 +218,13 @@ p <- ggplot2::ggplot(metrics, aes_string(x = group_col, y = "center")) +
   ggplot2::facet_wrap(~ Measure, scales = "free_y") +
   ggplot2::labs(x = x_lab, y = y_lab, title = title) +
   ggplot2::theme_minimal() +
-  ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = 1),
+                panel.background = element_rect(fill = "white", colour = "white"),
+                plot.background = element_rect(fill = "white", colour = "white"),
+                legend.background = element_rect(fill = "white", colour = "white"),
+                axis.title = element_text(color = "black", size = 12, face = "bold"),
+                legend.title = element_text(color = "black", size = 10, face = "bold"),
+                legend.text = element_text(color = "black"))
 
 # Add text annotations if requested.
 if (p_lab) {

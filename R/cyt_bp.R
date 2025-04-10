@@ -63,7 +63,13 @@ cyt_bp <- function(data, pdf_title, bin_size = 25, y_lim = NULL, scale = NULL) {
       ggplot2::labs(title = "Boxplots for Variables:",
                     x = "Variable", y = "Value") +
       ggplot2::theme_minimal() +
-      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust = 1))
+      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust = 1),
+    panel.background = element_rect(fill = "white", colour = "white"),
+    plot.background = element_rect(fill = "white", colour = "white"),
+    legend.background = element_rect(fill = "white", colour = "white"),
+    axis.title = element_text(color = "black", size = 12, face = "bold"),
+    legend.title = element_text(color = "black", size = 10, face = "bold"),
+    legend.text = element_text(color = "black"))
 
     if (!is.null(y_lim)) {
       p <- p + ggplot2::coord_cartesian(ylim = y_lim)
