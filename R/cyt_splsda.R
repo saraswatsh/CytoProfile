@@ -324,6 +324,34 @@ cyt_splsda <- function(data, group_col = NULL, group_col2 = NULL, colors = NULL,
       if(verbose){
         warning("Only ", keep_x, " variable has VIP > 1. Skipping VIP > 1 PLS-DA Model.")
       }
+      if (conf_mat == TRUE) {
+        if (verbose) cat(paste0("Confusion Matrix for PLS-DA Comparison: ", overall_analysis, "\n"))
+  
+        # Confusion Matrix for main model
+        cm <- caret::confusionMatrix(
+          data = as.factor(prediction1[, 3]), # predicted
+          reference = as.factor(prediction1[, 1]) # actual
+        )
+        if(verbose){
+          print(cm$table)
+          cat("Accuracy:", signif(cm$overall["Accuracy"], 2), "\n")
+  
+          # Check if binary or multi-class
+          if (nlevels(as.factor(prediction1[, 1])) == 2) {
+            cat("Sensitivity:", signif(cm$byClass["Sensitivity"], 2), "\n")
+            cat("Specificity:", signif(cm$byClass["Specificity"], 2), "\n")
+          } else {
+            cat("\nPer-Class Sensitivity:\n")
+            print(signif(cm$byClass[, "Sensitivity"], 2))
+            cat("\nPer-Class Specificity:\n")
+            print(signif(cm$byClass[, "Specificity"], 2))
+            macro_sens <- mean(cm$byClass[, "Sensitivity"], na.rm = TRUE)
+            macro_spec <- mean(cm$byClass[, "Specificity"], na.rm = TRUE)
+            cat("\nMacro-Averaged Sensitivity:", signif(macro_sens, 2), "\n")
+            cat("Macro-Averaged Specificity:", signif(macro_spec, 2), "\n")
+          }
+        }
+      }
     }
     else{
         cytokine_splsda2 <- mixOmics::splsda(the_data_mat, the_groups,
