@@ -9,7 +9,7 @@ output: github_document
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "output/",
+  fig.path = "man/figures/readme-",
   out.width = "100%"
 )
 ```
@@ -48,7 +48,7 @@ You can install the development version of CytoProfile from [GitHub](https://git
 devtools::install_github("saraswatsh/CytoProfile")
 ```
 
-Install CytoProfile from CRAN with:
+Install CytoProfile from [CRAN](https://cloud.r-project.org/web/packages/CytoProfile/index.html) with:
 
 ``` r
 install.packages("CytoProfile")
@@ -58,7 +58,7 @@ See change log for the latest updates and changes at [News](NEWS.md)
 
 ## Example
 
-Below are examples of using the functions provided in CytoProfile. Any saved or generated files that are PDF or PNG format will be found at in the [Output Folder](https://github.com/saraswatsh/CytoProfile/tree/main/output).  
+Below are examples of using the functions provided in CytoProfile. Any saved or generated files that are PDF or PNG format will be found at in the [Figures Folder](https://github.com/saraswatsh/CytoProfile/tree/main/man/figures).  
 
 ## 1. Data Loading and set up
 

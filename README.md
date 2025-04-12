@@ -42,7 +42,9 @@ You can install the development version of CytoProfile from
 devtools::install_github("saraswatsh/CytoProfile")
 ```
 
-Install CytoProfile from CRAN with:
+Install CytoProfile from
+[CRAN](https://cloud.r-project.org/web/packages/CytoProfile/index.html)
+with:
 
 ``` r
 install.packages("CytoProfile")
@@ -54,8 +56,8 @@ See change log for the latest updates and changes at [News](NEWS.md)
 
 Below are examples of using the functions provided in CytoProfile. Any
 saved or generated files that are PDF or PNG format will be found at in
-the [Output
-Folder](https://github.com/saraswatsh/CytoProfile/tree/main/output).
+the [Figures
+Folder](https://github.com/saraswatsh/CytoProfile/tree/main/man/figures).
 
 ## 1. Data Loading and set up
 
@@ -105,7 +107,7 @@ cyt_bp(data_df[, -c(1:3)],
        pdf_title = NULL)  
 ```
 
-<img src="output/EDA1-1.png" width="100%" />
+<img src="man/figures/readme-EDA1-1.png" width="100%" />
 
 ``` r
 # Removing the first 3 columns to retain only continuous variables.
@@ -116,7 +118,7 @@ cyt_bp(data_df[, -c(1:3)],
        scale = "log2")  
 ```
 
-<img src="output/EDA1-2.png" width="100%" />
+<img src="man/figures/readme-EDA1-2.png" width="100%" />
 
 ``` r
 # Using log2 transformation for cytokine values.
@@ -134,7 +136,7 @@ cyt_bp2(data_df,
         scale = NULL)
 ```
 
-<img src="output/EDA2-1.png" width="100%" /><img src="output/EDA2-2.png" width="100%" />
+<img src="man/figures/readme-EDA2-1.png" width="100%" /><img src="man/figures/readme-EDA2-2.png" width="100%" />
 
 ``` r
 
@@ -144,7 +146,7 @@ cyt_bp2(data_df,
         scale = "log2")
 ```
 
-<img src="output/EDA2-3.png" width="100%" /><img src="output/EDA2-4.png" width="100%" />
+<img src="man/figures/readme-EDA2-3.png" width="100%" /><img src="man/figures/readme-EDA2-4.png" width="100%" />
 
 ## 3. Skewness and Kurtosis
 
@@ -156,7 +158,7 @@ cyt_skku(data_df[, -c(1:3)],
          group_cols = NULL)
 ```
 
-<img src="output/EDA3-1.png" width="100%" />
+<img src="man/figures/readme-EDA3-1.png" width="100%" />
 
 ``` r
 
@@ -166,7 +168,7 @@ cyt_skku(ExampleData1[, -c(2:3)],
          group_cols = c("Group"))
 ```
 
-<img src="output/EDA3-2.png" width="100%" />
+<img src="man/figures/readme-EDA3-2.png" width="100%" />
 
 ## 4. Error Bar Plots
 
@@ -179,7 +181,7 @@ cyt_errbp(data_df[,c("Group", "CCL.20.MIP.3A", "IL.10")], group_col = "Group", p
 es_lab = FALSE, class_symbol = FALSE, x_lab = "Cytokines", y_lab = "Concentrations in log2 scale", log2 = TRUE)
 ```
 
-<img src="output/EDA4-1.png" width="100%" />
+<img src="man/figures/readme-EDA4-1.png" width="100%" />
 
 ### Enriched Error Bar Plot with p-values and Effect Sizes
 
@@ -190,7 +192,7 @@ cyt_errbp(data_df[,c("Group", "CCL.20.MIP.3A", "IL.10")], group_col = "Group", p
 es_lab = TRUE, class_symbol = TRUE, x_lab = "Cytokines", y_lab = "Concentrations in log2 scale", log2 = TRUE)
 ```
 
-<img src="output/EDA5-1.png" width="100%" />
+<img src="man/figures/readme-EDA5-1.png" width="100%" />
 
 ## 5. Univariate Analysis
 
@@ -261,7 +263,7 @@ cyt_splsda(data_df,
            roc = TRUE)
 ```
 
-<img src="output/Multivariate1-1.png" width="50%" /><img src="output/Multivariate1-2.png" width="50%" /><img src="output/Multivariate1-3.png" width="50%" /><img src="output/Multivariate1-4.png" width="50%" /><img src="output/Multivariate1-5.png" width="50%" /><img src="output/Multivariate1-6.png" width="50%" /><img src="output/Multivariate1-7.png" width="50%" /><img src="output/Multivariate1-8.png" width="50%" /><img src="output/Multivariate1-9.png" width="50%" /><img src="output/Multivariate1-10.png" width="50%" /><img src="output/Multivariate1-11.png" width="50%" /><img src="output/Multivariate1-12.png" width="50%" />
+<img src="man/figures/readme-Multivariate1-1.png" width="50%" /><img src="man/figures/readme-Multivariate1-2.png" width="50%" /><img src="man/figures/readme-Multivariate1-3.png" width="50%" /><img src="man/figures/readme-Multivariate1-4.png" width="50%" /><img src="man/figures/readme-Multivariate1-5.png" width="50%" /><img src="man/figures/readme-Multivariate1-6.png" width="50%" /><img src="man/figures/readme-Multivariate1-7.png" width="50%" /><img src="man/figures/readme-Multivariate1-8.png" width="50%" /><img src="man/figures/readme-Multivariate1-9.png" width="50%" /><img src="man/figures/readme-Multivariate1-10.png" width="50%" /><img src="man/figures/readme-Multivariate1-11.png" width="50%" /><img src="man/figures/readme-Multivariate1-12.png" width="50%" />
 
 ## 7. Principal Component Analysis (PCA)
 
@@ -277,7 +279,7 @@ cyt_pca(data_df,
 #> [1] "Results based on log2 transformation:"
 ```
 
-<img src="output/Multivariate2-1.png" width="50%" /><img src="output/Multivariate2-2.png" width="50%" /><img src="output/Multivariate2-3.png" width="50%" /><img src="output/Multivariate2-4.png" width="50%" /><img src="output/Multivariate2-5.png" width="50%" /><img src="output/Multivariate2-6.png" width="50%" />
+<img src="man/figures/readme-Multivariate2-1.png" width="50%" /><img src="man/figures/readme-Multivariate2-2.png" width="50%" /><img src="man/figures/readme-Multivariate2-3.png" width="50%" /><img src="man/figures/readme-Multivariate2-4.png" width="50%" /><img src="man/figures/readme-Multivariate2-5.png" width="50%" /><img src="man/figures/readme-Multivariate2-6.png" width="50%" />
 
 ## 8. Volcano Plot
 
@@ -291,7 +293,7 @@ cyt_volc(data_df, group_col = "Group",
 #> $`T2D vs ND`
 ```
 
-<img src="output/EDA6-1.png" width="100%" />
+<img src="man/figures/readme-EDA6-1.png" width="100%" />
 
 ## 9. Heatmap
 
@@ -303,7 +305,7 @@ cyt_heatmap(data = data_df,
             title = NULL)
 ```
 
-<img src="output/EDA7-1.png" width="100%" />
+<img src="man/figures/readme-EDA7-1.png" width="100%" />
 
 ## 10. Dual Flashlight Plot
 
@@ -318,7 +320,7 @@ dfp <- cyt_dualflashplot(data_df, group_var = "Group",
 dfp
 ```
 
-<img src="output/EDA8-1.png" width="100%" />
+<img src="man/figures/readme-EDA8-1.png" width="100%" />
 
 ``` r
 # Print the table data used for plotting
@@ -373,7 +375,7 @@ cyt_xgb(data = data_df, group_col = "Group",
                        verbose = 0, plot_roc = TRUE, print_results = FALSE)
 ```
 
-<img src="output/ML1-1.png" width="100%" /><img src="output/ML1-2.png" width="100%" />
+<img src="man/figures/readme-ML1-1.png" width="100%" /><img src="man/figures/readme-ML1-2.png" width="100%" />
 
 ### Using Random Forest for classification
 
@@ -384,4 +386,4 @@ cyt_rf(data = data_df, group_col = "Group", k_folds = 5,
                      plot_roc = TRUE, verbose = FALSE)
 ```
 
-<img src="output/ML2-1.png" width="100%" /><img src="output/ML2-2.png" width="100%" /><img src="output/ML2-3.png" width="100%" />
+<img src="man/figures/readme-ML2-1.png" width="100%" /><img src="man/figures/readme-ML2-2.png" width="100%" /><img src="man/figures/readme-ML2-3.png" width="100%" />

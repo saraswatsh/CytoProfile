@@ -12,9 +12,10 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  out.width = "100%",
-  fig.show = "asis",
-  fig.keep = "all"
+  fig.show="hold", 
+  fig.pos = "h",
+  out.width  = "42%",       
+  fig.retina = 2           
 )
 ```
 
@@ -53,7 +54,7 @@ install.packages("CytoProfile")
 
 ## Example
 
-Below are examples of using the functions provided in CytoProfile. Any saved or generated files that are PDF or PNG format will be found at in the [Output Folder](https://github.com/saraswatsh/CytoProfile/tree/main/output). 
+Below are examples of using the functions provided in CytoProfile. Any saved or generated files that are PDF or PNG format will be found at in the [Figures Folder](https://github.com/saraswatsh/CytoProfile/tree/main/man/figures). 
 
 
 ## 1. Data Loading and set up
@@ -190,7 +191,7 @@ cyt_anova(data_df[, c(1:2, 5:6)], format_output = TRUE)
 
 ### Partial Least Squares Discriminant Analysis (PLS-DA) 
 
-```{r, Multivariate1, echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE, fig.show = "hold", out.width = "50%"}
+```{r, Multivariate1, echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE, fig.show = "hold", out.width = "25%"}
 # cyt_plsda function. 
 data <- ExampleData1[, -c(3)]
 data_df <- dplyr::filter(data, Group != "ND" & Treatment == "CD3/CD28")
@@ -204,16 +205,12 @@ cyt_splsda(data_df,
            roc = TRUE)
 ```
 
+
 ## 7. Principal Component Analysis (PCA)
 
-```{r, Multivariate2, echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE, fig.show = "hold", out.width = "50%"}
+```{r, Multivariate2, echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE,  fig.show = "hold", out.width = "25%"}
 data <- ExampleData1[, -c(3,23)]
 data_df <- dplyr::filter(data, Group != "ND" & Treatment != "Unstimulated")
-# cyt_pca(data_df, 
-#         pdf_title = file.path(path, "example_pca_analysis.pdf"), 
-#         colors = c("black", "red2"), scale = "log2", 
-#         comp_num = 3, pch_values = c(16, 4), 
-#         style = "3D", group_col = "Group", group_col2 = "Treatment")
 cyt_pca(data_df, 
         pdf_title = NULL, 
         colors = c("black", "red2"), scale = "log2", 
