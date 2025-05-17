@@ -156,7 +156,7 @@ cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
     mixOmics::plotIndiv(cytokine_pca,
       group = the_groups, ind.names = FALSE, legend = TRUE,
       col = colors, title = paste("PCA:", overall_analysis), ellipse = ellipse,
-      pch = pch_values, pch.levels = group_factors,
+      pch = pch_values,
       legend.title = group_col
     )
 
@@ -280,7 +280,7 @@ cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
       mixOmics::plotIndiv(cytokine_pca,
         group = the_groups, ind.names = FALSE, legend = TRUE,
         col = colors, title = paste("PCA:", title_sub),
-        ellipse = ellipse, pch = pch_values, pch.levels = group_factors,
+        ellipse = ellipse, pch = pch_values,
         legend.title = group_col
       )
 

@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# CytoProfile <a href="https://saraswatsh.github.io/CytoProfile/"><img src="man/figures/logo.png" align="right" height="150" alt="CytoProfile website" /></a>
+# CytoProfile <a href="https://cytoprofile.cytokineprofile.org/"><img src="man/figures/logo.png" align="right" height="150" alt="CytoProfile website" /></a>
 
 <!-- badges: start -->
 
@@ -43,8 +43,7 @@ devtools::install_github("saraswatsh/CytoProfile")
 ```
 
 Install CytoProfile from
-[CRAN](https://cloud.r-project.org/web/packages/CytoProfile/index.html)
-with:
+[CRAN](https://cran.r-project.org/package=CytoProfile) with:
 
 ``` r
 install.packages("CytoProfile")
@@ -64,30 +63,30 @@ Folder](https://github.com/saraswatsh/CytoProfile/tree/main/man/figures).
 ``` r
 # Loading all packages required
 # Data manipulation and reshaping
-library(dplyr)       # For data filtering, grouping, and summarising.
-library(tidyr)       # For reshaping data (e.g., pivot_longer, pivot_wider).
+library(dplyr) # For data filtering, grouping, and summarising.
+library(tidyr) # For reshaping data (e.g., pivot_longer, pivot_wider).
 
 # Plotting and visualization
-library(ggplot2)     # For creating all the ggplot-based visualizations.
-library(gridExtra)   # For arranging multiple plots on a single page.
-library(ggrepel)     # For improved label placement in plots (e.g., volcano plots).
-library(gplots)      # For heatmap.2, which is used to generate heatmaps.
-library(plot3D)      # For creating 3D scatter plots in PCA and sPLS-DA analyses.
-library(reshape2)    # For data transformation (e.g., melt) in cross-validation plots.
+library(ggplot2) # For creating all the ggplot-based visualizations.
+library(gridExtra) # For arranging multiple plots on a single page.
+library(ggrepel) # For improved label placement in plots (e.g., volcano plots).
+library(gplots) # For heatmap.2, which is used to generate heatmaps.
+library(plot3D) # For creating 3D scatter plots in PCA and sPLS-DA analyses.
+library(reshape2) # For data transformation (e.g., melt) in cross-validation plots.
 
 # Statistical analysis
-library(mixOmics)    # For multivariate analyses (PCA, sPLS-DA, etc.).
-library(e1071)       # For computing skewness and kurtosis.
-library(pROC)        # For ROC curve generation in machine learning model evaluation.
+library(mixOmics) # For multivariate analyses (PCA, sPLS-DA, etc.).
+library(e1071) # For computing skewness and kurtosis.
+library(pROC) # For ROC curve generation in machine learning model evaluation.
 
 # Machine learning
-library(xgboost)     # For building XGBoost classification models.
+library(xgboost) # For building XGBoost classification models.
 library(randomForest) # For building Random Forest classification models.
-library(caret)       # For cross-validation and other machine learning utilities.
+library(caret) # For cross-validation and other machine learning utilities.
 
 # Package development and document rendering
-library(knitr)       # For knitting RMarkdown files and setting chunk options.
-library(devtools)    # For installing the development version of the package from GitHub.
+library(knitr) # For knitting RMarkdown files and setting chunk options.
+library(devtools) # For installing the development version of the package from GitHub.
 
 # Load in the CytoProfile package
 library(CytoProfile)
@@ -103,8 +102,7 @@ data_df <- ExampleData1
 
 ``` r
 # Generating boxplots to check for outliers for raw values
-cyt_bp(data_df[, -c(1:3)], 
-       pdf_title = NULL)  
+cyt_bp(data_df[, -c(1:3)], pdf_title = NULL)
 ```
 
 <img src="man/figures/readme-EDA1-1.png" width="100%" />
@@ -113,9 +111,7 @@ cyt_bp(data_df[, -c(1:3)],
 # Removing the first 3 columns to retain only continuous variables.
 
 # Generating boxplots to check for outliers for log2 values
-cyt_bp(data_df[, -c(1:3)], 
-       pdf_title = NULL,
-       scale = "log2")  
+cyt_bp(data_df[, -c(1:3)], pdf_title = NULL, scale = "log2")
 ```
 
 <img src="man/figures/readme-EDA1-2.png" width="100%" />
@@ -131,9 +127,7 @@ data_df <- ExampleData1[, -c(3, 5:28)]
 data_df <- dplyr::filter(data_df, Group == "T2D", Treatment == "Unstimulated")
 
 # Raw values for group-specific boxplots
-cyt_bp2(data_df, 
-        pdf_title = NULL, 
-        scale = NULL)
+cyt_bp2(data_df, pdf_title = NULL, scale = NULL)
 ```
 
 <img src="man/figures/readme-EDA2-1.png" width="100%" /><img src="man/figures/readme-EDA2-2.png" width="100%" />
@@ -141,9 +135,7 @@ cyt_bp2(data_df,
 ``` r
 
 # Log2-transformed group-specific boxplots
-cyt_bp2(data_df, 
-        pdf_title = NULL, 
-        scale = "log2")
+cyt_bp2(data_df, pdf_title = NULL, scale = "log2")
 ```
 
 <img src="man/figures/readme-EDA2-3.png" width="100%" /><img src="man/figures/readme-EDA2-4.png" width="100%" />
@@ -153,9 +145,7 @@ cyt_bp2(data_df,
 ``` r
 data_df <- ExampleData1
 # Histogram of skewness and kurtosis for raw data
-cyt_skku(data_df[, -c(1:3)], 
-         pdf_title = NULL, 
-         group_cols = NULL)
+cyt_skku(data_df[, -c(1:3)], pdf_title = NULL, group_cols = NULL)
 ```
 
 <img src="man/figures/readme-EDA3-1.png" width="100%" />
@@ -163,9 +153,7 @@ cyt_skku(data_df[, -c(1:3)],
 ``` r
 
 # Histogram of skewness and kurtosis with grouping (e.g., "Group")
-cyt_skku(ExampleData1[, -c(2:3)], 
-         pdf_title = NULL, 
-         group_cols = c("Group"))
+cyt_skku(ExampleData1[, -c(2:3)], pdf_title = NULL, group_cols = c("Group"))
 ```
 
 <img src="man/figures/readme-EDA3-2.png" width="100%" />
@@ -177,8 +165,16 @@ cyt_skku(ExampleData1[, -c(2:3)],
 ``` r
 # Generating basic error bar plots
 data_df <- ExampleData1
-cyt_errbp(data_df[,c("Group", "CCL.20.MIP.3A", "IL.10")], group_col = "Group", p_lab = FALSE, 
-es_lab = FALSE, class_symbol = FALSE, x_lab = "Cytokines", y_lab = "Concentrations in log2 scale", log2 = TRUE)
+cyt_errbp(
+  data_df[, c("Group", "CCL.20.MIP.3A", "IL.10")],
+  group_col = "Group",
+  p_lab = FALSE,
+  es_lab = FALSE,
+  class_symbol = FALSE,
+  x_lab = "Cytokines",
+  y_lab = "Concentrations in log2 scale",
+  log2 = TRUE
+)
 ```
 
 <img src="man/figures/readme-EDA4-1.png" width="100%" />
@@ -186,10 +182,18 @@ es_lab = FALSE, class_symbol = FALSE, x_lab = "Cytokines", y_lab = "Concentratio
 ### Enriched Error Bar Plot with p-values and Effect Sizes
 
 ``` r
-# Generating Error Bar Plot enriched with p-value and effect size 
+# Generating Error Bar Plot enriched with p-value and effect size
 data_df <- ExampleData1
-cyt_errbp(data_df[,c("Group", "CCL.20.MIP.3A", "IL.10")], group_col = "Group", p_lab = TRUE, 
-es_lab = TRUE, class_symbol = TRUE, x_lab = "Cytokines", y_lab = "Concentrations in log2 scale", log2 = TRUE)
+cyt_errbp(
+  data_df[, c("Group", "CCL.20.MIP.3A", "IL.10")],
+  group_col = "Group",
+  p_lab = TRUE,
+  es_lab = TRUE,
+  class_symbol = TRUE,
+  x_lab = "Cytokines",
+  y_lab = "Concentrations in log2 scale",
+  log2 = TRUE
+)
 ```
 
 <img src="man/figures/readme-EDA5-1.png" width="100%" />
@@ -203,7 +207,12 @@ es_lab = TRUE, class_symbol = TRUE, x_lab = "Cytokines", y_lab = "Concentrations
 data_df <- ExampleData1[, -c(3)]
 data_df <- dplyr::filter(data_df, Group != "ND", Treatment != "Unstimulated")
 # Two sample T-test
-cyt_ttest(data_df[, c(1:2, 5:6)], scale = "log2", verbose = TRUE, format_output = TRUE)
+cyt_ttest(
+  data_df[, c(1:2, 5:6)],
+  scale = "log2",
+  verbose = TRUE,
+  format_output = TRUE
+)
 #>   Outcome Categorical      Comparison P_value
 #> 1   IFN.G       Group   PreT2D vs T2D  0.0208
 #> 2   IL.10       Group   PreT2D vs T2D  0.0248
@@ -250,17 +259,25 @@ cyt_anova(data_df[, c(1:2, 5:6)], format_output = TRUE)
 ### Partial Least Squares Discriminant Analysis (PLS-DA)
 
 ``` r
-# cyt_plsda function. 
+# cyt_plsda function.
 data <- ExampleData1[, -c(3)]
 data_df <- dplyr::filter(data, Group != "ND" & Treatment == "CD3/CD28")
-cyt_splsda(data_df, 
-           pdf_title = NULL, 
-           colors = c("black", "purple"),
-           bg = FALSE, scale = "log2", ellipse = TRUE,
-           conf_mat = FALSE, var_num = 25, 
-           cv_opt = "loocv", comp_num = 2, 
-           pch_values = c(16, 4), group_col = "Group", group_col2 = "Treatment", 
-           roc = TRUE)
+cyt_splsda(
+  data_df,
+  pdf_title = NULL,
+  colors = c("black", "purple"),
+  bg = FALSE,
+  scale = "log2",
+  ellipse = TRUE,
+  conf_mat = FALSE,
+  var_num = 25,
+  cv_opt = "loocv",
+  comp_num = 2,
+  pch_values = c(16, 4),
+  group_col = "Group",
+  group_col2 = "Treatment",
+  roc = TRUE
+)
 ```
 
 <img src="man/figures/readme-Multivariate1-1.png" width="50%" /><img src="man/figures/readme-Multivariate1-2.png" width="50%" /><img src="man/figures/readme-Multivariate1-3.png" width="50%" /><img src="man/figures/readme-Multivariate1-4.png" width="50%" /><img src="man/figures/readme-Multivariate1-5.png" width="50%" /><img src="man/figures/readme-Multivariate1-6.png" width="50%" /><img src="man/figures/readme-Multivariate1-7.png" width="50%" /><img src="man/figures/readme-Multivariate1-8.png" width="50%" /><img src="man/figures/readme-Multivariate1-9.png" width="50%" /><img src="man/figures/readme-Multivariate1-10.png" width="50%" /><img src="man/figures/readme-Multivariate1-11.png" width="50%" /><img src="man/figures/readme-Multivariate1-12.png" width="50%" />
@@ -268,14 +285,17 @@ cyt_splsda(data_df,
 ## 7. Principal Component Analysis (PCA)
 
 ``` r
-data <- ExampleData1[, -c(3,23)]
+data <- ExampleData1[, -c(3, 23)]
 data_df <- filter(data, Group != "ND" & Treatment != "Unstimulated")
-cyt_pca(data_df, 
-        pdf_title = NULL, 
-        colors = c("black", "red2"), 
-        scale = "log2", 
-        comp_num = 2, pch_values = c(16, 4), 
-        group_col = "Group")
+cyt_pca(
+  data_df,
+  pdf_title = NULL,
+  colors = c("black", "red2"),
+  scale = "log2",
+  comp_num = 2,
+  pch_values = c(16, 4),
+  group_col = "Group"
+)
 #> [1] "Results based on log2 transformation:"
 ```
 
@@ -286,10 +306,14 @@ cyt_pca(data_df,
 ``` r
 # Generating Volcano Plot
 data_df <- ExampleData1[, -c(2:3)]
-cyt_volc(data_df, group_col = "Group", 
-                      cond1 = "T2D", cond2 = "ND", 
-                      fold_change_thresh = 2.0, 
-                      top_labels = 15)
+cyt_volc(
+  data_df,
+  group_col = "Group",
+  cond1 = "T2D",
+  cond2 = "ND",
+  fold_change_thresh = 2.0,
+  top_labels = 15
+)
 #> $`T2D vs ND`
 ```
 
@@ -299,10 +323,12 @@ cyt_volc(data_df, group_col = "Group",
 
 ``` r
 # Generating Heat map
-cyt_heatmap(data = data_df,
-            scale = "log2",        # Optional scaling
-            annotation_col_name = "Group",
-            title = NULL)
+cyt_heatmap(
+  data = data_df,
+  scale = "log2", # Optional scaling
+  annotation_col_name = "Group",
+  title = NULL
+)
 ```
 
 <img src="man/figures/readme-EDA7-1.png" width="100%" />
@@ -312,10 +338,15 @@ cyt_heatmap(data = data_df,
 ``` r
 # Generating dual flashlights plot
 data_df <- ExampleData1[, -c(2:3)]
-dfp <- cyt_dualflashplot(data_df, group_var = "Group", 
-                         group1 = "T2D", group2 = "ND", 
-                         ssmd_thresh = -0.2, log2fc_thresh = 1, 
-                         top_labels = 10)
+dfp <- cyt_dualflashplot(
+  data_df,
+  group_var = "Group",
+  group1 = "T2D",
+  group2 = "ND",
+  ssmd_thresh = -0.2,
+  log2fc_thresh = 1,
+  top_labels = 10
+)
 # Print the plot
 dfp
 ```
@@ -324,7 +355,7 @@ dfp
 
 ``` r
 # Print the table data used for plotting
-print(dfp$data, n=25)
+print(dfp$data, n = 25)
 #> # A tibble: 25 × 11
 #>    cytokine         mean_ND mean_PreT2D   mean_T2D variance_ND variance_PreT2D
 #>    <chr>              <dbl>       <dbl>      <dbl>       <dbl>           <dbl>
@@ -368,11 +399,21 @@ data_df <- data.frame(data_df0[, 1:3], log2(data_df0[, -c(1:3)]))
 data_df <- data_df[, -c(2:3)]
 data_df <- dplyr::filter(data_df, Group != "ND")
 
-cyt_xgb(data = data_df, group_col = "Group",
-                       nrounds = 500, max_depth = 4, eta = 0.05,
-                       nfold = 5, cv = TRUE, eval_metric = "mlogloss",
-                       early_stopping_rounds = NULL, top_n_features = 10,
-                       verbose = 0, plot_roc = TRUE, print_results = FALSE)
+cyt_xgb(
+  data = data_df,
+  group_col = "Group",
+  nrounds = 500,
+  max_depth = 4,
+  eta = 0.05,
+  nfold = 5,
+  cv = TRUE,
+  eval_metric = "mlogloss",
+  early_stopping_rounds = NULL,
+  top_n_features = 10,
+  verbose = 0,
+  plot_roc = TRUE,
+  print_results = FALSE
+)
 ```
 
 <img src="man/figures/readme-ML1-1.png" width="100%" /><img src="man/figures/readme-ML1-2.png" width="100%" />
@@ -381,9 +422,16 @@ cyt_xgb(data = data_df, group_col = "Group",
 
 ``` r
 # Using Random Forest for classification
-cyt_rf(data = data_df, group_col = "Group", k_folds = 5,
-                     ntree = 1000, mtry = 4, run_rfcv = TRUE,
-                     plot_roc = TRUE, verbose = FALSE)
+cyt_rf(
+  data = data_df,
+  group_col = "Group",
+  k_folds = 5,
+  ntree = 1000,
+  mtry = 4,
+  run_rfcv = TRUE,
+  plot_roc = TRUE,
+  verbose = FALSE
+)
 ```
 
 <img src="man/figures/readme-ML2-1.png" width="100%" /><img src="man/figures/readme-ML2-2.png" width="100%" /><img src="man/figures/readme-ML2-3.png" width="100%" />

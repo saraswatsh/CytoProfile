@@ -1,0 +1,10 @@
+bibentry(
+  bibtype  = "Manual",
+  title    = "CytoProfile: Comprehensive Statistical Analysis of Cytokine Profiling Data",
+  author   =  c(
+    person("Shubh",  "Saraswat", email = "shubh.saraswat00@gmail.com", role = c("aut", "cre")),
+    person("Douglas", "Zhang",  role  = "aut")),
+  year     = "2025",
+  note     = "Package version 0.2.1",
+  url      = "https://cran.r-project.org/package=CytoProfile"
+)

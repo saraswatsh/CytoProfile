@@ -14,7 +14,7 @@ Provides comprehensive cytokine profiling analysis through quality control using
 Useful links:
 \itemize{
   \item \url{https://github.com/saraswatsh/CytoProfile}
-  \item \url{https://saraswatsh.github.io/CytoProfile/}
+  \item \url{https://cytoprofile.cytokineprofile.org/}
   \item Report bugs at \url{https://github.com/saraswatsh/CytoProfile/issues}
 }
 

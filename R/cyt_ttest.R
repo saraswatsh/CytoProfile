@@ -30,9 +30,14 @@
 #' cyt_ttest(data_df[, c(1, 2, 5:6)], scale = "log2", verbose = TRUE, format_output = TRUE)
 #' # Mann-Whitney U Test without transformation
 #' cyt_ttest(data_df[, c(1, 2, 5:6)], verbose = TRUE, format_output = FALSE)
-cyt_ttest <- function(data, scale = NULL, verbose = TRUE, format_output = FALSE) {
+cyt_ttest <- function(
+  data,
+  scale = NULL,
+  verbose = TRUE,
+  format_output = FALSE
+) {
   # Take input and store it as its own data frame
-  x1_df <- data
+  x1_df <- as.data.frame(data)
 
   # Convert any character variables to factors
   cat_vars <- sapply(x1_df, is.character)
@@ -67,52 +72,93 @@ cyt_ttest <- function(data, scale = NULL, verbose = TRUE, format_output = FALSE)
 
         # Check for sufficient data and variance in both groups
         if (length(group1) < 2 || length(group2) < 2) {
-          warning("Skipping test for ", outcome, " in ", cat_var, " due to insufficient data in one of the groups.")
+          warning(
+            "Skipping test for ",
+            outcome,
+            " in ",
+            cat_var,
+            " due to insufficient data in one of the groups."
+          )
           next
         } else if (sd(group1) == 0 || sd(group2) == 0) {
-          warning("Skipping test for ", outcome, " in ", cat_var, " due to low variance.")
+          warning(
+            "Skipping test for ",
+            outcome,
+            " in ",
+            cat_var,
+            " due to low variance."
+          )
           next
         }
 
         comparison_name <- paste(group_levels[1], "vs", group_levels[2])
         test_formula <- as.formula(paste(outcome, "~", cat_var))
 
-        # Conduct the appropriate test
-        if (!is.null(scale) && scale == "log2") {
-          test_result <- t.test(test_formula, data = x1_df)
-        } else if (is.null(scale)) {
-          test_result <- wilcox.test(test_formula, data = x1_df)
-        }
+        # normality check
+        p1 <- tryCatch(
+          stats::shapiro.test(group1)$p.value,
+          error = function(e) 0
+        )
+        p2 <- tryCatch(
+          stats::shapiro.test(group2)$p.value,
+          error = function(e) 0
+        )
 
+        # pick the test
+        if (p1 > 0.05 && p2 > 0.05) {
+          tt <- stats::t.test(
+            stats::as.formula(paste(outcome, "~", cat_var)),
+            data = x1_df
+          )
+        } else {
+          tt <- stats::wilcox.test(
+            stats::as.formula(paste(outcome, "~", cat_var)),
+            data = x1_df,
+            conf.int = TRUE
+          )
+        }
         # Store the p-value in the results list
-        result_key <- paste(outcome, cat_var, sep = "_")
-        test_results[[result_key]] <- round(test_result$p.value, 4)
+        key <- paste(outcome, cat_var, sep = "_")
+        test_results[[key]] <- tt
       }
     }
   }
-
+  if (length(test_results) == 0) {
+    return("No valid tests were performed.")
+  }
   # Return results in tidy format if requested, otherwise as a list
   if (!format_output && verbose) {
     return(test_results)
   }
+
   if (format_output && verbose) {
-    out_df <- data.frame(Outcome = character(),
-                         Categorical = character(),
-                         Comparison = character(),
-                         P_value = numeric(),
-                         stringsAsFactors = FALSE)
-    for (key in names(test_results)) {
-      parts <- unlist(strsplit(key, "_"))
-      outcome <- parts[1]
-      cat_var <- parts[2]
-      group_levels <- levels(x1_df[[cat_var]])
-      comp <- paste(group_levels[1], "vs", group_levels[2])
-      out_df <- rbind(out_df, data.frame(Outcome = outcome,
-                                         Categorical = cat_var,
-                                         Comparison = comp,
-                                         P_value = test_results[[key]],
-                                         stringsAsFactors = FALSE))
-    }
-    return(out_df)
+    out_df <- do.call(
+      rbind,
+      lapply(names(test_results), function(key) {
+        tt <- test_results[[key]]
+        parts <- strsplit(key, "_")[[1]]
+        outcome <- parts[1]
+        cat_var <- parts[2]
+        lvls <- levels(x1_df[[cat_var]])
+        comp <- paste(lvls[1], "vs", lvls[2])
+
+        est <- if (!is.null(tt$estimate)) unname(tt$estimate)[1] else NA_real_
+        stat <- if (!is.null(tt$statistic)) unname(tt$statistic)[1] else
+          NA_real_
+
+        data.frame(
+          Outcome = outcome,
+          Categorical = cat_var,
+          Comparison = comp,
+          Test = tt$method,
+          Estimate = round(est, 3),
+          Statistic = round(stat, 3),
+          P_value = round(tt$p.value, 3),
+          stringsAsFactors = FALSE
+        )
+      })
+    )
+    res <- list(results = out_df)
+    return(res)
   }
 }
