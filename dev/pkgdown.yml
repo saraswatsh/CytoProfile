@@ -3,7 +3,7 @@ pkgdown: 2.1.2
 pkgdown_sha: ~
 articles:
   getting_started: getting_started.html
-last_built: 2025-05-17T19:13Z
+last_built: 2025-05-17T20:55Z
 urls:
   reference: https://cytoprofile.cytokineprofile.org/reference
   article: https://cytoprofile.cytokineprofile.org/articles
