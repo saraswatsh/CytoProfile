@@ -1,4 +1,4 @@
-# CytoProfile 0.2.0.9000 (Development Version)
+# CytoProfile 0.2.1
 
 ## Major Changes
 
