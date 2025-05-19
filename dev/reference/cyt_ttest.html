@@ -105,8 +105,13 @@ If TRUE, returns a data frame in a tidy format.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data_df</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span>, <span class="va">Treatment</span> <span class="op">!=</span> <span class="st">"Unstimulated"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Two sample T-test with log2 transformation</span></span></span>
-<span class="r-in"><span><span class="fu">cyt_ttest</span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">5</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">]</span>, scale <span class="op">=</span> <span class="st">"log2"</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, format_output <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Test example</span></span></span>
+<span class="r-in"><span><span class="fu">cyt_ttest</span><span class="op">(</span></span></span>
+<span class="r-in"><span> <span class="va">data_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span> scale <span class="op">=</span> <span class="st">"log2"</span>,</span></span>
+<span class="r-in"><span> verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span> format_output <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $results</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Outcome Categorical      Comparison</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1   IFN.G       Group   PreT2D vs T2D</span>
@@ -118,64 +123,6 @@ If TRUE, returns a data frame in a tidy format.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2 Wilcoxon rank sum test with continuity correction   -0.956    1625.0   0.012</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3 Wilcoxon rank sum test with continuity correction    9.024    4132.5   0.000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4 Wilcoxon rank sum test with continuity correction    1.690    3091.0   0.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span><span class="co"># Mann-Whitney U Test without transformation</span></span></span>
-<span class="r-in"><span><span class="fu">cyt_ttest</span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">5</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">]</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, format_output <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $IFN.G_Group</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 	Wilcoxon rank sum test with continuity correction</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> data:  IFN.G by Group</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> W = 1599, p-value = 0.008462</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> alternative hypothesis: true location shift is not equal to 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 95 percent confidence interval:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  -14579.24997    -86.00006</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sample estimates:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> difference in location </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              -418.2805 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $IL.10_Group</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 	Wilcoxon rank sum test with continuity correction</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> data:  IL.10 by Group</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> W = 1625, p-value = 0.01191</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> alternative hypothesis: true location shift is not equal to 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 95 percent confidence interval:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  -960.31995  -91.81001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sample estimates:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> difference in location </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              -423.9743 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $IFN.G_Treatment</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 	Wilcoxon rank sum test with continuity correction</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> data:  IFN.G by Treatment</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> W = 4132.5, p-value &lt; 2.2e-16</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> alternative hypothesis: true location shift is not equal to 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 95 percent confidence interval:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  38008.33 71285.37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sample estimates:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> difference in location </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               46585.57 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $IL.10_Treatment</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 	Wilcoxon rank sum test with continuity correction</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> data:  IL.10 by Treatment</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> W = 3091, p-value = 3.278e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> alternative hypothesis: true location shift is not equal to 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 95 percent confidence interval:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   431.3601 1307.9299</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sample estimates:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> difference in location </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               879.2558 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>
