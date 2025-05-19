@@ -179,18 +179,16 @@ cyt_errbp(
 ### Two Sample T-test and Mann Whitney U Test
 
 ```{r, Univariate1,  echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE}
-# Performing Two Sample T-test and Mann Whitney U Test
+# Performing Test
 data_df <- ExampleData1[, -c(3)]
 data_df <- dplyr::filter(data_df, Group != "ND", Treatment != "Unstimulated")
-# Two sample T-test
+# Test example
 cyt_ttest(
   data_df[, c(1:2, 5:6)],
   scale = "log2",
   verbose = TRUE,
   format_output = TRUE
 )
-# Mann-Whitney U Test
-cyt_ttest(data_df[, c(1:2, 5:6)], verbose = TRUE)
 ```
 
 ### ANOVA Comparisons Test

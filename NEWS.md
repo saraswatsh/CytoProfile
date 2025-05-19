@@ -6,7 +6,8 @@
 
 ## Minor Changes and Bug Fixes
 
-* Updated 'cyt_pca' and 'cyt_splsda' to use the appropriate pch argument in plotIndiv(). 
+* Updated 'cyt_pca' and 'cyt_splsda' to use the appropriate pch argument in plotIndiv().
+* Updated 'cyt_ttest' examples.  
 * Updated citation formatting.
 * Changed links
 

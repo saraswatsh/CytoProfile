@@ -36,8 +36,11 @@ and returned.
 \examples{
 data_df <- ExampleData1[, -c(3)]
 data_df <- dplyr::filter(data_df, Group != "ND", Treatment != "Unstimulated")
-# Two sample T-test with log2 transformation
-cyt_ttest(data_df[, c(1, 2, 5:6)], scale = "log2", verbose = TRUE, format_output = TRUE)
-# Mann-Whitney U Test without transformation
-cyt_ttest(data_df[, c(1, 2, 5:6)], verbose = TRUE, format_output = FALSE)
+# Test example
+cyt_ttest(
+ data_df[, c(1:2, 5:6)],
+ scale = "log2",
+ verbose = TRUE,
+ format_output = TRUE
+)
 }

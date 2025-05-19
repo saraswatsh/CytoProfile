@@ -203,34 +203,27 @@ cyt_errbp(
 ### Two Sample T-test and Mann Whitney U Test
 
 ``` r
-# Performing Two Sample T-test and Mann Whitney U Test
+# Performing Test
 data_df <- ExampleData1[, -c(3)]
 data_df <- dplyr::filter(data_df, Group != "ND", Treatment != "Unstimulated")
-# Two sample T-test
+# Test example
 cyt_ttest(
   data_df[, c(1:2, 5:6)],
   scale = "log2",
   verbose = TRUE,
   format_output = TRUE
 )
-#>   Outcome Categorical      Comparison P_value
-#> 1   IFN.G       Group   PreT2D vs T2D  0.0208
-#> 2   IL.10       Group   PreT2D vs T2D  0.0248
-#> 3   IFN.G   Treatment CD3/CD28 vs LPS  0.0000
-#> 4   IL.10   Treatment CD3/CD28 vs LPS  0.0001
-# Mann-Whitney U Test
-cyt_ttest(data_df[, c(1:2, 5:6)], verbose = TRUE)
-#> $IFN.G_Group
-#> [1] 0.0085
-#> 
-#> $IL.10_Group
-#> [1] 0.0119
-#> 
-#> $IFN.G_Treatment
-#> [1] 0
-#> 
-#> $IL.10_Treatment
-#> [1] 0
+#> $results
+#>   Outcome Categorical      Comparison
+#> 1   IFN.G       Group   PreT2D vs T2D
+#> 2   IL.10       Group   PreT2D vs T2D
+#> 3   IFN.G   Treatment CD3/CD28 vs LPS
+#> 4   IL.10   Treatment CD3/CD28 vs LPS
+#>                                                Test Estimate Statistic P_value
+#> 1 Wilcoxon rank sum test with continuity correction   -2.463    1599.0   0.008
+#> 2 Wilcoxon rank sum test with continuity correction   -0.956    1625.0   0.012
+#> 3 Wilcoxon rank sum test with continuity correction    9.024    4132.5   0.000
+#> 4 Wilcoxon rank sum test with continuity correction    1.690    3091.0   0.000
 ```
 
 ### ANOVA Comparisons Test
