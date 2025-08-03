@@ -68,18 +68,28 @@
 #' )
 #'
 
-cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
-                    colors = NULL, pdf_title, ellipse = FALSE,
-                    comp_num = 2, scale = NULL, pch_values = NULL,
-                    style = NULL) {
+cyt_pca <- function(
+  data,
+  group_col = NULL,
+  group_col2 = NULL,
+  colors = NULL,
+  pdf_title,
+  ellipse = FALSE,
+  comp_num = 2,
+  scale = NULL,
+  pch_values = NULL,
+  style = NULL
+) {
   # If one factor is missing, use the provided column for both grouping
   # and treatment.
   if (!is.null(group_col) && is.null(group_col2)) {
     message("No second grouping column provided; performing overall analysis.")
     group_col2 <- group_col
   }
-  if(is.null(group_col) && !is.null(group_col2)) {
-    stop("No first grouping column provided; must provide the first grouping column.")
+  if (is.null(group_col) && !is.null(group_col2)) {
+    stop(
+      "No first grouping column provided; must provide the first grouping column."
+    )
   }
   if (is.null(group_col) && is.null(group_col2)) {
     stop("At least one grouping column must be provided.")
@@ -98,9 +108,9 @@ cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
       data[, unique(c(group_col, group_col2)), drop = FALSE],
       log2(data[, numeric_idx, drop = FALSE])
     )
-    print("Results based on log2 transformation:")
+    message("Results based on log2 transformation:")
   } else {
-    print("Results based on no transformation:")
+    message("Results based on no transformation:")
   }
 
   # Extract the grouping variable from your data (using group_col or group_col2)
@@ -116,9 +126,13 @@ cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
   if (is.null(pch_values)) {
     stop("Please enter a vector of pch values, e.g. c(16, 4).")
   } else if (length(pch_values) < length(unique(group_vec))) {
-    stop("Please ensure the number of pch values provided (", length(pch_values),
-         ") is at least equal to the number of unique groups (", length(unique(group_vec)),
-         ") from the grouping column.")
+    stop(
+      "Please ensure the number of pch values provided (",
+      length(pch_values),
+      ") is at least equal to the number of unique groups (",
+      length(unique(group_vec)),
+      ") from the grouping column."
+    )
   }
   # Generate a color palette if not provided (based on the
   # grouping variable levels)
@@ -127,7 +141,7 @@ cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
     colors <- rainbow(num_groups)
   }
 
-  if(!is.null(pdf_title)){
+  if (!is.null(pdf_title)) {
     pdf(file = pdf_title, width = 8.5, height = 8)
   }
 
@@ -141,38 +155,63 @@ cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
 
     the_groups <- as.vector(data[[group_col]])
     if (length(unique(the_groups)) < 2) {
-      stop("The grouping variable must have at least two levels for PCA.
-           Please provide an appropriate grouping column.")
+      stop(
+        "The grouping variable must have at least two levels for PCA.
+           Please provide an appropriate grouping column."
+      )
     }
 
-    cytokine_pca <- mixOmics::pca(the_data_df,
+    cytokine_pca <- mixOmics::pca(
+      the_data_df,
       ncomp = comp_num,
-      center = TRUE, scale = TRUE
+      center = TRUE,
+      scale = TRUE
     )
 
     group_factors <- seq_len(length(levels(factor(the_groups))))
 
     # Plot PCA individuals plot
-    mixOmics::plotIndiv(cytokine_pca,
-      group = the_groups, ind.names = FALSE, legend = TRUE,
-      col = colors, title = paste("PCA:", overall_analysis), ellipse = ellipse,
-      pch = pch_values,
+
+    plot_args <- list(
+      cytokine_pca,
+      ind.names = NA,
+      legend = TRUE,
+      group = the_groups,
+      col = colors,
+      pch = pch_values[group_factors],
+      title = paste("PCA:", overall_analysis),
       legend.title = group_col
     )
-
+    if (ellipse) {
+      plot_args$ellipse <- TRUE
+    }
+    overall_indiv_plot <- do.call(mixOmics::plotIndiv, plot_args)
     # 3D Plot if requested and exactly three components are used
     if (!is.null(style) && comp_num == 3 && (tolower(style) == "3d")) {
       cytokine_scores <- cytokine_pca$variates$X
-      plot3D::scatter3D(cytokine_scores[, 1], cytokine_scores[, 2],
-        cytokine_scores[, 3],
-        pch = pch_values, col = colors,
-        xlab = "PC1", ylab = "PC2", zlab = "PC3",
-        main = paste("3D Plot:", overall_analysis),
-        theta = 20, phi = 30, bty = "g", colkey = FALSE
-      )
+      overall_3D <- function() {
+        plot3D::scatter3D(
+          cytokine_scores[, 1],
+          cytokine_scores[, 2],
+          cytokine_scores[, 3],
+          pch = pch_values,
+          col = colors,
+          xlab = "Component 1",
+          ylab = "Component 2",
+          zlab = "Component 3",
+          main = paste("3D Plot:", overall_analysis),
+          theta = 20,
+          phi = 30,
+          bty = "g",
+          colkey = FALSE
+        )
+      }
+      overall_3D()
     } else if (!is.null(style)) {
-      stop("Please enter a valid style for 3D plot: '3d' or '3D' or
-           enter a valid number of components.")
+      stop(
+        "Please enter a valid style for 3D plot: '3d' or '3D' or
+           enter a valid number of components."
+      )
     }
 
     # Scree Plot
@@ -187,68 +226,122 @@ cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
     scree_plot <- ggplot2::ggplot(scree_data, aes(x = Component)) +
       ggplot2::geom_line(aes(y = Variance, color = "Individual"), size = 1) +
       ggplot2::geom_point(aes(y = Variance, color = "Individual"), size = 2) +
-      ggplot2::geom_line(aes(y = Cumulative, color = "Cumulative"),
-        size = 1, linetype = "dashed"
+      ggplot2::geom_line(
+        aes(y = Cumulative, color = "Cumulative"),
+        size = 1,
+        linetype = "dashed"
       ) +
       ggplot2::geom_point(aes(y = Cumulative, color = "Cumulative"), size = 2) +
-      ggplot2::scale_color_manual(values = c(
-        "Individual" = "blue",
-        "Cumulative" = "green"
-      )) +
+      ggplot2::scale_color_manual(
+        values = c(
+          "Individual" = "blue",
+          "Cumulative" = "green"
+        )
+      ) +
       ggplot2::labs(
         title = paste("Scree Plot:", overall_analysis),
         x = "Principal Components",
-        y = "Explained Variance", color = "Variance Type"
+        y = "Explained Variance",
+        color = "Variance Type"
       ) +
       ggplot2::theme_minimal() +
       ggplot2::scale_x_continuous(breaks = 1:comp_num) +
       ggplot2::geom_text(
-        aes(y = Variance, label = paste0(
-          round(Variance * 100, 1),
-          "%"
-        )),
-        vjust = -1.5, hjust = 0.5, size = 4
+        aes(
+          y = Variance,
+          label = paste0(
+            round(Variance * 100, 1),
+            "%"
+          )
+        ),
+        vjust = -1.5,
+        hjust = 0.5,
+        size = 4
       ) +
       ggplot2::geom_text(
-        aes(y = Cumulative, label = paste0(
-          round(Cumulative * 100, 1),
-          "%"
-        )),
-        vjust = 1.5, hjust = 0.5, size = 4
+        aes(
+          y = Cumulative,
+          label = paste0(
+            round(Cumulative * 100, 1),
+            "%"
+          )
+        ),
+        vjust = 1.5,
+        hjust = 0.5,
+        size = 4
       )
 
-    print(scree_plot)
+    invisible(print(scree_plot))
 
     # Plot loadings for each component
-    for (comp in 1:comp_num) {
-      mixOmics::plotLoadings(cytokine_pca,
-        comp = comp, size.names = 1, size.legend = 1, col = "grey",
-        legend.color = colors, title = paste(
-          "Loadings Component", comp, ":",
-          overall_analysis
-        ),
-        legend = TRUE
-      )
-    }
+    loadings_list <- setNames(
+      lapply(seq_len(comp_num), function(comp) {
+        force(comp) # capture comp in the closure
+        function() {
+          mixOmics::plotLoadings(
+            cytokine_pca,
+            comp = comp,
+            size.names = 1,
+            size.legend = 1,
+            col = "grey",
+            legend.color = colors,
+            title = paste(
+              "Loadings Component",
+              comp,
+              ":",
+              overall_analysis
+            ),
+            legend = TRUE
+          )
+        }
+      }),
+      nm = paste0("Comp", seq_len(comp_num))
+    )
+
+    invisible(lapply(loadings_list, function(plot_fn) plot_fn()))
 
     # Biplot for components 1 and 2
-    biplot_obj <- biplot(cytokine_pca,
-      comp = c(1, 2), group = the_groups, col.per.group = colors,
-      var.arrow.col = "blue", var.arrow.size = 0.5, var.arrow.length = 0.2,
-      var.names = TRUE, var.names.col = "blue", var.names.size = 3,
-      ind.names = FALSE, legend = TRUE, legend.title = "Group"
+    biplot_obj <- biplot(
+      cytokine_pca,
+      comp = c(1, 2),
+      group = the_groups,
+      col = colors,
+      var.arrow.col = "blue",
+      var.arrow.size = 0.5,
+      var.arrow.length = 0.2,
+      var.names = TRUE,
+      var.names.col = "blue",
+      var.names.size = 3,
+      ind.names = FALSE,
+      legend = TRUE,
+      legend.title = "Group"
     )
-    print(biplot_obj)
+
+    invisible(print(biplot_obj))
 
     # Correlation circle plot
-    mixOmics::plotVar(cytokine_pca,
-      comp = c(1, 2), var.names = TRUE, cex = 4, col = "black",
-      overlap = TRUE, title = paste(
-        "Correlation Circle Plot:",
-        overall_analysis
-      ),
-      style = "ggplot2"
+    corr_plot <- function() {
+      mixOmics::plotVar(
+        cytokine_pca,
+        comp = c(1, 2),
+        var.names = TRUE,
+        cex = 4,
+        col = "black",
+        overlap = TRUE,
+        title = paste("Correlation Circle Plot:", overall_analysis),
+        style = "ggplot2"
+      )
+    }
+    corr_plot()
+
+    result_list <- list(
+      overall_indiv_plot = overall_indiv_plot$graph,
+      loadings = loadings_list,
+      biplot = biplot_obj,
+      correlation_circle = corr_plot,
+      scree_plot = scree_plot
     )
+    invisible(result_list)
   } else {
     # Case 2: When grouping and treatment columns differ
     levels_vec <- unique(data[[group_col2]])
@@ -257,46 +350,76 @@ cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
       title_sub <- current_level
       condt <- data[[group_col2]] == current_level
 
-      the_data_df <- data[condt, !(names(data) %in% unique(c(
-        group_col,
-        group_col2
-      )))]
+      the_data_df <- data[
+        condt,
+        !(names(data) %in%
+          unique(c(
+            group_col,
+            group_col2
+          )))
+      ]
       the_data_df <- the_data_df[, sapply(the_data_df, is.numeric)]
       the_groups <- as.vector(data[condt, group_col])
 
       if (length(unique(the_groups)) < 2) {
-        stop("The grouping variable must have at least two levels for PCA.
-             Please provide an appropriate grouping column.")
+        stop(
+          "The grouping variable must have at least two levels for PCA.
+             Please provide an appropriate grouping column."
+        )
       }
 
-      cytokine_pca <- mixOmics::pca(the_data_df,
+      cytokine_pca <- mixOmics::pca(
+        the_data_df,
         ncomp = comp_num,
-        center = TRUE, scale = TRUE
+        center = TRUE,
+        scale = TRUE
       )
 
       group_factors <- seq_len(length(levels(factor(the_groups))))
 
       # PCA individuals plot for current treatment level
-      mixOmics::plotIndiv(cytokine_pca,
-        group = the_groups, ind.names = FALSE, legend = TRUE,
-        col = colors, title = paste("PCA:", title_sub),
-        ellipse = ellipse, pch = pch_values,
+
+      plot_args <- list(
+        cytokine_pca,
+        ind.names = NA,
+        legend = TRUE,
+        group = the_groups,
+        col = colors,
+        pch = pch_values[group_factors],
+        title = paste("PCA:", title_sub),
         legend.title = group_col
       )
+      if (ellipse) {
+        plot_args$ellipse <- TRUE
+      }
+      overall_indiv_plot <- do.call(mixOmics::plotIndiv, plot_args)
 
       # 3D Plot if applicable
       if (!is.null(style) && comp_num == 3 && (tolower(style) == "3d")) {
         cytokine_scores <- cytokine_pca$variates$X
-        plot3D::scatter3D(cytokine_scores[, 1], cytokine_scores[, 2],
-          cytokine_scores[, 3],
-          pch = pch_values, col = colors,
-          xlab = "PC1", ylab = "PC2", zlab = "PC3",
-          main = paste("3D Plot:", current_level),
-          theta = 20, phi = 30, bty = "g", colkey = FALSE
-        )
+        overall_3D <- function() {
+          plot3D::scatter3D(
+            cytokine_scores[, 1],
+            cytokine_scores[, 2],
+            cytokine_scores[, 3],
+            pch = pch_values,
+            col = colors,
+            xlab = "Component 1",
+            ylab = "Component 2",
+            zlab = "Component 3",
+            main = paste("3D Plot:", current_level),
+            theta = 20,
+            phi = 30,
+            bty = "g",
+            colkey = FALSE
+          )
+        }
+        overall_3D()
       } else if (!is.null(style)) {
-        stop("Please enter a valid style for 3D plot: '3d' or '3D' or
-             enter a valid number of components.")
+        stop(
+          "Please enter a valid style for 3D plot: '3d' or '3D' or
+             enter a valid number of components."
+        )
       }
 
       # Scree Plot for the current treatment level
@@ -311,72 +434,126 @@ cyt_pca <- function(data, group_col = NULL, group_col2 = NULL,
       scree_plot <- ggplot2::ggplot(scree_data, aes(x = Component)) +
         ggplot2::geom_line(aes(y = Variance, color = "Individual"), size = 1) +
         ggplot2::geom_point(aes(y = Variance, color = "Individual"), size = 2) +
-        ggplot2::geom_line(aes(y = Cumulative, color = "Cumulative"),
-          size = 1, linetype = "dashed"
+        ggplot2::geom_line(
+          aes(y = Cumulative, color = "Cumulative"),
+          size = 1,
+          linetype = "dashed"
         ) +
-        ggplot2::geom_point(aes(y = Cumulative, color = "Cumulative"), size = 2) +
-        ggplot2::scale_color_manual(values = c(
-          "Individual" = "blue",
-          "Cumulative" = "green"
-        )) +
+        ggplot2::geom_point(
+          aes(y = Cumulative, color = "Cumulative"),
+          size = 2
+        ) +
+        ggplot2::scale_color_manual(
+          values = c(
+            "Individual" = "blue",
+            "Cumulative" = "green"
+          )
+        ) +
         ggplot2::labs(
           title = paste("Scree Plot:", current_level),
-          x = "Principal Components", y = "Explained Variance",
+          x = "Principal Components",
+          y = "Explained Variance",
           color = "Variance Type"
         ) +
         ggplot2::theme_minimal() +
         ggplot2::scale_x_continuous(breaks = 1:comp_num) +
         ggplot2::geom_text(
-          aes(y = Variance, label = paste0(
-            round(Variance * 100, 1),
-            "%"
-          )),
-          vjust = -1.5, hjust = 0.5, size = 4
+          aes(
+            y = Variance,
+            label = paste0(
+              round(Variance * 100, 1),
+              "%"
+            )
+          ),
+          vjust = -1.5,
+          hjust = 0.5,
+          size = 4
         ) +
         ggplot2::geom_text(
-          aes(y = Cumulative, label = paste0(
-            round(Cumulative * 100, 1),
-            "%"
-          )),
-          vjust = 1.5, hjust = 0.5, size = 4
+          aes(
+            y = Cumulative,
+            label = paste0(
+              round(Cumulative * 100, 1),
+              "%"
+            )
+          ),
+          vjust = 1.5,
+          hjust = 0.5,
+          size = 4
         )
 
-      print(scree_plot)
+      invisible(print(scree_plot))
 
       # Plot loadings for each component
-      for (comp in 1:comp_num) {
-        mixOmics::plotLoadings(cytokine_pca,
-          comp = comp, size.names = 1, size.legend = 1, col = "grey",
-          legend.color = colors, title = paste(
-            "Loadings Component", comp, ":",
-            current_level
-          ),
-          legend = TRUE
-        )
-      }
+      loadings_list <- setNames(
+        lapply(seq_len(comp_num), function(comp) {
+          force(comp) # capture comp in the closure
+          function() {
+            mixOmics::plotLoadings(
+              cytokine_pca,
+              comp = comp,
+              size.names = 1,
+              size.legend = 1,
+              col = "grey",
+              legend.color = colors,
+              title = paste(
+                "Loadings Component",
+                comp,
+                ":",
+                current_level
+              ),
+              legend = TRUE
+            )
+          }
+        }),
+        nm = paste0("Comp", seq_len(comp_num))
+      )
+
+      invisible(lapply(loadings_list, function(plot_fn) plot_fn()))
 
       # Biplot for components 1 and 2
-      biplot_obj <- biplot(cytokine_pca,
-        comp = c(1, 2), group = the_groups, col.per.group = colors,
-        var.arrow.col = "blue", var.arrow.size = 0.5, var.arrow.length = 0.2,
-        var.names = TRUE, var.names.col = "blue", var.names.size = 3,
-        ind.names = FALSE, legend = TRUE, legend.title = "Group"
+      biplot_obj <- biplot(
+        cytokine_pca,
+        comp = c(1, 2),
+        group = the_groups,
+        col = colors,
+        var.arrow.col = "blue",
+        var.arrow.size = 0.5,
+        var.arrow.length = 0.2,
+        var.names = TRUE,
+        var.names.col = "blue",
+        var.names.size = 3,
+        ind.names = FALSE,
+        legend = TRUE,
+        legend.title = "Group"
       )
-      print(biplot_obj)
+      invisible(print(biplot_obj))
 
       # Correlation circle plot
-      mixOmics::plotVar(cytokine_pca,
-        comp = c(1, 2), var.names = TRUE, cex = 4, col = "black",
-        overlap = TRUE, title = paste(
-          "Correlation Circle Plot:",
-          current_level
-        ),
-        style = "ggplot2"
-      )
+      corr_plot <- function() {
+        mixOmics::plotVar(
+          cytokine_pca,
+          comp = c(1, 2),
+          var.names = TRUE,
+          cex = 4,
+          col = "black",
+          overlap = TRUE,
+          title = paste("Correlation Circle Plot:", current_level),
+          style = "ggplot2"
+        )
+      }
+      corr_plot()
     }
+    result_list <- list(
+      overall_indiv_plot = overall_indiv_plot,
+      loadings = loadings_list,
+      biplot = biplot_obj,
+      correlation_circle = corr_plot,
+      scree_plot = scree_plot
+    )
+    invisible(result_list)
   }
-  if(!is.null(pdf_title)){
+  if (!is.null(pdf_title)) {
     if (dev.cur() > 1) dev.off()
   }
 }
-

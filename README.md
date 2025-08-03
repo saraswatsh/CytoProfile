@@ -275,7 +275,7 @@ cyt_splsda(
 
 <img src="man/figures/readme-Multivariate1-1.png" width="50%" /><img src="man/figures/readme-Multivariate1-2.png" width="50%" /><img src="man/figures/readme-Multivariate1-3.png" width="50%" /><img src="man/figures/readme-Multivariate1-4.png" width="50%" /><img src="man/figures/readme-Multivariate1-5.png" width="50%" /><img src="man/figures/readme-Multivariate1-6.png" width="50%" /><img src="man/figures/readme-Multivariate1-7.png" width="50%" /><img src="man/figures/readme-Multivariate1-8.png" width="50%" /><img src="man/figures/readme-Multivariate1-9.png" width="50%" /><img src="man/figures/readme-Multivariate1-10.png" width="50%" /><img src="man/figures/readme-Multivariate1-11.png" width="50%" /><img src="man/figures/readme-Multivariate1-12.png" width="50%" />
 
-## 7. Principal Component Analysis (PCA)
+### Principal Component Analysis (PCA)
 
 ``` r
 data <- ExampleData1[, -c(3, 23)]
@@ -289,12 +289,13 @@ cyt_pca(
   pch_values = c(16, 4),
   group_col = "Group"
 )
-#> [1] "Results based on log2 transformation:"
 ```
 
 <img src="man/figures/readme-Multivariate2-1.png" width="50%" /><img src="man/figures/readme-Multivariate2-2.png" width="50%" /><img src="man/figures/readme-Multivariate2-3.png" width="50%" /><img src="man/figures/readme-Multivariate2-4.png" width="50%" /><img src="man/figures/readme-Multivariate2-5.png" width="50%" /><img src="man/figures/readme-Multivariate2-6.png" width="50%" />
 
-## 8. Volcano Plot
+## 7. Statistical Visualizations
+
+### Volcano Plot
 
 ``` r
 # Generating Volcano Plot
@@ -312,7 +313,7 @@ cyt_volc(
 
 <img src="man/figures/readme-EDA6-1.png" width="100%" />
 
-## 9. Heatmap
+### Heatmap
 
 ``` r
 # Generating Heat map
@@ -326,7 +327,7 @@ cyt_heatmap(
 
 <img src="man/figures/readme-EDA7-1.png" width="100%" />
 
-## 10. Dual Flashlight Plot
+### Dual Flashlight Plot
 
 ``` r
 # Generating dual flashlights plot
@@ -381,7 +382,7 @@ print(dfp$data, n = 25)
 #> #   SSMD_Category <chr>, Significant <lgl>
 ```
 
-## 11. Machine Learning Models
+## 8. Machine Learning Models
 
 ### Using XGBoost for classification
 

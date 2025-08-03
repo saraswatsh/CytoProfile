@@ -203,7 +203,7 @@ cyt_anova(data_df[, c(1:2, 5:6)], format_output = TRUE)
 
 ### Partial Least Squares Discriminant Analysis (PLS-DA) 
 
-```{r, Multivariate1, echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE, fig.show = "hold", out.width = "50%"}
+```{r, Multivariate1, echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE, fig.show = "hold", out.width = "50%", fig.ncol = 2}
 # cyt_plsda function.
 data <- ExampleData1[, -c(3)]
 data_df <- dplyr::filter(data, Group != "ND" & Treatment == "CD3/CD28")
@@ -225,9 +225,9 @@ cyt_splsda(
 )
 ```
 
-## 7. Principal Component Analysis (PCA)
+### Principal Component Analysis (PCA)
 
-```{r, Multivariate2, echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE, fig.show = "hold", out.width = "50%"}
+```{r, Multivariate2, echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE, fig.show = "hold", out.width = "50%", fig.ncol = 2}
 data <- ExampleData1[, -c(3, 23)]
 data_df <- filter(data, Group != "ND" & Treatment != "Unstimulated")
 cyt_pca(
@@ -241,7 +241,9 @@ cyt_pca(
 )
 ```
 
-## 8. Volcano Plot
+## 7. Statistical Visualizations
+
+### Volcano Plot
 
 ```{r, EDA6, echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE}
 # Generating Volcano Plot
@@ -256,7 +258,7 @@ cyt_volc(
 )
 ```
 
-## 9. Heatmap
+### Heatmap
 
 ```{r,EDA7, echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE}
 # Generating Heat map
@@ -268,7 +270,7 @@ cyt_heatmap(
 )
 ```
 
-## 10. Dual Flashlight Plot
+### Dual Flashlight Plot
 
 ```{r,EDA8, echo=TRUE, warning=FALSE, message=FALSE, cache=TRUE}
 # Generating dual flashlights plot
@@ -288,7 +290,7 @@ dfp
 print(dfp$data, n = 25)
 ```
 
-## 11. Machine Learning Models
+## 8. Machine Learning Models
 
 ### Using XGBoost for classification
 

@@ -1,3 +1,19 @@
+# CytoProfile (development version)
+
+## Major Changes
+
+* 'cyt_mint_splsda', a new function for conducting multivariate integrative analysis using sparse partial least squares discriminant analysis (sPLS-DA) with multiple datasets, has been added.
+
+* 'cyt_splsda' now has a new argument 'batch_col' to specify a batch column for batch correction in the sPLS-DA analysis using a Z-score method.
+
+* Added new "ExampleData5" dataset which is the same as "ExampleData1" but with a batch column for demonstration of the 'batch_col' argument in 'cyt_mint_splsda'.
+
+## Minor Changes and Bug Fixes
+
+* Updated the vignette and README files to include examples of the new 'cyt_mint_splsda' function.
+
+* Updated 'cyt_splsda' and 'cyt_pca' 
+
 # CytoProfile 0.2.1
 
 ## Major Changes

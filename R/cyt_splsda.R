@@ -9,6 +9,13 @@
 #'   be performed.
 #' @param group_col2 A string specifying the second grouping column. Default is
 #'   \code{NULL}.
+#' @param multilevel_col A string specifying the column name that identifies
+#'   repeated measurements (e.g., patient or sample IDs). If provided, a
+#'   multilevel analysis will be performed. Default is \code{NULL}.
+#' @param batch_col A string specifying the column that identifies the batch or study for each sample.
+#' @param ind_names  If \code{TRUE}, the row names of the first (or second) data matrix is used as names
+#'   If 'pch' is set this will overwrite the names as shapes. Default is FALSE. See ?mixOmics::plotIndiv for
+#'   details.
 #' @param colors A vector of colors for the groups or treatments. If
 #'   \code{NULL}, a random palette (using \code{rainbow}) is generated based on
 #'   the number of groups.
@@ -59,9 +66,8 @@
 #'   based on VIP scores greater than 1. ROC curves and confusion matrices are also
 #'   produced if requested.
 #' @details
-#' When \code{verbose} is set to \code{TRUE}, additional diagnostic plots (e.g., VIP plots, ROC Plots, Cross-Validation Plots)
-#' are printed to the console. These plots provide extra insight into the model's performance
-#' but can be suppressed by keeping \code{verbose = FALSE}.
+#' When \code{verbose} is set to \code{TRUE}, additional information about the analysis and confusion matrices
+#' are printed to the console. These can be suppressed by keeping \code{verbose = FALSE}.
 #'
 #' @examples
 #' # Loading Sample Data
@@ -85,6 +91,9 @@ cyt_splsda <- function(
   data,
   group_col = NULL,
   group_col2 = NULL,
+  multilevel_col = NULL,
+  batch_col = NULL,
+  ind_names = FALSE,
   colors = NULL,
   pdf_title,
   ellipse = FALSE,
@@ -104,8 +113,9 @@ cyt_splsda <- function(
   # If one factor is missing, use the provided column for
   # both grouping and treatment.
   if (!is.null(group_col) && is.null(group_col2)) {
-    if (verbose)
+    if (verbose) {
       cat("No second grouping column provided; performing overall analysis.\n")
+    }
     group_col2 <- group_col
   }
   if (is.null(group_col) && !is.null(group_col2)) {
@@ -116,18 +126,40 @@ cyt_splsda <- function(
   if (is.null(group_col) && is.null(group_col2)) {
     stop("At least one grouping column must be provided.")
   }
+  # Identify columns given by user
+  id_cols <- c(group_col, group_col2, multilevel_col, batch_col)
+  id_cols <- id_cols[!is.na(id_cols) & id_cols %in% names(data)]
 
   # Optionally apply log2 transformation
   if (!is.null(scale) && scale == "log2") {
     data <- data.frame(
-      data[, c(group_col, group_col2)],
-      log2(data[, !(names(data) %in% c(group_col, group_col2))])
+      data[, id_cols, drop = FALSE],
+      log2(data[, !(names(data) %in% id_cols), drop = FALSE])
     )
-    if (verbose) cat("Results based on log2 transformation:\n")
-  } else if (is.null(scale)) {
-    if (verbose) cat("Results based on no transformation:\n")
+    if (verbose) message("Applied log2 transformation.\n")
+  } else if (is.null(scale) && verbose) {
+    message("No data transformation applied.\n")
   }
-
+  if (!is.null(batch_col)) {
+    if (!(batch_col %in% names(data))) {
+      stop(sprintf("Batch column '%s' not found in your data.", batch_col))
+    }
+    if (verbose) {
+      message(
+        "Applying per-batch z-score normalization on numeric predictors.\n"
+      )
+    }
+    # Identify which columns are “ID” columns to skip
+    id_cols2 <- unique(c(id_cols, batch_col))
+    # Perform z-score within each batch
+    data <- data %>%
+      dplyr::group_by(dplyr::across(dplyr::all_of(batch_col))) %>%
+      dplyr::mutate(dplyr::across(
+        .cols = dplyr::where(is.numeric) & !dplyr::all_of(id_cols2),
+        .fns = ~ (. - mean(., na.rm = TRUE)) / sd(., na.rm = TRUE)
+      )) %>%
+      dplyr::ungroup()
+  }
   # Extract the grouping variable from your data (using group_col or group_col2)
   # Extract grouping variable(s)
   if (group_col == group_col2) {
@@ -190,13 +222,23 @@ cyt_splsda <- function(
            Please provide an appropriate grouping column."
       )
     }
-
+    multilevel_vec <- NULL
+    if (!is.null(multilevel_col)) {
+      if (!(multilevel_col %in% names(data))) {
+        stop(sprintf("Multilevel column '%s' not found.", multilevel_col))
+      }
+      multilevel_vec <- data[[multilevel_col]]
+      if (verbose) {
+        message(sprintf("Using multilevel design: '%s'.\n"), multilevel_col)
+      }
+    }
     cytokine_splsda <- mixOmics::splsda(
       the_data_df,
       the_groups,
       scale = TRUE,
       ncomp = comp_num,
-      keepX = rep(var_num, comp_num)
+      keepX = rep(var_num, comp_num),
+      multilevel = multilevel_vec
     )
 
     splsda_predict <- predict(cytokine_splsda, the_data_df, dist = "max.dist")
@@ -219,8 +261,8 @@ cyt_splsda <- function(
 
     plot_args <- list(
       cytokine_splsda,
-      ind.names = NA,
       legend = TRUE,
+      ind.names = ind_names,
       col = colors,
       pch = pch_values,
       title = paste(
@@ -231,32 +273,40 @@ cyt_splsda <- function(
       ),
       legend.title = group_col
     )
-    if (ellipse) plot_args$ellipse <- TRUE
-    if (bg) plot_args$background <- bg_maxdist
-    do.call(mixOmics::plotIndiv, plot_args)
-
+    if (ellipse) {
+      plot_args$ellipse <- TRUE
+    }
+    if (bg) {
+      plot_args$background <- bg_maxdist
+    }
+    overall_indiv_plot <- do.call(mixOmics::plotIndiv, plot_args)
+    overall_3D <- NULL
     if (!is.null(style) && comp_num == 3 && (tolower(style) == "3d")) {
       cytokine_scores <- cytokine_splsda$variates$X
-      plot3D::scatter3D(
-        cytokine_scores[, 1],
-        cytokine_scores[, 2],
-        cytokine_scores[, 3],
-        pch = pch_values,
-        col = colors,
-        xlab = "Component 1",
-        ylab = "Component 2",
-        zlab = "Component 3",
-        main = paste("3D Plot:", overall_analysis),
-        theta = 20,
-        phi = 30,
-        bty = "g",
-        colkey = FALSE
-      )
+      overall_3D <- function() {
+        plot3D::scatter3D(
+          cytokine_scores[, 1],
+          cytokine_scores[, 2],
+          cytokine_scores[, 3],
+          pch = pch_values,
+          col = colors,
+          xlab = "Component 1",
+          ylab = "Component 2",
+          zlab = "Component 3",
+          main = paste("3D Plot:", overall_analysis),
+          theta = 20,
+          phi = 30,
+          bty = "g",
+          colkey = FALSE
+        )
+      }
+      overall_3D()
     }
 
     # If roc = TRUE, compute and plot ROC curve for the overall model
+    overall_ROC <- NULL
     if (roc) {
-      roc_obj <- mixOmics::auroc(
+      overall_ROC <- mixOmics::auroc(
         object = cytokine_splsda,
         newdata = the_data_df,
         outcome.test = the_groups,
@@ -266,6 +316,8 @@ cyt_splsda <- function(
         print = FALSE
       )
     }
+
+    overall_CV <- NULL
 
     # Cross-validation methods
     if (!is.null(cv_opt)) {
@@ -277,7 +329,9 @@ cyt_splsda <- function(
           "max.dist"
         ]
         loocv_acc <- 100 * signif(1 - loocv_error_rate, digits = 2)
-        if (verbose) cat("LOOCV Accuracy: ", paste0(loocv_acc, "%"), "\n")
+        if (verbose) {
+          cat("LOOCV Accuracy: ", paste0(loocv_acc, "%"), "\n")
+        }
 
         error_rates <- loocv_results$error.rate$overall[, "max.dist"]
         error_df <- as.data.frame(error_rates)
@@ -288,7 +342,7 @@ cyt_splsda <- function(
           variable.name = "Distance",
           value.name = "ErrorRate"
         )
-        a <- ggplot2::ggplot(
+        overall_CV <- ggplot2::ggplot(
           error_df,
           ggplot2::aes(
             x = Component,
@@ -309,7 +363,7 @@ cyt_splsda <- function(
             axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
           ) +
           ggplot2::scale_color_manual(values = "red", labels = "max.dist")
-        print(a)
+        print(overall_CV)
       } else if (cv_opt == "Mfold") {
         set.seed(seed)
         fold_results <- mixOmics::perf(
@@ -323,7 +377,9 @@ cyt_splsda <- function(
           "max.dist"
         ]
         fold_acc <- 100 * signif(1 - fold_error_rate, digits = 2)
-        if (verbose) cat("Mfold Accuracy: ", paste0(fold_acc, "%"), "\n")
+        if (verbose) {
+          cat("Mfold Accuracy: ", paste0(fold_acc, "%"), "\n")
+        }
 
         error_rates <- fold_results$error.rate$overall[, "max.dist"]
         error_df <- as.data.frame(error_rates)
@@ -334,7 +390,7 @@ cyt_splsda <- function(
           variable.name = "Distance",
           value.name = "ErrorRate"
         )
-        a <- ggplot2::ggplot(
+        overall_CV <- ggplot2::ggplot(
           error_df,
           ggplot2::aes(
             x = Component,
@@ -355,54 +411,87 @@ cyt_splsda <- function(
             axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
           ) +
           ggplot2::scale_color_manual(values = "red", labels = "max.dist")
-        print(a)
+        print(overall_CV)
       }
     }
 
     # Loadings plot for each component
-    for (comp in 1:comp_num) {
-      mixOmics::plotLoadings(
-        cytokine_splsda,
-        comp = comp,
-        contrib = "max",
-        method = "mean",
-        size.name = 1,
-        size.legend = 1,
-        legend.color = colors,
-        title = paste("Component", comp, ":", overall_analysis),
-        size.title = 1,
-        legend.title = group_col
-      )
-    }
+    loadings_list <- setNames(
+      lapply(seq_len(comp_num), function(comp) {
+        force(comp) # capture comp in the closure
+        function() {
+          mixOmics::plotLoadings(
+            cytokine_splsda,
+            comp = comp,
+            contrib = "max",
+            method = "mean",
+            size.name = 1,
+            size.legend = 1,
+            legend.color = colors,
+            title = paste(
+              "Loadings for Component",
+              comp,
+              ":",
+              overall_analysis
+            ),
+            size.title = 1,
+            legend.title = group_col
+          )
+        }
+      }),
+      nm = paste0("Comp", seq_len(comp_num))
+    )
+    invisible(lapply(loadings_list, function(plot_fn) plot_fn()))
 
     # VIP scores and plot for PLS-DA with VIP > 1
     all_vip_scores <- mixOmics::vip(cytokine_splsda)
-    for (comp in 1:comp_num) {
-      vscore <- as.data.frame(all_vip_scores[, comp, drop = FALSE])
-      vscore$metabo <- rownames(vscore)
-      vscore$comp <- vscore[, 1]
-      bar <- vscore[, c("metabo", "comp")]
-      bar <- bar[order(bar$comp, decreasing = TRUE), ]
+    vip_scores <- setNames(
+      lapply(seq_len(comp_num), function(comp) {
+        force(comp) # capture `comp` in the closure
+        function() {
+          # recreate your data frame
+          vscore <- as.data.frame(all_vip_scores[, comp, drop = FALSE])
+          vscore$metabo <- rownames(vscore)
+          vscore$comp <- vscore[, 1]
+          bar <- vscore[
+            order(vscore$comp, decreasing = TRUE),
+            c("metabo", "comp")
+          ]
 
-      a <- ggplot2::ggplot(bar, ggplot2::aes(x = metabo, y = comp)) +
-        ggplot2::geom_bar(stat = "identity", position = "dodge") +
-        ggplot2::scale_y_continuous(limits = c(0, max(bar$comp))) +
-        ggplot2::geom_hline(yintercept = 1, color = "grey") +
-        ggplot2::scale_x_discrete(limits = factor(bar$metabo)) +
-        ggplot2::theme(
-          axis.text.x = ggplot2::element_text(angle = 45, hjust = 1, size = 15)
-        ) +
-        ggplot2::labs(x = "", y = "VIP score") +
-        ggplot2::ggtitle(paste("Component", comp)) +
-        ggplot2::theme(
-          panel.grid = ggplot2::element_blank(),
-          panel.background = ggplot2::element_rect(
-            color = "black",
-            fill = "transparent"
-          )
-        )
-      print(a)
-    }
+          # build and print the plot
+          p <- ggplot2::ggplot(bar, ggplot2::aes(x = metabo, y = comp)) +
+            ggplot2::geom_bar(stat = "identity", position = "dodge") +
+            ggplot2::scale_y_continuous(limits = c(0, max(bar$comp))) +
+            ggplot2::geom_hline(yintercept = 1, color = "grey") +
+            ggplot2::scale_x_discrete(limits = factor(bar$metabo)) +
+            ggplot2::theme(
+              axis.text.x = ggplot2::element_text(
+                angle = 45,
+                hjust = 1,
+                size = 15
+              ),
+              panel.grid = ggplot2::element_blank(),
+              panel.background = ggplot2::element_rect(
+                color = "black",
+                fill = "transparent"
+              )
+            ) +
+            ggplot2::coord_flip() +
+            ggplot2::labs(x = "Variables", y = "VIP score") +
+            ggplot2::ggtitle(paste("Component", comp))
+
+          print(p)
+        }
+      }),
+      nm = paste0("Comp", seq_len(comp_num))
+    )
+    invisible(lapply(vip_scores, function(draw_fn) draw_fn()))
+
+    vip_indiv_plot <- NULL
+    vip_loadings <- NULL
+    vip_3D <- NULL
+    vip_ROC <- NULL
+    vip_CV <- NULL
 
     # PLS-DA on VIP > 1: Subset predictors with VIP > 1
     condt_variable <- all_vip_scores[, 1] > 1
@@ -417,33 +506,48 @@ cyt_splsda <- function(
         )
       }
       if (conf_mat == TRUE) {
-        if (verbose)
+        if (verbose) {
           cat(paste0(
             "Confusion Matrix for PLS-DA Comparison: ",
             overall_analysis,
             "\n"
           ))
+        }
 
         # Confusion Matrix for main model
-        cm <- caret::confusionMatrix(
+        cm_overall <- caret::confusionMatrix(
           data = as.factor(prediction1[, 3]), # predicted
           reference = as.factor(prediction1[, 1]) # actual
         )
         if (verbose) {
-          print(cm$table)
-          cat("Accuracy:", signif(cm$overall["Accuracy"], 2), "\n")
+          print(cm_overall$table)
+          cat("Accuracy:", signif(cm_overall$overall["Accuracy"], 2), "\n")
 
           # Check if binary or multi-class
           if (nlevels(as.factor(prediction1[, 1])) == 2) {
-            cat("Sensitivity:", signif(cm$byClass["Sensitivity"], 2), "\n")
-            cat("Specificity:", signif(cm$byClass["Specificity"], 2), "\n")
+            cat(
+              "Sensitivity:",
+              signif(cm_overall$byClass["Sensitivity"], 2),
+              "\n"
+            )
+            cat(
+              "Specificity:",
+              signif(cm_overall$byClass["Specificity"], 2),
+              "\n"
+            )
           } else {
             cat("\nPer-Class Sensitivity:\n")
-            print(signif(cm$byClass[, "Sensitivity"], 2))
+            print(signif(cm_overall$byClass[, "Sensitivity"], 2))
             cat("\nPer-Class Specificity:\n")
-            print(signif(cm$byClass[, "Specificity"], 2))
-            macro_sens <- mean(cm$byClass[, "Sensitivity"], na.rm = TRUE)
-            macro_spec <- mean(cm$byClass[, "Specificity"], na.rm = TRUE)
+            print(signif(cm_overall$byClass[, "Specificity"], 2))
+            macro_sens <- mean(
+              cm_overall$byClass[, "Sensitivity"],
+              na.rm = TRUE
+            )
+            macro_spec <- mean(
+              cm_overall$byClass[, "Specificity"],
+              na.rm = TRUE
+            )
             cat("\nMacro-Averaged Sensitivity:", signif(macro_sens, 2), "\n")
             cat("Macro-Averaged Specificity:", signif(macro_spec, 2), "\n")
           }
@@ -455,7 +559,8 @@ cyt_splsda <- function(
         the_groups,
         scale = TRUE,
         ncomp = comp_num,
-        keepX = rep(keep_x, comp_num)
+        keepX = rep(keep_x, comp_num),
+        multilevel = multilevel_vec
       )
 
       splsda_predict2 <- predict(
@@ -483,8 +588,8 @@ cyt_splsda <- function(
       }
       plot_args2 <- list(
         cytokine_splsda2,
-        ind.names = NA,
         legend = TRUE,
+        ind.names = ind_names,
         col = colors,
         pch = pch_values,
         title = paste(
@@ -496,43 +601,63 @@ cyt_splsda <- function(
         ),
         legend.title = group_col
       )
-      if (ellipse) plot_args2$ellipse <- TRUE
-      if (bg) plot_args2$background <- bg_maxdist2
-      do.call(mixOmics::plotIndiv, plot_args2)
+      if (ellipse) {
+        plot_args2$ellipse <- TRUE
+      }
+      if (bg) {
+        plot_args2$background <- bg_maxdist2
+      }
+      vip_indiv_plot <- do.call(mixOmics::plotIndiv, plot_args2)
 
       if (!is.null(style) && comp_num == 3 && (tolower(style) == "3d")) {
         cytokine_scores2 <- cytokine_splsda2$variates$X
-        plot3D::scatter3D(
-          cytokine_scores2[, 1],
-          cytokine_scores2[, 2],
-          cytokine_scores2[, 3],
-          pch = pch_values,
-          col = colors,
-          xlab = "Component 1",
-          ylab = "Component 2",
-          zlab = "Component 3",
-          main = paste("3D Plot:", overall_analysis, "(VIP>1)"),
-          theta = 20,
-          phi = 30,
-          bty = "g",
-          colkey = FALSE
-        )
+        vip_3D <- function() {
+          plot3D::scatter3D(
+            cytokine_scores2[, 1],
+            cytokine_scores2[, 2],
+            cytokine_scores2[, 3],
+            pch = pch_values,
+            col = colors,
+            xlab = "Component 1",
+            ylab = "Component 2",
+            zlab = "Component 3",
+            main = paste("3D Plot:", overall_analysis, "(VIP>1)"),
+            theta = 20,
+            phi = 30,
+            bty = "g",
+            colkey = FALSE
+          )
+        }
+        vip_3D()
       }
       # Loadings plot for each component with VIP > 1
-      for (comp in 1:comp_num) {
-        mixOmics::plotLoadings(
-          cytokine_splsda2,
-          comp = comp,
-          contrib = "max",
-          method = "mean",
-          size.name = 1,
-          size.legend = 1,
-          legend.color = colors,
-          title = paste("Component", comp, "(VIP > 1):", overall_analysis),
-          size.title = 1,
-          legend.title = group_col
-        )
-      }
+      vip_loadings <- setNames(
+        lapply(seq_len(comp_num), function(comp) {
+          force(comp) # capture comp in the closure
+          function() {
+            mixOmics::plotLoadings(
+              cytokine_splsda2,
+              comp = comp,
+              contrib = "max",
+              method = "mean",
+              size.name = 1,
+              size.legend = 1,
+              legend.color = colors,
+              title = paste(
+                "Loadings for Component",
+                comp,
+                "(VIP > 1):",
+                overall_analysis
+              ),
+              size.title = 1,
+              legend.title = group_col
+            )
+          }
+        }),
+        nm = paste0("Comp", seq_len(comp_num))
+      )
+      invisible(lapply(vip_loadings, function(plot_fn) plot_fn()))
+
       if (!is.null(cv_opt)) {
         if (cv_opt == "loocv") {
           set.seed(seed)
@@ -542,8 +667,9 @@ cyt_splsda <- function(
             "max.dist"
           ]
           loocv_acc2 <- 100 * signif(1 - loocv_error_rate2, digits = 2)
-          if (verbose)
+          if (verbose) {
             cat(paste0("LOOCV Accuracy (VIP>1): ", loocv_acc2, "%\n"))
+          }
 
           error_rates2 <- loocv_results2$error.rate$overall[, "max.dist"]
           error_df2 <- as.data.frame(error_rates2)
@@ -555,7 +681,7 @@ cyt_splsda <- function(
             value.name = "ErrorRate"
           )
 
-          a <- ggplot2::ggplot(
+          vip_CV <- ggplot2::ggplot(
             error_df2,
             ggplot2::aes(
               x = Component,
@@ -576,7 +702,7 @@ cyt_splsda <- function(
               axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
             ) +
             ggplot2::scale_color_manual(values = "red", labels = "max.dist")
-          print(a)
+          print(vip_CV)
         } else if (cv_opt == "Mfold") {
           set.seed(seed)
           fold_results2 <- mixOmics::perf(
@@ -590,7 +716,9 @@ cyt_splsda <- function(
             "max.dist"
           ]
           fold_acc2 <- 100 * signif(1 - fold_error_rate2, digits = 2)
-          if (verbose) cat(paste0("Mfold Accuracy (VIP>1): ", fold_acc2, "%\n"))
+          if (verbose) {
+            cat(paste0("Mfold Accuracy (VIP>1): ", fold_acc2, "%\n"))
+          }
 
           error_rates2 <- fold_results2$error.rate$overall[, "max.dist"]
           error_df2 <- as.data.frame(error_rates2)
@@ -602,7 +730,7 @@ cyt_splsda <- function(
             value.name = "ErrorRate"
           )
 
-          a <- ggplot2::ggplot(
+          vip_CV <- ggplot2::ggplot(
             error_df2,
             ggplot2::aes(
               x = Component,
@@ -623,49 +751,65 @@ cyt_splsda <- function(
               axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
             ) +
             ggplot2::scale_color_manual(values = "red", labels = "max.dist")
-          print(a)
+          print(vip_CV)
         }
       }
 
       if (conf_mat == TRUE) {
-        if (verbose)
+        if (verbose) {
           cat(paste0(
             "Confusion Matrix for PLS-DA Comparison: ",
             overall_analysis,
             "\n"
           ))
+        }
 
         # Confusion Matrix for main model
-        cm <- caret::confusionMatrix(
+        cm_overall <- caret::confusionMatrix(
           data = as.factor(prediction1[, 3]), # predicted
           reference = as.factor(prediction1[, 1]) # actual
         )
         if (verbose) {
-          print(cm$table)
-          cat("Accuracy:", signif(cm$overall["Accuracy"], 2), "\n")
+          print(cm_overall$table)
+          cat("Accuracy:", signif(cm_overall$overall["Accuracy"], 2), "\n")
 
           # Check if binary or multi-class
           if (nlevels(as.factor(prediction1[, 1])) == 2) {
-            cat("Sensitivity:", signif(cm$byClass["Sensitivity"], 2), "\n")
-            cat("Specificity:", signif(cm$byClass["Specificity"], 2), "\n")
+            cat(
+              "Sensitivity:",
+              signif(cm_overall$byClass["Sensitivity"], 2),
+              "\n"
+            )
+            cat(
+              "Specificity:",
+              signif(cm_overall$byClass["Specificity"], 2),
+              "\n"
+            )
           } else {
             cat("\nPer-Class Sensitivity:\n")
-            print(signif(cm$byClass[, "Sensitivity"], 2))
+            print(signif(cm_overall$byClass[, "Sensitivity"], 2))
             cat("\nPer-Class Specificity:\n")
-            print(signif(cm$byClass[, "Specificity"], 2))
-            macro_sens <- mean(cm$byClass[, "Sensitivity"], na.rm = TRUE)
-            macro_spec <- mean(cm$byClass[, "Specificity"], na.rm = TRUE)
+            print(signif(cm_overall$byClass[, "Specificity"], 2))
+            macro_sens <- mean(
+              cm_overall$byClass[, "Sensitivity"],
+              na.rm = TRUE
+            )
+            macro_spec <- mean(
+              cm_overall$byClass[, "Specificity"],
+              na.rm = TRUE
+            )
             cat("\nMacro-Averaged Sensitivity:", signif(macro_sens, 2), "\n")
             cat("Macro-Averaged Specificity:", signif(macro_spec, 2), "\n")
           }
         }
 
-        if (verbose)
+        if (verbose) {
           cat(paste0(
             "Confusion Matrix for PLS-DA Comparison with VIP > 1: ",
             overall_analysis,
             "\n"
           ))
+        }
 
         # Confusion Matrix for VIP>1 model
         cm_vip <- caret::confusionMatrix(
@@ -700,9 +844,10 @@ cyt_splsda <- function(
           }
         }
       }
+
       # If roc = TRUE, compute and plot ROC curve for the overall model of VIP > 1
       if (roc) {
-        roc_obj2 <- mixOmics::auroc(
+        vip_ROC <- mixOmics::auroc(
           object = cytokine_splsda2,
           newdata = the_data_mat,
           outcome.test = the_groups,
@@ -713,6 +858,20 @@ cyt_splsda <- function(
         )
       }
     }
+    result_list <- list(
+      overall_indiv_plot = overall_indiv_plot$graph,
+      overall_3D = overall_3D,
+      overall_ROC = overall_ROC,
+      overall_CV = overall_CV,
+      loadings = loadings_list,
+      vip_scores = vip_scores,
+      vip_indiv_plot = vip_indiv_plot$graph,
+      vip_loadings = vip_loadings,
+      vip_3D = vip_3D,
+      vip_ROC = vip_ROC,
+      vip_CV = vip_CV
+    )
+    invisible(result_list)
   } else {
     # Case 2: Both group and treatment columns are provided and they differ.
     levels_vec <- unique(data[[group_col2]])
@@ -727,7 +886,8 @@ cyt_splsda <- function(
           names(data) %in%
             c(
               group_col,
-              group_col2
+              group_col2,
+              multilevel_col
             )
         )
       ]
@@ -740,13 +900,23 @@ cyt_splsda <- function(
              Please provide an appropriate grouping column."
         )
       }
-
+      multilevel_vec <- NULL
+      if (!is.null(multilevel_col)) {
+        if (!(multilevel_col %in% names(data))) {
+          stop(sprintf("Multilevel column '%s' not found.", multilevel_col))
+        }
+        multilevel_vec <- data[[multilevel_col]]
+        if (verbose) {
+          message(sprintf("Using multilevel design: '%s'.\n"), multilevel_col)
+        }
+      }
       cytokine_splsda <- mixOmics::splsda(
         the_data_df,
         the_groups,
         scale = TRUE,
         ncomp = comp_num,
-        keepX = rep(var_num, comp_num)
+        keepX = rep(var_num, comp_num),
+        multilevel = multilevel_vec
       )
 
       splsda_predict <- predict(cytokine_splsda, the_data_df, dist = "max.dist")
@@ -774,8 +944,8 @@ cyt_splsda <- function(
 
       plot_args <- list(
         cytokine_splsda,
-        ind.names = NA,
         legend = TRUE,
+        ind.names = ind_names,
         col = colors,
         pch = pch_values[group_factors],
         title = paste(
@@ -786,32 +956,43 @@ cyt_splsda <- function(
         ),
         legend.title = group_col
       )
-      if (ellipse) plot_args$ellipse <- TRUE
-      if (bg) plot_args$background <- bg_maxdist
-      do.call(mixOmics::plotIndiv, plot_args)
+      if (ellipse) {
+        plot_args$ellipse <- TRUE
+      }
+      if (bg) {
+        plot_args$background <- bg_maxdist
+      }
+      overall_indiv_plot <- do.call(mixOmics::plotIndiv, plot_args)
+
+      overall_3D <- NULL
 
       if (!is.null(style) && comp_num == 3 && (tolower(style) == "3d")) {
         cytokine_scores <- cytokine_splsda$variates$X
-        plot3D::scatter3D(
-          cytokine_scores[, 1],
-          cytokine_scores[, 2],
-          cytokine_scores[, 3],
-          pch = pch_values,
-          col = colors,
-          xlab = "Component 1",
-          ylab = "Component 2",
-          zlab = "Component 3",
-          main = paste("3D Plot:", overall_analysis),
-          theta = 20,
-          phi = 30,
-          bty = "g",
-          colkey = FALSE
-        )
+        overall_3D <- function() {
+          plot3D::scatter3D(
+            cytokine_scores[, 1],
+            cytokine_scores[, 2],
+            cytokine_scores[, 3],
+            pch = pch_values,
+            col = colors,
+            xlab = "Component 1",
+            ylab = "Component 2",
+            zlab = "Component 3",
+            main = paste("3D Plot:", overall_analysis),
+            theta = 20,
+            phi = 30,
+            bty = "g",
+            colkey = FALSE
+          )
+        }
+        overall_3D()
       }
 
       # If roc = TRUE, compute and plot ROC curve for the overall model
+      overall_ROC <- NULL
+
       if (roc) {
-        roc_obj <- mixOmics::auroc(
+        overall_ROC <- mixOmics::auroc(
           object = cytokine_splsda,
           newdata = the_data_df,
           outcome.test = the_groups,
@@ -822,6 +1003,8 @@ cyt_splsda <- function(
         )
       }
 
+      overall_CV <- NULL
+
       if (!is.null(cv_opt)) {
         if (cv_opt == "loocv") {
           set.seed(seed)
@@ -831,8 +1014,9 @@ cyt_splsda <- function(
             "max.dist"
           ]
           loocv_acc <- 100 * signif(1 - loocv_error_rate, digits = 2)
-          if (verbose)
+          if (verbose) {
             cat(paste0(current_level, " LOOCV Accuracy: ", loocv_acc, "%\n"))
+          }
 
           error_rates <- loocv_results$error.rate$overall[, "max.dist"]
           error_df <- as.data.frame(error_rates)
@@ -843,7 +1027,7 @@ cyt_splsda <- function(
             variable.name = "Distance",
             value.name = "ErrorRate"
           )
-          a <- ggplot2::ggplot(
+          overall_CV <- ggplot2::ggplot(
             error_df,
             ggplot2::aes(
               x = Component,
@@ -864,7 +1048,7 @@ cyt_splsda <- function(
               axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
             ) +
             ggplot2::scale_color_manual(values = "red", labels = "max.dist")
-          print(a)
+          print(overall_CV)
         } else if (cv_opt == "Mfold") {
           set.seed(seed)
           fold_results <- mixOmics::perf(
@@ -878,8 +1062,9 @@ cyt_splsda <- function(
             "max.dist"
           ]
           fold_acc <- 100 * signif(1 - fold_error_rate, digits = 2)
-          if (verbose)
+          if (verbose) {
             cat(paste0(current_level, " Mfold Accuracy: ", fold_acc, "%\n"))
+          }
 
           error_rates <- fold_results$error.rate$overall[, "max.dist"]
           error_df <- as.data.frame(error_rates)
@@ -891,7 +1076,7 @@ cyt_splsda <- function(
             value.name = "ErrorRate"
           )
 
-          a <- ggplot2::ggplot(
+          overall_CV <- ggplot2::ggplot(
             error_df,
             ggplot2::aes(
               x = Component,
@@ -912,53 +1097,87 @@ cyt_splsda <- function(
               axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
             ) +
             ggplot2::scale_color_manual(values = "red", labels = "max.dist")
-          print(a)
+          print(overall_CV)
         }
       }
 
       # Loadings plot for each component
-      for (comp in 1:comp_num) {
-        mixOmics::plotLoadings(
-          cytokine_splsda,
-          comp = comp,
-          contrib = "max",
-          method = "mean",
-          size.name = 1,
-          size.legend = 1,
-          legend.color = colors,
-          title = paste("Component", comp, ":", overall_analysis),
-          size.title = 1,
-          legend.title = group_col
-        )
-      }
+
+      loadings_list <- setNames(
+        lapply(seq_len(comp_num), function(comp) {
+          force(comp) # capture comp in the closure
+          function() {
+            mixOmics::plotLoadings(
+              cytokine_splsda,
+              comp = comp,
+              contrib = "max",
+              method = "mean",
+              size.name = 1,
+              size.legend = 1,
+              legend.color = colors,
+              title = paste(
+                "Loadings for Component",
+                comp,
+                ":",
+                overall_analysis
+              ),
+              size.title = 1,
+              legend.title = group_col
+            )
+          }
+        }),
+        nm = paste0("Comp", seq_len(comp_num))
+      )
+      invisible(lapply(loadings_list, function(plot_fn) plot_fn()))
 
       all_vip_scores <- mixOmics::vip(cytokine_splsda)
-      for (comp in 1:comp_num) {
-        vscore <- as.data.frame(all_vip_scores[, comp, drop = FALSE])
-        vscore$metabo <- rownames(vscore)
-        vscore$comp <- vscore[, 1]
-        bar <- vscore[, c("metabo", "comp")]
-        bar <- bar[order(bar$comp, decreasing = TRUE), ]
+      vip_scores <- setNames(
+        lapply(seq_len(comp_num), function(comp) {
+          force(comp) # capture `comp` in the closure
+          function() {
+            # recreate your data frame
+            vscore <- as.data.frame(all_vip_scores[, comp, drop = FALSE])
+            vscore$metabo <- rownames(vscore)
+            vscore$comp <- vscore[, 1]
+            bar <- vscore[
+              order(vscore$comp, decreasing = TRUE),
+              c("metabo", "comp")
+            ]
 
-        a <- ggplot2::ggplot(bar, aes(x = metabo, y = comp)) +
-          ggplot2::geom_bar(stat = "identity", position = "dodge") +
-          ggplot2::scale_y_continuous(limits = c(0, max(bar$comp))) +
-          ggplot2::geom_hline(yintercept = 1, color = "grey") +
-          ggplot2::scale_x_discrete(limits = factor(bar$metabo)) +
-          ggplot2::theme(
-            axis.text.x = element_text(angle = 45, hjust = 1, size = 15)
-          ) +
-          ggplot2::labs(x = "", y = "VIP score") +
-          ggplot2::ggtitle(paste("Component", comp)) +
-          ggplot2::theme(
-            panel.grid = element_blank(),
-            panel.background = element_rect(
-              color = "black",
-              fill = "transparent"
-            )
-          )
-        print(a)
-      }
+            # build and print the plot
+            p <- ggplot2::ggplot(bar, ggplot2::aes(x = metabo, y = comp)) +
+              ggplot2::geom_bar(stat = "identity", position = "dodge") +
+              ggplot2::scale_y_continuous(limits = c(0, max(bar$comp))) +
+              ggplot2::geom_hline(yintercept = 1, color = "grey") +
+              ggplot2::scale_x_discrete(limits = factor(bar$metabo)) +
+              ggplot2::theme(
+                axis.text.x = ggplot2::element_text(
+                  angle = 45,
+                  hjust = 1,
+                  size = 15
+                ),
+                panel.grid = ggplot2::element_blank(),
+                panel.background = ggplot2::element_rect(
+                  color = "black",
+                  fill = "transparent"
+                )
+              ) +
+              ggplot2::coord_flip() +
+              ggplot2::labs(x = "Variables", y = "VIP score") +
+              ggplot2::ggtitle(paste("Component", comp))
+
+            print(p)
+          }
+        }),
+        nm = paste0("Comp", seq_len(comp_num))
+      )
+      invisible(lapply(vip_scores, function(draw_fn) draw_fn()))
+
+      vip_indiv_plot <- NULL
+      vip_loadings <- NULL
+      vip_3D <- NULL
+      vip_ROC <- NULL
+      vip_CV <- NULL
 
       condt_variable <- all_vip_scores[, 1] > 1
       keep_x <- sum(condt_variable)
@@ -968,7 +1187,8 @@ cyt_splsda <- function(
         the_groups,
         scale = TRUE,
         ncomp = comp_num,
-        keepX = rep(keep_x, comp_num)
+        keepX = rep(keep_x, comp_num),
+        multilevel = multilevel_vec
       )
 
       splsda_predict2 <- predict(
@@ -998,9 +1218,9 @@ cyt_splsda <- function(
 
       plot_args2 <- list(
         cytokine_splsda2,
-        ind.names = NA,
         legend = TRUE,
         col = colors,
+        ind.names = ind_names,
         pch = pch_values[group_factors],
         title = paste(
           overall_analysis,
@@ -1011,46 +1231,66 @@ cyt_splsda <- function(
         ),
         legend.title = group_col
       )
-      if (ellipse) plot_args2$ellipse <- TRUE
-      if (bg) plot_args2$background <- bg_maxdist2
-      do.call(mixOmics::plotIndiv, plot_args2)
+      if (ellipse) {
+        plot_args2$ellipse <- TRUE
+      }
+      if (bg) {
+        plot_args2$background <- bg_maxdist2
+      }
+      vip_indiv_plot <- do.call(mixOmics::plotIndiv, plot_args2)
 
       if (!is.null(style) && comp_num == 3 && (tolower(style) == "3d")) {
         cytokine_scores2 <- cytokine_splsda2$variates$X
-        plot3D::scatter3D(
-          cytokine_scores2[, 1],
-          cytokine_scores2[, 2],
-          cytokine_scores2[, 3],
-          pch = pch_values,
-          col = colors,
-          xlab = "Component 1",
-          ylab = "Component 2",
-          zlab = "Component 3",
-          main = paste("3D Plot:", overall_analysis, "(VIP>1)"),
-          theta = 20,
-          phi = 30,
-          bty = "g",
-          colkey = FALSE
-        )
+        vip_3D <- function() {
+          plot3D::scatter3D(
+            cytokine_scores2[, 1],
+            cytokine_scores2[, 2],
+            cytokine_scores2[, 3],
+            pch = pch_values,
+            col = colors,
+            xlab = "Component 1",
+            ylab = "Component 2",
+            zlab = "Component 3",
+            main = paste("3D Plot:", overall_analysis, "(VIP>1)"),
+            theta = 20,
+            phi = 30,
+            bty = "g",
+            colkey = FALSE
+          )
+        }
+        vip_3D()
       }
       # Loadings plot for each component with VIP > 1
-      # Loadings plot for each component
-      for (comp in 1:comp_num) {
-        mixOmics::plotLoadings(
-          cytokine_splsda2,
-          comp = comp,
-          contrib = "max",
-          method = "mean",
-          size.name = 1,
-          size.legend = 1,
-          legend.color = colors,
-          title = paste("Component", comp, "(VIP > 1):", overall_analysis),
-          size.title = 1,
-          legend.title = group_col
-        )
-      }
+
+      vip_loadings <- setNames(
+        lapply(seq_len(comp_num), function(comp) {
+          force(comp) # capture comp in the closure
+          function() {
+            mixOmics::plotLoadings(
+              cytokine_splsda2,
+              comp = comp,
+              contrib = "max",
+              method = "mean",
+              size.name = 1,
+              size.legend = 1,
+              legend.color = colors,
+              title = paste(
+                "Loadings for Component",
+                comp,
+                "(VIP > 1):",
+                overall_analysis
+              ),
+              size.title = 1,
+              legend.title = group_col
+            )
+          }
+        }),
+        nm = paste0("Comp", seq_len(comp_num))
+      )
+      invisible(lapply(vip_loadings, function(plot_fn) plot_fn()))
+
       if (roc) {
-        roc_obj2 <- mixOmics::auroc(
+        vip_ROC <- mixOmics::auroc(
           object = cytokine_splsda2,
           newdata = the_data_mat,
           outcome.test = the_groups,
@@ -1070,13 +1310,14 @@ cyt_splsda <- function(
             "max.dist"
           ]
           loocv_acc2 <- 100 * signif(1 - loocv_error_rate2, digits = 2)
-          if (verbose)
+          if (verbose) {
             cat(paste0(
               current_level,
               " LOOCV Accuracy (VIP>1): ",
               loocv_acc2,
               "%\n"
             ))
+          }
 
           error_rates2 <- loocv_results2$error.rate$overall[, "max.dist"]
           error_df2 <- as.data.frame(error_rates2)
@@ -1087,9 +1328,9 @@ cyt_splsda <- function(
             variable.name = "Distance",
             value.name = "ErrorRate"
           )
-          a <- ggplot2::ggplot(
+          vip_CV <- ggplot2::ggplot(
             error_df2,
-            aes(
+            ggplot2::aes(
               x = Component,
               y = ErrorRate,
               color = Distance,
@@ -1106,7 +1347,7 @@ cyt_splsda <- function(
             ggplot2::theme_minimal() +
             ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
             ggplot2::scale_color_manual(values = "red", labels = "max.dist")
-          print(a)
+          print(vip_CV)
         } else if (cv_opt == "Mfold") {
           set.seed(seed)
           fold_results2 <- mixOmics::perf(
@@ -1120,13 +1361,14 @@ cyt_splsda <- function(
             "max.dist"
           ]
           fold_acc2 <- 100 * signif(1 - fold_error_rate2, digits = 2)
-          if (verbose)
+          if (verbose) {
             cat(paste0(
               current_level,
               " Mfold Accuracy (VIP>1): ",
               fold_acc2,
               "%\n"
             ))
+          }
 
           error_rates2 <- fold_results2$error.rate$overall[, "max.dist"]
           error_df2 <- as.data.frame(error_rates2)
@@ -1137,9 +1379,9 @@ cyt_splsda <- function(
             variable.name = "Distance",
             value.name = "ErrorRate"
           )
-          a <- ggplot2::ggplot(
+          vip_CV <- ggplot2::ggplot(
             error_df2,
-            aes(
+            ggplot2::aes(
               x = Component,
               y = ErrorRate,
               color = Distance,
@@ -1156,46 +1398,62 @@ cyt_splsda <- function(
             ggplot2::theme_minimal() +
             ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
             ggplot2::scale_color_manual(values = "red", labels = "max.dist")
-          print(a)
+          print(vip_CV)
         }
       }
       if (conf_mat == TRUE) {
-        if (verbose)
+        if (verbose) {
           cat(paste0(
             "Confusion Matrix for PLS-DA Comparison: ",
             current_level,
             "\n"
           ))
+        }
 
         # Confusion Matrix for main model
-        cm <- caret::confusionMatrix(
+        cm_overall <- caret::confusionMatrix(
           data = as.factor(prediction1[, 3]), # predicted
           reference = as.factor(prediction1[, 1]) # actual
         )
         if (verbose) {
-          print(cm$table)
-          cat("Accuracy:", signif(cm$overall["Accuracy"], 2), "\n")
+          print(cm_overall$table)
+          cat("Accuracy:", signif(cm_overall$overall["Accuracy"], 2), "\n")
           if (nlevels(as.factor(prediction1[, 1])) == 2) {
-            cat("Sensitivity:", signif(cm$byClass["Sensitivity"], 2), "\n")
-            cat("Specificity:", signif(cm$byClass["Specificity"], 2), "\n")
+            cat(
+              "Sensitivity:",
+              signif(cm_overall$byClass["Sensitivity"], 2),
+              "\n"
+            )
+            cat(
+              "Specificity:",
+              signif(cm_overall$byClass["Specificity"], 2),
+              "\n"
+            )
           } else {
             cat("\nPer-Class Sensitivity:\n")
-            print(signif(cm$byClass[, "Sensitivity"], 2))
+            print(signif(cm_overall$byClass[, "Sensitivity"], 2))
             cat("\nPer-Class Specificity:\n")
-            print(signif(cm$byClass[, "Specificity"], 2))
-            macro_sens <- mean(cm$byClass[, "Sensitivity"], na.rm = TRUE)
-            macro_spec <- mean(cm$byClass[, "Specificity"], na.rm = TRUE)
+            print(signif(cm_overall$byClass[, "Specificity"], 2))
+            macro_sens <- mean(
+              cm_overall$byClass[, "Sensitivity"],
+              na.rm = TRUE
+            )
+            macro_spec <- mean(
+              cm_overall$byClass[, "Specificity"],
+              na.rm = TRUE
+            )
             cat("\nMacro-Averaged Sensitivity:", signif(macro_sens, 2), "\n")
             cat("Macro-Averaged Specificity:", signif(macro_spec, 2), "\n")
           }
         }
 
-        if (verbose)
+        if (verbose) {
           cat(paste0(
             "Confusion Matrix for PLS-DA Comparison with VIP > 1: ",
             current_level,
             "\n"
           ))
+        }
 
         # Confusion Matrix for VIP>1 model
         cm_vip <- caret::confusionMatrix(
@@ -1231,6 +1489,20 @@ cyt_splsda <- function(
         }
       }
     }
+    result_list <- list(
+      overall_indiv_plot = overall_indiv_plot$graph,
+      overall_3D = overall_3D,
+      overall_ROC = overall_ROC,
+      overall_CV = overall_CV,
+      loadings = loadings_list,
+      vip_scores = vip_scores,
+      vip_indiv_plot = vip_indiv_plot$graph,
+      vip_loadings = vip_loadings,
+      vip_3D = vip_3D,
+      vip_ROC = vip_ROC,
+      vip_CV = vip_CV
+    )
+    invisible(result_list)
   }
   if (!is.null(pdf_title)) {
     dev.off()
