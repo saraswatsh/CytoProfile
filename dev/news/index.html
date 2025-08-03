@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">CytoProfile</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.1.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,17 +39,31 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/saraswatsh/CytoProfile/blob/v0.2.1/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/saraswatsh/CytoProfile/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.0.9000" id="cytoprofile-0209000-development-version">CytoProfile 0.2.0.9000 (Development Version)<a class="anchor" aria-label="anchor" href="#cytoprofile-0209000-development-version"></a></h2>
+<h2 class="pkg-version" data-toc-text="development version" id="cytoprofile-development-version">CytoProfile (development version)<a class="anchor" aria-label="anchor" href="#cytoprofile-development-version"></a></h2>
 <div class="section level3">
-<h3 id="major-changes-0-2-0-9000">Major Changes<a class="anchor" aria-label="anchor" href="#major-changes-0-2-0-9000"></a></h3>
+<h3 id="major-changes-development-version">Major Changes<a class="anchor" aria-label="anchor" href="#major-changes-development-version"></a></h3>
+<ul><li><p>‘cyt_mint_splsda’, a new function for conducting multivariate integrative analysis using sparse partial least squares discriminant analysis (sPLS-DA) with multiple datasets, has been added.</p></li>
+<li><p>‘cyt_splsda’ now has a new argument ‘batch_col’ to specify a batch column for batch correction in the sPLS-DA analysis using a Z-score method.</p></li>
+<li><p>Added new “ExampleData5” dataset which is the same as “ExampleData1” but with a batch column for demonstration of the ‘batch_col’ argument in ‘cyt_mint_splsda’.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-changes-and-bug-fixes-development-version">Minor Changes and Bug Fixes<a class="anchor" aria-label="anchor" href="#minor-changes-and-bug-fixes-development-version"></a></h3>
+<ul><li><p>Updated the vignette and README files to include examples of the new ‘cyt_mint_splsda’ function.</p></li>
+<li><p>Updated ‘cyt_splsda’ and ‘cyt_pca’</p></li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.1" id="cytoprofile-021">CytoProfile 0.2.1<a class="anchor" aria-label="anchor" href="#cytoprofile-021"></a></h2><p class="text-muted">CRAN release: 2025-05-19</p>
+<div class="section level3">
+<h3 id="major-changes-0-2-1">Major Changes<a class="anchor" aria-label="anchor" href="#major-changes-0-2-1"></a></h3>
 <ul><li>‘cyt_ttest’ now conducts shapiro-wilk test and based on the p-value decides to do Welch two sample t-test or Wilcoxon Rank Sum Test.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="minor-changes-and-bug-fixes-0-2-0-9000">Minor Changes and Bug Fixes<a class="anchor" aria-label="anchor" href="#minor-changes-and-bug-fixes-0-2-0-9000"></a></h3>
+<h3 id="minor-changes-and-bug-fixes-0-2-1">Minor Changes and Bug Fixes<a class="anchor" aria-label="anchor" href="#minor-changes-and-bug-fixes-0-2-1"></a></h3>
 <ul><li>Updated ‘cyt_pca’ and ‘cyt_splsda’ to use the appropriate pch argument in plotIndiv().</li>
 <li>Updated ‘cyt_ttest’ examples.<br></li>
 <li>Updated citation formatting.</li>
@@ -126,7 +140,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
