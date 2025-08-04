@@ -4,7 +4,9 @@
 
 * 'cyt_mint_splsda', a new function for conducting multivariate integrative analysis using sparse partial least squares discriminant analysis (sPLS-DA) with multiple datasets, has been added.
 
-* 'cyt_splsda' now has a new argument 'batch_col' to specify a batch column for batch correction in the sPLS-DA analysis using a Z-score method.
+* 'cyt_splsda' now has two new arguments:
+    * 'batch_col' to specify a batch column for batch correction in the sPLS-DA analysis using a Z-score method.
+    * 'multilevel_col' to specify a multilevel column for multilevel analysis in sPLS-DA.
 
 * Added new "ExampleData5" dataset which is the same as "ExampleData1" but with a batch column for demonstration of the 'batch_col' argument in 'cyt_mint_splsda'.
 

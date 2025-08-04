@@ -2,7 +2,7 @@
 % Please edit documentation in R/cyt_mint_splsda.R
 \name{cyt_mint_splsda}
 \alias{cyt_mint_splsda}
-\title{Analyze data with MINT Sparse Partial Least Squares Discriminant Analysis (sPLS-DA).}
+\title{Analyze data with Multivariate INTegration (MINT) Sparse Partial Least Squares Discriminant Analysis (sPLS-DA).}
 \usage{
 cyt_mint_splsda(
   data,
@@ -16,6 +16,7 @@ cyt_mint_splsda(
   var_num = 20,
   comp_num = 2,
   scale = NULL,
+  cim = FALSE,
   roc = FALSE,
   verbose = FALSE
 )
@@ -49,12 +50,12 @@ Default is \code{FALSE}.}
 
 \item{var_num}{Numeric. The number of variables to be used in the PLS-DA model.}
 
-\item{comp_num}{Numeric. The number of components to calculate in the sPLS-DA model.
-Default is 2.
-to be used in the plots.}
+\item{comp_num}{Numeric. The number of components to calculate in the sPLS-DA model. Default is 2.}
 
 \item{scale}{Character. Option for data transformation; if set to \code{"log2"}, a log2
 transformation is applied to the continuous variables. Default is \code{NULL}.}
+
+\item{cim}{Logical. Whether to compute and plot the Clustered Image Map (CIM) heatmap. Default is \code{FALSE}.}
 
 \item{roc}{Logical. Whether to compute and plot the ROC curve for the model.
 Default is \code{FALSE}.}
@@ -78,16 +79,13 @@ When \code{verbose} is set to \code{TRUE}, additional information about the anal
 are printed to the console. These can be suppressed by keeping \code{verbose = FALSE}.
 }
 \examples{
-pdf(file = tempfile(fileext = ".pdf"))
 # Loading ExampleData5 dataset with batch column
 data_df <- ExampleData5[,-c(2,4)]
 data_df <- dplyr::filter(data_df, Group != "ND")
 
-results <- cyt_mint_splsda(data_df, group_col = "Group",
+cyt_mint_splsda(data_df, group_col = "Group",
  batch_col = "Batch", colors = c("black", "purple"),
  ellipse = TRUE, var_num = 25, comp_num = 2,
  scale = "log2", verbose = FALSE)
-
-dev.off()
 
 }

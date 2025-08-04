@@ -249,7 +249,7 @@ cyt_anova(data_df[, c(1:2, 5:6)], format_output = TRUE)
 
 ## 6. Multivariate Analysis
 
-### Partial Least Squares Discriminant Analysis (PLS-DA)
+### Sparse Partial Least Squares Discriminant Analysis (sPLS-DA)
 
 ``` r
 # cyt_plsda function.
@@ -275,6 +275,28 @@ cyt_splsda(
 
 <img src="man/figures/readme-Multivariate1-1.png" width="50%" /><img src="man/figures/readme-Multivariate1-2.png" width="50%" /><img src="man/figures/readme-Multivariate1-3.png" width="50%" /><img src="man/figures/readme-Multivariate1-4.png" width="50%" /><img src="man/figures/readme-Multivariate1-5.png" width="50%" /><img src="man/figures/readme-Multivariate1-6.png" width="50%" /><img src="man/figures/readme-Multivariate1-7.png" width="50%" /><img src="man/figures/readme-Multivariate1-8.png" width="50%" /><img src="man/figures/readme-Multivariate1-9.png" width="50%" /><img src="man/figures/readme-Multivariate1-10.png" width="50%" /><img src="man/figures/readme-Multivariate1-11.png" width="50%" /><img src="man/figures/readme-Multivariate1-12.png" width="50%" />
 
+### Multivariate INTegration Partial Least Squares Discriminant Analysis (MINT sPLS-DA)
+
+``` r
+# cyt_mint_plsda function.
+data_df <- ExampleData5[, -c(2, 4)]
+data_df <- dplyr::filter(data_df, Group != "ND")
+
+cyt_mint_splsda(
+  data_df,
+  group_col = "Group",
+  batch_col = "Batch",
+  colors = c("black", "purple"),
+  ellipse = TRUE,
+  var_num = 25,
+  comp_num = 2,
+  scale = "log2",
+  verbose = FALSE
+)
+```
+
+<img src="man/figures/readme-Multivariate2-1.png" width="50%" /><img src="man/figures/readme-Multivariate2-2.png" width="50%" /><img src="man/figures/readme-Multivariate2-3.png" width="50%" /><img src="man/figures/readme-Multivariate2-4.png" width="50%" /><img src="man/figures/readme-Multivariate2-5.png" width="50%" /><img src="man/figures/readme-Multivariate2-6.png" width="50%" /><img src="man/figures/readme-Multivariate2-7.png" width="50%" /><img src="man/figures/readme-Multivariate2-8.png" width="50%" /><img src="man/figures/readme-Multivariate2-9.png" width="50%" />
+
 ### Principal Component Analysis (PCA)
 
 ``` r
@@ -291,7 +313,7 @@ cyt_pca(
 )
 ```
 
-<img src="man/figures/readme-Multivariate2-1.png" width="50%" /><img src="man/figures/readme-Multivariate2-2.png" width="50%" /><img src="man/figures/readme-Multivariate2-3.png" width="50%" /><img src="man/figures/readme-Multivariate2-4.png" width="50%" /><img src="man/figures/readme-Multivariate2-5.png" width="50%" /><img src="man/figures/readme-Multivariate2-6.png" width="50%" />
+<img src="man/figures/readme-Multivariate3-1.png" width="50%" /><img src="man/figures/readme-Multivariate3-2.png" width="50%" /><img src="man/figures/readme-Multivariate3-3.png" width="50%" /><img src="man/figures/readme-Multivariate3-4.png" width="50%" /><img src="man/figures/readme-Multivariate3-5.png" width="50%" /><img src="man/figures/readme-Multivariate3-6.png" width="50%" />
 
 ## 7. Statistical Visualizations
 

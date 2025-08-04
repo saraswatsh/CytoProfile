@@ -112,8 +112,6 @@ cyt_pca <- function(
   } else {
     message("Results based on no transformation:")
   }
-
-  # Extract the grouping variable from your data (using group_col or group_col2)
   # Extract grouping variable(s)
   if (group_col == group_col2) {
     group_vec <- data[[group_col]]

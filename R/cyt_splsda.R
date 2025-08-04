@@ -138,7 +138,7 @@ cyt_splsda <- function(
     )
     if (verbose) message("Applied log2 transformation.\n")
   } else if (is.null(scale) && verbose) {
-    message("No data transformation applied.\n")
+    if (verbose) message("No data transformation applied.\n")
   }
   if (!is.null(batch_col)) {
     if (!(batch_col %in% names(data))) {
@@ -160,15 +160,6 @@ cyt_splsda <- function(
       )) %>%
       dplyr::ungroup()
   }
-  # Extract the grouping variable from your data (using group_col or group_col2)
-  # Extract grouping variable(s)
-  if (group_col == group_col2) {
-    group_vec <- data[[group_col]]
-  } else {
-    # Combine the two grouping columns into a composite factor
-    group_vec <- data[[group_col2]]
-  }
-
   # Now perform the check for pch_values:
   if (is.null(pch_values)) {
     stop("Please enter a vector of pch values, e.g. c(16, 4).")
@@ -449,7 +440,7 @@ cyt_splsda <- function(
       lapply(seq_len(comp_num), function(comp) {
         force(comp) # capture `comp` in the closure
         function() {
-          # recreate your data frame
+          # recreate  data frame
           vscore <- as.data.frame(all_vip_scores[, comp, drop = FALSE])
           vscore$metabo <- rownames(vscore)
           vscore$comp <- vscore[, 1]
@@ -887,7 +878,8 @@ cyt_splsda <- function(
             c(
               group_col,
               group_col2,
-              multilevel_col
+              multilevel_col, 
+              batch_col
             )
         )
       ]
@@ -1135,7 +1127,7 @@ cyt_splsda <- function(
         lapply(seq_len(comp_num), function(comp) {
           force(comp) # capture `comp` in the closure
           function() {
-            # recreate your data frame
+            # recreate data frame
             vscore <- as.data.frame(all_vip_scores[, comp, drop = FALSE])
             vscore$metabo <- rownames(vscore)
             vscore$comp <- vscore[, 1]
