@@ -13,7 +13,7 @@ cyt_splsda(
   batch_col = NULL,
   ind_names = FALSE,
   colors = NULL,
-  pdf_title,
+  pdf_title = NULL,
   ellipse = FALSE,
   bg = FALSE,
   conf_mat = FALSE,
