@@ -339,7 +339,7 @@ cyt_pca <- function(
       correlation_circle = corr_plot,
       scree_plot = scree_plot
     )
-    invisible(result_list)
+    return(invisible(result_list))
   } else {
     # Case 2: When grouping and treatment columns differ
     levels_vec <- unique(data[[group_col2]])
@@ -549,7 +549,7 @@ cyt_pca <- function(
       correlation_circle = corr_plot,
       scree_plot = scree_plot
     )
-    invisible(result_list)
+    return(invisible(result_list))
   }
   if (!is.null(pdf_title)) {
     if (dev.cur() > 1) dev.off()

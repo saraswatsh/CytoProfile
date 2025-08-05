@@ -83,6 +83,7 @@
 #' @export
 #' @importFrom mixOmics splsda background.predict perf vip auroc plotIndiv plotLoadings
 #' @import ggplot2
+#' @import dplyr
 #' @importFrom plot3D scatter3D
 #' @importFrom reshape2 melt
 #' @importFrom caret confusionMatrix
@@ -95,7 +96,7 @@ cyt_splsda <- function(
   batch_col = NULL,
   ind_names = FALSE,
   colors = NULL,
-  pdf_title,
+  pdf_title = NULL,
   ellipse = FALSE,
   bg = FALSE,
   conf_mat = FALSE,
@@ -149,15 +150,20 @@ cyt_splsda <- function(
         "Applying per-batch z-score normalization on numeric predictors.\n"
       )
     }
-    # Identify which columns are “ID” columns to skip
     id_cols2 <- unique(c(id_cols, batch_col))
-    # Perform z-score within each batch
+    num_cols <- setdiff(
+      names(data)[sapply(data, is.numeric)],
+      id_cols2
+    )
+
     data <- data %>%
-      dplyr::group_by(dplyr::across(dplyr::all_of(batch_col))) %>%
-      dplyr::mutate(dplyr::across(
-        .cols = dplyr::where(is.numeric) & !dplyr::all_of(id_cols2),
-        .fns = ~ (. - mean(., na.rm = TRUE)) / sd(., na.rm = TRUE)
-      )) %>%
+      dplyr::group_by(!!dplyr::sym(batch_col)) %>%
+      dplyr::mutate(
+        dplyr::across(
+          .cols = dplyr::all_of(num_cols),
+          .fns = ~ (. - mean(., na.rm = TRUE)) / sd(., na.rm = TRUE)
+        )
+      ) %>%
       dplyr::ungroup()
   }
   # Now perform the check for pch_values:
@@ -862,7 +868,7 @@ cyt_splsda <- function(
       vip_ROC = vip_ROC,
       vip_CV = vip_CV
     )
-    invisible(result_list)
+    return(invisible(result_list))
   } else {
     # Case 2: Both group and treatment columns are provided and they differ.
     levels_vec <- unique(data[[group_col2]])
@@ -878,13 +884,13 @@ cyt_splsda <- function(
             c(
               group_col,
               group_col2,
-              multilevel_col, 
+              multilevel_col,
               batch_col
             )
         )
       ]
       the_data_df <- the_data_df[, sapply(the_data_df, is.numeric)]
-      the_groups <- as.vector(data[condt, group_col])
+      the_groups <- as.vector(data[[group_col]][condt])
 
       if (length(unique(the_groups)) < 2) {
         stop(
@@ -1494,7 +1500,7 @@ cyt_splsda <- function(
       vip_ROC = vip_ROC,
       vip_CV = vip_CV
     )
-    invisible(result_list)
+    return(invisible(result_list))
   }
   if (!is.null(pdf_title)) {
     dev.off()
