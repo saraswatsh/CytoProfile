@@ -307,8 +307,143 @@ Folder</a>.</p>
 <span>  group_col <span class="op">=</span> <span class="st">"Group"</span>,</span>
 <span>  group_col2 <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
 <span>  roc <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p><img src="getting_started_files/figure-html/Multivariate1-1.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-2.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-3.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-4.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-5.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-6.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-7.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-8.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-9.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-10.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-11.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-12.png" width="25%"></p>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; $overall_indiv_plot</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $overall_3D</span></span>
+<span><span class="co">#&gt; NULL</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $overall_ROC</span></span>
+<span><span class="co">#&gt; $overall_ROC$Comp1</span></span>
+<span><span class="co">#&gt;                  AUC   p-value</span></span>
+<span><span class="co">#&gt; PreT2D vs T2D 0.8347 2.946e-06</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $overall_ROC$Comp2</span></span>
+<span><span class="co">#&gt;                  AUC  p-value</span></span>
+<span><span class="co">#&gt; PreT2D vs T2D 0.8797 1.14e-07</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $overall_ROC$graph.Comp2</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $overall_CV</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $loadings</span></span>
+<span><span class="co">#&gt; $loadings$Comp1</span></span>
+<span><span class="co">#&gt; function () </span></span>
+<span><span class="co">#&gt; {</span></span>
+<span><span class="co">#&gt;     mixOmics::plotLoadings(cytokine_splsda, comp = comp, contrib = "max", </span></span>
+<span><span class="co">#&gt;         method = "mean", size.name = 1, size.legend = 1, legend.color = colors, </span></span>
+<span><span class="co">#&gt;         title = paste("Loadings for Component", comp, ":", overall_analysis), </span></span>
+<span><span class="co">#&gt;         size.title = 1, legend.title = group_col)</span></span>
+<span><span class="co">#&gt; }</span></span>
+<span><span class="co">#&gt; &lt;bytecode: 0x557ebbd82d30&gt;</span></span>
+<span><span class="co">#&gt; &lt;environment: 0x557ec0ef94d8&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $loadings$Comp2</span></span>
+<span><span class="co">#&gt; function () </span></span>
+<span><span class="co">#&gt; {</span></span>
+<span><span class="co">#&gt;     mixOmics::plotLoadings(cytokine_splsda, comp = comp, contrib = "max", </span></span>
+<span><span class="co">#&gt;         method = "mean", size.name = 1, size.legend = 1, legend.color = colors, </span></span>
+<span><span class="co">#&gt;         title = paste("Loadings for Component", comp, ":", overall_analysis), </span></span>
+<span><span class="co">#&gt;         size.title = 1, legend.title = group_col)</span></span>
+<span><span class="co">#&gt; }</span></span>
+<span><span class="co">#&gt; &lt;bytecode: 0x557ebbd82d30&gt;</span></span>
+<span><span class="co">#&gt; &lt;environment: 0x557ec0efd068&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $vip_scores</span></span>
+<span><span class="co">#&gt; $vip_scores$Comp1</span></span>
+<span><span class="co">#&gt; function () </span></span>
+<span><span class="co">#&gt; {</span></span>
+<span><span class="co">#&gt;     vscore &lt;- as.data.frame(all_vip_scores[, comp, drop = FALSE])</span></span>
+<span><span class="co">#&gt;     vscore$metabo &lt;- rownames(vscore)</span></span>
+<span><span class="co">#&gt;     vscore$comp &lt;- vscore[, 1]</span></span>
+<span><span class="co">#&gt;     bar &lt;- vscore[order(vscore$comp, decreasing = TRUE), c("metabo", </span></span>
+<span><span class="co">#&gt;         "comp")]</span></span>
+<span><span class="co">#&gt;     p &lt;- ggplot2::ggplot(bar, ggplot2::aes(x = metabo, y = comp)) + </span></span>
+<span><span class="co">#&gt;         ggplot2::geom_bar(stat = "identity", position = "dodge") + </span></span>
+<span><span class="co">#&gt;         ggplot2::scale_y_continuous(limits = c(0, max(bar$comp))) + </span></span>
+<span><span class="co">#&gt;         ggplot2::geom_hline(yintercept = 1, color = "grey") + </span></span>
+<span><span class="co">#&gt;         ggplot2::scale_x_discrete(limits = factor(bar$metabo)) + </span></span>
+<span><span class="co">#&gt;         ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, </span></span>
+<span><span class="co">#&gt;             hjust = 1, size = 15), panel.grid = ggplot2::element_blank(), </span></span>
+<span><span class="co">#&gt;             panel.background = ggplot2::element_rect(color = "black", </span></span>
+<span><span class="co">#&gt;                 fill = "transparent")) + ggplot2::coord_flip() + </span></span>
+<span><span class="co">#&gt;         ggplot2::labs(x = "Variables", y = "VIP score") + ggplot2::ggtitle(paste("Component", </span></span>
+<span><span class="co">#&gt;         comp))</span></span>
+<span><span class="co">#&gt;     print(p)</span></span>
+<span><span class="co">#&gt; }</span></span>
+<span><span class="co">#&gt; &lt;bytecode: 0x557ebbd7e550&gt;</span></span>
+<span><span class="co">#&gt; &lt;environment: 0x557ec1f85818&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $vip_scores$Comp2</span></span>
+<span><span class="co">#&gt; function () </span></span>
+<span><span class="co">#&gt; {</span></span>
+<span><span class="co">#&gt;     vscore &lt;- as.data.frame(all_vip_scores[, comp, drop = FALSE])</span></span>
+<span><span class="co">#&gt;     vscore$metabo &lt;- rownames(vscore)</span></span>
+<span><span class="co">#&gt;     vscore$comp &lt;- vscore[, 1]</span></span>
+<span><span class="co">#&gt;     bar &lt;- vscore[order(vscore$comp, decreasing = TRUE), c("metabo", </span></span>
+<span><span class="co">#&gt;         "comp")]</span></span>
+<span><span class="co">#&gt;     p &lt;- ggplot2::ggplot(bar, ggplot2::aes(x = metabo, y = comp)) + </span></span>
+<span><span class="co">#&gt;         ggplot2::geom_bar(stat = "identity", position = "dodge") + </span></span>
+<span><span class="co">#&gt;         ggplot2::scale_y_continuous(limits = c(0, max(bar$comp))) + </span></span>
+<span><span class="co">#&gt;         ggplot2::geom_hline(yintercept = 1, color = "grey") + </span></span>
+<span><span class="co">#&gt;         ggplot2::scale_x_discrete(limits = factor(bar$metabo)) + </span></span>
+<span><span class="co">#&gt;         ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, </span></span>
+<span><span class="co">#&gt;             hjust = 1, size = 15), panel.grid = ggplot2::element_blank(), </span></span>
+<span><span class="co">#&gt;             panel.background = ggplot2::element_rect(color = "black", </span></span>
+<span><span class="co">#&gt;                 fill = "transparent")) + ggplot2::coord_flip() + </span></span>
+<span><span class="co">#&gt;         ggplot2::labs(x = "Variables", y = "VIP score") + ggplot2::ggtitle(paste("Component", </span></span>
+<span><span class="co">#&gt;         comp))</span></span>
+<span><span class="co">#&gt;     print(p)</span></span>
+<span><span class="co">#&gt; }</span></span>
+<span><span class="co">#&gt; &lt;bytecode: 0x557ebbd7e550&gt;</span></span>
+<span><span class="co">#&gt; &lt;environment: 0x557ec1f853b8&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $vip_indiv_plot</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $vip_loadings</span></span>
+<span><span class="co">#&gt; $vip_loadings$Comp1</span></span>
+<span><span class="co">#&gt; function () </span></span>
+<span><span class="co">#&gt; {</span></span>
+<span><span class="co">#&gt;     mixOmics::plotLoadings(cytokine_splsda2, comp = comp, contrib = "max", </span></span>
+<span><span class="co">#&gt;         method = "mean", size.name = 1, size.legend = 1, legend.color = colors, </span></span>
+<span><span class="co">#&gt;         title = paste("Loadings for Component", comp, "(VIP &gt; 1):", </span></span>
+<span><span class="co">#&gt;             overall_analysis), size.title = 1, legend.title = group_col)</span></span>
+<span><span class="co">#&gt; }</span></span>
+<span><span class="co">#&gt; &lt;bytecode: 0x557ebbd66358&gt;</span></span>
+<span><span class="co">#&gt; &lt;environment: 0x557ec04a9838&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $vip_loadings$Comp2</span></span>
+<span><span class="co">#&gt; function () </span></span>
+<span><span class="co">#&gt; {</span></span>
+<span><span class="co">#&gt;     mixOmics::plotLoadings(cytokine_splsda2, comp = comp, contrib = "max", </span></span>
+<span><span class="co">#&gt;         method = "mean", size.name = 1, size.legend = 1, legend.color = colors, </span></span>
+<span><span class="co">#&gt;         title = paste("Loadings for Component", comp, "(VIP &gt; 1):", </span></span>
+<span><span class="co">#&gt;             overall_analysis), size.title = 1, legend.title = group_col)</span></span>
+<span><span class="co">#&gt; }</span></span>
+<span><span class="co">#&gt; &lt;bytecode: 0x557ebbd66358&gt;</span></span>
+<span><span class="co">#&gt; &lt;environment: 0x557ec04a9598&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $vip_3D</span></span>
+<span><span class="co">#&gt; NULL</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $vip_ROC</span></span>
+<span><span class="co">#&gt; $vip_ROC$Comp1</span></span>
+<span><span class="co">#&gt;                  AUC  p-value</span></span>
+<span><span class="co">#&gt; PreT2D vs T2D 0.8476 1.21e-06</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $vip_ROC$Comp2</span></span>
+<span><span class="co">#&gt;                  AUC   p-value</span></span>
+<span><span class="co">#&gt; PreT2D vs T2D 0.8659 3.212e-07</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $vip_ROC$graph.Comp2</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $vip_CV</span></span></code></pre></div>
+<p><img src="getting_started_files/figure-html/Multivariate1-1.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-2.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-3.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-4.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-5.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-6.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-7.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-8.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-9.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-10.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-11.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-12.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-13.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-14.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-15.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-16.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-17.png" width="25%"><img src="getting_started_files/figure-html/Multivariate1-18.png" width="25%"></p>
 </div>
 <div class="section level4">
 <h4 id="multivariate-integration-partial-least-squares-discriminant-analysis-pls-da">Multivariate INTegration Partial Least Squares Discriminant Analysis
