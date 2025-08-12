@@ -158,7 +158,7 @@ cyt_mint_splsda <- function(
 
     # --- 4. Prepare plot titles and background object ---
     title_label <- if (nzchar(overall_analysis)) {
-      paste("MINT sPLS-DA:", overall_analysis)
+      paste(overall_analysis)
     } else {
       "MINT sPLS-DA Global Plot"
     }
@@ -318,6 +318,7 @@ cyt_mint_splsda <- function(
   } else {
     # Case 2: If group_col != group_col2, perform stratified analysis
     levels_vec <- unique(data[[group_col2]])
+    indiv_plots <- list()
     results_list <- list()
     for (lvl in levels_vec) {
       # 1) subset to only those rows where group_col2 == lvl
@@ -357,7 +358,7 @@ cyt_mint_splsda <- function(
 
       # --- 4. Prepare plot titles and background object ---
       title_label <- if (nzchar(lvl)) {
-        paste("MINT sPLS-DA:", lvl)
+        paste(lvl)
       } else {
         "MINT sPLS-DA Global Plot"
       }
@@ -390,6 +391,7 @@ cyt_mint_splsda <- function(
         plot_args$background <- bg_obj
       }
       global_indiv_plot <- do.call(mixOmics::plotIndiv, plot_args)
+      indiv_plots[[as.character(lvl)]] <- global_indiv_plot$graph
 
       # -- Global loadings plots --
       global_loadings_plots <- setNames(
@@ -506,6 +508,7 @@ cyt_mint_splsda <- function(
       }
       results_list[[lvl]] <- list(
         global_indiv_plot = global_indiv_plot$graph,
+        all_indiv_plots = indiv_plots,
         global_loadings_plots = global_loadings_plots,
         partial_indiv_plot = partial_indiv_plot$graph,
         partial_loadings_plots = partial_loadings_plots,

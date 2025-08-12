@@ -277,6 +277,9 @@ cyt_splsda <- function(
       plot_args$background <- bg_maxdist
     }
     overall_indiv_plot <- do.call(mixOmics::plotIndiv, plot_args)
+
+    overall_indiv_plots <- list(Overall = overall_indiv_plot$graph)
+
     overall_3D <- NULL
     if (!is.null(style) && comp_num == 3 && (tolower(style) == "3d")) {
       cytokine_scores <- cytokine_splsda$variates$X
@@ -606,6 +609,8 @@ cyt_splsda <- function(
       }
       vip_indiv_plot <- do.call(mixOmics::plotIndiv, plot_args2)
 
+      vip_indiv_plots <- list(VIP = vip_indiv_plot$graph)
+
       if (!is.null(style) && comp_num == 3 && (tolower(style) == "3d")) {
         cytokine_scores2 <- cytokine_splsda2$variates$X
         vip_3D <- function() {
@@ -872,6 +877,8 @@ cyt_splsda <- function(
   } else {
     # Case 2: Both group and treatment columns are provided and they differ.
     levels_vec <- unique(data[[group_col2]])
+    indiv_plots <- list()
+    vip_indiv_plots <- list()
     for (i in seq_along(levels_vec)) {
       current_level <- levels_vec[i]
       overall_analysis <- current_level
@@ -961,6 +968,7 @@ cyt_splsda <- function(
         plot_args$background <- bg_maxdist
       }
       overall_indiv_plot <- do.call(mixOmics::plotIndiv, plot_args)
+      indiv_plots[[as.character(current_level)]] <- overall_indiv_plot$graph
 
       overall_3D <- NULL
 
@@ -1236,6 +1244,7 @@ cyt_splsda <- function(
         plot_args2$background <- bg_maxdist2
       }
       vip_indiv_plot <- do.call(mixOmics::plotIndiv, plot_args2)
+      vip_indiv_plots[[as.character(current_level)]] <- vip_indiv_plot$graph
 
       if (!is.null(style) && comp_num == 3 && (tolower(style) == "3d")) {
         cytokine_scores2 <- cytokine_splsda2$variates$X
@@ -1489,12 +1498,14 @@ cyt_splsda <- function(
     }
     result_list <- list(
       overall_indiv_plot = overall_indiv_plot$graph,
+      all_indiv_plots = indiv_plots,
       overall_3D = overall_3D,
       overall_ROC = overall_ROC,
       overall_CV = overall_CV,
       loadings = loadings_list,
       vip_scores = vip_scores,
       vip_indiv_plot = vip_indiv_plot$graph,
+      vip_indiv_plots = vip_indiv_plots,
       vip_loadings = vip_loadings,
       vip_3D = vip_3D,
       vip_ROC = vip_ROC,

@@ -343,6 +343,7 @@ cyt_pca <- function(
   } else {
     # Case 2: When grouping and treatment columns differ
     levels_vec <- unique(data[[group_col2]])
+    indiv_plots <- list()
     for (i in seq_along(levels_vec)) {
       current_level <- levels_vec[i]
       title_sub <- current_level
@@ -391,7 +392,9 @@ cyt_pca <- function(
         plot_args$ellipse <- TRUE
       }
       overall_indiv_plot <- do.call(mixOmics::plotIndiv, plot_args)
-
+      indiv_plots[[as.character(
+        current_level
+      )]] <- overall_indiv_plot$graph
       # 3D Plot if applicable
       if (!is.null(style) && comp_num == 3 && (tolower(style) == "3d")) {
         cytokine_scores <- cytokine_pca$variates$X
@@ -544,6 +547,7 @@ cyt_pca <- function(
     }
     result_list <- list(
       overall_indiv_plot = overall_indiv_plot,
+      all_indiv_plots = indiv_plots,
       loadings = loadings_list,
       biplot = biplot_obj,
       correlation_circle = corr_plot,
