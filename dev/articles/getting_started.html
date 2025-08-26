@@ -127,7 +127,7 @@ Folder</a>.</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span> <span class="co"># For creating all the ggplot-based visualizations.</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">gridExtra</span><span class="op">)</span> <span class="co"># For arranging multiple plots on a single page.</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggrepel.slowkow.com/" class="external-link">ggrepel</a></span><span class="op">)</span> <span class="co"># For improved label placement in plots (e.g., volcano plots).</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/talgalili/gplots" class="external-link">gplots</a></span><span class="op">)</span> <span class="co"># For heatmap.2, which is used to generate heatmaps.</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">pheatmap</span><span class="op">)</span> <span class="co"># For heatmap.2, which is used to generate heatmaps.</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">plot3D</span><span class="op">)</span> <span class="co"># For creating 3D scatter plots in PCA and sPLS-DA analyses.</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/hadley/reshape" class="external-link">reshape2</a></span><span class="op">)</span> <span class="co"># For data transformation (e.g., melt) in cross-validation plots.</span></span>
 <span></span>
@@ -378,7 +378,7 @@ Folder</a>.</p>
 <span><span class="fu"><a href="../reference/cyt_heatmap.html">cyt_heatmap</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">data_df</span>,</span>
 <span>  scale <span class="op">=</span> <span class="st">"log2"</span>, <span class="co"># Optional scaling</span></span>
-<span>  annotation_col_name <span class="op">=</span> <span class="st">"Group"</span>,</span>
+<span>  annotation_col <span class="op">=</span> <span class="st">"Group"</span>,</span>
 <span>  title <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="getting_started_files/figure-html/EDA7-1.png" width="42%"></p>
