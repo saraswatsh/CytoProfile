@@ -10,6 +10,8 @@
 
 * Added new "ExampleData5" dataset which is the same as "ExampleData1" but with a batch column for demonstration of the 'batch_col' argument in 'cyt_mint_splsda'.
 
+* 'cyt_heatmap' now uses pheatmap for plotting, and provides a proper legend along with additional scaling options.
+
 ## Minor Changes and Bug Fixes
 
 * Updated the vignette and README files to include examples of the new 'cyt_mint_splsda' function.

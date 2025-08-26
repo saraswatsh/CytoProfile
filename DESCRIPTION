@@ -21,7 +21,7 @@ Imports:
     caret,
     xgboost,
     randomForest,
-    gplots,
+    pheatmap,
     e1071, 
     ggplot2,
     ggrepel, 

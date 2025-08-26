@@ -2,11 +2,13 @@
 #'
 #' @param data A data frame containing the input data. Only numeric columns
 #' will be used to generate the heatmap.
-#' @param scale Character. An optional scaling option. If set to "log2",
-#' the numeric data will be log2-transformed (with non-positive values
-#' set to NA). Default is NULL.
-#' @param annotation_col_name Character. An optional column name from
+#' @param scale Character. An optional scaling option. Options are NULL
+#' (no scaling), "log2" (log2 transformation), "row_zscore" (z-score scaling by row),
+#' or "col_zscore" (z-score scaling by column). Default is NULL.
+#' @param annotation_col Character. An optional column name from
 #' \code{data} to be used for generating annotation colors. Default is NULL.
+#' @param annotation_side Character. Specifies whether the annotation should
+#' be applied to rows or columns. Options are "auto", "row", or "col".
 #' @param title Character. The title of the heatmap and the file name for
 #' saving the plot. The file extension (".pdf" or ".png") determines the
 #' output format. If \code{NULL}, the plot is generated on the current
@@ -14,15 +16,16 @@
 #'
 #' @description
 #' This function creates a heatmap using the numeric columns from the
-#' provided data frame. If requested via the \code{scale} parameter,
-#' the function applies a log2 transformation to the data (with non-positive
-#' values replaced by NA). The heatmap is saved as a file,
+#' provided data frame. It supports various scaling options and allows for row or
+#' column annotations. The heatmap is saved as a file,
 #' with the format determined by the file extension in \code{title}.
 #'
 #' @return The function does not return a value. It saves the heatmap to a file.
 #'
 #' @export
-#' @importFrom gplots heatmap.2
+#' @importFrom pheatmap pheatmap
+#' @importFrom grDevices colorRampPalette
+#' @importFrom stats setNames
 #'
 #' @examples
 #' # Load sample data
@@ -33,74 +36,141 @@
 #' cyt_heatmap(
 #'   data = data_df[, -c(2:3)],
 #'   scale = "log2",  # Optional scaling
-#'   annotation_col_name = "Group",
+#'   annotation_col = "Group",
+#'   annotation_side = "auto",
 #'   title = NULL
 #' )
 #'
-cyt_heatmap <- function(data, scale = NULL, annotation_col_name = NULL, title) {
-  if (!is.null(title)){
-    if (grepl("\\.pdf$", title, ignore.case = TRUE)) {
-      pdf(file = title)
-    } else if (grepl("\\.png$", title, ignore.case = TRUE)) {
-      png(filename = title, res = 300, width = 2100, height = 2100, units = "px")
-    } else {
-      stop("Title must end with .pdf or .png")
-    }
-  }
+cyt_heatmap <- function(
+  data,
+  scale = c(NULL, "log2", "row_zscore", "col_zscore"),
+  annotation_col = NULL,
+  annotation_side = c("auto", "row", "col"),
+  title = NULL
+) {
+  scale <- match.arg(scale)
+  annotation_side <- match.arg(annotation_side)
 
-  # Ensure data is a data frame and extract only numeric data
   if (!is.data.frame(data)) {
-    stop("Input data must be a data frame.")
+    stop("`data` must be a data.frame.")
   }
-  numeric_data <- data[, sapply(data, is.numeric), drop = FALSE]
-  if (ncol(data) != ncol(numeric_data)) {
-    warning("Non-numeric columns detected. Subsetting to
-            numeric columns only.")
+  num <- data[, vapply(data, is.numeric, logical(1)), drop = FALSE]
+  if (!ncol(num)) {
+    stop("No numeric columns found in `data`.")
+  }
+  mat <- as.matrix(num)
+  if (is.null(rownames(mat))) {
+    rownames(mat) <- seq_len(nrow(mat))
+  }
+  if (is.null(colnames(mat))) {
+    colnames(mat) <- paste0("V", seq_len(ncol(mat)))
   }
 
-  # Apply log2 transformation if requested
-  if (!is.null(scale) && scale == "log2") {
-    numeric_data[numeric_data <= 0] <- NA  # Set non-positive values to NA
-    numeric_data <- log2(numeric_data)
+  # ---- transform / scale (mapped to pheatmap's 'scale') ----
+  pm_scale <- "none"
+  if (identical(scale, "log2")) {
+    mat <- log2(mat + 0.005) # small offset to avoid log(0)
+  } else if (identical(scale, "row_zscore")) {
+    pm_scale <- "row"
+  } else if (identical(scale, "col_zscore")) {
+    pm_scale <- "column"
   }
 
-  # Generate annotation colors if annotation_col_name is provided
-  # and exists in data
-  side_colors <- NULL
-  if (!is.null(annotation_col_name) && annotation_col_name %in% names(data)) {
-    ann_data <- as.factor(data[[annotation_col_name]])
-    # Check if we have enough annotations for each numeric column
-    if (length(ann_data) >= ncol(numeric_data)) {
-      num_levels <- length(levels(ann_data))
-      # Generate a color for each level and subset to match the number of
-      # numeric cols
-      side_colors <- rainbow(num_levels)[as.integer(
-        ann_data[seq_len(ncol(numeric_data))])]
+  # ---- annotation handling ----
+  ann_row <- ann_col <- NULL
+  ann_colors <- NULL
+  ann_title <- NULL
+
+  if (!is.null(annotation_col)) {
+    if (
+      is.character(annotation_col) &&
+        length(annotation_col) == 1 &&
+        annotation_col %in% names(data)
+    ) {
+      ann <- factor(data[[annotation_col]])
+      ann_title <- annotation_col
+    } else if (length(annotation_col) %in% c(nrow(mat), ncol(mat))) {
+      ann <- factor(annotation_col)
+      ann_title <- "Annotation"
     } else {
-      warning("Length of annotation column is less than the number of
-               numeric columns. ",
-              "Skipping annotation colors.")
+      ann <- NULL
+      warning(
+        "`annotation_col` must be a column in `data` or a vector matching rows or columns; skipping."
+      )
+    }
+
+    if (!is.null(ann)) {
+      side <- if (annotation_side == "auto") {
+        if (length(ann) == nrow(mat)) {
+          "row"
+        } else if (length(ann) == ncol(mat)) {
+          "col"
+        } else {
+          "row"
+        }
+      } else {
+        annotation_side
+      }
+
+      levs <- levels(ann)
+      cols <- grDevices::rainbow(length(levs))
+      cmap <- stats::setNames(cols, levs)
+
+      if (side == "row" && length(ann) == nrow(mat)) {
+        ann_row <- stats::setNames(
+          data.frame(ann, row.names = rownames(mat)),
+          ann_title
+        )
+        ann_colors <- list()
+        ann_colors[[ann_title]] <- cmap
+      } else if (side == "col" && length(ann) == ncol(mat)) {
+        ann_col <- stats::setNames(
+          data.frame(ann, row.names = colnames(mat)),
+          ann_title
+        )
+        ann_colors <- list()
+        ann_colors[[ann_title]] <- cmap
+      } else {
+        warning(
+          "`annotation_col` length does not match the chosen side; skipping annotation."
+        )
+      }
     }
   }
 
-  # Build argument list for heatmap.2: only include ColSideColors if
-  # side_colors is not NULL
-  heatmap_args <- list(
-    as.matrix(numeric_data),
-    distfun = function(x) dist(x, method = "euclidean"),
-    hclustfun = function(x) hclust(x, method = "complete"),
-    dendrogram = "both",
-    trace = "column",
-    key = TRUE,
-    cexCol = 1,
-    margins = c(10, 10)
-  )
-  if (!is.null(side_colors)) {
-    heatmap_args$ColSideColors <- side_colors
+  # ---- draw with pheatmap ----
+  filename <- if (
+    !is.null(title) && grepl("\\.(pdf|png)$", title, ignore.case = TRUE)
+  ) {
+    title
+  } else {
+    NA
+  }
+  main <- if (
+    !is.null(title) && !grepl("\\.(pdf|png)$", title, ignore.case = TRUE)
+  ) {
+    title
+  } else {
+    NA
   }
 
-  do.call(gplots::heatmap.2, heatmap_args)
-  if(!is.null(title)){
-    if (dev.cur() > 1) dev.off()
-  }
+  pheatmap::pheatmap(
+    mat,
+    scale = pm_scale,
+    color = grDevices::colorRampPalette(c("#253494", "#f7f7f7", "#b30000"))(
+      255
+    ),
+    cluster_rows = TRUE,
+    cluster_cols = TRUE,
+    border_color = NA,
+    annotation_row = ann_row,
+    annotation_col = ann_col,
+    annotation_colors = ann_colors,
+    legend = TRUE,
+    annotation_legend = TRUE,
+    filename = filename,
+    main = main
+  )
+
+  invisible(list(annotation_map = ann_colors))
 }

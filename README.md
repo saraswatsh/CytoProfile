@@ -70,7 +70,7 @@ library(tidyr) # For reshaping data (e.g., pivot_longer, pivot_wider).
 library(ggplot2) # For creating all the ggplot-based visualizations.
 library(gridExtra) # For arranging multiple plots on a single page.
 library(ggrepel) # For improved label placement in plots (e.g., volcano plots).
-library(gplots) # For heatmap.2, which is used to generate heatmaps.
+library(pheatmap) # For heatmap.2, which is used to generate heatmaps.
 library(plot3D) # For creating 3D scatter plots in PCA and sPLS-DA analyses.
 library(reshape2) # For data transformation (e.g., melt) in cross-validation plots.
 
@@ -342,7 +342,7 @@ cyt_volc(
 cyt_heatmap(
   data = data_df,
   scale = "log2", # Optional scaling
-  annotation_col_name = "Group",
+  annotation_col = "Group",
   title = NULL
 )
 ```
