@@ -37,6 +37,7 @@
 #'   \code{printResRaw} and/or \code{printResLog} is \code{TRUE}, the function
 #'   returns the corresponding summary statistics as a data frame or a list of
 #'   data frames.
+#' @author Xiaohua Douglas Zhang and Shubh Saraswat
 #'
 #' @details A cutoff is computed as one-tenth of the minimum positive value
 #'   among all numeric measurement columns to avoid taking logarithms of zero.
@@ -62,8 +63,13 @@
 #' @importFrom gridExtra grid.arrange
 #'
 
-cyt_skku <- function(data, group_cols = NULL, pdf_title = NULL,
-                     print_res_raw = FALSE, print_res_log = FALSE) {
+cyt_skku <- function(
+  data,
+  group_cols = NULL,
+  pdf_title = NULL,
+  print_res_raw = FALSE,
+  print_res_log = FALSE
+) {
   # Identify measurement columns.
   # If grouping columns are provided, exclude them from measurement columns.
   if (!is.null(group_cols)) {
@@ -82,8 +88,9 @@ cyt_skku <- function(data, group_cols = NULL, pdf_title = NULL,
   compute_metrics <- function(Y, groups) {
     n <- tapply(Y, groups, function(x) sum(!is.na(x)))
     center <- tapply(Y, groups, mean, na.rm = TRUE)
-    spread <- tapply(Y, groups,
-                     function(x) sd(x, na.rm = TRUE) / sqrt(sum(!is.na(x))))
+    spread <- tapply(Y, groups, function(x) {
+      sd(x, na.rm = TRUE) / sqrt(sum(!is.na(x)))
+    })
     skew <- tapply(Y, groups, e1071::skewness, na.rm = TRUE)
     kurt <- tapply(Y, groups, e1071::kurtosis, na.rm = TRUE)
 
@@ -168,40 +175,42 @@ cyt_skku <- function(data, group_cols = NULL, pdf_title = NULL,
     pdf(file = pdf_title)
     on.exit(dev.off(), add = TRUE)
   }
-    df_skew <- rbind(
-      data.frame(value = raw_results$skewness, transformation = "Raw"),
-      data.frame(value = log_results$skewness, transformation = "Log2")
+  df_skew <- rbind(
+    data.frame(value = raw_results$skewness, transformation = "Raw"),
+    data.frame(value = log_results$skewness, transformation = "Log2")
+  )
+  df_kurt <- rbind(
+    data.frame(value = raw_results$kurtosis, transformation = "Raw"),
+    data.frame(value = log_results$kurtosis, transformation = "Log2")
+  )
+
+  p_skew <- ggplot2::ggplot(df_skew, aes(x = value, fill = transformation)) +
+    ggplot2::geom_histogram(bins = 30, alpha = 0.7, position = "identity") +
+    ggplot2::labs(x = "Skewness", title = "Distribution of Skewness") +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(
+      panel.background = element_rect(fill = "white", colour = "white"),
+      plot.background = element_rect(fill = "white", colour = "white"),
+      legend.background = element_rect(fill = "white", colour = "white"),
+      axis.title = element_text(color = "black", size = 12, face = "bold"),
+      legend.title = element_text(color = "black", size = 10, face = "bold"),
+      legend.text = element_text(color = "black")
     )
-    df_kurt <- rbind(
-      data.frame(value = raw_results$kurtosis, transformation = "Raw"),
-      data.frame(value = log_results$kurtosis, transformation = "Log2")
+
+  p_kurt <- ggplot2::ggplot(df_kurt, aes(x = value, fill = transformation)) +
+    ggplot2::geom_histogram(bins = 30, alpha = 0.7, position = "identity") +
+    ggplot2::labs(x = "Kurtosis", title = "Distribution of Kurtosis") +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(
+      panel.background = element_rect(fill = "white", colour = "white"),
+      plot.background = element_rect(fill = "white", colour = "white"),
+      legend.background = element_rect(fill = "white", colour = "white"),
+      axis.title = element_text(color = "black", size = 12, face = "bold"),
+      legend.title = element_text(color = "black", size = 10, face = "bold"),
+      legend.text = element_text(color = "black")
     )
 
-    p_skew <- ggplot2::ggplot(df_skew, aes(x = value, fill = transformation)) +
-      ggplot2::geom_histogram(bins = 30, alpha = 0.7, position = "identity") +
-      ggplot2::labs(x = "Skewness", title = "Distribution of Skewness") +
-      ggplot2::theme_minimal()+
-      ggplot2::theme(
-          panel.background = element_rect(fill = "white", colour = "white"),
-          plot.background = element_rect(fill = "white", colour = "white"),
-          legend.background = element_rect(fill = "white", colour = "white"),
-          axis.title = element_text(color = "black", size = 12, face = "bold"),
-          legend.title = element_text(color = "black", size = 10, face = "bold"),
-          legend.text = element_text(color = "black"))
-
-    p_kurt <- ggplot2::ggplot(df_kurt, aes(x = value, fill = transformation)) +
-      ggplot2::geom_histogram(bins = 30, alpha = 0.7, position = "identity") +
-      ggplot2::labs(x = "Kurtosis", title = "Distribution of Kurtosis") +
-      ggplot2::theme_minimal()+
-      ggplot2::theme(
-          panel.background = element_rect(fill = "white", colour = "white"),
-          plot.background = element_rect(fill = "white", colour = "white"),
-          legend.background = element_rect(fill = "white", colour = "white"),
-          axis.title = element_text(color = "black", size = 12, face = "bold"),
-          legend.title = element_text(color = "black", size = 10, face = "bold"),
-          legend.text = element_text(color = "black"))
-
-    gridExtra::grid.arrange(p_skew, p_kurt, ncol = 1)
+  gridExtra::grid.arrange(p_skew, p_kurt, ncol = 1)
 
   # Return results based on flags.
   if (print_res_raw && print_res_log) {

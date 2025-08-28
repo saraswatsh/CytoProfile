@@ -84,7 +84,10 @@ numeric variable.
 \examples{
 data <- ExampleData1
 
-cyt_errbp(data[,c("Group", "CCL.20.MIP.3A", "IL.10")], group_col = "Group", 
-p_lab = TRUE, es_lab = TRUE, class_symbol = TRUE, x_lab = "Cytokines", 
+cyt_errbp(data[,c("Group", "CCL.20.MIP.3A", "IL.10")], group_col = "Group",
+p_lab = TRUE, es_lab = TRUE, class_symbol = TRUE, x_lab = "Cytokines",
 y_lab = "Concentrations in log2 scale", log2 = TRUE)
+}
+\author{
+Xiaohua Douglas Zhang and Shubh Saraswat
 }

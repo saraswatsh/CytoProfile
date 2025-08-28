@@ -13,9 +13,9 @@
 #'   repeated measurements (e.g., patient or sample IDs). If provided, a
 #'   multilevel analysis will be performed. Default is \code{NULL}.
 #' @param batch_col A string specifying the column that identifies the batch or study for each sample.
-#' @param ind_names  If \code{TRUE}, the row names of the first (or second) data matrix is used as names
-#'   If 'pch' is set this will overwrite the names as shapes. Default is FALSE. See ?mixOmics::plotIndiv for
-#'   details.
+#' @param ind_names  If \code{TRUE}, the row names of the first (or second) data matrix is used as names.
+#'   Default is \code{FALSE}. If a character vector is provided, these values will be used as names.
+#'   If 'pch' is set this will overwrite the names as shapes. See ?mixOmics::plotIndiv for details.
 #' @param colors A vector of colors for the groups or treatments. If
 #'   \code{NULL}, a random palette (using \code{rainbow}) is generated based on
 #'   the number of groups.
@@ -68,7 +68,12 @@
 #' @details
 #' When \code{verbose} is set to \code{TRUE}, additional information about the analysis and confusion matrices
 #' are printed to the console. These can be suppressed by keeping \code{verbose = FALSE}.
+#' @author Xiaohua Douglas Zhang and Shubh Saraswat
 #'
+#' @references Lê Cao, K.-A., Boitard, S. and Besse, P. (2011).
+#' Sparse PLS Discriminant Analysis: biologically relevant feature selection
+#' and graphical displays for multiclass problems. \emph{BMC Bioinformatics}
+#' \bold{12}:253.
 #' @examples
 #' # Loading Sample Data
 #' data_df <- ExampleData1[,-c(3)]
@@ -256,28 +261,56 @@ cyt_splsda <- function(
     }
     group_factors <- seq_len(length(levels(factor(the_groups))))
 
-    plot_args <- list(
-      cytokine_splsda,
-      legend = TRUE,
-      ind.names = ind_names,
-      col = colors,
-      pch = pch_values,
-      title = paste(
-        overall_analysis,
-        "With Accuracy:",
-        acc1,
-        "%"
-      ),
-      legend.title = group_col
-    )
-    if (ellipse) {
-      plot_args$ellipse <- TRUE
-    }
-    if (bg) {
-      plot_args$background <- bg_maxdist
-    }
-    overall_indiv_plot <- do.call(mixOmics::plotIndiv, plot_args)
+    .build_indiv_args <- function(
+      obj,
+      colors,
+      ind_names,
+      pch_vec,
+      title,
+      legend_title,
+      ellipse = FALSE,
+      bg_obj = NULL,
+      extra = list()
+    ) {
+      args <- c(
+        list(
+          obj,
+          legend = TRUE,
+          col = colors,
+          title = title,
+          legend.title = legend_title
+        ),
+        extra
+      )
 
+      if (ellipse) {
+        args$ellipse <- TRUE
+      }
+      if (!is.null(bg_obj)) {
+        args$background <- bg_obj
+      }
+
+      # labels OR shapes (never both)
+      if (isTRUE(ind_names) || is.character(ind_names)) {
+        args$ind.names <- ind_names
+      } else {
+        args$ind.names <- FALSE
+        args$pch <- pch_vec
+      }
+      args
+    }
+
+    plot_args <- .build_indiv_args(
+      obj = cytokine_splsda,
+      colors = colors,
+      ind_names = ind_names,
+      pch_vec = pch_values, # overall case uses full vector
+      title = paste(overall_analysis, "With Accuracy:", acc1, "%"),
+      legend_title = group_col,
+      ellipse = ellipse,
+      bg_obj = if (bg) bg_maxdist else NULL
+    )
+    overall_indiv_plot <- do.call(mixOmics::plotIndiv, plot_args)
     overall_indiv_plots <- list(Overall = overall_indiv_plot$graph)
 
     overall_3D <- NULL
@@ -586,29 +619,17 @@ cyt_splsda <- function(
           resolution = 200
         )
       }
-      plot_args2 <- list(
-        cytokine_splsda2,
-        legend = TRUE,
-        ind.names = ind_names,
-        col = colors,
-        pch = pch_values,
-        title = paste(
-          overall_analysis,
-          "(VIP>1)",
-          "With Accuracy:",
-          acc2,
-          "%"
-        ),
-        legend.title = group_col
+      plot_args2 <- .build_indiv_args(
+        obj = cytokine_splsda2,
+        colors = colors,
+        ind_names = ind_names,
+        pch_vec = pch_values, # overall case
+        title = paste(overall_analysis, "(VIP>1)", "With Accuracy:", acc2, "%"),
+        legend_title = group_col,
+        ellipse = ellipse,
+        bg_obj = if (bg) bg_maxdist2 else NULL
       )
-      if (ellipse) {
-        plot_args2$ellipse <- TRUE
-      }
-      if (bg) {
-        plot_args2$background <- bg_maxdist2
-      }
       vip_indiv_plot <- do.call(mixOmics::plotIndiv, plot_args2)
-
       vip_indiv_plots <- list(VIP = vip_indiv_plot$graph)
 
       if (!is.null(style) && comp_num == 3 && (tolower(style) == "3d")) {
@@ -947,26 +968,55 @@ cyt_splsda <- function(
 
       group_factors <- seq_len(length(levels(factor(the_groups))))
 
-      plot_args <- list(
-        cytokine_splsda,
-        legend = TRUE,
-        ind.names = ind_names,
-        col = colors,
-        pch = pch_values[group_factors],
-        title = paste(
-          overall_analysis,
-          "With Accuracy:",
-          acc1,
-          "%"
-        ),
-        legend.title = group_col
+      .build_indiv_args <- function(
+        obj,
+        colors,
+        ind_names,
+        pch_vec,
+        title,
+        legend_title,
+        ellipse = FALSE,
+        bg_obj = NULL,
+        extra = list()
+      ) {
+        args <- c(
+          list(
+            obj,
+            legend = TRUE,
+            col = colors,
+            title = title,
+            legend.title = legend_title
+          ),
+          extra
+        )
+
+        if (ellipse) {
+          args$ellipse <- TRUE
+        }
+        if (!is.null(bg_obj)) {
+          args$background <- bg_obj
+        }
+
+        # labels OR shapes (never both)
+        if (isTRUE(ind_names) || is.character(ind_names)) {
+          args$ind.names <- ind_names
+        } else {
+          args$ind.names <- FALSE
+          args$pch <- pch_vec
+        }
+        args
+      }
+
+      plot_args <- .build_indiv_args(
+        obj = cytokine_splsda,
+        colors = colors,
+        ind_names = ind_names,
+        pch_vec = pch_values[group_factors], # match groups present in this level
+        title = paste(overall_analysis, "With Accuracy:", acc1, "%"),
+        legend_title = group_col,
+        ellipse = ellipse,
+        bg_obj = if (bg) bg_maxdist else NULL
       )
-      if (ellipse) {
-        plot_args$ellipse <- TRUE
-      }
-      if (bg) {
-        plot_args$background <- bg_maxdist
-      }
       overall_indiv_plot <- do.call(mixOmics::plotIndiv, plot_args)
       indiv_plots[[as.character(current_level)]] <- overall_indiv_plot$graph
 
@@ -1222,27 +1272,16 @@ cyt_splsda <- function(
         )
       }
 
-      plot_args2 <- list(
-        cytokine_splsda2,
-        legend = TRUE,
-        col = colors,
-        ind.names = ind_names,
-        pch = pch_values[group_factors],
-        title = paste(
-          overall_analysis,
-          "(VIP>1)",
-          "With Accuracy:",
-          acc2,
-          "%"
-        ),
-        legend.title = group_col
+      plot_args2 <- .build_indiv_args(
+        obj = cytokine_splsda2,
+        colors = colors,
+        ind_names = ind_names,
+        pch_vec = pch_values[group_factors], # keep consistent with main loop
+        title = paste(overall_analysis, "(VIP>1)", "With Accuracy:", acc2, "%"),
+        legend_title = group_col,
+        ellipse = ellipse,
+        bg_obj = if (bg) bg_maxdist2 else NULL
       )
-      if (ellipse) {
-        plot_args2$ellipse <- TRUE
-      }
-      if (bg) {
-        plot_args2$background <- bg_maxdist2
-      }
       vip_indiv_plot <- do.call(mixOmics::plotIndiv, plot_args2)
       vip_indiv_plots[[as.character(current_level)]] <- vip_indiv_plot$graph
 

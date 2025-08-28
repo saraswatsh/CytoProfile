@@ -37,3 +37,6 @@ data.df <- ExampleData1
 cyt_bp(data.df[,-c(1:3)], pdf_title = NULL, scale = "log2")
 
 }
+\author{
+Shubh Saraswat
+}

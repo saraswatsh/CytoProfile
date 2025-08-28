@@ -21,7 +21,7 @@
 #' with the format determined by the file extension in \code{title}.
 #'
 #' @return The function does not return a value. It saves the heatmap to a file.
-#'
+#' @author Shubh Saraswat
 #' @export
 #' @importFrom pheatmap pheatmap
 #' @importFrom grDevices colorRampPalette

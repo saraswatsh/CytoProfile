@@ -4,9 +4,10 @@
 
 * 'cyt_mint_splsda', a new function for conducting multivariate integrative analysis using sparse partial least squares discriminant analysis (sPLS-DA) with multiple datasets, has been added.
 
-* 'cyt_splsda' now has two new arguments:
+* 'cyt_splsda' now has new arguments:
     * 'batch_col' to specify a batch column for batch correction in the sPLS-DA analysis using a Z-score method.
     * 'multilevel_col' to specify a multilevel column for multilevel analysis in sPLS-DA.
+    * 'ind_names' to specify custom individual names for the samples in the plots.
 
 * Added new "ExampleData5" dataset which is the same as "ExampleData1" but with a batch column for demonstration of the 'batch_col' argument in 'cyt_mint_splsda'.
 
@@ -16,7 +17,7 @@
 
 * Updated the vignette and README files to include examples of the new 'cyt_mint_splsda' function.
 
-* Updated 'cyt_splsda' and 'cyt_pca' 
+* Updated 'cyt_splsda' and 'cyt_pca' logic. 
 
 # CytoProfile 0.2.1
 

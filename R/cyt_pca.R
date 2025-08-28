@@ -43,6 +43,7 @@
 #' data and handles analyses based treatment groups.
 #'
 #' @return A PDF file containing the PCA plots is generated and saved.
+#' @author Shubh Saraswat
 #'
 #' @export
 #' @importFrom mixOmics pca plotIndiv plotLoadings plotVar

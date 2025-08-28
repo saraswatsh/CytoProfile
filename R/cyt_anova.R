@@ -18,7 +18,7 @@
 #'   for each combination of continuous outcome and categorical predictor. List elements are named
 #'   in the format "Outcome_Categorical".
 #'   If \code{format_output} is TRUE, a data frame in a tidy format.
-#'
+#' @author Shubh Saraswat
 #' @export
 #'
 #' @examples
@@ -46,7 +46,9 @@ cyt_anova <- function(data, format_output = FALSE) {
   for (cat_var in names(x1_df)[cat_preds]) {
     # Skip factors with only one level or more than 10 levels
     num_levels <- length(levels(x1_df[[cat_var]]))
-    if (num_levels <= 1 || num_levels > 10) next
+    if (num_levels <= 1 || num_levels > 10) {
+      next
+    }
 
     for (outcome in names(x1_df)[cont_vars]) {
       # Build the ANOVA model and perform Tukey's HSD test
@@ -63,18 +65,22 @@ cyt_anova <- function(data, format_output = FALSE) {
 
   # Check if any comparisons were performed
   if (length(tukey_results) == 0) {
-    return("No valid comparisons were performed. Check that your data has numeric columns and factors with 2-10 levels.")
+    return(
+      "No valid comparisons were performed. Check that your data has numeric columns and factors with 2-10 levels."
+    )
   }
 
   # Return tidy data frame if requested
   if (!format_output) {
     return(tukey_results)
   } else {
-    out_df <- data.frame(Outcome = character(),
-                         Categorical = character(),
-                         Comparison = character(),
-                         P_adj = numeric(),
-                         stringsAsFactors = FALSE)
+    out_df <- data.frame(
+      Outcome = character(),
+      Categorical = character(),
+      Comparison = character(),
+      P_adj = numeric(),
+      stringsAsFactors = FALSE
+    )
 
     # Loop through each result in the list and add rows to the data frame
     for (key in names(tukey_results)) {
@@ -83,13 +89,16 @@ cyt_anova <- function(data, format_output = FALSE) {
       cat_var <- parts[2]
       p_vals <- tukey_results[[key]]
       for (comp in names(p_vals)) {
-        out_df <- rbind(out_df, data.frame(
-          Outcome = outcome,
-          Categorical = cat_var,
-          Comparison = comp,
-          P_adj = p_vals[comp],
-          stringsAsFactors = FALSE
-        ))
+        out_df <- rbind(
+          out_df,
+          data.frame(
+            Outcome = outcome,
+            Categorical = cat_var,
+            Comparison = comp,
+            P_adj = p_vals[comp],
+            stringsAsFactors = FALSE
+          )
+        )
       }
     }
     return(out_df)

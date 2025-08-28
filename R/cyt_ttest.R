@@ -17,7 +17,7 @@
 #'   Default is \code{TRUE}.
 #' @param format_output Logical. If TRUE, returns the results as a tidy data frame.
 #'   Default is \code{FALSE}.
-#'
+#' @author Shubh Saraswat
 #' @return If \code{format_output} is FALSE, returns a list of p-values (named by Outcome and Categorical variable).
 #'   If TRUE, returns a data frame in a tidy format.
 #'
@@ -147,8 +147,11 @@ cyt_ttest <- function(
         comp <- paste(lvls[1], "vs", lvls[2])
 
         est <- if (!is.null(tt$estimate)) unname(tt$estimate)[1] else NA_real_
-        stat <- if (!is.null(tt$statistic)) unname(tt$statistic)[1] else
+        stat <- if (!is.null(tt$statistic)) {
+          unname(tt$statistic)[1]
+        } else {
           NA_real_
+        }
 
         data.frame(
           Outcome = outcome,

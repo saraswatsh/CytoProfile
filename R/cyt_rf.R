@@ -51,6 +51,7 @@
 #' If \code{verbose} is TRUE, the function prints additional information to the
 #' console, including training results, test results, and plots.
 #'
+#' @author Shubh Saraswat
 #' @examples
 #' data.df0 <- ExampleData1
 #' data.df <- data.frame(data.df0[, 1:3], log2(data.df0[, -c(1:3)]))
@@ -70,27 +71,49 @@
 #' @export
 #'
 
-cyt_rf <- function(data, group_col, ntree = 500, mtry = 5,
-                   train_fraction = 0.7, plot_roc = FALSE,
-                   k_folds = 5, step = 0.5, run_rfcv = TRUE,
-                   verbose = FALSE,
-                   seed = 123) {
+cyt_rf <- function(
+  data,
+  group_col,
+  ntree = 500,
+  mtry = 5,
+  train_fraction = 0.7,
+  plot_roc = FALSE,
+  k_folds = 5,
+  step = 0.5,
+  run_rfcv = TRUE,
+  verbose = FALSE,
+  seed = 123
+) {
   # Ensure the grouping variable is a factor
   data[[group_col]] <- as.factor(data[[group_col]])
 
   # Split the data into training and testing sets
   set.seed(seed) # For reproducibility
-  train_indices <- caret::createDataPartition(data[[group_col]], p = train_fraction, list = FALSE)
+  train_indices <- caret::createDataPartition(
+    data[[group_col]],
+    p = train_fraction,
+    list = FALSE
+  )
   train_data <- data[train_indices, ]
   test_data <- data[-train_indices, ]
 
   # Prepare the formula for the random forest model
   predictors <- setdiff(colnames(data), group_col)
-  formula_rf <- as.formula(paste(group_col, "~", paste(predictors, collapse = "+")))
+  formula_rf <- as.formula(paste(
+    group_col,
+    "~",
+    paste(predictors, collapse = "+")
+  ))
 
   # Fit the Random Forest model on training data
-  rf_model <- randomForest::randomForest(formula_rf, data = train_data, ntree = ntree,
-                                         mtry = mtry, importance = TRUE, do.trace = FALSE)
+  rf_model <- randomForest::randomForest(
+    formula_rf,
+    data = train_data,
+    ntree = ntree,
+    mtry = mtry,
+    importance = TRUE,
+    do.trace = FALSE
+  )
 
   # Print basic Random Forest results for training set if verbose is TRUE
   if (verbose) {
@@ -108,11 +131,17 @@ cyt_rf <- function(data, group_col, ntree = 500, mtry = 5,
     true_positives <- train_confusion[i, i]
     false_negatives <- sum(train_confusion[i, ]) - true_positives
     false_positives <- sum(train_confusion[, i]) - true_positives
-    true_negatives <- sum(train_confusion) - (true_positives + false_negatives + false_positives)
+    true_negatives <- sum(train_confusion) -
+      (true_positives + false_negatives + false_positives)
     sensitivity <- true_positives / (true_positives + false_negatives)
     specificity <- true_negatives / (true_negatives + false_positives)
     if (verbose) {
-      cat("\nTraining set - Class '", rownames(train_confusion)[i], "' metrics:\n", sep = "")
+      cat(
+        "\nTraining set - Class '",
+        rownames(train_confusion)[i],
+        "' metrics:\n",
+        sep = ""
+      )
       cat("  Sensitivity: ", round(sensitivity, 3), "\n")
       cat("  Specificity: ", round(specificity, 3), "\n")
     }
@@ -125,8 +154,15 @@ cyt_rf <- function(data, group_col, ntree = 500, mtry = 5,
   }
   confusion_mat <- caret::confusionMatrix(rf_pred, test_data[[group_col]])
   if (verbose) {
-    cat(paste(capture.output(print(confusion_mat$table)), collapse = "\n"), "\n")
-    cat("\nAccuracy on test set: ", round(confusion_mat$overall["Accuracy"], 3), "\n")
+    cat(
+      paste(capture.output(print(confusion_mat$table)), collapse = "\n"),
+      "\n"
+    )
+    cat(
+      "\nAccuracy on test set: ",
+      round(confusion_mat$overall["Accuracy"], 3),
+      "\n"
+    )
   }
 
   # Report sensitivity and specificity on the test set
@@ -136,11 +172,35 @@ cyt_rf <- function(data, group_col, ntree = 500, mtry = 5,
     specificity_val <- confusion_mat$byClass["Specificity"]
     if (verbose) {
       cat("\nSensitivity by class:\n")
-      cat(paste0("Class: ", levels(data[[group_col]])[1], ": ", round(sensitivity_val, 3), "\n"))
-      cat(paste0("Class: ", levels(data[[group_col]])[2], ": ", round(1 - specificity_val, 3), "\n"))
+      cat(paste0(
+        "Class: ",
+        levels(data[[group_col]])[1],
+        ": ",
+        round(sensitivity_val, 3),
+        "\n"
+      ))
+      cat(paste0(
+        "Class: ",
+        levels(data[[group_col]])[2],
+        ": ",
+        round(1 - specificity_val, 3),
+        "\n"
+      ))
       cat("\nSpecificity by class:\n")
-      cat(paste0("Class: ", levels(data[[group_col]])[2], ": ", round(specificity_val, 3), "\n"))
-      cat(paste0("Class: ", levels(data[[group_col]])[1], ": ", round(1 - sensitivity_val, 3), "\n"))
+      cat(paste0(
+        "Class: ",
+        levels(data[[group_col]])[2],
+        ": ",
+        round(specificity_val, 3),
+        "\n"
+      ))
+      cat(paste0(
+        "Class: ",
+        levels(data[[group_col]])[1],
+        ": ",
+        round(1 - sensitivity_val, 3),
+        "\n"
+      ))
     }
   } else {
     # Multi-class case: Sensitivity and Specificity are vectors
@@ -149,11 +209,23 @@ cyt_rf <- function(data, group_col, ntree = 500, mtry = 5,
     if (verbose) {
       cat("\nSensitivity by class:\n")
       for (i in seq_along(sensitivity_vec)) {
-        cat(paste0("Class: ", levels(data[[group_col]])[i], ": ", round(sensitivity_vec[i], 3), "\n"))
+        cat(paste0(
+          "Class: ",
+          levels(data[[group_col]])[i],
+          ": ",
+          round(sensitivity_vec[i], 3),
+          "\n"
+        ))
       }
       cat("\nSpecificity by class:\n")
       for (i in seq_along(specificity_vec)) {
-        cat(paste0("Class: ", levels(data[[group_col]])[i], ": ", round(specificity_vec[i], 3), "\n"))
+        cat(paste0(
+          "Class: ",
+          levels(data[[group_col]])[i],
+          ": ",
+          round(specificity_vec[i], 3),
+          "\n"
+        ))
       }
     }
   }
@@ -167,19 +239,30 @@ cyt_rf <- function(data, group_col, ntree = 500, mtry = 5,
     if (verbose) {
       cat("\nAUC: ", round(auc_value, 3), "\n")
     }
-    roc_plot <- pROC::ggroc(roc_obj, color = "blue", linewidth = 1.5, legacy.axes = TRUE) +
+    roc_plot <- pROC::ggroc(
+      roc_obj,
+      color = "blue",
+      linewidth = 1.5,
+      legacy.axes = TRUE
+    ) +
       ggplot2::geom_abline(linetype = "dashed", color = "red", linewidth = 1) +
       ggplot2::labs(
         title = "ROC Curve (Test Set)",
         x = "1 - Specificity",
         y = "Sensitivity"
       ) +
-      ggplot2::annotate("text", x = 0.75, y = 0.25, label = paste("AUC =", round(auc_value, 3)),
-                        size = 5, color = "blue") +
+      ggplot2::annotate(
+        "text",
+        x = 0.75,
+        y = 0.25,
+        label = paste("AUC =", round(auc_value, 3)),
+        size = 5,
+        color = "blue"
+      ) +
       ggplot2::theme_minimal() +
       ggplot2::theme(
         panel.background = ggplot2::element_rect(fill = "white", color = NA),
-        plot.background  = ggplot2::element_rect(fill = "white", color = NA),
+        plot.background = ggplot2::element_rect(fill = "white", color = NA),
         panel.grid.major = ggplot2::element_line(color = "grey90"),
         panel.grid.minor = ggplot2::element_line(color = "grey95")
       )
@@ -187,9 +270,14 @@ cyt_rf <- function(data, group_col, ntree = 500, mtry = 5,
   }
 
   # Extract variable importance and generate plot
-  importance_data <- data.frame(Variable = rownames(randomForest::importance(rf_model)),
-                                Gini = randomForest::importance(rf_model)[, "MeanDecreaseGini"])
-  vip_plot <- ggplot2::ggplot(importance_data, ggplot2::aes(x = reorder(Variable, Gini), y = Gini)) +
+  importance_data <- data.frame(
+    Variable = rownames(randomForest::importance(rf_model)),
+    Gini = randomForest::importance(rf_model)[, "MeanDecreaseGini"]
+  )
+  vip_plot <- ggplot2::ggplot(
+    importance_data,
+    ggplot2::aes(x = reorder(Variable, Gini), y = Gini)
+  ) +
     ggplot2::geom_bar(stat = "identity", fill = "red2") +
     ggplot2::coord_flip() +
     ggplot2::ggtitle("Variable Importance Plot (Mean Decrease in Gini)") +
@@ -198,11 +286,25 @@ cyt_rf <- function(data, group_col, ntree = 500, mtry = 5,
     ggplot2::theme_minimal() +
     ggplot2::theme(
       legend.position = "none",
-      panel.background = ggplot2::element_rect(fill = "white", colour = "white"),
+      panel.background = ggplot2::element_rect(
+        fill = "white",
+        colour = "white"
+      ),
       plot.background = ggplot2::element_rect(fill = "white", colour = "white"),
-      legend.background = ggplot2::element_rect(fill = "white", colour = "white"),
-      axis.title = ggplot2::element_text(color = "black", size = 12, face = "bold"),
-      legend.title = ggplot2::element_text(color = "black", size = 10, face = "bold"),
+      legend.background = ggplot2::element_rect(
+        fill = "white",
+        colour = "white"
+      ),
+      axis.title = ggplot2::element_text(
+        color = "black",
+        size = 12,
+        face = "bold"
+      ),
+      legend.title = ggplot2::element_text(
+        color = "black",
+        size = 10,
+        face = "bold"
+      ),
       legend.text = ggplot2::element_text(color = "black")
     )
   print(vip_plot)
@@ -217,9 +319,21 @@ cyt_rf <- function(data, group_col, ntree = 500, mtry = 5,
     }
     x_train <- train_data[, predictors]
     y_train <- train_data[[group_col]]
-    rfcv_result <- randomForest::rfcv(x_train, y_train, cv.fold = k_folds, step = step, do.trace = FALSE)
-    rfcv_data <- data.frame(Variables = rfcv_result$n.var, Error = rfcv_result$error.cv)
-    rfcv_plot <- ggplot2::ggplot(rfcv_data, ggplot2::aes(x = Variables, y = Error)) +
+    rfcv_result <- randomForest::rfcv(
+      x_train,
+      y_train,
+      cv.fold = k_folds,
+      step = step,
+      do.trace = FALSE
+    )
+    rfcv_data <- data.frame(
+      Variables = rfcv_result$n.var,
+      Error = rfcv_result$error.cv
+    )
+    rfcv_plot <- ggplot2::ggplot(
+      rfcv_data,
+      ggplot2::aes(x = Variables, y = Error)
+    ) +
       ggplot2::geom_line(color = "blue") +
       ggplot2::geom_point(color = "blue") +
       ggplot2::ggtitle("Cross-Validation Error vs. Number of Variables") +
@@ -229,13 +343,15 @@ cyt_rf <- function(data, group_col, ntree = 500, mtry = 5,
       ggplot2::theme_minimal() +
       ggplot2::theme(
         panel.background = ggplot2::element_rect(fill = "white", color = NA),
-        plot.background  = ggplot2::element_rect(fill = "white", color = NA),
+        plot.background = ggplot2::element_rect(fill = "white", color = NA),
         panel.grid.major = ggplot2::element_line(color = "grey90"),
         panel.grid.minor = ggplot2::element_line(color = "grey95")
       )
     print(rfcv_plot)
     if (verbose) {
-      cat("Random Forest CV completed for feature selection. Check the plot for error vs. number of variables.\n")
+      cat(
+        "Random Forest CV completed for feature selection. Check the plot for error vs. number of variables.\n"
+      )
     }
   }
 
@@ -250,4 +366,3 @@ cyt_rf <- function(data, group_col, ntree = 500, mtry = 5,
   #   roc_plot = roc_plot
   # ))
 }
-

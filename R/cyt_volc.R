@@ -31,6 +31,8 @@
 #'   comparison. Additionally, the function prints the data frame used for
 #'   plotting (excluding the significance column) from the final comparison.
 #'
+#' @author Xiaohua Douglas Zhang and Shubh Saraswat
+#'
 #' @export
 #' @import ggplot2
 #' @importFrom dplyr arrange mutate desc row_number
@@ -44,10 +46,16 @@
 #' fold_change_thresh = 2.0, top_labels= 15)
 #' print(volc_plot$`T2D vs ND`)
 
-cyt_volc <- function(data, group_col, cond1 = NULL, cond2 = NULL,
-                     fold_change_thresh = 2,
-                     p_value_thresh = 0.05, top_labels = 10,
-                     verbose = FALSE) {
+cyt_volc <- function(
+  data,
+  group_col,
+  cond1 = NULL,
+  cond2 = NULL,
+  fold_change_thresh = 2,
+  p_value_thresh = 0.05,
+  top_labels = 10,
+  verbose = FALSE
+) {
   # Determine the pairs of conditions to compare
   if (!is.null(cond1) && !is.null(cond2)) {
     condition_pairs <- list(c(cond1, cond2))
@@ -79,8 +87,11 @@ cyt_volc <- function(data, group_col, cond1 = NULL, cond2 = NULL,
 
     # Calculate fold changes and p-values
     fold_changes <- means_cond2 / means_cond1
-    p_values <- mapply(function(x, y) t.test(x, y)$p.value,
-                       data_ncond1, data_ncond2)
+    p_values <- mapply(
+      function(x, y) t.test(x, y)$p.value,
+      data_ncond1,
+      data_ncond2
+    )
 
     # Log2 transform of fold changes and -log10 of p-values
     fc_log <- log2(fold_changes)
@@ -98,25 +109,43 @@ cyt_volc <- function(data, group_col, cond1 = NULL, cond2 = NULL,
     # Order data by significance and p_log, then add labels for top points
     plot_data <- plot_data %>%
       dplyr::arrange(dplyr::desc(significant), dplyr::desc(p_log)) %>%
-      dplyr::mutate(label = ifelse(dplyr::row_number() <= top_labels,
-                            as.character(cytokine), ""))
+      dplyr::mutate(
+        label = ifelse(
+          dplyr::row_number() <= top_labels,
+          as.character(cytokine),
+          ""
+        )
+      )
 
     # Create the volcano plot with labels for top significant points
-    volcano_plot <- ggplot2::ggplot(plot_data, aes(x = fc_log, y = p_log, label = label,
-                                          color = significant)) +
+    volcano_plot <- ggplot2::ggplot(
+      plot_data,
+      aes(x = fc_log, y = p_log, label = label, color = significant)
+    ) +
       ggplot2::geom_point(alpha = 1, size = 2) +
-      ggplot2::geom_vline(xintercept = c(log2(fold_change_thresh),
-                                -log2(fold_change_thresh)),
-                 linetype = "dashed", color = "blue") +
-      ggplot2::geom_hline(yintercept = -log10(p_value_thresh),
-                 linetype = "dashed", color = "blue") +
-      ggrepel::geom_text_repel(aes(label = label), size = 3,
-                               vjust = 1.5, hjust = 0.5,
-                               show.legend = FALSE) +
+      ggplot2::geom_vline(
+        xintercept = c(log2(fold_change_thresh), -log2(fold_change_thresh)),
+        linetype = "dashed",
+        color = "blue"
+      ) +
+      ggplot2::geom_hline(
+        yintercept = -log10(p_value_thresh),
+        linetype = "dashed",
+        color = "blue"
+      ) +
+      ggrepel::geom_text_repel(
+        aes(label = label),
+        size = 3,
+        vjust = 1.5,
+        hjust = 0.5,
+        show.legend = FALSE
+      ) +
       ggplot2::scale_color_manual(values = c("grey2", "red")) +
-      ggplot2::labs(x = "Log2 Fold Change", y = "-Log10 P-Value",
-           title = paste("Volcano Plot of Cytokine Levels:",
-                         cond1, "vs", cond2)) +
+      ggplot2::labs(
+        x = "Log2 Fold Change",
+        y = "-Log10 P-Value",
+        title = paste("Volcano Plot of Cytokine Levels:", cond1, "vs", cond2)
+      ) +
       ggplot2::theme_minimal() +
       ggplot2::theme(
         panel.background = element_rect(fill = "white", colour = "white"),
@@ -131,9 +160,13 @@ cyt_volc <- function(data, group_col, cond1 = NULL, cond2 = NULL,
   }
 
   # Print the final plot data (excluding the label column)
-  if(verbose){
-    print(plot_data[, -which(names(plot_data) == "label")],
-          n = nrow(plot_data), na.print = "", quote = FALSE)
+  if (verbose) {
+    print(
+      plot_data[, -which(names(plot_data) == "label")],
+      n = nrow(plot_data),
+      na.print = "",
+      quote = FALSE
+    )
   }
   return(plots)
 }

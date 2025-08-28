@@ -34,3 +34,6 @@ data("ExampleData1")
 cyt_anova(ExampleData1[, c(1:2, 5:6)], format_output = TRUE)
 
 }
+\author{
+Shubh Saraswat
+}

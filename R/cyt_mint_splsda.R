@@ -39,6 +39,12 @@
 #' When \code{verbose} is set to \code{TRUE}, additional information about the analysis and confusion matrices
 #' are printed to the console. These can be suppressed by keeping \code{verbose = FALSE}.
 #'
+#' @author Shubh Saraswat
+#' @references Rohart F, Eslami A, Matigian, N, Bougeard S, Lê Cao K-A (2017).
+#' MINT: A multivariate integrative approach to identify a reproducible
+#' biomarker signature across multiple experiments and platforms. BMC
+#' Bioinformatics 18:128.
+#' 
 #' @examples
 #' # Loading ExampleData5 dataset with batch column
 #' data_df <- ExampleData5[,-c(2,4)]

@@ -30,6 +30,8 @@
 #' @return A ggplot object representing the dual flash plot for the
 #' comparisons between group1 and group2.
 #'
+#' @author Xiaohua Douglas Zhang and Shubh Saraswat
+#'
 #' @export
 #' @import dplyr
 #' @importFrom tidyr pivot_longer pivot_wider
@@ -50,15 +52,26 @@
 #'   verbose = FALSE
 #' )
 #'
-cyt_dualflashplot <- function(data, group_var, group1, group2, ssmd_thresh = 1,
-                              log2fc_thresh = 1, top_labels = 15, verbose = FALSE) {
+cyt_dualflashplot <- function(
+  data,
+  group_var,
+  group1,
+  group2,
+  ssmd_thresh = 1,
+  log2fc_thresh = 1,
+  top_labels = 15,
+  verbose = FALSE
+) {
   if (!is.data.frame(data)) {
     stop("Input must be a data frame.")
   }
 
   data_long <- data %>%
-    tidyr::pivot_longer(cols = -all_of(group_var), names_to = "cytokine",
-                 values_to = "level")
+    tidyr::pivot_longer(
+      cols = -all_of(group_var),
+      names_to = "cytokine",
+      values_to = "level"
+    )
 
   stats <- data_long %>%
     dplyr::group_by(cytokine, .data[[group_var]]) %>%
@@ -67,14 +80,21 @@ cyt_dualflashplot <- function(data, group_var, group1, group2, ssmd_thresh = 1,
       mean = mean(level, na.rm = TRUE),
       variance = var(level, na.rm = TRUE)
     ) %>%
-    tidyr::pivot_wider(names_from = .data[[group_var]],
-                values_from = c(mean, variance)) %>%
+    tidyr::pivot_wider(
+      names_from = .data[[group_var]],
+      values_from = c(mean, variance)
+    ) %>%
     dplyr::mutate(
       ssmd = (get(paste0("mean_", group1)) - get(paste0("mean_", group2))) /
-        sqrt((get(paste0("variance_", group1)) +
-                get(paste0("variance_", group2))) / 2),
-      log2FC = log2(get(paste0("mean_", group1)) /
-                      get(paste0("mean_", group2))),
+        sqrt(
+          (get(paste0("variance_", group1)) +
+            get(paste0("variance_", group2))) /
+            2
+        ),
+      log2FC = log2(
+        get(paste0("mean_", group1)) /
+          get(paste0("mean_", group2))
+      ),
       SSMD_Category = case_when(
         abs(ssmd) >= 1 ~ "Strong Effect",
         abs(ssmd) >= 0.5 ~ "Moderate Effect",
@@ -85,17 +105,29 @@ cyt_dualflashplot <- function(data, group_var, group1, group2, ssmd_thresh = 1,
 
   p <- ggplot2::ggplot(stats, aes(x = log2FC, y = ssmd, label = cytokine)) +
     ggplot2::geom_point(aes(color = SSMD_Category, shape = Significant)) +
-    ggplot2::geom_text(data = top_n(stats, top_labels, abs(ssmd)), vjust = 1.5,
-              hjust = 1.1, check_overlap = TRUE) +
-    ggplot2::scale_color_manual(values = c("Strong Effect" = "red",
-                                  "Moderate Effect" = "orange",
-                                  "Weak Effect" = "blue")) +
+    ggplot2::geom_text(
+      data = top_n(stats, top_labels, abs(ssmd)),
+      vjust = 1.5,
+      hjust = 1.1,
+      check_overlap = TRUE
+    ) +
+    ggplot2::scale_color_manual(
+      values = c(
+        "Strong Effect" = "red",
+        "Moderate Effect" = "orange",
+        "Weak Effect" = "blue"
+      )
+    ) +
     ggplot2::scale_shape_manual(values = c(`FALSE` = 16, `TRUE` = 17)) +
     ggplot2::geom_hline(yintercept = 0, linetype = "dashed") +
-    ggplot2::geom_vline(xintercept = c(log2fc_thresh, -log2fc_thresh),
-               linetype = "dashed", color = "blue") +
+    ggplot2::geom_vline(
+      xintercept = c(log2fc_thresh, -log2fc_thresh),
+      linetype = "dashed",
+      color = "blue"
+    ) +
     ggplot2::labs(
-      x = "Average log2 Fold Change", y = "SSMD",
+      x = "Average log2 Fold Change",
+      y = "SSMD",
       title = paste0("SSMD vs log2FC for ", group1, " vs ", group2)
     ) +
     ggplot2::theme_minimal() +
@@ -108,9 +140,8 @@ cyt_dualflashplot <- function(data, group_var, group1, group2, ssmd_thresh = 1,
       legend.text = element_text(color = "black")
     )
 
-  if(verbose){
+  if (verbose) {
     print(as.data.frame(stats), n = nrow(stats), na.print = "", quote = FALSE)
   }
   return(p)
 }
-
