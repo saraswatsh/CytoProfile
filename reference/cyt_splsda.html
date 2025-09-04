@@ -25,7 +25,7 @@ analyzes each treatment level separately."><meta property="og:image" content="ht
 
     <a class="navbar-brand me-2" href="../index.html">CytoProfile</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,8 +80,11 @@ analyzes each treatment level separately.</p>
 <span>  <span class="va">data</span>,</span>
 <span>  group_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  group_col2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  multilevel_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  batch_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ind_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  colors <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  <span class="va">pdf_title</span>,</span>
+<span>  pdf_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ellipse <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  bg <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  conf_mat <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -117,6 +120,22 @@ be performed.</p></dd>
 <dt id="arg-group-col-">group_col2<a class="anchor" aria-label="anchor" href="#arg-group-col-"></a></dt>
 <dd><p>A string specifying the second grouping column. Default is
 <code>NULL</code>.</p></dd>
+
+
+<dt id="arg-multilevel-col">multilevel_col<a class="anchor" aria-label="anchor" href="#arg-multilevel-col"></a></dt>
+<dd><p>A string specifying the column name that identifies
+repeated measurements (e.g., patient or sample IDs). If provided, a
+multilevel analysis will be performed. Default is <code>NULL</code>.</p></dd>
+
+
+<dt id="arg-batch-col">batch_col<a class="anchor" aria-label="anchor" href="#arg-batch-col"></a></dt>
+<dd><p>A string specifying the column that identifies the batch or study for each sample.</p></dd>
+
+
+<dt id="arg-ind-names">ind_names<a class="anchor" aria-label="anchor" href="#arg-ind-names"></a></dt>
+<dd><p>If <code>TRUE</code>, the row names of the first (or second) data matrix is used as names.
+Default is <code>FALSE</code>. If a character vector is provided, these values will be used as names.
+If 'pch' is set this will overwrite the names as shapes. See ?mixOmics::plotIndiv for details.</p></dd>
 
 
 <dt id="arg-colors">colors<a class="anchor" aria-label="anchor" href="#arg-colors"></a></dt>
@@ -206,9 +225,19 @@ produced if requested.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>When <code>verbose</code> is set to <code>TRUE</code>, additional diagnostic plots (e.g., VIP plots, ROC Plots, Cross-Validation Plots)
-are printed to the console. These plots provide extra insight into the model's performance
-but can be suppressed by keeping <code>verbose = FALSE</code>.</p>
+    <p>When <code>verbose</code> is set to <code>TRUE</code>, additional information about the analysis and confusion matrices
+are printed to the console. These can be suppressed by keeping <code>verbose = FALSE</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>Lê Cao, K.-A., Boitard, S. and Besse, P. (2011).
+Sparse PLS Discriminant Analysis: biologically relevant feature selection
+and graphical displays for multiclass problems. <em>BMC Bioinformatics</em>
+<b>12</b>:253.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
+    <p>Xiaohua Douglas Zhang and Shubh Saraswat</p>
     </div>
 
     <div class="section level2">
@@ -252,7 +281,7 @@ but can be suppressed by keeping <code>verbose = FALSE</code>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
