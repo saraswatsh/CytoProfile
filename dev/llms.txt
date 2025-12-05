@@ -1,0 +1,115 @@
+# Welcome to CytoProfile
+
+**CytoProfile** is an R package designed for advanced cytokine data
+analysis. It provides a comprehensive suite of functions for
+exploratory, univariate, and multivariate analysis as well as machine
+learning methods tailored to your cytokine datasets.
+
+## Key Features
+
+- **Exploratory Analysis:**  
+  Quickly generate enriched bar plots, boxplots, and summary statistics
+  to assess your data.
+
+- **Statistical Testing:**  
+  Perform t-tests, ANOVA, and other univariate methods with ease.
+
+- **Multivariate Analysis:**  
+  Utilize PCA, PLS-DA, and other techniques for deeper insights.
+
+- **Machine Learning:**  
+  Integrate Random Forest and XGBoost models for predictive analysis.
+
+- **Data Handling:**  
+  Seamlessly load and preprocess cytokine data for efficient analysis.
+
+You can install the development version of CytoProfile from
+[GitHub](https://github.com/saraswatsh/CytoProfile) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("saraswatsh/CytoProfile")
+```
+
+Install CytoProfile from CRAN with:
+
+``` r
+install.packages("CytoProfile")
+```
+
+## Learn More
+
+- [Getting
+  Started](https://cytoprofile.cytokineprofile.org/dev/articles/getting_started.md):
+  A detailed tutorial to help you start using CytoProfile.
+- [Function
+  Reference](https://cytoprofile.cytokineprofile.org/dev/reference/index.md):
+  Complete documentation for all functions.
+- [GitHub Repository](https://github.com/saraswatsh/CytoProfile): Access
+  the source code and contribute.
+
+# Package index
+
+## Exploratory Analysis
+
+Functions for exploring raw data, summarizing statistics, and
+visualizing key patterns.
+
+- [`cyt_anova()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_anova.md)
+  : ANOVA Analysis on Continuous Variables.
+- [`cyt_ttest()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_ttest.md)
+  : Two Sample T-test Comparisons.
+- [`cyt_bp()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_bp.md)
+  : Boxplots for Overall Comparisons by Continuous Variables.
+- [`cyt_bp2()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_bp2.md)
+  : Boxplot Function Enhanced for Specific Group Comparisons.
+- [`cyt_errbp()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_errbp.md)
+  : Error-bar Plot.
+- [`cyt_skku()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_skku.md)
+  : Distribution of the Data Set Shown by Skewness and Kurtosis.
+- [`cyt_volc()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_volc.md)
+  : Volcano Plot.
+- [`cyt_heatmap()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_heatmap.md)
+  : Heat Map.
+- [`cyt_dualflashplot()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_dualflashplot.md)
+  : Dual-flashlight Plot.
+
+## Multivariate Analysis
+
+Functions for deeper multivariate insights.
+
+- [`cyt_splsda()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_splsda.md)
+  : Analyze data with Sparse Partial Least Squares Discriminant Analysis
+  (sPLS-DA).
+- [`cyt_pca()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_pca.md)
+  : Analyze Data with Principal Component Analysis (PCA) for Cytokines.
+- [`cyt_mint_splsda()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_mint_splsda.md)
+  : Analyze data with Multivariate INTegration (MINT) Sparse Partial
+  Least Squares Discriminant Analysis (sPLS-DA).
+
+## Machine Learning Methods
+
+- [`cyt_rf()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_rf.md)
+  : Run Random Forest Classification on Cytokine Data,
+- [`cyt_xgb()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_xgb.md)
+  : Run XGBoost Classification on Cytokine Data.
+
+## Datasets
+
+- [`ExampleData1`](https://cytoprofile.cytokineprofile.org/dev/reference/ExampleData1.md)
+  : Example Cytokine Profiling Data 1.
+- [`ExampleData2`](https://cytoprofile.cytokineprofile.org/dev/reference/ExampleData2.md)
+  : Example Cytokine Profiling Data 2.
+- [`ExampleData3`](https://cytoprofile.cytokineprofile.org/dev/reference/ExampleData3.md)
+  : Example Cytokine Profiling Data 3.
+- [`ExampleData4`](https://cytoprofile.cytokineprofile.org/dev/reference/ExampleData4.md)
+  : Example Cytokine Profiling Data 4.
+- [`ExampleData5`](https://cytoprofile.cytokineprofile.org/dev/reference/ExampleData5.md)
+  : Example Cytokine Profiling Data 5.
+
+# Articles
+
+### Getting Started
+
+- [Getting Started with
+  CytoProfile](https://cytoprofile.cytokineprofile.org/dev/articles/getting_started.md):
