@@ -10,13 +10,15 @@ cyt_xgb(
   train_fraction = 0.7,
   nrounds = 500,
   max_depth = 6,
-  eta = 0.1,
+  eta = lifecycle::deprecated(),
+  learning_rate = 0.1,
   nfold = 5,
   cv = FALSE,
   objective = "multi:softprob",
   early_stopping_rounds = NULL,
   eval_metric = "mlogloss",
-  gamma = 0,
+  gamma = lifecycle::deprecated(),
+  min_split_loss = 0,
   colsample_bytree = 1,
   subsample = 1,
   min_child_weight = 1,
@@ -43,7 +45,10 @@ proportion of data to use for training (default is 0.7).}
 \item{max_depth}{An integer specifying the maximum depth of the trees
 (default is 6).}
 
-\item{eta}{A numeric value representing the learning rate (default is 0.1).}
+\item{eta}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Deprecated; use \code{learning_rate} instead.}
+
+\item{learning_rate}{A numeric value representing the learning rate
+(default is 0.1).  This replaces the deprecated \code{eta} argument.}
 
 \item{nfold}{An integer specifying the number of folds for cross-validation
 (default is 5).}
@@ -60,8 +65,11 @@ with no improvement to stop training early (default is NULL).}
 \item{eval_metric}{A string specifying the evaluation metric
 (default is "mlogloss").}
 
-\item{gamma}{A numeric value for the minimum loss reduction required to
-make a further partition (default is 0).}
+\item{gamma}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Deprecated; use \code{min_split_loss} instead.}
+
+\item{min_split_loss}{A numeric value for the minimum loss reduction
+required to make a further partition (default is 0).  This replaces
+the deprecated \code{gamma} argument.}
 
 \item{colsample_bytree}{A numeric value specifying the subsample ratio
 of columns when constructing each tree (default is 1).}
@@ -107,8 +115,8 @@ feature importance.
 \details{
 The function allows for training an XGBoost model on cytokine data,
 splitting the data into training and test sets. If cross-validation is
-enabled (\code{cv = TRUE}), it performs k-fold cross-validation and prints the
-best iteration based on the evaluation metric.
+enabled (\code{cv = TRUE}), it performs k-fold cross-validation and reports the
+confusion matrix and accuracy.
 The function also visualizes the top N important
 features using \code{xgb.ggplot.importance()}.
 }
@@ -116,16 +124,25 @@ features using \code{xgb.ggplot.importance()}.
 # Example usage:
 data_df0 <- ExampleData1
 data_df <- data.frame(data_df0[, 1:3], log2(data_df0[, -c(1:3)]))
-data_df <- data_df[, -c(2,3)]
+data_df <- data_df[, -c(2:3)]
 data_df <- dplyr::filter(data_df, Group != "ND")
 
 cyt_xgb(
-  data = data_df, group_col = "Group",
-  nrounds = 500, max_depth = 4, eta = 0.05,
-  nfold = 5, cv = FALSE, eval_metric = "mlogloss",
-  early_stopping_rounds = NULL, top_n_features = 10,
-  verbose = 0, plot_roc = TRUE, print_results = FALSE
-)
+ data = data_df,
+ group_col = "Group",
+ nrounds = 500,
+ max_depth = 4,
+ min_split_loss = 0,
+ learning_rate = 0.05,
+ nfold = 5,
+ cv = FALSE,
+ objective = "multi:softprob",
+ eval_metric = "auc",
+ early_stopping_rounds = NULL,
+ top_n_features = 10,
+ verbose = 0,
+ plot_roc = TRUE,
+ print_results = FALSE)
 
 }
 \author{

@@ -243,8 +243,8 @@ cyt_mint_splsda(
   scale = "log2",
   verbose = FALSE
 )
-
 ```
+
 
 ### Principal Component Analysis (PCA)
 
@@ -327,10 +327,12 @@ cyt_xgb(
   group_col = "Group",
   nrounds = 500,
   max_depth = 4,
-  eta = 0.05,
+  min_split_loss = 0,
+  learning_rate = 0.05,
   nfold = 5,
   cv = TRUE,
-  eval_metric = "mlogloss",
+  objective = "multi:softprob",
+  eval_metric = "auc",
   early_stopping_rounds = NULL,
   top_n_features = 10,
   verbose = 0,

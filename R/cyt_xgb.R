@@ -15,7 +15,9 @@
 #' (default is 500).
 #' @param max_depth An integer specifying the maximum depth of the trees
 #' (default is 6).
-#' @param eta A numeric value representing the learning rate (default is 0.1).
+#' @param learning_rate A numeric value representing the learning rate
+#'   (default is 0.1).  This replaces the deprecated `eta` argument.
+#' @param eta `r lifecycle::badge("deprecated")` Deprecated; use `learning_rate` instead.
 #' @param nfold An integer specifying the number of folds for cross-validation
 #' (default is 5).
 #' @param cv A logical value indicating whether to perform cross-validation
@@ -26,8 +28,10 @@
 #' with no improvement to stop training early (default is NULL).
 #' @param eval_metric A string specifying the evaluation metric
 #' (default is "mlogloss").
-#' @param gamma A numeric value for the minimum loss reduction required to
-#'  make a further partition (default is 0).
+#' @param min_split_loss A numeric value for the minimum loss reduction
+#'   required to make a further partition (default is 0).  This replaces
+#'   the deprecated `gamma` argument.
+#' @param gamma `r lifecycle::badge("deprecated")` Deprecated; use `min_split_loss` instead.
 #' @param colsample_bytree A numeric value specifying the subsample ratio
 #' of columns when constructing each tree (default is 1).
 #' @param subsample A numeric value specifying the subsample ratio of the
@@ -60,8 +64,8 @@
 #' @details
 #' The function allows for training an XGBoost model on cytokine data,
 #' splitting the data into training and test sets. If cross-validation is
-#' enabled (`cv = TRUE`), it performs k-fold cross-validation and prints the
-#'  best iteration based on the evaluation metric.
+#' enabled (`cv = TRUE`), it performs k-fold cross-validation and reports the
+#' confusion matrix and accuracy.
 #' The function also visualizes the top N important
 #' features using `xgb.ggplot.importance()`.
 #'
@@ -69,16 +73,25 @@
 #' # Example usage:
 #' data_df0 <- ExampleData1
 #' data_df <- data.frame(data_df0[, 1:3], log2(data_df0[, -c(1:3)]))
-#' data_df <- data_df[, -c(2,3)]
+#' data_df <- data_df[, -c(2:3)]
 #' data_df <- dplyr::filter(data_df, Group != "ND")
 #'
 #' cyt_xgb(
-#'   data = data_df, group_col = "Group",
-#'   nrounds = 500, max_depth = 4, eta = 0.05,
-#'   nfold = 5, cv = FALSE, eval_metric = "mlogloss",
-#'   early_stopping_rounds = NULL, top_n_features = 10,
-#'   verbose = 0, plot_roc = TRUE, print_results = FALSE
-#' )
+#'  data = data_df,
+#'  group_col = "Group",
+#'  nrounds = 500,
+#'  max_depth = 4,
+#'  min_split_loss = 0,
+#'  learning_rate = 0.05,
+#'  nfold = 5,
+#'  cv = FALSE,
+#'  objective = "multi:softprob",
+#'  eval_metric = "auc",
+#'  early_stopping_rounds = NULL,
+#'  top_n_features = 10,
+#'  verbose = 0,
+#'  plot_roc = TRUE,
+#'  print_results = FALSE)
 #'
 #' @importFrom xgboost xgb.DMatrix xgb.train xgb.importance xgb.ggplot.importance xgb.cv getinfo
 #' @importFrom caret createDataPartition confusionMatrix
@@ -92,13 +105,15 @@ cyt_xgb <- function(
   train_fraction = 0.7,
   nrounds = 500,
   max_depth = 6,
-  eta = 0.1,
+  eta = lifecycle::deprecated(),
+  learning_rate = 0.1,
   nfold = 5,
   cv = FALSE,
   objective = "multi:softprob",
   early_stopping_rounds = NULL,
   eval_metric = "mlogloss",
-  gamma = 0,
+  gamma = lifecycle::deprecated(),
+  min_split_loss = 0,
   colsample_bytree = 1,
   subsample = 1,
   min_child_weight = 1,
@@ -108,6 +123,26 @@ cyt_xgb <- function(
   print_results = FALSE,
   seed = 123
 ) {
+  # Handle deprecated eta -> learning_rate
+  if (lifecycle::is_present(eta)) {
+    lifecycle::deprecate_warn(
+      when = "0.2.2",
+      what = "cyt_xgb(eta)",
+      with = "cyt_xgb(learning_rate)"
+    )
+    learning_rate <- eta
+  }
+
+  # Handle deprecated gamma -> min_split_loss
+  if (lifecycle::is_present(gamma)) {
+    lifecycle::deprecate_warn(
+      when = "0.2.2",
+      what = "cyt_xgb(gamma)",
+      with = "cyt_xgb(min_split_loss)"
+    )
+    min_split_loss <- gamma
+  }
+
   # Ensure the grouping variable is a factor
   data[[group_col]] <- as.factor(data[[group_col]])
 
@@ -126,6 +161,8 @@ cyt_xgb <- function(
   # Prepare the dataset for xgboost (convert to matrix)
   X <- as.matrix(data[, -which(names(data) == group_col)])
   y <- data[[group_col]] # Numeric class values: 0, 1, 2, ..., n-1
+
+  num_class <- length(unique(y))
 
   # Split the data into training and testing sets
   set.seed(seed)
@@ -149,8 +186,8 @@ cyt_xgb <- function(
     eval_metric = eval_metric,
     num_class = length(unique(y)),
     max_depth = max_depth,
-    eta = eta,
-    gamma = gamma,
+    learning_rate = learning_rate,
+    min_split_loss = min_split_loss,
     colsample_bytree = colsample_bytree,
     subsample = subsample,
     min_child_weight = min_child_weight
@@ -164,81 +201,79 @@ cyt_xgb <- function(
     params = params,
     data = dtrain,
     nrounds = nrounds,
-    watchlist = list(train = dtrain, test = dtest),
+    evals = list(train = dtrain, test = dtest),
     early_stopping_rounds = early_stopping_rounds,
     verbose = verbose
   )
-
-  # Determine the evaluation column name dynamically (e.g., "test_mlogloss")
-  eval_col_name <- paste0("test_", eval_metric)
-  if (print_results) {
-    cat("\nBest iteration from training (based on", eval_metric, "):\n")
-    print(xgb_model$evaluation_log[
-      which.min(
-        xgb_model$evaluation_log[[eval_col_name]]
-      ),
-    ])
-  }
-
   # Make predictions on the test set
   preds <- predict(xgb_model, X_test)
-  pred_labels <- max.col(matrix(
-    preds,
-    ncol = length(unique(y_test)),
-    byrow = TRUE
-  )) -
-    1
+
+  # XGBoost >= 1.4: multi:softprob returns a matrix [nrow, num_class]
+  # Older versions might return a flat vector, so handle both.
+  if (is.matrix(preds)) {
+    preds_matrix <- preds
+  } else {
+    preds_matrix <- matrix(preds, ncol = num_class, byrow = TRUE)
+  }
+
+  # Hard labels for confusion matrix (0 .. num_class-1)
+  pred_labels <- max.col(preds_matrix) - 1
 
   # For binary classification, reshape predictions and compute ROC/AUC
+  roc_plot <- NULL
+
   if (plot_roc) {
-    if (length(unique(y_test)) == 2) {
-      preds_matrix <- matrix(preds, ncol = 2, byrow = TRUE)
+    if (num_class == 2) {
+      # probability of class "1" (label 1)
       xgb_prob <- preds_matrix[, 2]
+
       if (length(xgb_prob) != length(y_test)) {
-        if (print_results) {
-          cat(
-            "The length of predicted probabilities does not match the length of
-          true labels."
-          )
-        }
-      }
-      roc_obj <- pROC::roc(y_test, xgb_prob, quiet = TRUE)
-      auc_value <- pROC::auc(roc_obj)
-      if (print_results) {
-        cat("\nAUC: ", round(auc_value, 3), "\n")
-      }
-      roc_plot <- pROC::ggroc(
-        roc_obj,
-        color = "blue",
-        linewidth = 1.5,
-        legacy.axes = TRUE
-      ) +
-        ggplot2::geom_abline(
-          linetype = "dashed",
-          color = "red",
-          linewidth = 1
-        ) +
-        ggplot2::labs(
-          title = "ROC Curve (Test Set)",
-          x = "1 - Specificity",
-          y = "Sensitivity"
-        ) +
-        ggplot2::annotate(
-          "text",
-          x = 0.75,
-          y = 0.25,
-          label = paste("AUC =", round(auc_value, 3)),
-          size = 5,
-          color = "blue"
-        ) +
-        ggplot2::theme_minimal() +
-        ggplot2::theme(
-          panel.background = element_rect(fill = "white", color = NA),
-          plot.background = element_rect(fill = "white", color = NA),
-          panel.grid.major = element_line(color = "grey90"),
-          panel.grid.minor = element_line(color = "grey95")
+        warning(
+          "Length mismatch between predicted probabilities and true labels; ",
+          "skipping ROC/AUC."
         )
-      print(roc_plot)
+      } else {
+        roc_obj <- pROC::roc(y_test, xgb_prob, quiet = TRUE)
+        auc_value <- pROC::auc(roc_obj)
+
+        if (print_results) {
+          cat("\nAUC: ", round(auc_value, 3), "\n")
+        }
+
+        roc_plot <- pROC::ggroc(
+          roc_obj,
+          color = "blue",
+          linewidth = 1.5,
+          legacy.axes = TRUE
+        ) +
+          ggplot2::geom_abline(
+            linetype = "dashed",
+            color = "red",
+            linewidth = 1
+          ) +
+          ggplot2::labs(
+            title = "ROC Curve (Test Set)",
+            x = "1 - Specificity",
+            y = "Sensitivity"
+          ) +
+          ggplot2::annotate(
+            "text",
+            x = 0.75,
+            y = 0.25,
+            label = paste("AUC =", round(auc_value, 3)),
+            size = 5,
+            color = "blue"
+          ) +
+          ggplot2::theme_minimal() +
+          ggplot2::theme(
+            panel.background = element_rect(fill = "white", color = NA),
+            plot.background = element_rect(fill = "white", color = NA),
+            panel.grid.major = element_line(color = "grey90"),
+            panel.grid.minor = element_line(color = "grey95")
+          )
+
+        print(roc_plot)
+      }
     } else {
       warning("ROC curve is only available for binary classification.")
     }
@@ -248,10 +283,14 @@ cyt_xgb <- function(
   if (print_results) {
     cat("\nConfusion Matrix on Test Set\n")
   }
-  confusion_mat <- caret::confusionMatrix(
-    as.factor(pred_labels),
-    as.factor(y_test)
-  )
+  # Ensure both factors share the same levels (0 .. num_class-1)
+  test_levels <- sort(unique(y)) # global class set
+
+  test_pred <- factor(pred_labels, levels = test_levels)
+  test_ref <- factor(y_test, levels = test_levels)
+
+  confusion_mat <- caret::confusionMatrix(test_pred, test_ref)
+
   if (print_results) {
     print(confusion_mat)
   }
@@ -304,33 +343,37 @@ cyt_xgb <- function(
       prediction = TRUE
     )
 
-    if (print_results) {
-      cat("\nBest iteration from cross-validation:\n")
-      eval_col_name_cv <- paste0("test_", eval_metric, "_mean")
-      print(xgb_cv$evaluation_log[
-        which.min(
-          xgb_cv$evaluation_log[[eval_col_name_cv]]
-        ),
-      ])
-    }
-
-    cv_preds <- xgb_cv$pred
+    cv_preds <- xgb_cv$cv_predict
     num_class <- length(unique(y))
     if (num_class == 2) {
-      cv_pred_labels <- ifelse(cv_preds[, 2] > cv_preds[, 1], 1, 0)
+      cv_pred_labels <- ifelse(cv_preds$pred[, 2] > cv_preds$pred[, 1], 1, 0)
     } else {
-      cv_pred_labels <- max.col(cv_preds) - 1
+      cv_pred_labels <- max.col(cv_preds$pred) - 1
     }
 
     actual_labels <- xgboost::getinfo(dtrain, "label")
-    cv_confusion_mat <- caret::confusionMatrix(
-      as.factor(cv_pred_labels),
-      as.factor(actual_labels)
-    )
-    if (print_results) {
+
+    # Use a common set of factor levels for CV predictions and labels
+    class_levels <- 0:(num_class - 1)
+
+    cv_pred <- factor(cv_pred_labels, levels = class_levels)
+    cv_ref <- factor(actual_labels, levels = class_levels)
+
+    if (length(cv_pred) != length(cv_ref)) {
+      warning(
+        "Length mismatch between CV predictions and labels; ",
+        "skipping CV confusion matrix."
+      )
+      cv_confusion_mat <- NULL
+    } else {
+      cv_confusion_mat <- caret::confusionMatrix(cv_pred, cv_ref)
+    }
+
+    if (print_results && !is.null(cv_confusion_mat)) {
       cat("\nCross-Validation Confusion Matrix\n")
       print(cv_confusion_mat)
     }
+
     cv_accuracy <- sum(cv_pred_labels == actual_labels) / length(actual_labels)
     if (print_results) {
       cat("\nCross-Validation Accuracy: ", round(cv_accuracy, 3), "\n")

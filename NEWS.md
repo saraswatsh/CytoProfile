@@ -1,4 +1,10 @@
-# CytoProfile (development version)
+# CytoProfile 0.2.3
+
+## Major Changes
+
+* Make 'cyt_xgb' compatible with the upcoming XGBoost R package changes (parameter renames, changes in predict() output).
+* Fix ROC/AUC computation and confusion matrix computation for XGBoost models.
+* Deprecate arguments 'eta' and 'gamma' in cyt_xgb() in favor of 'learning_rate' and 'min_split_loss' using the lifecycle package.
 
 # CytoProfile 0.2.2
 
