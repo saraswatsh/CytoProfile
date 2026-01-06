@@ -13,7 +13,7 @@ RoxygenNote: 7.3.3
 URL: https://github.com/saraswatsh/CytoProfile, https://cytoprofile.cytokineprofile.org/
 Depends: R (>= 4.3)
 Imports: 
-    mixOmics,
+   mixOmics,
     dplyr,
     tidyr,
     pROC,
@@ -27,16 +27,17 @@ Imports:
     ggrepel,
     gridExtra,
     reshape2,
-    lifecycle
+    lifecycle,
+    Ckmeans.1d.dp,
+    prodlim,
+    stats
 Suggests:
-    spelling, 
+    spelling,
     BiocManager,
     testthat,
     knitr,
     rmarkdown,
-    devtools,
-    Ckmeans.1d.dp,
-    prodlim
+    devtools
 NeedsCompilation: no
 License: GPL (>= 2)
 LazyData: true
