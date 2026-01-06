@@ -1,26 +1,18 @@
-# Heat Map
+# Heat Map.
 
 This function creates a heatmap using the numeric columns from the
-provided data frame. It provides the ability to hide row and column
-names, adjust font sizes and clustering, and apply additional
-transformations such as log₁₀ or combined z‑scoring. A file name with
-extension may be provided via `title` to save the heat map to disk;
-otherwise the plot is drawn on the active graphics device.
+provided data frame. It supports various scaling options and allows for
+row or column annotations. The heatmap is saved as a file, with the
+format determined by the file extension in `title`.
 
 ## Usage
 
 ``` r
 cyt_heatmap(
   data,
-  scale = c(NULL, "log2", "log10", "row_zscore", "col_zscore", "zscore"),
+  scale = c(NULL, "log2", "row_zscore", "col_zscore"),
   annotation_col = NULL,
   annotation_side = c("auto", "row", "col"),
-  show_row_names = FALSE,
-  show_col_names = TRUE,
-  fontsize_row = 10,
-  fontsize_col = 10,
-  cluster_rows = TRUE,
-  cluster_cols = TRUE,
   title = NULL
 )
 ```
@@ -29,60 +21,35 @@ cyt_heatmap(
 
 - data:
 
-  A data frame. Only numeric columns are used to construct the heat map.
+  A data frame containing the input data. Only numeric columns will be
+  used to generate the heatmap.
 
 - scale:
 
-  Character specifying an optional scaling. Accepts `NULL` (no scaling),
-  "log2", "log10", "row_zscore", "col_zscore" or "zscore" (apply both
-  row and column z‑scoring). Default is `NULL`.
+  Character. An optional scaling option. Options are NULL (no scaling),
+  "log2" (log2 transformation), "row_zscore" (z-score scaling by row),
+  or "col_zscore" (z-score scaling by column). Default is NULL.
 
 - annotation_col:
 
-  Optional. Either the name of a column in `data` or a vector of length
-  equal to the number of rows or columns of the numeric matrix. If a
-  column name is supplied the function determines whether it annotates
-  rows or columns based on its length or the value of `annotation_side`.
+  Character. An optional column name from `data` to be used for
+  generating annotation colors. Default is NULL.
 
 - annotation_side:
 
-  Character. One of "auto", "row" or "col". When "auto" (default) the
-  side is determined by matching the length of `annotation_col` to rows
-  or columns.
-
-- show_row_names:
-
-  Logical. If `TRUE` row names are shown Default is `FALSE`.
-
-- show_col_names:
-
-  Logical. If `FALSE` column names are hidden. Default is `TRUE`.
-
-- fontsize_row, :
-
-  fontsize_col Numeric. Font sizes for row and column names
-  respectively. Default is 10.
-
-- cluster_rows:
-
-  Logical. If `TRUE` (default), rows are clustered.
-
-- cluster_cols:
-
-  Logical. If `TRUE` (default), columns are clustered.
+  Character. Specifies whether the annotation should be applied to rows
+  or columns. Options are "auto", "row", or "col".
 
 - title:
 
-  Character. The heat map title or file name. If `title` ends with
-  ".pdf" or ".png" (case insensitive), the heat map is saved to that
-  file and no title is printed on screen. If `NULL` (default), the heat
-  map is drawn on the active device without saving and without a main
-  title.
+  Character. The title of the heatmap and the file name for saving the
+  plot. The file extension (".pdf" or ".png") determines the output
+  format. If `NULL`, the plot is generated on the current graphics
+  device. Default is `NULL`.
 
 ## Value
 
-Invisibly returns the pheatmap object created by
-[`pheatmap::pheatmap()`](https://rdrr.io/pkg/pheatmap/man/pheatmap.html).
+The function does not return a value. It saves the heatmap to a file.
 
 ## Author
 

@@ -1,12 +1,11 @@
-# Volcano plot
+# Volcano Plot.
 
 This function subsets the numeric columns from the input data and
 compares them based on a selected grouping column. It computes the fold
-changes (as the ratio of means) and associated p-values for each numeric
-variable between two groups. The results are log2-transformed (for fold
-change) and -log10-transformed (for p-values) to generate a volcano
-plot. Additionally, there is a choice between t‑tests and Wilcoxon
-rank‑sum tests and adjusting p‑values for multiple comparisons
+changes (as the ratio of means) and associated p-values (using
+two-sample t-tests) for each numeric variable between two groups. The
+results are log2-transformed (for fold change) and -log10-transformed
+(for p-values) to generate a volcano plot.
 
 ## Usage
 
@@ -19,9 +18,6 @@ cyt_volc(
   fold_change_thresh = 2,
   p_value_thresh = 0.05,
   top_labels = 10,
-  method = c("ttest", "wilcox"),
-  p_adjust_method = NULL,
-  add_effect = FALSE,
   verbose = FALSE
 )
 ```
@@ -30,60 +26,46 @@ cyt_volc(
 
 - data:
 
-  A data frame containing numeric variables and a grouping column.
+  A matrix or data frame containing the data to be analyzed.
 
 - group_col:
 
-  Character. Name of the grouping column.
+  A character string specifying the column name used for comparisons
+  (e.g., group, treatment, or stimulation).
 
-- cond1, :
+- cond1:
 
-  cond2 Character strings specifying the two levels of `group_col` to
-  compare. If either is `NULL`, all pairwise combinations of conditions
-  are used.
+  A character string specifying the name of the first condition for
+  comparison. Default is `NULL`.
+
+- cond2:
+
+  A character string specifying the name of the second condition for
+  comparison. Default is `NULL`.
 
 - fold_change_thresh:
 
-  Numeric. Threshold for absolute fold change (in original scale).
-  Default is 2.
+  A numeric threshold for the fold change. Default is `2`.
 
 - p_value_thresh:
 
-  Numeric. Threshold for the p‑value (raw or adjusted). Default is 0.05.
+  A numeric threshold for the p-value. Default is `0.05`.
 
 - top_labels:
 
-  Integer. Number of top points to label in each plot. Default is 10.
-
-- method:
-
-  Character. Statistical test to use. "ttest" (default) uses two‑sample
-  t‑tests; "wilcox" uses Wilcoxon rank‑sum tests.
-
-- p_adjust_method:
-
-  Character or `NULL`. Method to adjust p‑values across variables within
-  each comparison (e.g., "BH"). If `NULL` (default) no adjustment is
-  performed. See [`p.adjust`](https://rdrr.io/r/stats/p.adjust.html) for
-  details.
-
-- add_effect:
-
-  Logical. If `TRUE`, effect sizes are computed and returned in the
-  results (Cohen's d for t‑tests; rank‑biserial for Wilcoxon). Default
-  is `FALSE`.
+  An integer specifying the number of top variables to label on the
+  plot. Default is `10`.
 
 - verbose:
 
-  Logical. If `TRUE`, prints the data frame used for the final
-  comparison without the label column. Default is `FALSE`.
+  A logical indicating whether to print the computed statistics to the
+  console. Default is `FALSE`.
 
 ## Value
 
-A list of ggplot objects (one per comparison). Each plot visualizes log2
-fold change on the x‑axis and –log10 of the (adjusted) p‑value on the
-y‑axis. The underlying data used to construct the final plot are printed
-when `verbose = TRUE`.
+A list of volcano plots (as `ggplot` objects) for each pairwise
+comparison. Additionally, the function prints the data frame used for
+plotting (excluding the significance column) from the final comparison.
 
 ## Note
 
@@ -101,8 +83,7 @@ Xiaohua Douglas Zhang and Shubh Saraswat
 # Loading data
 data_df <- ExampleData1[,-c(2:3)]
 
-cyt_volc(data_df, "Group", cond1 = "T2D", cond2 = "ND", fold_change_thresh = 2.0, top_labels= 15)
-#> $`T2D vs ND`
-
-#> 
+volc_plot <- cyt_volc(data_df, "Group", cond1 = "T2D", cond2 = "ND",
+fold_change_thresh = 2.0, top_labels= 15)
+print(volc_plot$`T2D vs ND`)
 ```

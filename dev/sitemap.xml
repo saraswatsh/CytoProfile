@@ -12,8 +12,6 @@
 <url><loc>https://cytoprofile.cytokineprofile.org/dev/reference/ExampleData3.html</loc></url>
 <url><loc>https://cytoprofile.cytokineprofile.org/dev/reference/ExampleData4.html</loc></url>
 <url><loc>https://cytoprofile.cytokineprofile.org/dev/reference/ExampleData5.html</loc></url>
-<url><loc>https://cytoprofile.cytokineprofile.org/dev/reference/adjust_p.html</loc></url>
-<url><loc>https://cytoprofile.cytokineprofile.org/dev/reference/apply_scale.html</loc></url>
 <url><loc>https://cytoprofile.cytokineprofile.org/dev/reference/cyt_anova.html</loc></url>
 <url><loc>https://cytoprofile.cytokineprofile.org/dev/reference/cyt_bp.html</loc></url>
 <url><loc>https://cytoprofile.cytokineprofile.org/dev/reference/cyt_bp2.html</loc></url>
@@ -26,9 +24,6 @@
 <url><loc>https://cytoprofile.cytokineprofile.org/dev/reference/cyt_skku.html</loc></url>
 <url><loc>https://cytoprofile.cytokineprofile.org/dev/reference/cyt_splsda.html</loc></url>
 <url><loc>https://cytoprofile.cytokineprofile.org/dev/reference/cyt_ttest.html</loc></url>
-<url><loc>https://cytoprofile.cytokineprofile.org/dev/reference/cyt_univariate.html</loc></url>
-<url><loc>https://cytoprofile.cytokineprofile.org/dev/reference/cyt_univariate_multi.html</loc></url>
-<url><loc>https://cytoprofile.cytokineprofile.org/dev/reference/cyt_violin.html</loc></url>
 <url><loc>https://cytoprofile.cytokineprofile.org/dev/reference/cyt_volc.html</loc></url>
 <url><loc>https://cytoprofile.cytokineprofile.org/dev/reference/cyt_xgb.html</loc></url>
 <url><loc>https://cytoprofile.cytokineprofile.org/dev/reference/index.html</loc></url>
