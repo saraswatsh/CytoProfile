@@ -2,7 +2,7 @@
 % Please edit documentation in R/cyt_dualflashplot.R
 \name{cyt_dualflashplot}
 \alias{cyt_dualflashplot}
-\title{Dual-flashlight Plot}
+\title{Dual-flashlight Plot.}
 \usage{
 cyt_dualflashplot(
   data,
@@ -12,54 +12,38 @@ cyt_dualflashplot(
   ssmd_thresh = 1,
   log2fc_thresh = 1,
   top_labels = 15,
-  category_labels = c(Strong = "Strong Effect", Moderate = "Moderate Effect", Weak =
-    "Weak Effect"),
-  colors = c(`Strong Effect` = "red", `Moderate Effect` = "orange", `Weak Effect` =
-    "blue"),
-  shapes = c(`FALSE` = 16, `TRUE` = 17),
   verbose = FALSE
 )
 }
 \arguments{
-\item{data}{A data frame containing at least one numeric column
-and a grouping column.}
+\item{data}{A data frame containing the input data.}
 
-\item{group_var}{Character.  Name of the grouping column.}
+\item{group_var}{A string specifying the name of the grouping
+column in the data.}
 
-\item{group1, }{group2 Character strings identifying the two levels
-of \code{group_var} to compare.}
+\item{group1}{A string representing the name of the first group
+for comparison.}
 
-\item{ssmd_thresh}{Numeric.  Absolute SSMD threshold for
-highlighting observations as significant.  Default is 1.}
+\item{group2}{A string representing the name of the second group
+for comparison.}
 
-\item{log2fc_thresh}{Numeric.  Absolute log2 fold change threshold
-for significance.  Default is 1.}
+\item{ssmd_thresh}{A numeric threshold for the SSMD value used to
+determine significance.
+Default is 1.}
 
-\item{top_labels}{Integer.  Number of variables with the largest
-absolute SSMD to label on the plot.  Default is 15.}
+\item{log2fc_thresh}{A numeric threshold for the log2 fold change
+used to determine significance.
+Default is 1.}
 
-\item{category_labels}{Optional named character vector of length
-three providing alternative labels for the SSMD effect
-categories.  Names must include "Strong", "Moderate" and
-"Weak".  Defaults are \code{c(Strong = "Strong Effect", Moderate = "Moderate Effect", Weak = "Weak Effect")}.}
+\item{top_labels}{An integer specifying the number of top variables
+(based on absolute SSMD) to label in the plot. Default is 15.}
 
-\item{colors}{Optional named character vector mapping the effect
-categories to colors.  Names must match those in
-\code{category_labels}.  Defaults are red for strong, orange for
-moderate and blue for weak.}
-
-\item{shapes}{Optional named numeric vector of length two giving
-the plotting characters for non‑significant and significant
-points.  Defaults are \verb{c(}FALSE\verb{= 16,}TRUE\verb{ = 17)} (solid and
-triangular symbols).}
-
-\item{verbose}{Logical.  If \code{TRUE}, prints the computed summary
-statistics.  Default is \code{FALSE}.}
+\item{verbose}{A logical indicating whether to print the computed
+statistics to the console. Default is \code{FALSE}.}
 }
 \value{
-A ggplot object representing the dual‑flashlight plot.
-When \code{verbose} is \code{TRUE}, the summary statistics data frame is
-printed to the console.
+A ggplot object representing the dual flash plot for the
+comparisons between group1 and group2.
 }
 \description{
 This function reshapes the input data and computes summary statistics
@@ -70,14 +54,21 @@ the effect strength as "Strong Effect", "Moderate Effect", or "Weak Effect".
 A dual flash plot is generated using ggplot2 where the x-axis represents
 the average log2 fold change and the y-axis represents the SSMD.
 Additionally, the function prints the computed statistics to the console.
-A ggplot object is returned for further modification.
 }
 \examples{
 # Loading data
 data_df <- ExampleData1[, -c(2:3)]
-cyt_dualflashplot(data_df, group_var = "Group", group1 = "T2D", group2 = "ND",
-                       ssmd_thresh = 0.2, log2fc_thresh = 1,
-                       top_labels = 10)
+
+cyt_dualflashplot(
+  data_df,
+  group_var = "Group",
+  group1 = "T2D",
+  group2 = "ND",
+  ssmd_thresh = -0.2,
+  log2fc_thresh = 1,
+  top_labels = 10,
+  verbose = FALSE
+)
 
 }
 \author{

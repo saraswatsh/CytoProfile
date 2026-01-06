@@ -2,62 +2,41 @@
 % Please edit documentation in R/cyt_bp.R
 \name{cyt_bp}
 \alias{cyt_bp}
-\title{Boxplots for Continuous Variables with Optional Grouping}
+\title{Boxplots for Overall Comparisons by Continuous Variables.}
 \usage{
-cyt_bp(
-  data,
-  pdf_title = NULL,
-  group_by = NULL,
-  bin_size = 25,
-  y_lim = NULL,
-  scale = c("none", "log2", "log10", "zscore", "custom"),
-  custom_fn = NULL
-)
+cyt_bp(data, pdf_title, bin_size = 25, y_lim = NULL, scale = NULL)
 }
 \arguments{
-\item{data}{A matrix or data frame containing numeric and
-categorical variables.}
+\item{data}{A matrix or data frame containing the raw data to be plotted.}
 
-\item{pdf_title}{Optional string specifying the name of the PDF
-file to be created.  When \code{NULL} (default), plots are drawn on
-the current graphics device.}
+\item{pdf_title}{A string representing the name of the PDF file to
+be created. If set to \code{NULL}, the box plots are displayed on the current
+graphics device. Default is \code{NULL}.}
 
-\item{group_by}{Optional character vector specifying one or more
-columns to use for grouping.  If \code{NULL} (default) no grouping is
-applied.}
+\item{bin_size}{An integer specifying the maximum number of box plots to
+display on a single page.}
 
-\item{bin_size}{Integer.  Maximum number of boxplots per page when
-grouping is not used.  Default is 25, as in the original
-\code{cyt_bp}.}
+\item{y_lim}{An optional numeric vector defining the y-axis limits
+for the plots.}
 
-\item{y_lim}{Optional numeric vector giving y‑axis limits for the
-plots.  Applies to all plots.}
-
-\item{scale}{Character specifying a transformation for numeric
-variables.  Accepts \code{"none"}, \code{"log2"}, \code{"log10"},
-\code{"zscore"}, or \code{"custom"}.  When \code{"custom"}, supply a
-function via \code{custom_fn}.}
-
-\item{custom_fn}{A user supplied function to transform numeric
-columns when \code{scale = "custom"}.}
+\item{scale}{An optional character string. If set to "log2",
+numeric columns are log2-transformed.}
 }
 \value{
-Invisibly returns a list of \code{ggplot} objects.  When
-\code{pdf_title} is provided, plots are written to the PDF file.
+A PDF file containing the box plots for the continuous variables.
 }
 \description{
-This function generates boxplots for numeric variables in a data
-frame or matrix.  It supports optional grouping by one or more
-categorical variables.  Numeric variables can be scaled using
-various transformations before plotting.  When grouping is not
-used, boxplots are arranged in pages with a specified maximum
-number of plots per page.  Plots can be saved to a PDF file or
-displayed on the current graphics device.
+This function creates a PDF file containing box plots for the continuous
+variables in the provided data. If the number of columns in \code{data} exceeds
+\code{bin.size}, the function splits the plots across multiple pages.
 }
 \examples{
-# Boxplots without grouping
-cyt_bp(ExampleData1[, -c(1:3)], pdf_title = NULL, scale = "log2")
-# Boxplots grouped by Group
-cyt_bp(ExampleData1[, -c(3,5:28)], group_by = "Group", scale = "zscore")
+# Loading data
+data.df <- ExampleData1
+# Generate box plots for log2-transformed values to check for outliers:
+cyt_bp(data.df[,-c(1:3)], pdf_title = NULL, scale = "log2")
 
+}
+\author{
+Shubh Saraswat
 }

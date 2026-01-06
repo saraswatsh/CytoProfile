@@ -1,13 +1,5 @@
 # CytoProfile (development version)
 
-## Major Changes
-
-* New functions 'cyt_univariate' for t-test and wilcoxon rank sum test and 'cyt_univariate_multi' for ANOVA and Kruskal-Wallis test have been added to conduct univariate statistical analysis for multiple groups.
-* Changed 'cyt_bp' to adapt grouping similar to 'cyt_bp2' so there is no longer a need for separate functions
-* New function 'cyt_violin' for creating violin plots with statistical comparisons between groups.
-* Two new helper functions to apply different types of transformations and adjust p-values. 
-* Added more options for scale/transformations in all functions that require it and added p-value adjustment options where needed. 
-
 # CytoProfile 0.2.3
 
 ## Major Changes

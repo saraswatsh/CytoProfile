@@ -39,11 +39,6 @@ reference:
   - cyt_volc
   - cyt_heatmap
   - cyt_dualflashplot
-  - cyt_univariate
-  - cyt_univariate_multi
-  - cyt_violin
-  - apply_scale
-  - adjust_p
 - title: Multivariate Analysis
   description: |
     Functions for deeper multivariate insights.
