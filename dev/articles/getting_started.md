@@ -357,7 +357,7 @@ print(dfp$data, n = 25)
 #> 24 TNF.A          5046.       3069.      5624.        7.02e+ 7         1.63e+7
 #> 25 TNF.B             0.641       0.709      0.610     2.37e+ 0         2.76e+0
 #> # ℹ 5 more variables: variance_T2D <dbl>, ssmd <dbl>, log2FC <dbl>,
-#> #   SSMD_Category <chr>, Significant <lgl>
+#> #   Effect <fct>, Significant <lgl>
 ```
 
 ![](getting_started_files/figure-html/EDA8-1.png)
