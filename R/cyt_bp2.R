@@ -1,4 +1,4 @@
-#' Boxplot Function Enhanced for Specific Group Comparisons.
+#' Boxplot Function Enhanced for Specific Group Comparisons. `r lifecycle::badge("deprecated")`
 #'
 #' This function generates a PDF file containing boxplots for each combination
 #' of numeric and factor variables in the provided data. It first converts
@@ -32,6 +32,11 @@
 #' @import ggplot2
 
 cyt_bp2 <- function(data, pdf_title, scale = NULL, y_lim = NULL) {
+  lifecycle::deprecate_warn(
+    "0.2.3", # version when deprecation begins
+    "CytoProfile::cyt_bp2()",
+    "CytoProfile::cyt_bp()"
+  )
   # Convert any character variables to factors
   cat_vars <- sapply(data, is.character)
   if (any(cat_vars)) {

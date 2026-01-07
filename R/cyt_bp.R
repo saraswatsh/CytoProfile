@@ -31,6 +31,7 @@
 #' @return Invisibly returns a list of `ggplot` objects.  When
 #'   `pdf_title` is provided, plots are written to the PDF file.
 #' @examples
+#' data("ExampleData1")
 #' # Boxplots without grouping
 #' cyt_bp(ExampleData1[, -c(1:3)], pdf_title = NULL, scale = "log2")
 #' # Boxplots grouped by Group

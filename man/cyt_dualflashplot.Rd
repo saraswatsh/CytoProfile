@@ -26,7 +26,10 @@ and a grouping column.}
 
 \item{group_var}{Character.  Name of the grouping column.}
 
-\item{group1, }{group2 Character strings identifying the two levels
+\item{group1}{Character strings identifying the two levels
+of \code{group_var} to compare.}
+
+\item{group2}{Character strings identifying the two levels
 of \code{group_var} to compare.}
 
 \item{ssmd_thresh}{Numeric.  Absolute SSMD threshold for

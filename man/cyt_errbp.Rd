@@ -13,7 +13,6 @@ cyt_errbp(
   x_lab = "",
   y_lab = "",
   title = "",
-  log2 = FALSE,
   stat = c("mean", "median"),
   error = c("se", "sd", "mad", "ci"),
   scale = c("none", "log2", "log10", "zscore", "custom"),
@@ -41,8 +40,11 @@ labels are displayed.}
 effect‑size labels are encoded using symbols (e.g., \code{*}, \verb{>>>}).
 If \code{FALSE}(default), numeric values are shown instead.}
 
-\item{x_lab, }{y_lab Character strings for axis labels.  If
-left empty, sensible defaults are used.}
+\item{x_lab}{Character string for the x-axis label.  If empty a
+default label is generated.}
+
+\item{y_lab}{Character string for the y-axis label.  If empty a
+default label is generated.}
 
 \item{title}{Character string for the plot title.  If empty a
 default title is generated.}

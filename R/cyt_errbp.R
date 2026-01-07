@@ -23,8 +23,10 @@
 #' @param class_symbol Logical.  If `TRUE`, p‑value and
 #'   effect‑size labels are encoded using symbols (e.g., `*`, `>>>`).
 #'   If `FALSE`(default), numeric values are shown instead.
-#' @param x_lab, y_lab Character strings for axis labels.  If
-#'   left empty, sensible defaults are used.
+#' @param x_lab Character string for the x-axis label.  If empty a
+#'   default label is generated.
+#' @param y_lab Character string for the y-axis label.  If empty a
+#'   default label is generated.
 #' @param title Character string for the plot title.  If empty a
 #'   default title is generated.
 #' @param stat Character.  Central tendency statistic to use.  Choices
@@ -77,7 +79,6 @@ cyt_errbp <- function(
   x_lab = "",
   y_lab = "",
   title = "",
-  log2 = FALSE,
   stat = c("mean", "median"),
   error = c("se", "sd", "mad", "ci"),
   scale = c("none", "log2", "log10", "zscore", "custom"),

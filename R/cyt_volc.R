@@ -3,7 +3,10 @@
 #' @param data A data frame containing numeric variables and a
 #'   grouping column.
 #' @param group_col Character.  Name of the grouping column.
-#' @param cond1, cond2 Character strings specifying the two levels of
+#' @param cond1 Character strings specifying the levels of
+#'   `group_col` to compare.  If either is `NULL`, all pairwise
+#'   combinations of conditions are used.
+#' @param cond2 Character strings specifying the levels of
 #'   `group_col` to compare.  If either is `NULL`, all pairwise
 #'   combinations of conditions are used.
 #' @param fold_change_thresh Numeric.  Threshold for absolute fold

@@ -44,7 +44,7 @@
 #' MINT: A multivariate integrative approach to identify a reproducible
 #' biomarker signature across multiple experiments and platforms. BMC
 #' Bioinformatics 18:128.
-#' 
+#'
 #' @examples
 #' # Loading ExampleData5 dataset with batch column
 #' data_df <- ExampleData5[,-c(2,4)]
@@ -209,8 +209,8 @@ cyt_mint_splsda <- function(
             study = "global",
             contrib = "max",
             method = "mean",
-            size.name = 1,
-            size.legend = 1,
+            size.name = 0.7,
+            size.legend = 0.8,
             size.title = 1,
             legend.color = colors,
             legend.title = group_col,
@@ -249,6 +249,9 @@ cyt_mint_splsda <- function(
             study = "all.partial",
             contrib = "max",
             method = "mean",
+            size.name = 0.7,
+            size.legend = 0.8,
+            size.title = 1,
             legend.color = colors,
             legend.title = group_col,
             title = paste("Partial Loadings - Comp", comp)
@@ -410,8 +413,8 @@ cyt_mint_splsda <- function(
               study = "global",
               contrib = "max",
               method = "mean",
-              size.name = 1,
-              size.legend = 1,
+              size.name = 0.7,
+              size.legend = 0.8,
               size.title = 1,
               legend.color = colors,
               legend.title = group_col,
@@ -450,6 +453,9 @@ cyt_mint_splsda <- function(
               study = "all.partial",
               contrib = "max",
               method = "mean",
+              size.name = 0.7,
+              size.legend = 0.8,
+              size.title = 1,
               legend.color = colors,
               legend.title = group_col,
               title = paste("Partial Loadings - Comp", comp)

@@ -55,6 +55,7 @@ number of plots per page.  Plots can be saved to a PDF file or
 displayed on the current graphics device.
 }
 \examples{
+data("ExampleData1")
 # Boxplots without grouping
 cyt_bp(ExampleData1[, -c(1:3)], pdf_title = NULL, scale = "log2")
 # Boxplots grouped by Group

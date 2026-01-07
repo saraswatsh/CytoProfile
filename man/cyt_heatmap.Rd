@@ -37,14 +37,15 @@ on its length or the value of \code{annotation_side}.}
 "col".  When "auto" (default) the side is determined by
 matching the length of \code{annotation_col} to rows or columns.}
 
-\item{show_row_names}{Logical.  If \code{TRUE} row names are shown
+\item{show_row_names}{Logical. If \code{TRUE} row names are shown
 Default is \code{FALSE}.}
 
-\item{show_col_names}{Logical.  If \code{FALSE} column names are
+\item{show_col_names}{Logical. If \code{FALSE} column names are
 hidden.  Default is \code{TRUE}.}
 
-\item{fontsize_row, }{fontsize_col Numeric.  Font sizes for row and
-column names respectively.  Default is 10.}
+\item{fontsize_row}{Numeric. Font size for row names. Default is 10.}
+
+\item{fontsize_col}{Numeric. Font size for column names. Default is 10.}
 
 \item{cluster_rows}{Logical.  If \code{TRUE} (default), rows are
 clustered.}
@@ -66,7 +67,7 @@ Invisibly returns the pheatmap object created by
 This function creates a heatmap using the numeric columns from the
 provided data frame. It provides the ability to hide row and
 column names, adjust font sizes and clustering, and apply
-additional transformations such as log₁₀ or combined z‑scoring.  A
+additional transformations such as log10 or combined z‑scoring.  A
 file name with extension may be provided via \code{title} to save the
 heat map to disk; otherwise the plot is drawn on the active
 graphics device.

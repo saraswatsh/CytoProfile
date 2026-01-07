@@ -1,6 +1,8 @@
 Agrawal
 Andrzej
+BH
 BMC
+Benjamini
 Besse
 Bharath
 BiocManager
@@ -25,6 +27,7 @@ Gini
 Guestrin
 HSD
 Hasturk
+Hochberg
 IFN
 IFNg
 INTegration
@@ -54,13 +57,16 @@ TNFa
 TNFb
 Tianqi
 Welch
+Wilk
 XD
 XGBoost
 Xiaohua
 Zukowski
 anova
 biomarker
+biserial
 bp
+ci
 cyt
 cytokine
 data's
@@ -70,6 +76,7 @@ errbp
 ggplot
 https
 inflammaging
+kruskal
 lifecycle
 loadings
 loocv
@@ -90,6 +97,8 @@ readonly
 reproducibility
 rf
 sPLS
+sd
+se
 shapiro
 skku
 softprob
@@ -97,6 +106,8 @@ splsda
 tempdir
 ttest
 volc
+wilcox
+wilcoxon
 wilk
 xgb
 zscore

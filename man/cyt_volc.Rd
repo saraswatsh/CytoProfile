@@ -24,7 +24,11 @@ grouping column.}
 
 \item{group_col}{Character.  Name of the grouping column.}
 
-\item{cond1, }{cond2 Character strings specifying the two levels of
+\item{cond1}{Character strings specifying the levels of
+\code{group_col} to compare.  If either is \code{NULL}, all pairwise
+combinations of conditions are used.}
+
+\item{cond2}{Character strings specifying the levels of
 \code{group_col} to compare.  If either is \code{NULL}, all pairwise
 combinations of conditions are used.}
 

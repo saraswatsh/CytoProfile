@@ -13,7 +13,9 @@
 #' @param data A data frame containing at least one numeric column
 #'   and a grouping column.
 #' @param group_var Character.  Name of the grouping column.
-#' @param group1, group2 Character strings identifying the two levels
+#' @param group1 Character strings identifying the two levels
+#'   of `group_var` to compare.
+#' @param group2 Character strings identifying the two levels
 #'   of `group_var` to compare.
 #' @param ssmd_thresh Numeric.  Absolute SSMD threshold for
 #'   highlighting observations as significant.  Default is 1.

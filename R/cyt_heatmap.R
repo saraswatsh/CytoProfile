@@ -14,12 +14,12 @@
 #' @param annotation_side Character.  One of "auto", "row" or
 #'   "col".  When "auto" (default) the side is determined by
 #'   matching the length of `annotation_col` to rows or columns.
-#' @param show_row_names Logical.  If `TRUE` row names are shown
+#' @param show_row_names Logical. If `TRUE` row names are shown
 #'   Default is `FALSE`.
-#' @param show_col_names Logical.  If `FALSE` column names are
+#' @param show_col_names Logical. If `FALSE` column names are
 #'   hidden.  Default is `TRUE`.
-#' @param fontsize_row, fontsize_col Numeric.  Font sizes for row and
-#'   column names respectively.  Default is 10.
+#' @param fontsize_row Numeric. Font size for row names. Default is 10.
+#' @param fontsize_col Numeric. Font size for column names. Default is 10.
 #' @param cluster_rows Logical.  If `TRUE` (default), rows are
 #'   clustered.
 #' @param cluster_cols Logical.  If `TRUE` (default), columns are
@@ -34,7 +34,7 @@
 #' This function creates a heatmap using the numeric columns from the
 #' provided data frame. It provides the ability to hide row and
 #' column names, adjust font sizes and clustering, and apply
-#' additional transformations such as log₁₀ or combined z‑scoring.  A
+#' additional transformations such as log10 or combined z‑scoring.  A
 #' file name with extension may be provided via `title` to save the
 #' heat map to disk; otherwise the plot is drawn on the active
 #' graphics device.

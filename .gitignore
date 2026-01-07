@@ -16,3 +16,4 @@ CRAN-SUBMISSION
 .vscode
 output/
 revdep/
+^CytoProfile_0\.2\.3\.pdf$

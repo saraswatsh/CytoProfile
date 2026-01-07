@@ -28,12 +28,12 @@ Imports:
     gridExtra,
     reshape2,
     lifecycle,
-    Ckmeans.1d.dp,
-    prodlim,
     stats
 Suggests:
     spelling,
     BiocManager,
+    Ckmeans.1d.dp,
+    prodlim,
     testthat,
     knitr,
     rmarkdown,
