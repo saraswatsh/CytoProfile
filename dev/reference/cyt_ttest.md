@@ -1,4 +1,4 @@
-# Two Sample T-test Comparisons.
+# Two Sample T-test Comparisons. **\[deprecated\]**
 
 This function performs pairwise comparisons between two groups for each
 combination of a categorical predictor (with exactly two levels) and a
@@ -61,6 +61,8 @@ cyt_ttest(
  verbose = TRUE,
  format_output = TRUE
 )
+#> Warning: `cyt_ttest()` was deprecated in CytoProfile 0.2.3.
+#> ℹ Please use `cyt_univariate()` instead.
 #> $results
 #>   Outcome Categorical      Comparison
 #> 1   IFN.G       Group   PreT2D vs T2D

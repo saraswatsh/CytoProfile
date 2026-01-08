@@ -57,7 +57,7 @@ analyzes each treatment level separately."><meta property="og:image" content="ht
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Analyze data with Sparse Partial Least Squares Discriminant Analysis (sPLS-DA).</h1>
-      <small class="dont-index">Source: <a href="https://github.com/saraswatsh/CytoProfile/blob/main/R/cyt_splsda.R" class="external-link"><code>R/cyt_splsda.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/saraswatsh/CytoProfile/blob/devel/R/cyt_splsda.R" class="external-link"><code>R/cyt_splsda.R</code></a></small>
       <div class="d-none name"><code>cyt_splsda.Rd</code></div>
     </div>
 
@@ -91,7 +91,10 @@ analyzes each treatment level separately.</p>
 <span>  <span class="va">var_num</span>,</span>
 <span>  cv_opt <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  fold_num <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  scale <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  scale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"none"</span>, <span class="st">"log2"</span>, <span class="st">"log10"</span>, <span class="st">"zscore"</span>, <span class="st">"custom"</span><span class="op">)</span>,</span>
+<span>  custom_fn <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tune <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  tune_folds <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  comp_num <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  <span class="va">pch_values</span>,</span>
 <span>  style <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -179,9 +182,27 @@ classifications. Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-scale">scale<a class="anchor" aria-label="anchor" href="#arg-scale"></a></dt>
-<dd><p>Character. Option for data transformation; if set to
-<code>"log2"</code>, a log2 transformation is applied to the continuous
-variables. Default is <code>NULL</code>.</p></dd>
+<dd><p>Character string specifying a transformation to apply to the
+numeric predictor columns prior to model fitting.  Options are
+"none", "log2", "log10", "zscore", or "custom".  When
+"custom" is selected a user defined function must be supplied via
+<code>custom_fn</code>.  Defaults to "none".</p></dd>
+
+
+<dt id="arg-custom-fn">custom_fn<a class="anchor" aria-label="anchor" href="#arg-custom-fn"></a></dt>
+<dd><p>A custom transformation function used when
+<code>scale = "custom"</code>.  Ignored otherwise.  It should take a numeric
+vector and return a numeric vector of the same length.</p></dd>
+
+
+<dt id="arg-tune">tune<a class="anchor" aria-label="anchor" href="#arg-tune"></a></dt>
+<dd><p>Logical.  If <code>TRUE</code>, performs tuning of <code>ncomp</code> and
+<code>keepX</code> via cross‑validation.  Default is <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-tune-folds">tune_folds<a class="anchor" aria-label="anchor" href="#arg-tune-folds"></a></dt>
+<dd><p>Integer.  Number of folds in cross‑validation when
+tuning.  Default is 5.</p></dd>
 
 
 <dt id="arg-comp-num">comp_num<a class="anchor" aria-label="anchor" href="#arg-comp-num"></a></dt>

@@ -1,4 +1,4 @@
-# Boxplot Function Enhanced for Specific Group Comparisons.
+# Boxplot Function Enhanced for Specific Group Comparisons. **\[deprecated\]**
 
 This function generates a PDF file containing boxplots for each
 combination of numeric and factor variables in the provided data. It
@@ -51,12 +51,8 @@ Shubh Saraswat
 data_df <- ExampleData1[, -c(3, 5:28)]
 data_df <- dplyr::filter(data_df, Group == "T2D", Treatment == "Unstimulated")
 cyt_bp2(data_df, pdf_title = NULL, scale = "log2")
-#> Warning: `aes_string()` was deprecated in ggplot2 3.0.0.
-#> ℹ Please use tidy evaluation idioms with `aes()`.
-#> ℹ See also `vignette("ggplot2-in-packages")` for more information.
-#> ℹ The deprecated feature was likely used in the CytoProfile package.
-#>   Please report the issue at
-#>   <https://github.com/saraswatsh/CytoProfile/issues>.
+#> Warning: `cyt_bp2()` was deprecated in CytoProfile 0.2.3.
+#> ℹ Please use `cyt_bp()` instead.
 
 
 ```

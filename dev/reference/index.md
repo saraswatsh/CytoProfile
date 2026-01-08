@@ -6,23 +6,53 @@ Functions for exploring raw data, summarizing statistics, and
 visualizing key patterns.
 
 - [`cyt_anova()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_anova.md)
-  : ANOVA Analysis on Continuous Variables.
+  :
+
+  ANOVA Analysis on Continuous Variables. **\[deprecated\]**
+
 - [`cyt_ttest()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_ttest.md)
-  : Two Sample T-test Comparisons.
+  :
+
+  Two Sample T-test Comparisons. **\[deprecated\]**
+
 - [`cyt_bp()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_bp.md)
-  : Boxplots for Overall Comparisons by Continuous Variables.
+  : Boxplots for Continuous Variables with Optional Grouping
+
 - [`cyt_bp2()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_bp2.md)
-  : Boxplot Function Enhanced for Specific Group Comparisons.
+  :
+
+  Boxplot Function Enhanced for Specific Group Comparisons.
+  **\[deprecated\]**
+
 - [`cyt_errbp()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_errbp.md)
-  : Error-bar Plot.
+  : Error-bar Plot
+
 - [`cyt_skku()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_skku.md)
   : Distribution of the Data Set Shown by Skewness and Kurtosis.
+
 - [`cyt_volc()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_volc.md)
-  : Volcano Plot.
+  : Volcano plot
+
 - [`cyt_heatmap()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_heatmap.md)
-  : Heat Map.
+  : Heat Map
+
 - [`cyt_dualflashplot()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_dualflashplot.md)
-  : Dual-flashlight Plot.
+  : Dual-flashlight Plot
+
+- [`cyt_univariate()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_univariate.md)
+  : Pairwise Univariate Tests Between Two Groups
+
+- [`cyt_univariate_multi()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_univariate_multi.md)
+  : Univariate Tests for Multi‑Level Categorical Predictors
+
+- [`cyt_violin()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_violin.md)
+  : Violin Plots for Continuous Variables with Optional Grouping
+
+- [`apply_scale()`](https://cytoprofile.cytokineprofile.org/dev/reference/apply_scale.md)
+  : Apply a scale transformation to numeric columns
+
+- [`adjust_p()`](https://cytoprofile.cytokineprofile.org/dev/reference/adjust_p.md)
+  : Adjust p-values using a specified method
 
 ## Multivariate Analysis
 

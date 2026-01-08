@@ -45,7 +45,7 @@ feature importance."><meta property="og:image" content="https://cytoprofile.cyto
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Run XGBoost Classification on Cytokine Data.</h1>
-      <small class="dont-index">Source: <a href="https://github.com/saraswatsh/CytoProfile/blob/main/R/cyt_xgb.R" class="external-link"><code>R/cyt_xgb.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/saraswatsh/CytoProfile/blob/devel/R/cyt_xgb.R" class="external-link"><code>R/cyt_xgb.R</code></a></small>
       <div class="d-none name"><code>cyt_xgb.Rd</code></div>
     </div>
 
@@ -64,23 +64,23 @@ feature importance.</p>
 <span>  train_fraction <span class="op">=</span> <span class="fl">0.7</span>,</span>
 <span>  nrounds <span class="op">=</span> <span class="fl">500</span>,</span>
 <span>  max_depth <span class="op">=</span> <span class="fl">6</span>,</span>
-<span>  eta <span class="op">=</span> <span class="fu">lifecycle</span><span class="fu">::</span><span class="fu"><a href="https://lifecycle.r-lib.org/reference/deprecated.html" class="external-link">deprecated</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  learning_rate <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  nfold <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  cv <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  objective <span class="op">=</span> <span class="st">"multi:softprob"</span>,</span>
 <span>  early_stopping_rounds <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  eval_metric <span class="op">=</span> <span class="st">"mlogloss"</span>,</span>
-<span>  gamma <span class="op">=</span> <span class="fu">lifecycle</span><span class="fu">::</span><span class="fu"><a href="https://lifecycle.r-lib.org/reference/deprecated.html" class="external-link">deprecated</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  min_split_loss <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  colsample_bytree <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  subsample <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  min_child_weight <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  top_n_features <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  plot_roc <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  print_results <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  seed <span class="op">=</span> <span class="fl">123</span></span>
+<span>  seed <span class="op">=</span> <span class="fl">123</span>,</span>
+<span>  scale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"none"</span>, <span class="st">"log2"</span>, <span class="st">"log10"</span>, <span class="st">"zscore"</span>, <span class="st">"custom"</span><span class="op">)</span>,</span>
+<span>  custom_fn <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -89,164 +89,148 @@ feature importance.</p>
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>A data frame containing the cytokine data, with one column as
-the grouping variable and the rest as numerical features.</p></dd>
+<dd><p>A data frame containing numeric predictor variables and
+one grouping column.  Non-numeric predictor columns will be
+coerced to numeric if possible.</p></dd>
 
 
 <dt id="arg-group-col">group_col<a class="anchor" aria-label="anchor" href="#arg-group-col"></a></dt>
-<dd><p>A string representing the name of the column with the
-grouping variable (i.e., the target variable for classification).</p></dd>
+<dd><p>Character string naming the column that contains
+the class labels (target variable).  Required.</p></dd>
 
 
 <dt id="arg-train-fraction">train_fraction<a class="anchor" aria-label="anchor" href="#arg-train-fraction"></a></dt>
-<dd><p>A numeric value between 0 and 1 representing the
-proportion of data to use for training (default is 0.7).</p></dd>
+<dd><p>Numeric between 0 and 1 specifying the
+proportion of samples used for model training.  The remainder is
+reserved for testing.  Default is 0.7.</p></dd>
 
 
 <dt id="arg-nrounds">nrounds<a class="anchor" aria-label="anchor" href="#arg-nrounds"></a></dt>
-<dd><p>An integer specifying the number of boosting rounds
-(default is 500).</p></dd>
+<dd><p>Integer specifying the number of boosting rounds.
+Default is 500.</p></dd>
 
 
 <dt id="arg-max-depth">max_depth<a class="anchor" aria-label="anchor" href="#arg-max-depth"></a></dt>
-<dd><p>An integer specifying the maximum depth of the trees
-(default is 6).</p></dd>
-
-
-<dt id="arg-eta">eta<a class="anchor" aria-label="anchor" href="#arg-eta"></a></dt>
-<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> Deprecated; use <code>learning_rate</code> instead.</p></dd>
+<dd><p>Integer specifying the maximum depth of each tree.
+Default is 6.</p></dd>
 
 
 <dt id="arg-learning-rate">learning_rate<a class="anchor" aria-label="anchor" href="#arg-learning-rate"></a></dt>
-<dd><p>A numeric value representing the learning rate
-(default is 0.1).  This replaces the deprecated <code>eta</code> argument.</p></dd>
+<dd><p>Numeric specifying the learning rate.  Default
+is 0.1.</p></dd>
 
 
 <dt id="arg-nfold">nfold<a class="anchor" aria-label="anchor" href="#arg-nfold"></a></dt>
-<dd><p>An integer specifying the number of folds for cross-validation
-(default is 5).</p></dd>
+<dd><p>Integer specifying the number of folds for
+cross-validation when <code>cv = TRUE</code>.  Default is 5.</p></dd>
 
 
 <dt id="arg-cv">cv<a class="anchor" aria-label="anchor" href="#arg-cv"></a></dt>
-<dd><p>A logical value indicating whether to perform cross-validation
-(default is FALSE).</p></dd>
+<dd><p>Logical indicating whether to perform cross-validation
+using <code>xgb.cv</code>.  Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-objective">objective<a class="anchor" aria-label="anchor" href="#arg-objective"></a></dt>
-<dd><p>A string specifying the XGBoost objective function
-(default is "multi:softprob" for multi-class classification).</p></dd>
+<dd><p>Character string specifying the objective
+function.  For multi-class classification use "multi:softprob";
+for binary classification use "binary:logistic".  Default is
+"multi:softprob".</p></dd>
 
 
 <dt id="arg-early-stopping-rounds">early_stopping_rounds<a class="anchor" aria-label="anchor" href="#arg-early-stopping-rounds"></a></dt>
-<dd><p>An integer specifying the number of rounds
-with no improvement to stop training early (default is NULL).</p></dd>
+<dd><p>Integer specifying the number of rounds
+without improvement to trigger early stopping.  Default is NULL
+(no early stopping).</p></dd>
 
 
 <dt id="arg-eval-metric">eval_metric<a class="anchor" aria-label="anchor" href="#arg-eval-metric"></a></dt>
-<dd><p>A string specifying the evaluation metric
-(default is "mlogloss").</p></dd>
-
-
-<dt id="arg-gamma">gamma<a class="anchor" aria-label="anchor" href="#arg-gamma"></a></dt>
-<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> Deprecated; use <code>min_split_loss</code> instead.</p></dd>
+<dd><p>Character specifying the evaluation metric used
+during training.  Default is "mlogloss".</p></dd>
 
 
 <dt id="arg-min-split-loss">min_split_loss<a class="anchor" aria-label="anchor" href="#arg-min-split-loss"></a></dt>
-<dd><p>A numeric value for the minimum loss reduction
-required to make a further partition (default is 0).  This replaces
-the deprecated <code>gamma</code> argument.</p></dd>
+<dd><p>Numeric specifying the minimum loss reduction
+required to make a further partition.  Default is 0.</p></dd>
 
 
 <dt id="arg-colsample-bytree">colsample_bytree<a class="anchor" aria-label="anchor" href="#arg-colsample-bytree"></a></dt>
-<dd><p>A numeric value specifying the subsample ratio
-of columns when constructing each tree (default is 1).</p></dd>
+<dd><p>Numeric specifying the subsample ratio of
+columns when constructing each tree.  Default is 1.</p></dd>
 
 
 <dt id="arg-subsample">subsample<a class="anchor" aria-label="anchor" href="#arg-subsample"></a></dt>
-<dd><p>A numeric value specifying the subsample ratio of the
-training instances (default is 1).</p></dd>
+<dd><p>Numeric specifying the subsample ratio of the
+training instances.  Default is 1.</p></dd>
 
 
 <dt id="arg-min-child-weight">min_child_weight<a class="anchor" aria-label="anchor" href="#arg-min-child-weight"></a></dt>
-<dd><p>A numeric value specifying the minimum sum of
-instance weight needed in a child (default is 1).</p></dd>
+<dd><p>Numeric specifying the minimum sum of
+instance weight needed in a child.  Default is 1.</p></dd>
 
 
 <dt id="arg-top-n-features">top_n_features<a class="anchor" aria-label="anchor" href="#arg-top-n-features"></a></dt>
-<dd><p>An integer specifying the number of top features to
-display in the importance plot (default is 10).</p></dd>
+<dd><p>Integer specifying the number of top features
+to display in the importance plot.  Default is 10.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>An integer specifying the verbosity of the training
-process (default is 1).</p></dd>
+<dd><p>Integer (0, 1 or 2) controlling the verbosity of
+<code>xgb.train</code>.  Default is 1.  Larger values print more information.</p></dd>
 
 
 <dt id="arg-plot-roc">plot_roc<a class="anchor" aria-label="anchor" href="#arg-plot-roc"></a></dt>
-<dd><p>A logical value indicating whether to plot the ROC curve
-and calculate the AUC for binary classification (default is <code>FALSE</code>).</p></dd>
+<dd><p>Logical indicating whether to plot the ROC curve and
+compute the AUC for binary classification.  Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-print-results">print_results<a class="anchor" aria-label="anchor" href="#arg-print-results"></a></dt>
-<dd><p>A logical value indicating whether to print the results
-of the model training and evaluation (default is <code>FALSE</code>). If set to <code>TRUE</code>,
-it will print the confusion matrix, and feature importance.</p></dd>
+<dd><p>Logical.  If <code>TRUE</code>, prints the confusion
+matrix, top features and cross-validation metrics to the
+console.  Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>An integer specifying the seed for reproducibility (default is 123).</p></dd>
+<dd><p>Optional integer seed for reproducibility.  Default is
+123.</p></dd>
+
+
+<dt id="arg-scale">scale<a class="anchor" aria-label="anchor" href="#arg-scale"></a></dt>
+<dd><p>Character string specifying a transformation to apply
+to numeric predictors prior to model fitting.  Possible values
+are "none", "log2", "log10", "zscore" or "custom".  When set
+to "custom" a user defined function must be supplied via
+<code>custom_fn</code>.  Defaults to "none".</p></dd>
+
+
+<dt id="arg-custom-fn">custom_fn<a class="anchor" aria-label="anchor" href="#arg-custom-fn"></a></dt>
+<dd><p>A custom transformation function used when
+<code>scale = "custom"</code>.  Ignored otherwise.  Should take a numeric
+vector and return a numeric vector of the same length.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A list containing:</p>
-<dl><dt>model</dt>
-<dd><p>The trained XGBoost model.</p></dd>
-
-<dt>confusion_matrix</dt>
-<dd><p>The confusion matrix of the test set predictions.</p></dd>
-
-<dt>importance</dt>
-<dd><p>The feature importance matrix for the top features.</p></dd>
-
-<dt>class_mapping</dt>
-<dd><p>A named vector showing the mapping from class labels
-to numeric values used for training.</p></dd>
-
-<dt>cv_results</dt>
-<dd><p>Cross-validation results, if cross-validation was
-performed (otherwise NULL).</p></dd>
-
-<dt>plot</dt>
-<dd><p>A ggplot object showing the feature importance plot.</p></dd>
-
-</dl></div>
-    <div class="section level2">
-    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The function allows for training an XGBoost model on cytokine data,
-splitting the data into training and test sets. If cross-validation is
-enabled (<code>cv = TRUE</code>), it performs k-fold cross-validation and reports the
-confusion matrix and accuracy.
-The function also visualizes the top N important
-features using <code>xgb.ggplot.importance()</code>.</p>
-    </div>
-    <div class="section level2">
-    <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
-    <p>Shubh Saraswat</p>
+    <p>An invisible list with elements: <code>model</code> (the trained
+xgboost object), <code>confusion_matrix</code> (test set confusion
+matrix), <code>importance</code> (variable importance matrix),
+<code>class_mapping</code> (mapping from class names to numeric labels),
+<code>cv_results</code> (cross-validation results when <code>cv=TRUE</code>),
+<code>importance_plot</code> (a <code>ggplot2</code> object of the top feature
+importance), and <code>roc_plot</code> (a ROC curve for binary
+classification when <code>plot_roc=TRUE</code>).  All plots are printed
+automatically.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Example usage:</span></span></span>
-<span class="r-in"><span><span class="va">data_df0</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">data_df0</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span></span></span>
 <span class="r-in"><span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">data_df0</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log2</a></span><span class="op">(</span><span class="va">data_df0</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data_df</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">cyt_xgb</span><span class="op">(</span></span></span>
 <span class="r-in"><span> data <span class="op">=</span> <span class="va">data_df</span>,</span></span>
 <span class="r-in"><span> group_col <span class="op">=</span> <span class="st">"Group"</span>,</span></span>
-<span class="r-in"><span> nrounds <span class="op">=</span> <span class="fl">500</span>,</span></span>
+<span class="r-in"><span> nrounds <span class="op">=</span> <span class="fl">250</span>,</span></span>
 <span class="r-in"><span> max_depth <span class="op">=</span> <span class="fl">4</span>,</span></span>
 <span class="r-in"><span> min_split_loss <span class="op">=</span> <span class="fl">0</span>,</span></span>
 <span class="r-in"><span> learning_rate <span class="op">=</span> <span class="fl">0.05</span>,</span></span>
@@ -254,9 +238,6 @@ features using <code>xgb.ggplot.importance()</code>.</p>
 <span class="r-in"><span> cv <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span> objective <span class="op">=</span> <span class="st">"multi:softprob"</span>,</span></span>
 <span class="r-in"><span> eval_metric <span class="op">=</span> <span class="st">"auc"</span>,</span></span>
-<span class="r-in"><span> early_stopping_rounds <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
-<span class="r-in"><span> top_n_features <span class="op">=</span> <span class="fl">10</span>,</span></span>
-<span class="r-in"><span> verbose <span class="op">=</span> <span class="fl">0</span>,</span></span>
 <span class="r-in"><span> plot_roc <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span> print_results <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="cyt_xgb-1.png" alt="" width="700" height="433"></span>

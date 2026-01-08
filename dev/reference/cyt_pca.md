@@ -28,7 +28,8 @@ cyt_pca(
   pdf_title,
   ellipse = FALSE,
   comp_num = 2,
-  scale = NULL,
+  scale = c("none", "log2", "log10", "zscore", "custom"),
+  custom_fn = NULL,
   pch_values = NULL,
   style = NULL
 )
@@ -77,9 +78,15 @@ cyt_pca(
 
 - scale:
 
-  Character. If set to "log2", a log2 transformation is applied to the
-  numeric cytokine measurements (excluding the grouping columns).
-  Default is NULL.
+  Character string specifying a transformation to apply to numeric
+  variables before PCA. Options are "none" (no transformation), "log2",
+  "log10", "zscore", or "custom". When "custom" is selected, a user
+  supplied function must be given via `custom_fn`. Defaults to "none".
+
+- custom_fn:
+
+  A custom function used when `scale = "custom"`. Should take a numeric
+  vector and return a numeric vector. Ignored otherwise.
 
 - pch_values:
 
@@ -118,14 +125,8 @@ cyt_pca(
   group_col2 = "Treatment",
   ellipse = FALSE
 )
-#> Results based on log2 transformation:
 
 
-#> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-#> ℹ Please use `linewidth` instead.
-#> ℹ The deprecated feature was likely used in the CytoProfile package.
-#>   Please report the issue at
-#>   <https://github.com/saraswatsh/CytoProfile/issues>.
 
 
 

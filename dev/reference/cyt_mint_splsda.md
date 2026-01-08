@@ -20,7 +20,9 @@ cyt_mint_splsda(
   bg = FALSE,
   var_num = 20,
   comp_num = 2,
-  scale = NULL,
+  scale = c("none", "log2", "log10", "zscore", "custom"),
+  custom_fn = NULL,
+  tune = FALSE,
   cim = FALSE,
   roc = FALSE,
   verbose = FALSE
@@ -82,9 +84,21 @@ cyt_mint_splsda(
 
 - scale:
 
-  Character. Option for data transformation; if set to `"log2"`, a log2
-  transformation is applied to the continuous variables. Default is
-  `NULL`.
+  Character string specifying a transformation to apply to the numeric
+  predictor columns prior to model fitting. Options are "none", "log2",
+  "log10", "zscore", or "custom". When "custom" is selected a user
+  defined function must be supplied via `custom_fn`. Defaults to "none".
+
+- custom_fn:
+
+  A custom transformation function used when `scale = "custom"`. Ignored
+  otherwise. It should take a numeric vector and return a numeric vector
+  of the same length.
+
+- tune:
+
+  Logical. If `TRUE`, performs tuning of `ncomp` and `keepX` via
+  cross‑validation. Default is `FALSE`.
 
 - cim:
 
@@ -144,5 +158,11 @@ cyt_mint_splsda(data_df, group_col = "Group",
 
 
 
+#> Warning: `aes_string()` was deprecated in ggplot2 3.0.0.
+#> ℹ Please use tidy evaluation idioms with `aes()`.
+#> ℹ See also `vignette("ggplot2-in-packages")` for more information.
+#> ℹ The deprecated feature was likely used in the mixOmics package.
+#>   Please report the issue at
+#>   <https://github.com/mixOmicsTeam/mixOmics/issues/>.
 
 ```

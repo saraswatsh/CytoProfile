@@ -30,7 +30,10 @@ cyt_splsda(
   var_num,
   cv_opt = NULL,
   fold_num = 5,
-  scale = NULL,
+  scale = c("none", "log2", "log10", "zscore", "custom"),
+  custom_fn = NULL,
+  tune = FALSE,
+  tune_folds = 5,
   comp_num = 2,
   pch_values,
   style = NULL,
@@ -116,9 +119,26 @@ cyt_splsda(
 
 - scale:
 
-  Character. Option for data transformation; if set to `"log2"`, a log2
-  transformation is applied to the continuous variables. Default is
-  `NULL`.
+  Character string specifying a transformation to apply to the numeric
+  predictor columns prior to model fitting. Options are "none", "log2",
+  "log10", "zscore", or "custom". When "custom" is selected a user
+  defined function must be supplied via `custom_fn`. Defaults to "none".
+
+- custom_fn:
+
+  A custom transformation function used when `scale = "custom"`. Ignored
+  otherwise. It should take a numeric vector and return a numeric vector
+  of the same length.
+
+- tune:
+
+  Logical. If `TRUE`, performs tuning of `ncomp` and `keepX` via
+  cross‑validation. Default is `FALSE`.
+
+- tune_folds:
+
+  Integer. Number of folds in cross‑validation when tuning. Default is
+  5.
 
 - comp_num:
 

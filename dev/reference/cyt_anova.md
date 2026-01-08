@@ -1,4 +1,4 @@
-# ANOVA Analysis on Continuous Variables.
+# ANOVA Analysis on Continuous Variables. **\[deprecated\]**
 
 This function performs an analysis of variance (ANOVA) for each
 continuous variable against every categorical predictor in the input
@@ -45,6 +45,8 @@ Shubh Saraswat
 ``` r
 data("ExampleData1")
 cyt_anova(ExampleData1[, c(1:2, 5:6)], format_output = TRUE)
+#> Warning: `cyt_anova()` was deprecated in CytoProfile 0.2.3.
+#> ℹ Please use `cyt_univariate_multi()` instead.
 #>                        Outcome Categorical            Comparison  P_adj
 #> PreT2D-ND               GM.CSF       Group             PreT2D-ND 0.7731
 #> T2D-ND                  GM.CSF       Group                T2D-ND 0.5373
