@@ -9,8 +9,8 @@ Scree plots showing both individual and cumulative
 explained variance,
 Loadings plots, and
 Biplots and correlation circle plots.
-The function optionally applies a log2 transformation to the numeric
-data and handles analyses based treatment groups."><meta property="og:description" content="This function performs Principal Component Analysis (PCA) on cytokine data
+
+"><meta property="og:description" content="This function performs Principal Component Analysis (PCA) on cytokine data
 and generates several types of plots,
 including:
 2D PCA plots using mixOmics' plotIndiv function,
@@ -20,8 +20,8 @@ Scree plots showing both individual and cumulative
 explained variance,
 Loadings plots, and
 Biplots and correlation circle plots.
-The function optionally applies a log2 transformation to the numeric
-data and handles analyses based treatment groups."><meta property="og:image" content="https://cytoprofile.cytokineprofile.org/logo.png"><meta name="robots" content="noindex"></head><body>
+
+"><meta property="og:image" content="https://cytoprofile.cytokineprofile.org/logo.png"><meta name="robots" content="noindex"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -75,9 +75,7 @@ including:</p><ul><li><p>2D PCA plots using mixOmics' <code>plotIndiv</code> fun
 explained variance,</p></li>
 <li><p>Loadings plots, and</p></li>
 <li><p>Biplots and correlation circle plots.</p></li>
-</ul><p>The function optionally applies a log2 transformation to the numeric
-data and handles analyses based treatment groups.</p>
-    </div>
+</ul></div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
@@ -165,7 +163,9 @@ a 3D scatter plot is generated using the plot3D package. Default is NULL.</p></d
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A PDF file containing the PCA plots is generated and saved.</p>
+    <p>A PDF file containing the PCA plots is generated and saved when
+<code>pdf_title</code> is provided. Otherwise, plots are displayed on the current
+graphics device.</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>

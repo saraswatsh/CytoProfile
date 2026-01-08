@@ -4,7 +4,7 @@ This function conducts Sparse Partial Least Squares Discriminant
 Analysis (sPLS-DA) on the provided data. It uses the specified
 `group_col` (and optionally `group_col2`) to define class labels while
 assuming the remaining columns contain continuous variables. The
-function supports a log2 transformation via the `scale` parameter and
+function supports transformations via the `scale` parameter and
 generates a series of plots, including classification plots, scree
 plots, loadings plots, and VIP score plots. Optionally, ROC curves are
 produced when `roc` is `TRUE`. Additionally, cross-validation is

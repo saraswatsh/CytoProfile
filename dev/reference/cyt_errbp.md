@@ -133,7 +133,7 @@ Xiaohua Douglas Zhang and Shubh Saraswat
 
 ``` r
 # Basic usage with default settings
-df <- ExampleData1[, c("Group", "CCL.20.MIP.3A", "IL.10")]
+df <- ExampleData1[, c("Group", "CCL-20/MIP-3A", "IL-10")]
 cyt_errbp(df, group_col = "Group")
 
 # Use mean and SD, log2 transform and show significance

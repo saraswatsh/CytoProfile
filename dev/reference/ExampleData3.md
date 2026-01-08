@@ -21,53 +21,53 @@ A data frame with 64 rows and 14 columns:
 
   Group assigned to the subjects.
 
-- GM.CSF:
+- GM-CSF:
 
-  Observed concentration of GM.CSF cytokine.
+  Observed concentration of GM-CSF cytokine.
 
-- IFN.G:
+- IFN-G:
 
-  Observed concentration of IFN.G cytokine.
+  Observed concentration of IFN-G cytokine.
 
-- IL.10:
+- IL-10:
 
-  Observed concentration of IL.10 cytokine.
+  Observed concentration of IL-10 cytokine.
 
-- CCL.20.MIP.3A:
+- CCL-20/MIP-3A:
 
-  Observed concentration of CCL.20.MIP.3A cytokine.
+  Observed concentration of CCL-20/MIP-3A cytokine.
 
-- IL.12.P70:
+- IL-12/P70:
 
-  Observed concentration of IL.12.P70 cytokine.
+  Observed concentration of IL-12/P70 cytokine.
 
-- IL.13:
+- IL-13:
 
-  Observed concentration of IL.13 cytokine.
+  Observed concentration of IL-13 cytokine.
 
-- IL.15:
+- IL-15:
 
-  Observed concentration of IL.15 cytokine.
+  Observed concentration of IL-15 cytokine.
 
-- IL.9:
+- IL-9:
 
-  Observed concentration of IL.9 cytokine.
+  Observed concentration of IL-9 cytokine.
 
-- IL.1B:
+- IL-1B:
 
-  Observed concentration of IL.1B cytokine.
+  Observed concentration of IL-1B cytokine.
 
-- IL.21:
+- IL-21:
 
-  Observed concentration of IL.21 cytokine.
+  Observed concentration of IL-21 cytokine.
 
-- IL.6:
+- IL-6:
 
-  Observed concentration of IL.6 cytokine.
+  Observed concentration of IL-6 cytokine.
 
-- TNF.A:
+- TNF-A:
 
-  Observed concentration of TNF.A cytokine.
+  Observed concentration of TNF-A cytokine.
 
 ## Source
 

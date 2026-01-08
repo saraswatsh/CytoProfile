@@ -110,7 +110,7 @@ cyt_skku(data_df[, -c(2:3)], pdf_title = NULL, group_cols = c("Group"))
 
 ``` r
  # Basic usage with default settings
-data_df <- ExampleData1[, c("Group", "CCL.20.MIP.3A", "IL.10")]
+data_df <- ExampleData1[, c("Group", "CCL-20/MIP-3A", "IL-10")]
 cyt_errbp(data_df, group_col = "Group", x_lab = "Cytokines",
   y_lab = "Concentrations in log2 scale")
 ```

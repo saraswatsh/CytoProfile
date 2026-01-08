@@ -14,9 +14,6 @@ data and generates several types of plots, including:
 
 - Biplots and correlation circle plots.
 
-The function optionally applies a log2 transformation to the numeric
-data and handles analyses based treatment groups.
-
 ## Usage
 
 ``` r
@@ -100,7 +97,9 @@ cyt_pca(
 
 ## Value
 
-A PDF file containing the PCA plots is generated and saved.
+A PDF file containing the PCA plots is generated and saved when
+`pdf_title` is provided. Otherwise, plots are displayed on the current
+graphics device.
 
 ## Author
 
