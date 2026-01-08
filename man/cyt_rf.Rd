@@ -15,55 +15,80 @@ cyt_rf(
   step = 0.5,
   run_rfcv = TRUE,
   verbose = FALSE,
-  seed = 123
+  seed = 123,
+  cv = FALSE,
+  cv_folds = 5,
+  scale = c("none", "log2", "log10", "zscore", "custom"),
+  custom_fn = NULL
 )
 }
 \arguments{
-\item{data}{A data frame containing the cytokine data, with one column as
-the grouping variable and the rest as numerical features.}
+\item{data}{A data frame containing the cytokine measurements.  One column
+should correspond to the grouping variable (the outcome) and the
+remaining columns should be numeric predictors.}
 
-\item{group_col}{A string representing the name of the column with the
-grouping variable (the target variable for classification).}
+\item{group_col}{A string naming the column in \code{data} that contains the
+grouping variable.}
 
-\item{ntree}{An integer specifying the number of trees to grow in the forest
-(default is 500).}
+\item{ntree}{Integer specifying the number of trees to grow.  Default is
+500.}
 
-\item{mtry}{An integer specifying the number of variables randomly selected
-at each split (default is 5).}
+\item{mtry}{Integer specifying the number of variables randomly sampled at
+each split.  Default is 5.}
 
-\item{train_fraction}{A numeric value between 0 and 1 representing the
-proportion of data to use for training (default is 0.7).}
+\item{train_fraction}{Numeric between 0 and 1 giving the proportion of data
+used for training.  The remainder is used for testing.  Default is 0.7.}
 
-\item{plot_roc}{A logical value indicating whether to plot the ROC curve and
-compute the AUC for binary classification (default is FALSE).}
+\item{plot_roc}{Logical.  If \code{TRUE} and the problem is binary, an ROC curve
+and AUC will be computed and plotted for the test set.  Default is
+\code{FALSE}.}
 
-\item{k_folds}{An integer specifying the number of folds for
-cross-validation (default is 5).}
+\item{k_folds}{Integer specifying the number of folds for \code{rfcv} when
+\code{run_rfcv = TRUE}.  Default is 5.}
 
-\item{step}{A numeric value specifying the fraction of variables to remove
-at each step during cross-validation for feature selection (default is
-0.5).}
+\item{step}{Numeric specifying the fraction of variables removed at each
+step during \code{rfcv}.  Default is 0.5.}
 
-\item{run_rfcv}{A logical value indicating whether to run Random Forest
-cross-validation for feature selection (default is TRUE).}
+\item{run_rfcv}{Logical indicating whether to run Random Forest
+cross-validation for feature selection.  Default is \code{TRUE}.}
 
-\item{verbose}{A logical value indicating whether to print additional
-informational output to the console. When \code{TRUE}, the function will
-display progress messages, and intermediate results when
-\code{FALSE} (the default), it runs quietly.}
+\item{verbose}{Logical indicating whether to print intermediate results.
+When \code{TRUE}, training and test performance metrics, confusion matrices
+and cross-validation details are printed.  Default is \code{FALSE}.}
 
-\item{seed}{An integer specifying the seed for reproducibility (default is 123).}
+\item{seed}{Optional integer seed for reproducibility.  Default is 123.}
+
+\item{cv}{Logical indicating whether to perform a separate k-fold
+classification cross-validation using \code{caret}.  Default is \code{FALSE}.}
+
+\item{cv_folds}{Integer specifying the number of folds for classification
+cross-validation when \code{cv = TRUE}.  Default is 5.}
+
+\item{scale}{Character string specifying a transformation to apply to the
+numeric predictor columns prior to model fitting.  Options are
+"none" (no transformation), "log2", "log10", "zscore", or
+"custom".  When "custom" is selected a user defined function
+must be supplied via \code{custom_fn}.  Defaults to "none".}
+
+\item{custom_fn}{A custom transformation function used when \code{scale = "custom"}.
+The function should take a numeric vector and return a numeric vector
+of the same length.  Ignored for other values of \code{scale}.}
 }
 \value{
-A list containing:
-\item{model}{The trained Random Forest model.}
-\item{confusion_matrix}{The confusion matrix of the test set predictions.}
-\item{importance_plot}{A ggplot object showing the variable importance
-plot based on Mean Decrease Gini.}
-\item{rfcv_result}{Results from Random Forest cross-validation for feature
-selection (if \code{run_rfcv} is TRUE).}
-\item{importance_data}{A data frame containing the variable importance
-based on the Gini index.}
+An invisible list with components:
+\item{model}{The fitted \code{randomForest} model.}
+\item{confusion_matrix}{Confusion matrix on the test set.}
+\item{importance_plot}{A \code{ggplot2} object of the variable importance
+(mean decrease in Gini).}
+\item{importance_data}{A data frame of variable importance values.}
+\item{rfcv_result}{The \code{rfcv} object returned when \code{run_rfcv = TRUE}.}
+\item{rfcv_plot}{A \code{ggplot2} object of cross-validation error versus
+number of variables, returned when \code{run_rfcv = TRUE}.}
+\item{rfcv_data}{A data frame summarizing the \code{rfcv} error curve.}
+\item{roc_plot}{A \code{ggplot2} object of the ROC curve for binary
+classification when \code{plot_roc = TRUE}.}
+\item{cv_results}{A \code{caret} train object returned when \code{cv = TRUE} or
+\code{NULL} otherwise.}
 }
 \description{
 This function trains and evaluates a Random Forest classification model on
@@ -73,14 +98,18 @@ sensitivity, and specificity. Optionally, for binary classification, the
 function also plots the ROC curve and computes the AUC.
 }
 \details{
-The function fits a Random Forest model to the provided data by splitting it
-into training and test sets. It calculates performance metrics such as
-accuracy, sensitivity, and specificity for both sets. For binary
-classification, it can also plot the ROC curve and compute the AUC. If
-\code{run_rfcv} is TRUE, cross-validation is performed to select the optimal
-number of features.
-If \code{verbose} is TRUE, the function prints additional information to the
-console, including training results, test results, and plots.
+The function first coerces the grouping variable to a factor and splits
+the dataset into training and test subsets according to
+\code{train_fraction}.  A Random Forest classifier is fit to the training
+data using the specified \code{ntree} and \code{mtry} parameters.  The model
+performance is assessed on both the training and test sets, and
+results are printed when \code{verbose = TRUE}.  If \code{plot_roc = TRUE} and
+the grouping variable has exactly two levels, an ROC curve is computed
+on the test set and a plot is returned.  Variable importance is
+extracted and visualized with a bar plot.  Optionally, cross-
+validation for feature selection (\code{rfcv}) is performed and the error
+curve is plotted.  A separate k-fold classification cross-
+validation using \code{caret::train} can be requested via \code{cv = TRUE}.
 }
 \examples{
 data.df0 <- ExampleData1
@@ -92,8 +121,4 @@ cyt_rf(
   data = data.df, group_col = "Group", k_folds = 5, ntree = 1000,
   mtry = 4, run_rfcv = TRUE, plot_roc = TRUE, verbose = FALSE
 )
-
-}
-\author{
-Shubh Saraswat
 }

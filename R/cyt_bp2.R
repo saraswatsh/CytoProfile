@@ -73,7 +73,12 @@ cyt_bp2 <- function(data, pdf_title, scale = NULL, y_lim = NULL) {
       # Create the boxplot
       p <- ggplot2::ggplot(
         data,
-        aes_string(x = fac_col, y = num_col, fill = fac_col)
+        # CHANGE HERE: Use aes() with .data[[string_variable]]
+        ggplot2::aes(
+          x = .data[[fac_col]],
+          y = .data[[num_col]],
+          fill = .data[[fac_col]]
+        )
       ) +
         ggplot2::geom_boxplot(alpha = 0.5) +
         ggplot2::geom_jitter(width = 0.2, alpha = 0.5) +

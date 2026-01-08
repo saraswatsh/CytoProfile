@@ -12,7 +12,8 @@ cyt_pca(
   pdf_title,
   ellipse = FALSE,
   comp_num = 2,
-  scale = NULL,
+  scale = c("none", "log2", "log10", "zscore", "custom"),
+  custom_fn = NULL,
   pch_values = NULL,
   style = NULL
 )
@@ -43,9 +44,15 @@ PCA individuals plot. Default is FALSE.}
 \item{comp_num}{Numeric. The number of principal components to compute and
 display. Default is 2.}
 
-\item{scale}{Character. If set to "log2", a log2 transformation is applied
-to the numeric cytokine measurements (excluding the grouping columns).
-Default is NULL.}
+\item{scale}{Character string specifying a transformation to apply to
+numeric variables before PCA.  Options are "none" (no
+transformation), "log2", "log10", "zscore", or "custom".  When
+"custom" is selected, a user supplied function must be given via
+\code{custom_fn}.  Defaults to "none".}
+
+\item{custom_fn}{A custom function used when \code{scale = "custom"}.
+Should take a numeric vector and return a numeric vector.  Ignored
+otherwise.}
 
 \item{pch_values}{A vector of plotting symbols (pch values) to be used in
 the PCA plots. Default is NULL.}

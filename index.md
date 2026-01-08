@@ -19,7 +19,7 @@
 - **Data Handling:**  
   Seamlessly load and preprocess cytokine data for efficient analysis.
   
-You can install the development version of CytoProfile from [GitHub](https://github.com/saraswatsh/CytoProfile/tree/devel)with:
+You can install the development version of CytoProfile from [GitHub](https://github.com/saraswatsh/CytoProfile/tree/devel) with:
 
 ``` r
 # install.packages("devtools")

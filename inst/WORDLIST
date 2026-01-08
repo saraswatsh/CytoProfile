@@ -110,4 +110,5 @@ wilcox
 wilcoxon
 wilk
 xgb
+xgboost
 zscore

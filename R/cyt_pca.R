@@ -18,9 +18,14 @@
 #'  PCA individuals plot. Default is FALSE.
 #' @param comp_num Numeric. The number of principal components to compute and
 #'  display. Default is 2.
-#' @param scale Character. If set to "log2", a log2 transformation is applied
-#'  to the numeric cytokine measurements (excluding the grouping columns).
-#'  Default is NULL.
+#' @param scale Character string specifying a transformation to apply to
+#'   numeric variables before PCA.  Options are "none" (no
+#'   transformation), "log2", "log10", "zscore", or "custom".  When
+#'   "custom" is selected, a user supplied function must be given via
+#'   \code{custom_fn}.  Defaults to "none".
+#' @param custom_fn A custom function used when \code{scale = "custom"}.
+#'   Should take a numeric vector and return a numeric vector.  Ignored
+#'   otherwise.
 #' @param pch_values A vector of plotting symbols (pch values) to be used in
 #' the PCA plots. Default is NULL.
 #' @param style Character. If set to "3d" or "3D" and \code{comp_num} equals 3,
@@ -77,7 +82,8 @@ cyt_pca <- function(
   pdf_title,
   ellipse = FALSE,
   comp_num = 2,
-  scale = NULL,
+  scale = c("none", "log2", "log10", "zscore", "custom"),
+  custom_fn = NULL,
   pch_values = NULL,
   style = NULL
 ) {
@@ -95,24 +101,19 @@ cyt_pca <- function(
   if (is.null(group_col) && is.null(group_col2)) {
     stop("At least one grouping column must be provided.")
   }
-
-  # Optionally apply log2 transformation only to numeric columns
-  if (!is.null(scale) && scale == "log2") {
-    # Identify numeric columns not corresponding to the factor columns
-    numeric_idx <- sapply(data, is.numeric)
-    # Exclude the group and treatment columns (if present, even if numeric)
-    numeric_idx[names(data) %in% unique(c(group_col, group_col2))] <- FALSE
-    if (sum(numeric_idx) == 0) {
-      warning("No numeric columns available for log2 transformation.")
-    }
-    data <- data.frame(
-      data[, unique(c(group_col, group_col2)), drop = FALSE],
-      log2(data[, numeric_idx, drop = FALSE])
+  # Identify numeric columns to transform (exclude grouping columns)
+  scale <- match.arg(scale)
+  id_cols <- if (is.null(group_col2)) group_col else c(group_col, group_col2)
+  numeric_cols <- setdiff(names(data)[sapply(data, is.numeric)], id_cols)
+  if (length(numeric_cols) > 0) {
+    data <- apply_scale(
+      data,
+      columns = numeric_cols,
+      scale = scale,
+      custom_fn = custom_fn
     )
-    message("Results based on log2 transformation:")
-  } else {
-    message("Results based on no transformation:")
   }
+
   # Extract grouping variable(s)
   if (group_col == group_col2) {
     group_vec <- data[[group_col]]
@@ -223,11 +224,14 @@ cyt_pca <- function(
     )
 
     scree_plot <- ggplot2::ggplot(scree_data, aes(x = Component)) +
-      ggplot2::geom_line(aes(y = Variance, color = "Individual"), size = 1) +
+      ggplot2::geom_line(
+        aes(y = Variance, color = "Individual"),
+        linewidth = 1
+      ) +
       ggplot2::geom_point(aes(y = Variance, color = "Individual"), size = 2) +
       ggplot2::geom_line(
         aes(y = Cumulative, color = "Cumulative"),
-        size = 1,
+        linewidth = 1,
         linetype = "dashed"
       ) +
       ggplot2::geom_point(aes(y = Cumulative, color = "Cumulative"), size = 2) +
@@ -434,11 +438,14 @@ cyt_pca <- function(
       )
 
       scree_plot <- ggplot2::ggplot(scree_data, aes(x = Component)) +
-        ggplot2::geom_line(aes(y = Variance, color = "Individual"), size = 1) +
+        ggplot2::geom_line(
+          aes(y = Variance, color = "Individual"),
+          linewidth = 1
+        ) +
         ggplot2::geom_point(aes(y = Variance, color = "Individual"), size = 2) +
         ggplot2::geom_line(
           aes(y = Cumulative, color = "Cumulative"),
-          size = 1,
+          linewidth = 1,
           linetype = "dashed"
         ) +
         ggplot2::geom_point(

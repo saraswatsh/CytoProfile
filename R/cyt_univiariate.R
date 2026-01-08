@@ -37,7 +37,7 @@
 #' cyt_univariate(data_df[, c(1:2, 5:6)], scale = "log2",
 #'                method = "auto", format_output = TRUE)
 #' @author Shubh Saraswat
-#' @import stats
+#' @importFrom stats as.formula sd shapiro.test t.test wilcox.test
 #' @export
 cyt_univariate <- function(
   data,

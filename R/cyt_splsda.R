@@ -32,9 +32,6 @@
 #'   "loocv" or "Mfold". Default is \code{NULL}.
 #' @param fold_num Numeric. The number of folds to use if \code{cv_opt} is
 #'   "Mfold". Default is 5.
-#' @param scale Character. Option for data transformation; if set to
-#'   \code{"log2"}, a log2 transformation is applied to the continuous
-#'   variables. Default is \code{NULL}.
 #' @param comp_num Numeric. The number of components to calculate in the sPLS-DA
 #'   model. Default is 2.
 #' @param pch_values A vector of integers specifying the plotting characters
@@ -49,6 +46,18 @@
 #'   display progress messages, and intermediate results when
 #'   \code{FALSE} (the default), it runs quietly.
 #' @param seed An integer specifying the seed for reproducibility (default is 123).
+#' @param tune Logical.  If `TRUE`, performs tuning of `ncomp` and
+#'   `keepX` via cross‑validation.  Default is `FALSE`.
+#' @param tune_folds Integer.  Number of folds in cross‑validation when
+#'   tuning.  Default is 5.
+#' @param scale Character string specifying a transformation to apply to the
+#'   numeric predictor columns prior to model fitting.  Options are
+#'   "none", "log2", "log10", "zscore", or "custom".  When
+#'   "custom" is selected a user defined function must be supplied via
+#'   `custom_fn`.  Defaults to "none".
+#' @param custom_fn A custom transformation function used when
+#'   `scale = "custom"`.  Ignored otherwise.  It should take a numeric
+#'   vector and return a numeric vector of the same length.
 #' @description
 #' This function conducts Sparse Partial Least Squares Discriminant Analysis
 #' (sPLS-DA) on the provided data. It uses the specified \code{group_col} (and
@@ -108,7 +117,10 @@ cyt_splsda <- function(
   var_num,
   cv_opt = NULL,
   fold_num = 5,
-  scale = NULL,
+  scale = c("none", "log2", "log10", "zscore", "custom"),
+  custom_fn = NULL,
+  tune = FALSE,
+  tune_folds = 5,
   comp_num = 2,
   pch_values,
   style = NULL,
@@ -116,6 +128,7 @@ cyt_splsda <- function(
   verbose = FALSE,
   seed = 123
 ) {
+  data <- as.data.frame(data)
   # If one factor is missing, use the provided column for
   # both grouping and treatment.
   if (!is.null(group_col) && is.null(group_col2)) {
@@ -136,16 +149,6 @@ cyt_splsda <- function(
   id_cols <- c(group_col, group_col2, multilevel_col, batch_col)
   id_cols <- id_cols[!is.na(id_cols) & id_cols %in% names(data)]
 
-  # Optionally apply log2 transformation
-  if (!is.null(scale) && scale == "log2") {
-    data <- data.frame(
-      data[, id_cols, drop = FALSE],
-      log2(data[, !(names(data) %in% id_cols), drop = FALSE])
-    )
-    if (verbose) message("Applied log2 transformation.\n")
-  } else if (is.null(scale) && verbose) {
-    if (verbose) message("No data transformation applied.\n")
-  }
   if (!is.null(batch_col)) {
     if (!(batch_col %in% names(data))) {
       stop(sprintf("Batch column '%s' not found in your data.", batch_col))
@@ -170,6 +173,16 @@ cyt_splsda <- function(
         )
       ) %>%
       dplyr::ungroup()
+  }
+  scale <- match.arg(scale)
+  num_cols <- setdiff(names(data)[sapply(data, is.numeric)], id_cols)
+  if (length(num_cols) > 0) {
+    data <- apply_scale(
+      data,
+      columns = num_cols,
+      scale = scale,
+      custom_fn = custom_fn
+    )
   }
   # Now perform the check for pch_values:
   if (is.null(pch_values)) {
@@ -207,6 +220,7 @@ cyt_splsda <- function(
 
   if (!is.null(pdf_title)) {
     pdf(file = pdf_title, width = 8.5, height = 8)
+    on.exit(grDevices::dev.off(), add = TRUE)
   }
 
   # Case 1: Only one factor provided (both columns are the same)
@@ -234,14 +248,55 @@ cyt_splsda <- function(
         message(sprintf("Using multilevel design: '%s'.\n"), multilevel_col)
       }
     }
-    cytokine_splsda <- mixOmics::splsda(
-      the_data_df,
-      the_groups,
-      scale = TRUE,
-      ncomp = comp_num,
-      keepX = rep(var_num, comp_num),
-      multilevel = multilevel_vec
-    )
+    # Tuning sPLS-DA
+    outcome <- factor(data[[group_col]])
+    if (nlevels(outcome) < 2) {
+      stop("Outcome must have at least two levels.")
+    }
+    predictors <- as.matrix(the_data_df)
+
+    tune_res <- NULL
+    if (tune) {
+      tune_res <- mixOmics::tune.splsda(
+        X = predictors,
+        Y = outcome,
+        ncomp = comp_num,
+        test.keepX = c(5, 10, 15, 20, 25),
+        validation = "Mfold",
+        dist = "max.dist",
+        nrepeat = 100,
+        folds = tune_folds,
+        multilevel = multilevel_vec,
+        progressBar = FALSE
+      )
+      # Plot tuning results with proper title and labels
+      p <- plot(tune_res) +
+        ggplot2::ggtitle(paste("sPLS-DA Tuning Results:", overall_analysis)) +
+        ggplot2::xlab("Number of Variables") +
+        ggplot2::ylab("Balanced Error Rate (BER)")
+      print(p)
+      ncomp_final <- tune_res$choice.ncomp$ncomp
+      keepX_final <- tune_res$choice.keepX[1:ncomp_final]
+    }
+    if (tune) {
+      cytokine_splsda <- mixOmics::splsda(
+        the_data_df,
+        the_groups,
+        scale = TRUE,
+        ncomp = ncomp_final,
+        keepX = keepX_final,
+        multilevel = multilevel_vec
+      )
+    } else {
+      cytokine_splsda <- mixOmics::splsda(
+        the_data_df,
+        the_groups,
+        scale = TRUE,
+        ncomp = comp_num,
+        keepX = rep(var_num, comp_num),
+        multilevel = multilevel_vec
+      )
+    }
 
     splsda_predict <- predict(cytokine_splsda, the_data_df, dist = "max.dist")
     prediction1 <- cbind(original = the_groups, splsda_predict$class$max.dist)
@@ -403,7 +458,7 @@ cyt_splsda <- function(
           cytokine_splsda,
           validation = "Mfold",
           folds = fold_num,
-          nrepeat = 1000
+          nrepeat = 100
         )
         fold_error_rate <- fold_results$error.rate$overall[
           "comp2",
@@ -490,6 +545,17 @@ cyt_splsda <- function(
             order(vscore$comp, decreasing = TRUE),
             c("metabo", "comp")
           ]
+          bar <- bar[is.finite(bar$comp), , drop = FALSE]
+          bar <- bar[bar$comp > 0, , drop = FALSE]
+
+          # Match number with keepX
+          if (tune) {
+            bar <- head(bar, min(keepX_final, nrow(bar)))
+          } else {
+            bar <- head(bar, min(var_num, nrow(bar)))
+          }
+          # Lock the ordering to exactly what's being plotted (prevents gaps)
+          bar$metabo <- factor(bar$metabo, levels = rev(bar$metabo))
 
           # build and print the plot
           p <- ggplot2::ggplot(bar, ggplot2::aes(x = metabo, y = comp)) +
@@ -732,7 +798,7 @@ cyt_splsda <- function(
             cytokine_splsda2,
             validation = "Mfold",
             folds = fold_num,
-            nrepeat = 1000
+            nrepeat = 100
           )
           fold_error_rate2 <- fold_results2$error.rate$overall[
             "comp2",
@@ -881,7 +947,9 @@ cyt_splsda <- function(
         )
       }
     }
+    # Return a list of results
     result_list <- list(
+      tune_res = tune_res,
       overall_indiv_plot = overall_indiv_plot$graph,
       overall_3D = overall_3D,
       overall_ROC = overall_ROC,
@@ -936,14 +1004,57 @@ cyt_splsda <- function(
           message(sprintf("Using multilevel design: '%s'.\n"), multilevel_col)
         }
       }
-      cytokine_splsda <- mixOmics::splsda(
-        the_data_df,
-        the_groups,
-        scale = TRUE,
-        ncomp = comp_num,
-        keepX = rep(var_num, comp_num),
-        multilevel = multilevel_vec
-      )
+      # Tuning sPLS-DA
+      outcome <- factor(data[[group_col]])
+      if (nlevels(outcome) < 2) {
+        stop("Outcome must have at least two levels.")
+      }
+      predictors <- data[,
+        setdiff(names(data), id_cols),
+        drop = FALSE
+      ]
+      tune_res <- NULL
+      if (tune) {
+        tune_res <- mixOmics::tune.splsda(
+          X = predictors,
+          Y = outcome,
+          ncomp = comp_num,
+          test.keepX = c(5, 10, 15, 20, 25),
+          validation = "Mfold",
+          dist = "max.dist",
+          nrepeat = 100,
+          folds = tune_folds,
+          multilevel = multilevel_vec,
+          progressBar = FALSE
+        )
+        # Plot tuning results with proper title and labels
+        p <- plot(tune_res) +
+          ggplot2::ggtitle(paste("sPLS-DA Tuning Results:", overall_analysis)) +
+          ggplot2::xlab("Number of Variables") +
+          ggplot2::ylab("Balanced Error Rate (BER)")
+        print(p)
+        ncomp_final <- tune_res$choice.ncomp$ncomp
+        keepX_final <- tune_res$choice.keepX[1:ncomp_final]
+      }
+      if (tune) {
+        cytokine_splsda <- mixOmics::splsda(
+          the_data_df,
+          the_groups,
+          scale = TRUE,
+          ncomp = ncomp_final,
+          keepX = keepX_final,
+          multilevel = multilevel_vec
+        )
+      } else {
+        cytokine_splsda <- mixOmics::splsda(
+          the_data_df,
+          the_groups,
+          scale = TRUE,
+          ncomp = comp_num,
+          keepX = rep(var_num, comp_num),
+          multilevel = multilevel_vec
+        )
+      }
 
       splsda_predict <- predict(cytokine_splsda, the_data_df, dist = "max.dist")
       prediction1 <- cbind(
@@ -1111,7 +1222,7 @@ cyt_splsda <- function(
             cytokine_splsda,
             validation = "Mfold",
             folds = fold_num,
-            nrepeat = 1000
+            nrepeat = 100
           )
           fold_error_rate <- fold_results$error.rate$overall[
             "comp2",
@@ -1199,6 +1310,17 @@ cyt_splsda <- function(
               order(vscore$comp, decreasing = TRUE),
               c("metabo", "comp")
             ]
+            bar <- bar[is.finite(bar$comp), , drop = FALSE]
+            bar <- bar[bar$comp > 0, , drop = FALSE]
+
+            # Match number with keepX
+            if (tune) {
+              bar <- head(bar, min(keepX_final, nrow(bar)))
+            } else {
+              bar <- head(bar, min(var_num, nrow(bar)))
+            }
+            # Lock the ordering to exactly what's being plotted (prevents gaps)
+            bar$metabo <- factor(bar$metabo, levels = rev(bar$metabo))
 
             # build and print the plot
             p <- ggplot2::ggplot(bar, ggplot2::aes(x = metabo, y = comp)) +
@@ -1400,7 +1522,7 @@ cyt_splsda <- function(
             cytokine_splsda2,
             validation = "Mfold",
             folds = fold_num,
-            nrepeat = 1000
+            nrepeat = 100
           )
           fold_error_rate2 <- fold_results2$error.rate$overall[
             "comp2",
@@ -1535,7 +1657,9 @@ cyt_splsda <- function(
         }
       }
     }
+    # Return a list of results
     result_list <- list(
+      tune_res = tune_res,
       overall_indiv_plot = overall_indiv_plot$graph,
       all_indiv_plots = indiv_plots,
       overall_3D = overall_3D,
@@ -1551,8 +1675,5 @@ cyt_splsda <- function(
       vip_CV = vip_CV
     )
     return(invisible(result_list))
-  }
-  if (!is.null(pdf_title)) {
-    dev.off()
   }
 }

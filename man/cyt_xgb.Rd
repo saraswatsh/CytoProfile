@@ -10,101 +10,112 @@ cyt_xgb(
   train_fraction = 0.7,
   nrounds = 500,
   max_depth = 6,
-  eta = lifecycle::deprecated(),
   learning_rate = 0.1,
   nfold = 5,
   cv = FALSE,
   objective = "multi:softprob",
   early_stopping_rounds = NULL,
   eval_metric = "mlogloss",
-  gamma = lifecycle::deprecated(),
   min_split_loss = 0,
   colsample_bytree = 1,
   subsample = 1,
   min_child_weight = 1,
   top_n_features = 10,
-  verbose = 1,
+  verbose = 0,
   plot_roc = FALSE,
   print_results = FALSE,
-  seed = 123
+  seed = 123,
+  scale = c("none", "log2", "log10", "zscore", "custom"),
+  custom_fn = NULL
 )
 }
 \arguments{
-\item{data}{A data frame containing the cytokine data, with one column as
-the grouping variable and the rest as numerical features.}
+\item{data}{A data frame containing numeric predictor variables and
+one grouping column.  Non-numeric predictor columns will be
+coerced to numeric if possible.}
 
-\item{group_col}{A string representing the name of the column with the
-grouping variable (i.e., the target variable for classification).}
+\item{group_col}{Character string naming the column that contains
+the class labels (target variable).  Required.}
 
-\item{train_fraction}{A numeric value between 0 and 1 representing the
-proportion of data to use for training (default is 0.7).}
+\item{train_fraction}{Numeric between 0 and 1 specifying the
+proportion of samples used for model training.  The remainder is
+reserved for testing.  Default is 0.7.}
 
-\item{nrounds}{An integer specifying the number of boosting rounds
-(default is 500).}
+\item{nrounds}{Integer specifying the number of boosting rounds.
+Default is 500.}
 
-\item{max_depth}{An integer specifying the maximum depth of the trees
-(default is 6).}
+\item{max_depth}{Integer specifying the maximum depth of each tree.
+Default is 6.}
 
-\item{eta}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Deprecated; use \code{learning_rate} instead.}
+\item{learning_rate}{Numeric specifying the learning rate.  Default
+is 0.1.}
 
-\item{learning_rate}{A numeric value representing the learning rate
-(default is 0.1).  This replaces the deprecated \code{eta} argument.}
+\item{nfold}{Integer specifying the number of folds for
+cross-validation when \code{cv = TRUE}.  Default is 5.}
 
-\item{nfold}{An integer specifying the number of folds for cross-validation
-(default is 5).}
+\item{cv}{Logical indicating whether to perform cross-validation
+using \code{xgb.cv}.  Default is \code{FALSE}.}
 
-\item{cv}{A logical value indicating whether to perform cross-validation
-(default is FALSE).}
+\item{objective}{Character string specifying the objective
+function.  For multi-class classification use "multi:softprob";
+for binary classification use "binary:logistic".  Default is
+"multi:softprob".}
 
-\item{objective}{A string specifying the XGBoost objective function
-(default is "multi:softprob" for multi-class classification).}
+\item{early_stopping_rounds}{Integer specifying the number of rounds
+without improvement to trigger early stopping.  Default is NULL
+(no early stopping).}
 
-\item{early_stopping_rounds}{An integer specifying the number of rounds
-with no improvement to stop training early (default is NULL).}
+\item{eval_metric}{Character specifying the evaluation metric used
+during training.  Default is "mlogloss".}
 
-\item{eval_metric}{A string specifying the evaluation metric
-(default is "mlogloss").}
+\item{min_split_loss}{Numeric specifying the minimum loss reduction
+required to make a further partition.  Default is 0.}
 
-\item{gamma}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Deprecated; use \code{min_split_loss} instead.}
+\item{colsample_bytree}{Numeric specifying the subsample ratio of
+columns when constructing each tree.  Default is 1.}
 
-\item{min_split_loss}{A numeric value for the minimum loss reduction
-required to make a further partition (default is 0).  This replaces
-the deprecated \code{gamma} argument.}
+\item{subsample}{Numeric specifying the subsample ratio of the
+training instances.  Default is 1.}
 
-\item{colsample_bytree}{A numeric value specifying the subsample ratio
-of columns when constructing each tree (default is 1).}
+\item{min_child_weight}{Numeric specifying the minimum sum of
+instance weight needed in a child.  Default is 1.}
 
-\item{subsample}{A numeric value specifying the subsample ratio of the
-training instances (default is 1).}
+\item{top_n_features}{Integer specifying the number of top features
+to display in the importance plot.  Default is 10.}
 
-\item{min_child_weight}{A numeric value specifying the minimum sum of
-instance weight needed in a child (default is 1).}
+\item{verbose}{Integer (0, 1 or 2) controlling the verbosity of
+\code{xgb.train}.  Default is 1.  Larger values print more information.}
 
-\item{top_n_features}{An integer specifying the number of top features to
-display in the importance plot (default is 10).}
+\item{plot_roc}{Logical indicating whether to plot the ROC curve and
+compute the AUC for binary classification.  Default is \code{FALSE}.}
 
-\item{verbose}{An integer specifying the verbosity of the training
-process (default is 1).}
+\item{print_results}{Logical.  If \code{TRUE}, prints the confusion
+matrix, top features and cross-validation metrics to the
+console.  Default is \code{FALSE}.}
 
-\item{plot_roc}{A logical value indicating whether to plot the ROC curve
-and calculate the AUC for binary classification (default is \code{FALSE}).}
+\item{seed}{Optional integer seed for reproducibility.  Default is
+123.}
 
-\item{print_results}{A logical value indicating whether to print the results
-of the model training and evaluation (default is \code{FALSE}). If set to \code{TRUE},
-it will print the confusion matrix, and feature importance.}
+\item{scale}{Character string specifying a transformation to apply
+to numeric predictors prior to model fitting.  Possible values
+are "none", "log2", "log10", "zscore" or "custom".  When set
+to "custom" a user defined function must be supplied via
+\code{custom_fn}.  Defaults to "none".}
 
-\item{seed}{An integer specifying the seed for reproducibility (default is 123).}
+\item{custom_fn}{A custom transformation function used when
+\code{scale = "custom"}.  Ignored otherwise.  Should take a numeric
+vector and return a numeric vector of the same length.}
 }
 \value{
-A list containing:
-\item{model}{The trained XGBoost model.}
-\item{confusion_matrix}{The confusion matrix of the test set predictions.}
-\item{importance}{The feature importance matrix for the top features.}
-\item{class_mapping}{A named vector showing the mapping from class labels
-to numeric values used for training.}
-\item{cv_results}{Cross-validation results, if cross-validation was
-performed (otherwise NULL).}
-\item{plot}{A ggplot object showing the feature importance plot.}
+An invisible list with elements: \code{model} (the trained
+xgboost object), \code{confusion_matrix} (test set confusion
+matrix), \code{importance} (variable importance matrix),
+\code{class_mapping} (mapping from class names to numeric labels),
+\code{cv_results} (cross-validation results when \code{cv=TRUE}),
+\code{importance_plot} (a \code{ggplot2} object of the top feature
+importance), and \code{roc_plot} (a ROC curve for binary
+classification when \code{plot_roc=TRUE}).  All plots are printed
+automatically.
 }
 \description{
 This function trains and evaluates an XGBoost classification model on
@@ -112,25 +123,15 @@ cytokine data.
 It allows for hyperparameter tuning, cross-validation, and visualizes
 feature importance.
 }
-\details{
-The function allows for training an XGBoost model on cytokine data,
-splitting the data into training and test sets. If cross-validation is
-enabled (\code{cv = TRUE}), it performs k-fold cross-validation and reports the
-confusion matrix and accuracy.
-The function also visualizes the top N important
-features using \code{xgb.ggplot.importance()}.
-}
 \examples{
-# Example usage:
 data_df0 <- ExampleData1
 data_df <- data.frame(data_df0[, 1:3], log2(data_df0[, -c(1:3)]))
 data_df <- data_df[, -c(2:3)]
 data_df <- dplyr::filter(data_df, Group != "ND")
-
 cyt_xgb(
  data = data_df,
  group_col = "Group",
- nrounds = 500,
+ nrounds = 250,
  max_depth = 4,
  min_split_loss = 0,
  learning_rate = 0.05,
@@ -138,13 +139,7 @@ cyt_xgb(
  cv = FALSE,
  objective = "multi:softprob",
  eval_metric = "auc",
- early_stopping_rounds = NULL,
- top_n_features = 10,
- verbose = 0,
  plot_roc = TRUE,
  print_results = FALSE)
 
-}
-\author{
-Shubh Saraswat
 }

@@ -51,6 +51,7 @@
 #' @import ggplot2
 #' @importFrom dplyr arrange mutate desc row_number
 #' @importFrom ggrepel geom_text_repel
+#' @importFrom stats t.test wilcox.test p.adjust var na.omit
 #'
 #' @examples
 #' # Loading data

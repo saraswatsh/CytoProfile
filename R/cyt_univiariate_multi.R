@@ -40,7 +40,7 @@
 #' cyt_univariate_multi(ExampleData1[, c(1:2, 5:6)], method = "kruskal",
 #'                      format_output = TRUE)
 #' @author Shubh Saraswat
-#' @import stats
+#' @importFrom stats aov as.formula kruskal.test pairwise.wilcox.test TukeyHSD p.adjust
 #' @export
 cyt_univariate_multi <- function(
   data,

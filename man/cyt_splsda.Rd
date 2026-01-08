@@ -20,7 +20,10 @@ cyt_splsda(
   var_num,
   cv_opt = NULL,
   fold_num = 5,
-  scale = NULL,
+  scale = c("none", "log2", "log10", "zscore", "custom"),
+  custom_fn = NULL,
+  tune = FALSE,
+  tune_folds = 5,
   comp_num = 2,
   pch_values,
   style = NULL,
@@ -75,9 +78,21 @@ classifications. Default is \code{FALSE}.}
 \item{fold_num}{Numeric. The number of folds to use if \code{cv_opt} is
 "Mfold". Default is 5.}
 
-\item{scale}{Character. Option for data transformation; if set to
-\code{"log2"}, a log2 transformation is applied to the continuous
-variables. Default is \code{NULL}.}
+\item{scale}{Character string specifying a transformation to apply to the
+numeric predictor columns prior to model fitting.  Options are
+"none", "log2", "log10", "zscore", or "custom".  When
+"custom" is selected a user defined function must be supplied via
+\code{custom_fn}.  Defaults to "none".}
+
+\item{custom_fn}{A custom transformation function used when
+\code{scale = "custom"}.  Ignored otherwise.  It should take a numeric
+vector and return a numeric vector of the same length.}
+
+\item{tune}{Logical.  If \code{TRUE}, performs tuning of \code{ncomp} and
+\code{keepX} via cross‑validation.  Default is \code{FALSE}.}
+
+\item{tune_folds}{Integer.  Number of folds in cross‑validation when
+tuning.  Default is 5.}
 
 \item{comp_num}{Numeric. The number of components to calculate in the sPLS-DA
 model. Default is 2.}

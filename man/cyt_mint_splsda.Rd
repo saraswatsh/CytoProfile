@@ -15,7 +15,9 @@ cyt_mint_splsda(
   bg = FALSE,
   var_num = 20,
   comp_num = 2,
-  scale = NULL,
+  scale = c("none", "log2", "log10", "zscore", "custom"),
+  custom_fn = NULL,
+  tune = FALSE,
   cim = FALSE,
   roc = FALSE,
   verbose = FALSE
@@ -52,8 +54,18 @@ Default is \code{FALSE}.}
 
 \item{comp_num}{Numeric. The number of components to calculate in the sPLS-DA model. Default is 2.}
 
-\item{scale}{Character. Option for data transformation; if set to \code{"log2"}, a log2
-transformation is applied to the continuous variables. Default is \code{NULL}.}
+\item{scale}{Character string specifying a transformation to apply to the
+numeric predictor columns prior to model fitting.  Options are
+"none", "log2", "log10", "zscore", or "custom".  When
+"custom" is selected a user defined function must be supplied via
+\code{custom_fn}.  Defaults to "none".}
+
+\item{custom_fn}{A custom transformation function used when
+\code{scale = "custom"}.  Ignored otherwise.  It should take a numeric
+vector and return a numeric vector of the same length.}
+
+\item{tune}{Logical.  If \code{TRUE}, performs tuning of \code{ncomp} and
+\code{keepX} via cross‑validation.  Default is \code{FALSE}.}
 
 \item{cim}{Logical. Whether to compute and plot the Clustered Image Map (CIM) heatmap. Default is \code{FALSE}.}
 

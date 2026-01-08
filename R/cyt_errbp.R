@@ -61,6 +61,7 @@
 #' @import dplyr
 #' @importFrom tidyr pivot_longer
 #' @import ggplot2
+#' @importFrom stats t.test wilcox.test p.adjust shapiro.test mad sd median
 #' @author Xiaohua Douglas Zhang and Shubh Saraswat
 #' @export
 #' @examples
