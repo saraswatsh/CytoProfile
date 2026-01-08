@@ -61,7 +61,7 @@
 #' @import dplyr
 #' @importFrom tidyr pivot_longer
 #' @import ggplot2
-#' @importFrom stats t.test wilcox.test p.adjust shapiro.test mad sd median
+#' @importFrom stats t.test wilcox.test shapiro.test mad sd median
 #' @author Xiaohua Douglas Zhang and Shubh Saraswat
 #' @export
 #' @examples
@@ -122,24 +122,13 @@ cyt_errbp <- function(
     stop("No numeric columns found in the data.")
   }
   # Apply scaling
-  if (scale == "log2") {
-    data[num_vars] <- lapply(data[num_vars], function(x) log2(x))
-  } else if (scale == "log10") {
-    data[num_vars] <- lapply(data[num_vars], function(x) log10(x))
-  } else if (scale == "zscore") {
-    data[num_vars] <- lapply(data[num_vars], function(x) {
-      mu <- mean(x, na.rm = TRUE)
-      sdv <- sd(x, na.rm = TRUE)
-      if (is.na(sdv) || sdv == 0) {
-        return(x - mu)
-      }
-      (x - mu) / sdv
-    })
-  } else if (scale == "custom") {
-    if (!is.function(custom_fn)) {
-      stop("'custom_fn' must be a function when scale = 'custom'.")
-    }
-    data[num_vars] <- lapply(data[num_vars], custom_fn)
+  if (scale != "none") {
+    data <- apply_scale(
+      data,
+      columns = num_vars,
+      scale = scale,
+      custom_fn = custom_fn
+    )
   }
   # Reshape to long format
   long_df <- data %>%
@@ -242,7 +231,7 @@ cyt_errbp <- function(
     }
     # Adjust p‑values if a method is specified
     if (!is.null(p_adjust_method)) {
-      summarised$P_adj <- p.adjust(summarised$P_value, method = p_adjust_method)
+      summarised$P_adj <- adjust_p(summarised$P_value, method = p_adjust_method)
     } else {
       summarised$P_adj <- summarised$P_value
     }

@@ -51,7 +51,7 @@
 #' @import ggplot2
 #' @importFrom dplyr arrange mutate desc row_number
 #' @importFrom ggrepel geom_text_repel
-#' @importFrom stats t.test wilcox.test p.adjust var na.omit
+#' @importFrom stats t.test wilcox.test var na.omit
 #'
 #' @examples
 #' # Loading data
@@ -151,7 +151,7 @@ cyt_volc <- function(
     df <- do.call(rbind, res)
     # Adjust p‑values if requested
     if (!is.null(p_adjust_method)) {
-      df$P_adj <- p.adjust(df$P_value, method = p_adjust_method)
+      df$P_adj <- adjust_p(df$P_value, method = p_adjust_method)
     } else {
       df$P_adj <- df$P_value
     }
