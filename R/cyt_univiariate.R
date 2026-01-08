@@ -47,6 +47,7 @@ cyt_univariate <- function(
   format_output = FALSE,
   custom_fn = NULL
 ) {
+  names(data) <- make.names(names(data), unique = TRUE)
   method <- match.arg(method)
   # Convert to data frame
   x1_df <- as.data.frame(data)

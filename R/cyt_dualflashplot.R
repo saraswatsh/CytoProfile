@@ -78,6 +78,7 @@ cyt_dualflashplot <- function(
   shapes = c(`FALSE` = 16, `TRUE` = 17),
   verbose = FALSE
 ) {
+  names(data) <- make.names(names(data), unique = TRUE)
   if (!is.data.frame(data)) {
     stop("Input must be a data frame.")
   }

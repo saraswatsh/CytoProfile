@@ -128,6 +128,7 @@ cyt_splsda <- function(
   verbose = FALSE,
   seed = 123
 ) {
+  names(data) <- make.names(names(data), unique = TRUE)
   data <- as.data.frame(data)
   # If one factor is missing, use the provided column for
   # both grouping and treatment.

@@ -55,6 +55,7 @@ cyt_violin <- function(
   custom_fn = NULL,
   boxplot_overlay = FALSE
 ) {
+  names(data) <- make.names(names(data), unique = TRUE)
   scale <- match.arg(scale)
   df <- as.data.frame(data)
   # Validate grouping columns

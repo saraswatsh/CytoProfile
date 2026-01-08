@@ -72,6 +72,7 @@ cyt_volc <- function(
   add_effect = FALSE,
   verbose = FALSE
 ) {
+  names(data) <- make.names(names(data), unique = TRUE)
   method <- match.arg(method)
   data <- as.data.frame(data)
   if (!group_col %in% names(data)) {

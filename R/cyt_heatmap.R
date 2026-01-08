@@ -74,6 +74,7 @@ cyt_heatmap <- function(
   cluster_cols = TRUE,
   title = NULL
 ) {
+  names(data) <- make.names(names(data), unique = TRUE)
   # Match arguments
   scale <- match.arg(scale)
   annotation_side <- match.arg(annotation_side)

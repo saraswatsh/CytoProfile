@@ -32,7 +32,7 @@ cyt_anova <- function(data, format_output = FALSE) {
     "CytoProfile::cyt_anova()",
     "CytoProfile::cyt_univariate_multi()"
   )
-
+  names(data) <- make.names(names(data), unique = TRUE)
   # Convert input data to a data frame
   x1_df <- as.data.frame(data)
 

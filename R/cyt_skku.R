@@ -70,6 +70,7 @@ cyt_skku <- function(
   print_res_raw = FALSE,
   print_res_log = FALSE
 ) {
+  names(data) <- make.names(names(data), unique = TRUE)
   # Identify measurement columns.
   # If grouping columns are provided, exclude them from measurement columns.
   if (!is.null(group_cols)) {

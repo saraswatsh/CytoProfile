@@ -40,6 +40,7 @@ cyt_ttest <- function(
   verbose = TRUE,
   format_output = FALSE
 ) {
+  names(data) <- make.names(names(data), unique = TRUE)
   lifecycle::deprecate_warn(
     "0.2.3", # version when deprecation begins
     "CytoProfile::cyt_ttest()",

@@ -22,6 +22,7 @@
 #'   transformed numeric vector.  Only used when `scale = "custom"`.
 #' @return A data.frame with the same dimensions as `data` with
 #'   transformed numeric columns.
+#' @importFrom stats p.adjust
 #' @export
 apply_scale <- function(
   data,

@@ -49,6 +49,7 @@ cyt_bp <- function(
   scale = c("none", "log2", "log10", "zscore", "custom"),
   custom_fn = NULL
 ) {
+  names(data) <- make.names(names(data), unique = TRUE)
   scale <- match.arg(scale)
   df <- as.data.frame(data)
   # Identify numeric variables (exclude grouping columns)

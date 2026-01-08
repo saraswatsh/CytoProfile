@@ -66,7 +66,7 @@
 #' @export
 #' @examples
 #' # Basic usage with default settings
-#' df <- ExampleData1[, c("Group", "CCL.20.MIP.3A", "IL.10")]
+#' df <- ExampleData1[, c("Group", "CCL-20/MIP-3A", "IL-10")]
 #' cyt_errbp(df, group_col = "Group")
 #' # Use mean and SD, log2 transform and show significance
 #' cyt_errbp(df, group_col = "Group", stat = "mean", error = "sd",
@@ -89,6 +89,7 @@ cyt_errbp <- function(
   output_file = NULL,
   label_size = 4
 ) {
+  names(data) <- make.names(names(data), unique = TRUE)
   # Validate grouping column
   if (
     is.null(group_col) || !is.character(group_col) || length(group_col) != 1

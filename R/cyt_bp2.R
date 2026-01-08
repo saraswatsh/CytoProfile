@@ -37,6 +37,7 @@ cyt_bp2 <- function(data, pdf_title, scale = NULL, y_lim = NULL) {
     "CytoProfile::cyt_bp2()",
     "CytoProfile::cyt_bp()"
   )
+  names(data) <- make.names(names(data), unique = TRUE)
   # Convert any character variables to factors
   cat_vars <- sapply(data, is.character)
   if (any(cat_vars)) {

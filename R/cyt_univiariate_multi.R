@@ -50,6 +50,7 @@ cyt_univariate_multi <- function(
   p_adjust_method = "BH",
   format_output = FALSE
 ) {
+  names(data) <- make.names(names(data), unique = TRUE)
   method <- match.arg(method)
   # Convert to data frame
   x1_df <- as.data.frame(data)

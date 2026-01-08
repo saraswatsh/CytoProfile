@@ -29,7 +29,6 @@ HSD
 Hasturk
 Hochberg
 IFN
-IFNg
 INTegration
 INTegrative
 Javidan
@@ -53,8 +52,6 @@ Rohart
 SSMD
 SantaCruz
 TNF
-TNFa
-TNFb
 Tianqi
 Welch
 Wilk
@@ -111,4 +108,5 @@ wilcoxon
 wilk
 xgb
 xgboost
+yaml
 zscore

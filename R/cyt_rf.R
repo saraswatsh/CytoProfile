@@ -106,6 +106,7 @@ cyt_rf <- function(
   scale = c("none", "log2", "log10", "zscore", "custom"),
   custom_fn = NULL
 ) {
+  names(data) <- make.names(names(data), unique = TRUE)
   # Ensure grouping variable exists and is a factor
   if (!group_col %in% colnames(data)) {
     stop(sprintf("Column '%s' not found in data.", group_col))

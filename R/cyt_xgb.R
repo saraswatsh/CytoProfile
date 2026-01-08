@@ -118,6 +118,7 @@ cyt_xgb <- function(
   scale = c("none", "log2", "log10", "zscore", "custom"),
   custom_fn = NULL
 ) {
+  names(data) <- make.names(names(data), unique = TRUE)
   # Convert to data frame
   data <- as.data.frame(data)
   # Check group column

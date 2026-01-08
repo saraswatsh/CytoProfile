@@ -85,6 +85,7 @@ cyt_mint_splsda <- function(
   roc = FALSE,
   verbose = FALSE
 ) {
+  names(data) <- make.names(names(data), unique = TRUE)
   # If one factor is missing, use the provided column for
   # both grouping and treatment.
   if (!is.null(group_col) && is.null(group_col2)) {
