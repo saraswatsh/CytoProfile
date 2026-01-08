@@ -61,7 +61,9 @@ the PCA plots. Default is NULL.}
 a 3D scatter plot is generated using the plot3D package. Default is NULL.}
 }
 \value{
-A PDF file containing the PCA plots is generated and saved.
+A PDF file containing the PCA plots is generated and saved when
+\code{pdf_title} is provided. Otherwise, plots are displayed on the current
+graphics device.
 }
 \description{
 This function performs Principal Component Analysis (PCA) on cytokine data
@@ -76,8 +78,6 @@ explained variance,
 \item Loadings plots, and
 \item Biplots and correlation circle plots.
 }
-The function optionally applies a log2 transformation to the numeric
-data and handles analyses based treatment groups.
 }
 \examples{
 # Load sample data

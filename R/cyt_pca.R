@@ -44,10 +44,10 @@
 #'   \item Loadings plots, and
 #'   \item Biplots and correlation circle plots.
 #' }
-#' The function optionally applies a log2 transformation to the numeric
-#' data and handles analyses based treatment groups.
 #'
-#' @return A PDF file containing the PCA plots is generated and saved.
+#' @return A PDF file containing the PCA plots is generated and saved when
+#' \code{pdf_title} is provided. Otherwise, plots are displayed on the current
+#' graphics device.
 #' @author Shubh Saraswat
 #'
 #' @export
