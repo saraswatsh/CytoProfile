@@ -105,8 +105,8 @@ cyt_univariate_multi <- function(
         )
         p_mat <- pw$p.value
         # Flatten symmetric matrix into named vector (remove NA values)
-        pairs <- c()
-        pvals <- c()
+        pairs <- NULL
+        pvals <- NULL
         for (i in seq_len(nrow(p_mat))) {
           for (j in seq_len(ncol(p_mat))) {
             if (!is.na(p_mat[i, j])) {
