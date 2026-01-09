@@ -1,8 +1,8 @@
 # Changelog
 
-## CytoProfile (development version)
-
 ## CytoProfile 0.2.3
+
+CRAN release: 2025-12-06
 
 ### Major Changes
 
