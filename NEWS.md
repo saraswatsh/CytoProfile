@@ -1,5 +1,3 @@
-# CytoProfile (development version)
-
 # CytoProfile 0.2.3
 
 ## Major Changes
