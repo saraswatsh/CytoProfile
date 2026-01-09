@@ -132,16 +132,16 @@ cyt_errbp <- function(
     )
   }
   # Reshape to long format
-  long_df <- data %>%
-    dplyr::select(dplyr::all_of(c(group_col, num_vars))) %>%
+  long_df <- data |>
+    dplyr::select(dplyr::all_of(c(group_col, num_vars))) |>
     tidyr::pivot_longer(
       cols = dplyr::all_of(num_vars),
       names_to = "Measure",
       values_to = "Value"
     )
   # Summary statistics
-  summarised <- long_df %>%
-    dplyr::group_by(.data[[group_col]], Measure) %>%
+  summarised <- long_df |>
+    dplyr::group_by(.data[[group_col]], Measure) |>
     dplyr::summarise(
       n = sum(!is.na(Value)),
       center = if (stat == "mean") {
@@ -153,7 +153,7 @@ cyt_errbp <- function(
       .groups = "drop"
     )
   # Compute spread based on error metric
-  summarised <- summarised %>%
+  summarised <- summarised |>
     dplyr::mutate(
       spread = dplyr::case_when(
         error == "sd" ~ sd,
@@ -179,7 +179,7 @@ cyt_errbp <- function(
   group_levels <- levels(data[[group_col]])
   baseline <- group_levels[1]
   # Initialise p‑value and effect size columns
-  summarised <- summarised %>%
+  summarised <- summarised |>
     dplyr::mutate(P_value = NA_real_, EffectSize = NA_real_)
   # Compute p‑values and effect sizes
   if (p_lab || es_lab) {
@@ -241,7 +241,7 @@ cyt_errbp <- function(
   }
   # Compute label positions
   y_range <- diff(range(summarised$center + summarised$spread, na.rm = TRUE))
-  summarised <- summarised %>%
+  summarised <- summarised |>
     dplyr::mutate(
       p_y = center + spread + 0.05 * y_range,
       es_y = center + spread + 0.15 * y_range
@@ -429,7 +429,7 @@ cyt_errbp <- function(
   if (p_lab) {
     p <- p +
       ggplot2::geom_text(
-        data = summarised %>%
+        data = summarised |>
           dplyr::filter(.data[[group_col]] != baseline & !is.na(p_label)),
         ggplot2::aes(x = .data[[group_col]], y = p_y, label = p_label),
         size = label_size,
@@ -442,7 +442,7 @@ cyt_errbp <- function(
   if (es_lab) {
     p <- p +
       ggplot2::geom_text(
-        data = summarised %>%
+        data = summarised |>
           dplyr::filter(.data[[group_col]] != baseline & !is.na(es_label)),
         ggplot2::aes(x = .data[[group_col]], y = es_y, label = es_label),
         size = label_size,

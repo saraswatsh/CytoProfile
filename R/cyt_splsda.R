@@ -165,14 +165,14 @@ cyt_splsda <- function(
       id_cols2
     )
 
-    data <- data %>%
-      dplyr::group_by(!!dplyr::sym(batch_col)) %>%
+    data <- data |>
+      dplyr::group_by(!!dplyr::sym(batch_col)) |>
       dplyr::mutate(
         dplyr::across(
           .cols = dplyr::all_of(num_cols),
           .fns = ~ (. - mean(., na.rm = TRUE)) / sd(., na.rm = TRUE)
         )
-      ) %>%
+      ) |>
       dplyr::ungroup()
   }
   scale <- match.arg(scale)

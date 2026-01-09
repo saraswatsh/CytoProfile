@@ -95,25 +95,25 @@ cyt_dualflashplot <- function(
     stop("No numeric variables found.")
   }
   # Pivot longer and compute means and variances
-  data_long <- data %>%
+  data_long <- data |>
     tidyr::pivot_longer(
       cols = -dplyr::all_of(group_var),
       names_to = "cytokine",
       values_to = "level"
     )
-  stats_df <- data_long %>%
-    dplyr::group_by(cytokine, .data[[group_var]]) %>%
+  stats_df <- data_long |>
+    dplyr::group_by(cytokine, .data[[group_var]]) |>
     dplyr::summarise(
       mean = mean(level, na.rm = TRUE),
       variance = var(level, na.rm = TRUE),
       .groups = "drop"
-    ) %>%
+    ) |>
     tidyr::pivot_wider(
       names_from = .data[[group_var]],
       values_from = c(mean, variance)
     )
   # Compute SSMD and log2FC
-  stats_df <- stats_df %>%
+  stats_df <- stats_df |>
     dplyr::mutate(
       ssmd = (get(paste0("mean_", group1)) - get(paste0("mean_", group2))) /
         sqrt(
@@ -171,8 +171,8 @@ cyt_dualflashplot <- function(
     ggplot2::theme_minimal()
   # Label top variables
   if (top_labels > 0) {
-    top_df <- stats_df %>%
-      dplyr::arrange(dplyr::desc(abs(ssmd))) %>%
+    top_df <- stats_df |>
+      dplyr::arrange(dplyr::desc(abs(ssmd))) |>
       dplyr::slice_head(n = top_labels)
     p <- p +
       ggrepel::geom_text_repel(

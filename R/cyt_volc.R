@@ -164,8 +164,8 @@ cyt_volc <- function(
       P_adj <= p_value_thresh & abs(log2FC) >= log2(fold_change_thresh)
     )
     # Sort and label top points
-    df <- df %>%
-      dplyr::arrange(dplyr::desc(Significant), dplyr::desc(minusLog10P)) %>%
+    df <- df |>
+      dplyr::arrange(dplyr::desc(Significant), dplyr::desc(minusLog10P)) |>
       dplyr::mutate(
         label = ifelse(
           dplyr::row_number() <= top_labels,
