@@ -22,9 +22,11 @@
 #'   columns. When provided, the first element is treated as the treatment
 #'   variable and the second as the group variable. If not provided, the
 #'   entire data set is treated as one group.
-#' @param pdf_title A character string specifying the file name for the PDF file in
-#'   which the histograms will be saved. If \code{NULL}, the histograms are
-#'   displayed on the current graphics device. Default is \code{NULL}.
+#' @param output_file Optional string specifying the name of the file
+#'   to be created.  When `NULL` (default), plots are drawn on
+#'   the current graphics device. Ensure that the file
+#'   extension matches the desired format (e.g., ".pdf" for PDF output
+#'   or ".png" for PNG output or .tiff for TIFF output).
 #' @param print_res_raw Logical. If \code{TRUE}, the function returns and prints
 #'   the computed summary statistics for the raw data. Default is
 #'   \code{FALSE}.
@@ -49,12 +51,12 @@
 #' @examples
 #' # Example with grouping columns (e.g., "Group" and "Treatment")
 #' data(ExampleData1)
-#' cyt_skku(ExampleData1[, -c(2:3)], pdf_title = NULL,
+#' cyt_skku(ExampleData1[, -c(2:3)], output_file = NULL,
 #'   group_cols = c("Group")
 #' )
 #'
 #' # Example without grouping columns (analyzes the entire data set)
-#' cyt_skku(ExampleData1[, -c(1:3)], pdf_title = NULL)
+#' cyt_skku(ExampleData1[, -c(1:3)], output_file = NULL)
 #'
 #' @export
 #'
@@ -66,7 +68,7 @@
 cyt_skku <- function(
   data,
   group_cols = NULL,
-  pdf_title = NULL,
+  output_file = NULL,
   print_res_raw = FALSE,
   print_res_log = FALSE
 ) {
@@ -172,9 +174,25 @@ cyt_skku <- function(
   }
 
   # If a pdf title is provided, generate histograms using ggplot2.
-  if (!is.null(pdf_title)) {
-    pdf(file = pdf_title)
-    on.exit(dev.off(), add = TRUE)
+  if (!is.null(output_file)) {
+    ext <- tolower(tools::file_ext(output_file))
+    if (ext == "pdf") {
+      pdf(file = output_file, width = 7, height = 5)
+      on.exit(dev.off(), add = TRUE)
+      for (p in plot_list) {
+        print(p)
+      }
+    } else {
+      # For PNG, SVG, etc., save each page as a separate file
+      for (i in seq_along(plot_list)) {
+        fname <- if (length(plot_list) > 1) {
+          sub(paste0("\\.", ext, "$"), paste0("_", i, ".", ext), output_file)
+        } else {
+          output_file
+        }
+        ggplot2::ggsave(fname, plot_list[[i]], width = 7, height = 5)
+      }
+    }
   }
   df_skew <- rbind(
     data.frame(value = raw_results$skewness, transformation = "Raw"),
@@ -211,16 +229,16 @@ cyt_skku <- function(
       legend.text = element_text(color = "black")
     )
 
-  gridExtra::grid.arrange(p_skew, p_kurt, ncol = 1)
+  combined_plot <- gridExtra::grid.arrange(p_skew, p_kurt, ncol = 1)
 
   # Return results based on flags.
   if (print_res_raw && print_res_log) {
-    return(list(raw = raw_results, log2 = log_results))
+    return(list(raw = raw_results, log2 = log_results, plot = combined_plot))
   } else if (print_res_raw) {
-    return(raw_results)
+    return(list(data = raw_results, plot = combined_plot))
   } else if (print_res_log) {
-    return(log_results)
+    return(list(data = log_results, plot = combined_plot))
   } else {
-    return(invisible(NULL))
+    return(invisible(combined_plot)) # always return the plot
   }
 }

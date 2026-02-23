@@ -6,7 +6,7 @@
 \usage{
 cyt_bp(
   data,
-  pdf_title = NULL,
+  output_file = NULL,
   group_by = NULL,
   bin_size = 25,
   y_lim = NULL,
@@ -18,9 +18,11 @@ cyt_bp(
 \item{data}{A matrix or data frame containing numeric and
 categorical variables.}
 
-\item{pdf_title}{Optional string specifying the name of the PDF
-file to be created.  When \code{NULL} (default), plots are drawn on
-the current graphics device.}
+\item{output_file}{Optional string specifying the name of the file
+to be created.  When \code{NULL} (default), plots are drawn on
+the current graphics device. Ensure that the file
+extension matches the desired format (e.g., ".pdf" for PDF output
+or ".png" for PNG output or .tiff for TIFF output).}
 
 \item{group_by}{Optional character vector specifying one or more
 columns to use for grouping.  If \code{NULL} (default) no grouping is
@@ -43,7 +45,7 @@ columns when \code{scale = "custom"}.}
 }
 \value{
 Invisibly returns a list of \code{ggplot} objects.  When
-\code{pdf_title} is provided, plots are written to the PDF file.
+\code{output_file} is provided, plots are written to the PDF file.
 }
 \description{
 This function generates boxplots for numeric variables in a data
@@ -57,7 +59,7 @@ displayed on the current graphics device.
 \examples{
 data("ExampleData1")
 # Boxplots without grouping
-cyt_bp(ExampleData1[, -c(1:3)], pdf_title = NULL, scale = "log2")
+cyt_bp(ExampleData1[, -c(1:3)], output_file = NULL, scale = "log2")
 # Boxplots grouped by Group
 cyt_bp(ExampleData1[, -c(3,5:28)], group_by = "Group", scale = "zscore")
 

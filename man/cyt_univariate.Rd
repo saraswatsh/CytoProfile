@@ -10,7 +10,8 @@ cyt_univariate(
   method = c("auto", "ttest", "wilcox"),
   verbose = TRUE,
   format_output = FALSE,
-  custom_fn = NULL
+  custom_fn = NULL,
+  p_adjust_method = NULL
 )
 }
 \arguments{
@@ -37,6 +38,11 @@ a tidy data frame; if \code{FALSE} (default), returns a list of
 test objects similar to the original function.}
 
 \item{custom_fn}{A function to apply when \code{scale = "custom"}.}
+
+\item{p_adjust_method}{Character or \code{NULL}. Method passed to
+\code{p.adjust()} for correcting p-values across all comparisons
+(e.g., \code{"BH"} for Benjamini-Hochberg). If \code{NULL} (default)
+no adjustment is performed.}
 }
 \value{
 If \code{format_output = FALSE}, a named list of test objects

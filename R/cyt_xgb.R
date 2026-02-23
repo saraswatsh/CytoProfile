@@ -227,24 +227,42 @@ cyt_xgb <- function(
     cat("\nTop", top_n_features, "Important Features\n")
     print(top_features)
   }
-  imp_plot <- xgboost::xgb.ggplot.importance(
-    importance_matrix = top_features,
-    top_n = top_n_features
-  ) +
-    ggplot2::geom_bar(stat = "identity", fill = "red2", show.legend = FALSE) +
-    ggplot2::ggtitle("Top Features by Gain") +
-    ggplot2::ylab("Importance (Gain)") +
-    ggplot2::xlab("Features") +
-    ggplot2::theme_minimal() +
-    ggplot2::theme(
-      legend.position = "none",
-      panel.background = element_rect(fill = "white", colour = "white"),
-      plot.background = element_rect(fill = "white", colour = "white"),
-      legend.background = element_rect(fill = "white", colour = "white"),
-      axis.title = element_text(color = "black", size = 12, face = "bold"),
-      legend.title = element_text(color = "black", size = 10, face = "bold"),
-      legend.text = element_text(color = "black")
+  if (!requireNamespace("Ckmeans.1d.dp", quietly = TRUE)) {
+    warning(
+      "Install 'Ckmeans.1d.dp' for a clustered importance plot. Falling back to a basic bar chart."
     )
+    imp_plot <- ggplot2::ggplot(
+      top_features,
+      ggplot2::aes(x = reorder(Feature, Gain), y = Gain)
+    ) +
+      ggplot2::geom_bar(stat = "identity", fill = "red2") +
+      ggplot2::coord_flip() +
+      ggplot2::labs(
+        title = "Top Features by Gain",
+        x = "Features",
+        y = "Importance (Gain)"
+      ) +
+      ggplot2::theme_minimal()
+  } else {
+    imp_plot <- xgboost::xgb.ggplot.importance(
+      importance_matrix = top_features,
+      top_n = top_n_features
+    ) +
+      ggplot2::geom_bar(stat = "identity", fill = "red2", show.legend = FALSE) +
+      ggplot2::ggtitle("Top Features by Gain") +
+      ggplot2::ylab("Importance (Gain)") +
+      ggplot2::xlab("Features") +
+      ggplot2::theme_minimal() +
+      ggplot2::theme(
+        legend.position = "none",
+        panel.background = element_rect(fill = "white", colour = "white"),
+        plot.background = element_rect(fill = "white", colour = "white"),
+        legend.background = element_rect(fill = "white", colour = "white"),
+        axis.title = element_text(color = "black", size = 12, face = "bold"),
+        legend.title = element_text(color = "black", size = 10, face = "bold"),
+        legend.text = element_text(color = "black")
+      )
+  }
   # Print importance plot automatically
   print(imp_plot)
   # Cross-validation using xgb.cv

@@ -27,6 +27,10 @@
 #'   a tidy data frame; if `FALSE` (default), returns a list of
 #'   test objects similar to the original function.
 #' @param custom_fn A function to apply when `scale = "custom"`.
+#' @param p_adjust_method Character or \code{NULL}. Method passed to
+#'   \code{p.adjust()} for correcting p-values across all comparisons
+#'   (e.g., \code{"BH"} for Benjamini-Hochberg). If \code{NULL} (default)
+#'   no adjustment is performed.
 #' @return If `format_output = FALSE`, a named list of test objects
 #'   keyed by "Outcome_Categorical".  If `format_output = TRUE`, a
 #'   data frame with columns `Outcome`, `Categorical`, `Comparison`,
@@ -45,7 +49,8 @@ cyt_univariate <- function(
   method = c("auto", "ttest", "wilcox"),
   verbose = TRUE,
   format_output = FALSE,
-  custom_fn = NULL
+  custom_fn = NULL,
+  p_adjust_method = NULL
 ) {
   names(data) <- make.names(names(data), unique = TRUE)
   method <- match.arg(method)
@@ -179,5 +184,8 @@ cyt_univariate <- function(
       )
     })
   )
+  if (!is.null(p_adjust_method)) {
+    out_df$P_adj <- adjust_p(out_df$P_value, method = p_adjust_method)
+  }
   return(out_df)
 }

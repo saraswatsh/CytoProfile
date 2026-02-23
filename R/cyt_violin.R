@@ -13,9 +13,11 @@
 #'
 #' @param data A matrix or data frame containing numeric and
 #'   categorical variables.
-#' @param pdf_title Optional string specifying the name of the PDF
-#'   file to be created.  When `NULL` (default), plots are drawn on
-#'   the current graphics device.
+#' @param output_file Optional string specifying the name of the file
+#'   to be created.  When `NULL` (default), plots are drawn on
+#'   the current graphics device. Ensure that the file
+#'   extension matches the desired format (e.g., ".pdf" for PDF output
+#'   or ".png" for PNG output or .tiff for TIFF output).
 #' @param group_by Optional character vector specifying one or more
 #'   columns to use for grouping.  If `NULL` (default) no grouping is
 #'   applied.
@@ -33,10 +35,10 @@
 #'   drawn inside each violin to summarize the median and quartiles.
 #'   Default is `FALSE`.
 #' @return Invisibly returns a list of `ggplot` objects.  When
-#'   `pdf_title` is provided, plots are written to the PDF file.
+#'   `output_file` is provided, plots are written to the PDF file.
 #' @examples
 #' # Violin plots without grouping
-#' cyt_violin(ExampleData1[, -c(1:3)], pdf_title = NULL, scale = "zscore")
+#' cyt_violin(ExampleData1[, -c(1:3)], output_file = NULL, scale = "zscore")
 #' # Violin plots grouped by Group with boxplot overlay
 #' cyt_violin(ExampleData1[, -c(3,5:28)], group_by = "Group",
 #'                         boxplot_overlay = TRUE, scale = "log2")
@@ -47,7 +49,7 @@
 #' @export
 cyt_violin <- function(
   data,
-  pdf_title = NULL,
+  output_file = NULL,
   group_by = NULL,
   bin_size = 25,
   y_lim = NULL,
@@ -128,11 +130,24 @@ cyt_violin <- function(
       }
       plot_list[[var]] <- p
     }
-    if (!is.null(pdf_title)) {
-      pdf(file = pdf_title, width = 7, height = 5)
-      on.exit(dev.off(), add = TRUE)
-      for (p in plot_list) {
-        print(p)
+    if (!is.null(output_file)) {
+      ext <- tolower(tools::file_ext(output_file))
+      if (ext == "pdf") {
+        pdf(file = output_file, width = 7, height = 5)
+        on.exit(dev.off(), add = TRUE)
+        for (p in plot_list) {
+          print(p)
+        }
+      } else {
+        # For PNG, SVG, etc., save each page as a separate file
+        for (i in seq_along(plot_list)) {
+          fname <- if (length(plot_list) > 1) {
+            sub(paste0("\\.", ext, "$"), paste0("_", i, ".", ext), output_file)
+          } else {
+            output_file
+          }
+          ggplot2::ggsave(fname, plot_list[[i]], width = 7, height = 5)
+        }
       }
     } else {
       for (p in plot_list) {
@@ -168,18 +183,32 @@ cyt_violin <- function(
       ) +
       ggplot2::theme_minimal() +
       ggplot2::theme(
-        axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust = 1)
-      )
+        axis.text.x = ggplot2::element_text(angle = 45, vjust = 0.5, hjust = 1)
+      ) +
+      ggplot2::scale_x_discrete(guide = ggplot2::guide_axis(n.dodge = 1))
     if (!is.null(y_lim)) {
       p <- p + ggplot2::coord_cartesian(ylim = y_lim)
     }
     plot_list[[paste0("page", i)]] <- p
   }
-  if (!is.null(pdf_title)) {
-    pdf(file = pdf_title, width = 7, height = 5)
-    on.exit(dev.off(), add = TRUE)
-    for (p in plot_list) {
-      print(p)
+  if (!is.null(output_file)) {
+    ext <- tolower(tools::file_ext(output_file))
+    if (ext == "pdf") {
+      pdf(file = output_file, width = 7, height = 5)
+      on.exit(dev.off(), add = TRUE)
+      for (p in plot_list) {
+        print(p)
+      }
+    } else {
+      # For PNG, SVG, etc., save each page as a separate file
+      for (i in seq_along(plot_list)) {
+        fname <- if (length(plot_list) > 1) {
+          sub(paste0("\\.", ext, "$"), paste0("_", i, ".", ext), output_file)
+        } else {
+          output_file
+        }
+        ggplot2::ggsave(fname, plot_list[[i]], width = 7, height = 5)
+      }
     }
   } else {
     for (p in plot_list) {
