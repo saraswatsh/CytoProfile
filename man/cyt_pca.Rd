@@ -9,7 +9,7 @@ cyt_pca(
   group_col = NULL,
   group_col2 = NULL,
   colors = NULL,
-  pdf_title,
+  output_file,
   ellipse = FALSE,
   comp_num = 2,
   scale = c("none", "log2", "log10", "zscore", "custom"),
@@ -34,9 +34,11 @@ be performed.}
 If set to NULL, a palette is generated using \code{rainbow()} based on the
 number of unique groups.}
 
-\item{pdf_title}{A string specifying the file name of the PDF where the
-PCA plots will be saved. If \code{NULL}, the plots are generated on the current
-graphics device. Default is \code{NULL}.}
+\item{output_file}{Optional string specifying the name of the file
+to be created.  When \code{NULL} (default), plots are drawn on
+the current graphics device. Ensure that the file
+extension matches the desired format (e.g., ".pdf" for PDF output
+or ".png" for PNG output or .tiff for TIFF output).}
 
 \item{ellipse}{Logical. If TRUE, a 95\% confidence ellipse is drawn on the
 PCA individuals plot. Default is FALSE.}
@@ -62,7 +64,7 @@ a 3D scatter plot is generated using the plot3D package. Default is NULL.}
 }
 \value{
 A PDF file containing the PCA plots is generated and saved when
-\code{pdf_title} is provided. Otherwise, plots are displayed on the current
+\code{output_file} is provided. Otherwise, plots are displayed on the current
 graphics device.
 }
 \description{
@@ -86,7 +88,7 @@ data_df <- dplyr::filter(data, Group != "ND" & Treatment != "Unstimulated")
 # Run PCA analysis and save plots to a PDF file
 cyt_pca(
   data = data_df,
-  pdf_title = NULL,
+  output_file = NULL,
   colors = c("black", "red2"),
   scale = "log2",
   comp_num = 3,

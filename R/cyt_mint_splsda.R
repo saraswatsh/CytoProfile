@@ -17,8 +17,11 @@
 #' @param colors A vector of splsda_colors for the groups or treatments. If
 #'   \code{NULL}, a random palette (using \code{rainbow}) is generated based on
 #'   the number of groups.
-#' @param pdf_title A string specifying the file name for saving the PDF output.
-#'                If set to NULL, the function runs in IDE plots pane.
+#' @param output_file Optional string specifying the name of the file
+#'   to be created.  When `NULL` (default), plots are drawn on
+#'   the current graphics device. Ensure that the file
+#'   extension matches the desired format (e.g., ".pdf" for PDF output
+#'   or ".png" for PNG output or .tiff for TIFF output).
 #' @param ellipse Logical. Whether to draw a 95\% confidence ellipse on the figures.
 #'   Default is \code{FALSE}.
 #' @param bg Logical. Whether to draw the prediction background in the figures.
@@ -73,7 +76,7 @@ cyt_mint_splsda <- function(
   batch_col,
   group_col2 = NULL,
   colors = NULL,
-  pdf_title = NULL,
+  output_file = NULL,
   ellipse = TRUE,
   bg = FALSE,
   var_num = 20,
@@ -119,11 +122,6 @@ cyt_mint_splsda <- function(
   if (is.null(colors)) {
     num_groups <- length(unique(data[[group_col]]))
     colors <- rainbow(num_groups)
-  }
-
-  if (!is.null(pdf_title)) {
-    grDevices::pdf(file = pdf_title, width = 8.5, height = 8)
-    on.exit(grDevices::dev.off(), add = TRUE)
   }
   scale <- match.arg(scale)
   num_cols <- setdiff(names(data)[sapply(data, is.numeric)], id_cols)
@@ -300,26 +298,39 @@ cyt_mint_splsda <- function(
       plot_args2
     )
 
+    study_levels <- as.character(unique(study))
+
     partial_loadings_plots <- setNames(
-      lapply(seq_len(ncomp_used), function(comp) {
-        force(comp)
-        function() {
-          mixOmics::plotLoadings(
-            final_model,
-            comp = comp,
-            study = "all.partial",
-            contrib = "max",
-            method = "mean",
-            size.name = 0.7,
-            size.legend = 0.8,
-            size.title = 1,
-            legend.color = colors,
-            legend.title = group_col,
-            title = paste("Partial Loadings - Comp", comp)
-          )
-        }
-      }),
-      nm = paste0("Comp", seq_len(ncomp_used))
+      unlist(
+        lapply(seq_len(ncomp_used), function(comp) {
+          lapply(study_levels, function(s) {
+            force(comp)
+            force(s)
+            function() {
+              mixOmics::plotLoadings(
+                final_model,
+                comp = comp,
+                study = s,
+                contrib = "max",
+                method = "mean",
+                size.name = 0.7,
+                size.legend = 0.8,
+                size.title = 1,
+                legend.color = colors,
+                legend.title = group_col,
+                title = paste("Partial Loadings - Comp", comp, "| Study:", s)
+              )
+            }
+          })
+        }),
+        recursive = FALSE
+      ),
+      nm = as.vector(outer(
+        paste0("Comp", seq_len(ncomp_used)),
+        study_levels,
+        paste,
+        sep = "_"
+      ))
     )
     invisible(lapply(partial_loadings_plots, function(plot_fn) plot_fn()))
 
@@ -391,12 +402,35 @@ cyt_mint_splsda <- function(
       correlation_circle_plot = correlation_circle_plot,
       roc_plot = roc_plot
     )
+    if (!is.null(output_file)) {
+      plot_list <- Filter(
+        Negate(is.null),
+        c(
+          if (!is.null(tune_res)) list(function() print(plot(tune_res))),
+          list(global_indiv_plot$graph),
+          unname(global_loadings_plots), # list of closures
+          list(partial_indiv_plot$graph),
+          unname(partial_loadings_plots), # list of closures
+          if (!is.null(cim_plot)) list(cim_plot),
+          if (!is.null(correlation_circle_plot)) list(correlation_circle_plot),
+          if (!is.null(roc_plot)) list(function() print(roc_plot))
+        )
+      )
+      cyt_export(
+        plot_list,
+        filename = tools::file_path_sans_ext(output_file),
+        format = tolower(tools::file_ext(output_file)),
+        width = 8.5,
+        height = 8
+      )
+    }
     return(invisible(results_list))
   } else {
     # Case 2: If group_col != group_col2, perform stratified analysis
     levels_vec <- unique(data[[group_col2]])
     indiv_plots <- list()
     results_list <- list()
+    all_plots <- list()
     for (lvl in levels_vec) {
       # 1) subset to only those rows where group_col2 == lvl
       df_sub <- data[data[[group_col2]] == lvl, , drop = FALSE]
@@ -561,26 +595,39 @@ cyt_mint_splsda <- function(
         plot_args2
       )
 
+      study_levels <- as.character(unique(df_sub[[batch_col]]))
+
       partial_loadings_plots <- setNames(
-        lapply(seq_len(ncomp_used), function(comp) {
-          force(comp)
-          function() {
-            mixOmics::plotLoadings(
-              final_model,
-              comp = comp,
-              study = "all.partial",
-              contrib = "max",
-              method = "mean",
-              size.name = 0.7,
-              size.legend = 0.8,
-              size.title = 1,
-              legend.color = colors,
-              legend.title = group_col,
-              title = paste("Partial Loadings - Comp", comp)
-            )
-          }
-        }),
-        nm = paste0("Comp", seq_len(ncomp_used))
+        unlist(
+          lapply(seq_len(ncomp_used), function(comp) {
+            lapply(study_levels, function(s) {
+              force(comp)
+              force(s)
+              function() {
+                mixOmics::plotLoadings(
+                  final_model,
+                  comp = comp,
+                  study = s,
+                  contrib = "max",
+                  method = "mean",
+                  size.name = 0.7,
+                  size.legend = 0.8,
+                  size.title = 1,
+                  legend.color = colors,
+                  legend.title = group_col,
+                  title = paste("Partial Loadings - Comp", comp, "| Study:", s)
+                )
+              }
+            })
+          }),
+          recursive = FALSE
+        ),
+        nm = as.vector(outer(
+          paste0("Comp", seq_len(ncomp_used)),
+          study_levels,
+          paste,
+          sep = "_"
+        ))
       )
       invisible(lapply(partial_loadings_plots, function(plot_fn) plot_fn()))
 
@@ -607,7 +654,6 @@ cyt_mint_splsda <- function(
       }
 
       # -- Correlation circle --
-      correlation_circle_plot()
       correlation_circle_plot <- NULL
       if (ncomp_used >= 2) {
         correlation_circle_plot <- function() {
@@ -652,6 +698,28 @@ cyt_mint_splsda <- function(
         cim_plot = cim_plot,
         correlation_circle_plot = correlation_circle_plot,
         roc_plot = roc_plot
+      )
+      all_plots <- c(all_plots, list(global_indiv_plot$graph))
+      all_plots <- c(all_plots, unname(global_loadings_plots))
+      all_plots <- c(all_plots, list(partial_indiv_plot$graph))
+      all_plots <- c(all_plots, unname(partial_loadings_plots))
+      if (!is.null(cim_plot)) {
+        all_plots <- c(all_plots, list(cim_plot))
+      }
+      if (!is.null(correlation_circle_plot)) {
+        all_plots <- c(all_plots, list(correlation_circle_plot))
+      }
+      if (!is.null(roc_plot)) {
+        all_plots <- c(all_plots, list(function() print(roc_plot)))
+      }
+    }
+    if (!is.null(output_file)) {
+      cyt_export(
+        Filter(Negate(is.null), all_plots),
+        filename = tools::file_path_sans_ext(output_file),
+        format = tolower(tools::file_ext(output_file)),
+        width = 8.5,
+        height = 8
       )
     }
     return(invisible(results_list))

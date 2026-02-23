@@ -16,7 +16,9 @@ CMD
 CSF
 Calvo
 Cao
+CodeFactor
 Cytokine
+Dev
 Eslami
 ExampleData
 Fouladvand
@@ -73,6 +75,7 @@ errbp
 ggplot
 https
 inflammaging
+jpeg
 kruskal
 lifecycle
 loadings
@@ -108,5 +111,4 @@ wilcoxon
 wilk
 xgb
 xgboost
-yaml
 zscore

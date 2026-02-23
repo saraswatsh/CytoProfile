@@ -19,8 +19,11 @@
 #' @param colors A vector of colors for the groups or treatments. If
 #'   \code{NULL}, a random palette (using \code{rainbow}) is generated based on
 #'   the number of groups.
-#' @param pdf_title A string specifying the file name for saving the PDF output.
-#'  Default is \code{NULL} which generates figures in the current graphics device.
+#' @param output_file Optional string specifying the name of the file
+#'   to be created.  When `NULL` (default), plots are drawn on
+#'   the current graphics device. Ensure that the file
+#'   extension matches the desired format (e.g., ".pdf" for PDF output
+#'   or ".png" for PNG output or .tiff for TIFF output).
 #' @param ellipse Logical. Whether to draw a 95\% confidence ellipse on the
 #'   figures. Default is \code{FALSE}.
 #' @param bg Logical. Whether to draw the prediction background in the figures.
@@ -88,7 +91,7 @@
 #' data_df <- ExampleData1[,-c(3)]
 #' data_df <- dplyr::filter(data_df, Group != "ND", Treatment != "Unstimulated")
 #'
-#' cyt_splsda(data_df, pdf_title = NULL,
+#' cyt_splsda(data_df, output_file = NULL,
 #' colors = c("black", "purple"), bg = FALSE, scale = "log2",
 #' conf_mat = FALSE, var_num = 25, cv_opt = NULL, comp_num = 2,
 #' pch_values = c(16, 4), style = NULL, ellipse = TRUE,
@@ -110,7 +113,7 @@ cyt_splsda <- function(
   batch_col = NULL,
   ind_names = FALSE,
   colors = NULL,
-  pdf_title = NULL,
+  output_file = NULL,
   ellipse = FALSE,
   bg = FALSE,
   conf_mat = FALSE,
@@ -217,11 +220,6 @@ cyt_splsda <- function(
   if (is.null(colors)) {
     num_groups <- length(unique(data[[group_col]]))
     colors <- rainbow(num_groups)
-  }
-
-  if (!is.null(pdf_title)) {
-    pdf(file = pdf_title, width = 8.5, height = 8)
-    on.exit(grDevices::dev.off(), add = TRUE)
   }
 
   # Case 1: Only one factor provided (both columns are the same)
@@ -963,6 +961,53 @@ cyt_splsda <- function(
       vip_ROC = vip_ROC,
       vip_CV = vip_CV
     )
+    if (!is.null(output_file)) {
+      plot_list <- Filter(
+        Negate(is.null),
+        c(
+          list(overall_indiv_plot$graph),
+          if (!is.null(overall_CV)) list(overall_CV),
+          unname(loadings_list), # flatten named list of closures
+          unname(vip_scores), # flatten named list of closures
+          list(vip_indiv_plot$graph),
+          unname(vip_loadings),
+          if (!is.null(overall_3D)) list(overall_3D),
+          if (!is.null(vip_3D)) list(vip_3D),
+          if (!is.null(overall_ROC)) {
+            list(function() {
+              mixOmics::auroc(
+                object = cytokine_splsda,
+                newdata = the_data_df,
+                outcome.test = the_groups,
+                plot = TRUE,
+                roc.comp = comp_num,
+                print = FALSE
+              )
+            })
+          },
+          if (!is.null(vip_ROC)) {
+            list(function() {
+              mixOmics::auroc(
+                object = cytokine_splsda2,
+                newdata = the_data_mat,
+                outcome.test = the_groups,
+                plot = TRUE,
+                roc.comp = comp_num,
+                print = FALSE
+              )
+            })
+          },
+          if (!is.null(vip_CV)) list(vip_CV)
+        )
+      )
+      cyt_export(
+        plot_list,
+        filename = tools::file_path_sans_ext(output_file),
+        format = tolower(tools::file_ext(output_file)),
+        width = 8.5,
+        height = 8
+      )
+    }
     return(invisible(result_list))
   } else {
     # Case 2: Both group and treatment columns are provided and they differ.
@@ -1675,6 +1720,53 @@ cyt_splsda <- function(
       vip_ROC = vip_ROC,
       vip_CV = vip_CV
     )
+    if (!is.null(output_file)) {
+      plot_list <- Filter(
+        Negate(is.null),
+        c(
+          list(overall_indiv_plot$graph),
+          if (!is.null(overall_CV)) list(overall_CV),
+          unname(loadings_list), # flatten named list of closures
+          unname(vip_scores), # flatten named list of closures
+          list(vip_indiv_plot$graph),
+          unname(vip_loadings),
+          if (!is.null(overall_3D)) list(overall_3D),
+          if (!is.null(vip_3D)) list(vip_3D),
+          if (!is.null(overall_ROC)) {
+            list(function() {
+              mixOmics::auroc(
+                object = cytokine_splsda,
+                newdata = the_data_df,
+                outcome.test = the_groups,
+                plot = TRUE,
+                roc.comp = comp_num,
+                print = FALSE
+              )
+            })
+          },
+          if (!is.null(vip_ROC)) {
+            list(function() {
+              mixOmics::auroc(
+                object = cytokine_splsda2,
+                newdata = the_data_mat,
+                outcome.test = the_groups,
+                plot = TRUE,
+                roc.comp = comp_num,
+                print = FALSE
+              )
+            })
+          },
+          if (!is.null(vip_CV)) list(vip_CV)
+        )
+      )
+      cyt_export(
+        plot_list,
+        filename = tools::file_path_sans_ext(output_file),
+        format = tolower(tools::file_ext(output_file)),
+        width = 8.5,
+        height = 8
+      )
+    }
     return(invisible(result_list))
   }
 }

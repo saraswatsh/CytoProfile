@@ -172,28 +172,6 @@ cyt_skku <- function(
     raw_results <- do.call(rbind, raw_list)
     log_results <- do.call(rbind, log_list)
   }
-
-  # If a pdf title is provided, generate histograms using ggplot2.
-  if (!is.null(output_file)) {
-    ext <- tolower(tools::file_ext(output_file))
-    if (ext == "pdf") {
-      pdf(file = output_file, width = 7, height = 5)
-      on.exit(dev.off(), add = TRUE)
-      for (p in plot_list) {
-        print(p)
-      }
-    } else {
-      # For PNG, SVG, etc., save each page as a separate file
-      for (i in seq_along(plot_list)) {
-        fname <- if (length(plot_list) > 1) {
-          sub(paste0("\\.", ext, "$"), paste0("_", i, ".", ext), output_file)
-        } else {
-          output_file
-        }
-        ggplot2::ggsave(fname, plot_list[[i]], width = 7, height = 5)
-      }
-    }
-  }
   df_skew <- rbind(
     data.frame(value = raw_results$skewness, transformation = "Raw"),
     data.frame(value = log_results$skewness, transformation = "Log2")
@@ -228,7 +206,28 @@ cyt_skku <- function(
       legend.title = element_text(color = "black", size = 10, face = "bold"),
       legend.text = element_text(color = "black")
     )
-
+  plot_list <- list(p_skew, p_kurt)
+  # If a pdf title is provided, generate histograms using ggplot2.
+  if (!is.null(output_file)) {
+    ext <- tolower(tools::file_ext(output_file))
+    if (ext == "pdf") {
+      pdf(file = output_file, width = 7, height = 5)
+      on.exit(dev.off(), add = TRUE)
+      for (p in plot_list) {
+        print(p)
+      }
+    } else {
+      # For PNG, SVG, etc., save each page as a separate file
+      for (i in seq_along(plot_list)) {
+        fname <- if (length(plot_list) > 1) {
+          sub(paste0("\\.", ext, "$"), paste0("_", i, ".", ext), output_file)
+        } else {
+          output_file
+        }
+        ggplot2::ggsave(fname, plot_list[[i]], width = 7, height = 5)
+      }
+    }
+  }
   combined_plot <- gridExtra::grid.arrange(p_skew, p_kurt, ncol = 1)
 
   # Return results based on flags.

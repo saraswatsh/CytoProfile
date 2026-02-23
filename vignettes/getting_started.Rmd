@@ -147,7 +147,7 @@ data <- ExampleData1[, -c(3)]
 data_df <- dplyr::filter(data, Group != "ND" & Treatment == "CD3/CD28")
 results <- cyt_splsda(
   data_df,
-  pdf_title = NULL,
+  output_file = NULL,
   colors = c("black", "purple"),
   bg = FALSE,
   scale = "log2",
@@ -178,10 +178,6 @@ results$vip_loadings$Comp1()
 data <- ExampleData5[, -c(2, 4)]
 data_df <- dplyr::filter(data, Group != "ND")
 
-#data_df <- dplyr::filter(data, Group != "ND" & Batch != 3)
-# # Change levels to 1,2, and 4
-# data_df$Batch <- droplevels(data_df$Batch)
-
 results <- cyt_mint_splsda(
   data_df,
   group_col = "Group",
@@ -208,7 +204,7 @@ data <- ExampleData1[, -c(3, 23)]
 data_df <- dplyr::filter(data, Group != "ND" & Treatment != "Unstimulated")
 results <- cyt_pca(
   data_df,
-  pdf_title = NULL,
+  output_file = NULL,
   colors = c("black", "red2"),
   scale = "log2",
   comp_num = 2,

@@ -55,6 +55,8 @@ reference:
   contents:
   - cyt_rf
   - cyt_xgb
+- title: Utility Functions
+  contents: cyt_export
 - title: Datasets
   contents:
   - ExampleData1

@@ -10,7 +10,7 @@ cyt_mint_splsda(
   batch_col,
   group_col2 = NULL,
   colors = NULL,
-  pdf_title = NULL,
+  output_file = NULL,
   ellipse = TRUE,
   bg = FALSE,
   var_num = 20,
@@ -41,8 +41,11 @@ grouping and treatment.}
 \code{NULL}, a random palette (using \code{rainbow}) is generated based on
 the number of groups.}
 
-\item{pdf_title}{A string specifying the file name for saving the PDF output.
-If set to NULL, the function runs in IDE plots pane.}
+\item{output_file}{Optional string specifying the name of the file
+to be created.  When \code{NULL} (default), plots are drawn on
+the current graphics device. Ensure that the file
+extension matches the desired format (e.g., ".pdf" for PDF output
+or ".png" for PNG output or .tiff for TIFF output).}
 
 \item{ellipse}{Logical. Whether to draw a 95\\% confidence ellipse on the figures.
 Default is \code{FALSE}.}

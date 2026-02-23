@@ -32,6 +32,8 @@ if (getRversion() >= "4.3") {
     "p_y",
     "es_label",
     "es_y",
-    "minusLog10P"
+    "minusLog10P",
+    "Feature",
+    "Gain"
   ))
 }

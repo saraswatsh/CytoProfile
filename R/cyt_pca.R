@@ -11,9 +11,11 @@
 #' @param colors A vector of colors corresponding to the groups.
 #'  If set to NULL, a palette is generated using \code{rainbow()} based on the
 #'   number of unique groups.
-#' @param pdf_title A string specifying the file name of the PDF where the
-#'  PCA plots will be saved. If \code{NULL}, the plots are generated on the current
-#'  graphics device. Default is \code{NULL}.
+#' @param output_file Optional string specifying the name of the file
+#'   to be created.  When `NULL` (default), plots are drawn on
+#'   the current graphics device. Ensure that the file
+#'   extension matches the desired format (e.g., ".pdf" for PDF output
+#'   or ".png" for PNG output or .tiff for TIFF output).
 #' @param ellipse Logical. If TRUE, a 95% confidence ellipse is drawn on the
 #'  PCA individuals plot. Default is FALSE.
 #' @param comp_num Numeric. The number of principal components to compute and
@@ -46,7 +48,7 @@
 #' }
 #'
 #' @return A PDF file containing the PCA plots is generated and saved when
-#' \code{pdf_title} is provided. Otherwise, plots are displayed on the current
+#' \code{output_file} is provided. Otherwise, plots are displayed on the current
 #' graphics device.
 #' @author Shubh Saraswat
 #'
@@ -62,7 +64,7 @@
 #' # Run PCA analysis and save plots to a PDF file
 #' cyt_pca(
 #'   data = data_df,
-#'   pdf_title = NULL,
+#'   output_file = NULL,
 #'   colors = c("black", "red2"),
 #'   scale = "log2",
 #'   comp_num = 3,
@@ -79,7 +81,7 @@ cyt_pca <- function(
   group_col = NULL,
   group_col2 = NULL,
   colors = NULL,
-  pdf_title,
+  output_file,
   ellipse = FALSE,
   comp_num = 2,
   scale = c("none", "log2", "log10", "zscore", "custom"),
@@ -142,10 +144,6 @@ cyt_pca <- function(
     colors <- rainbow(num_groups)
   }
 
-  if (!is.null(pdf_title)) {
-    pdf(file = pdf_title, width = 8.5, height = 8)
-  }
-
   # Case 1: Overall PCA when both factors are the same.
   if (group_col == group_col2) {
     overall_analysis <- "Overall Analysis"
@@ -187,6 +185,7 @@ cyt_pca <- function(
       plot_args$ellipse <- TRUE
     }
     overall_indiv_plot <- do.call(mixOmics::plotIndiv, plot_args)
+    overall_3D <- NULL
     # 3D Plot if requested and exactly three components are used
     if (!is.null(style) && comp_num == 3 && (tolower(style) == "3d")) {
       cytokine_scores <- cytokine_pca$variates$X
@@ -341,15 +340,38 @@ cyt_pca <- function(
     result_list <- list(
       overall_indiv_plot = overall_indiv_plot$graph,
       loadings = loadings_list,
+      plot_3d = if (!is.null(overall_3D)) overall_3D else NULL,
       biplot = biplot_obj,
       correlation_circle = corr_plot,
       scree_plot = scree_plot
     )
+    if (!is.null(output_file)) {
+      plot_list <- Filter(
+        Negate(is.null),
+        c(
+          list(overall_indiv_plot$graph),
+          list(scree_plot),
+          unname(loadings_list), # list of closures
+          list(function() print(biplot_obj)),
+          list(corr_plot), # closure
+          if (!is.null(overall_3D)) list(overall_3D)
+        )
+      )
+      cyt_export(
+        plot_list,
+        filename = tools::file_path_sans_ext(output_file),
+        format = tolower(tools::file_ext(output_file)),
+        width = 8.5,
+        height = 8
+      )
+    }
     return(invisible(result_list))
   } else {
     # Case 2: When grouping and treatment columns differ
     levels_vec <- unique(data[[group_col2]])
     indiv_plots <- list()
+    all_plots <- list()
+    overall_3D <- NULL
     for (i in seq_along(levels_vec)) {
       current_level <- levels_vec[i]
       title_sub <- current_level
@@ -553,18 +575,40 @@ cyt_pca <- function(
         )
       }
       corr_plot()
+      # After overall_indiv_plot is created:
+      all_plots <- c(all_plots, list(overall_indiv_plot$graph))
+      # After scree_plot:
+      all_plots <- c(all_plots, list(scree_plot))
+      # After loadings_list is created:
+      all_plots <- c(all_plots, unname(loadings_list))
+      # After biplot_obj:
+      all_plots <- c(all_plots, list(function() print(biplot_obj)))
+      # After corr_plot:
+      all_plots <- c(all_plots, list(corr_plot))
+      # After overall_3D (inside the 3D if block):
+      if (!is.null(overall_3D)) {
+        all_plots <- c(all_plots, list(overall_3D))
+      }
     }
     result_list <- list(
       overall_indiv_plot = overall_indiv_plot,
       all_indiv_plots = indiv_plots,
       loadings = loadings_list,
+      plot_3d = if (!is.null(overall_3D)) overall_3D else NULL,
       biplot = biplot_obj,
       correlation_circle = corr_plot,
       scree_plot = scree_plot
     )
+    # AFTER the for loop, before return():
+    if (!is.null(output_file)) {
+      cyt_export(
+        Filter(Negate(is.null), all_plots),
+        filename = tools::file_path_sans_ext(output_file),
+        format = tolower(tools::file_ext(output_file)),
+        width = 8.5,
+        height = 8
+      )
+    }
     return(invisible(result_list))
-  }
-  if (!is.null(pdf_title)) {
-    if (dev.cur() > 1) dev.off()
   }
 }

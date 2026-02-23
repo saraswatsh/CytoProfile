@@ -60,7 +60,10 @@ Install CytoProfile from
 install.packages("CytoProfile")
 ```
 
-See change log for the latest updates and changes at [News](NEWS.md)
+See change log for the latest updates and changes on release build at
+[News](https://cytoprofile.cytokineprofile.org/news/index.html) and
+development build at
+[News](https://cytoprofile.cytokineprofile.org/dev/news/index.html).
 
 To look at the vignettes included in the package, use:
 
@@ -75,4 +78,4 @@ package.
 For more details on the released build of the package, please visit the
 [CytoProfile website](https://cytoprofile.cytokineprofile.org/). For the
 development version of the package, please visit the [Development
-CytoProfile website](https://cytoprofile.cytokineprofile.org/).
+CytoProfile website](https://cytoprofile.cytokineprofile.org/dev).
