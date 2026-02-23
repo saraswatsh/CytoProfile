@@ -20,7 +20,7 @@ file name is provided.
 cyt_skku(
   data,
   group_cols = NULL,
-  pdf_title = NULL,
+  output_file = NULL,
   print_res_raw = FALSE,
   print_res_log = FALSE
 )
@@ -42,11 +42,13 @@ cyt_skku(
   the second as the group variable. If not provided, the entire data set
   is treated as one group.
 
-- pdf_title:
+- output_file:
 
-  A character string specifying the file name for the PDF file in which
-  the histograms will be saved. If `NULL`, the histograms are displayed
-  on the current graphics device. Default is `NULL`.
+  Optional string specifying the name of the file to be created. When
+  `NULL` (default), plots are drawn on the current graphics device.
+  Ensure that the file extension matches the desired format (e.g.,
+  ".pdf" for PDF output or ".png" for PNG output or .tiff for TIFF
+  output).
 
 - print_res_raw:
 
@@ -83,7 +85,7 @@ Xiaohua Douglas Zhang and Shubh Saraswat
 ``` r
 # Example with grouping columns (e.g., "Group" and "Treatment")
 data(ExampleData1)
-cyt_skku(ExampleData1[, -c(2:3)], pdf_title = NULL,
+cyt_skku(ExampleData1[, -c(2:3)], output_file = NULL,
   group_cols = c("Group")
 )
 #> Warning: Removed 2 rows containing non-finite outside the scale range (`stat_bin()`).
@@ -91,6 +93,6 @@ cyt_skku(ExampleData1[, -c(2:3)], pdf_title = NULL,
 
 
 # Example without grouping columns (analyzes the entire data set)
-cyt_skku(ExampleData1[, -c(1:3)], pdf_title = NULL)
+cyt_skku(ExampleData1[, -c(1:3)], output_file = NULL)
 
 ```

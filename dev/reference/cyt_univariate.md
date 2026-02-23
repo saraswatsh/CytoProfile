@@ -16,7 +16,8 @@ cyt_univariate(
   method = c("auto", "ttest", "wilcox"),
   verbose = TRUE,
   format_output = FALSE,
-  custom_fn = NULL
+  custom_fn = NULL,
+  p_adjust_method = NULL
 )
 ```
 
@@ -55,6 +56,13 @@ cyt_univariate(
 - custom_fn:
 
   A function to apply when `scale = "custom"`.
+
+- p_adjust_method:
+
+  Character or `NULL`. Method passed to
+  [`p.adjust()`](https://rdrr.io/r/stats/p.adjust.html) for correcting
+  p-values across all comparisons (e.g., `"BH"` for Benjamini-Hochberg).
+  If `NULL` (default) no adjustment is performed.
 
 ## Value
 

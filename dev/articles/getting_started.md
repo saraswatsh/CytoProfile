@@ -45,7 +45,9 @@ Below are examples of using the functions provided in CytoProfile.
 ``` r
 # Load in the CytoProfile package
 library(CytoProfile)
-
+# dplyr is used below for data subsetting; it is not re-exported by CytoProfile
+# so we load it explicitly here. All other functions used are from CytoProfile.
+library(dplyr)
 # Loading in data
 data("ExampleData1")
 data_df <- ExampleData1
@@ -58,7 +60,7 @@ data_df <- ExampleData1
 ``` r
 # Boxplots without grouping with log2 scaling
 data_df <- ExampleData1
-cyt_bp(data_df[, -c(1:3)], pdf_title = NULL, scale = "log2")
+cyt_bp(data_df[, -c(1:3)], output_file= NULL, scale = "log2")
 ```
 
 ![](getting_started_files/figure-html/EDA1-1.png)
@@ -73,7 +75,7 @@ cyt_bp(data_df[, -c(3,5:28)], group_by = "Group", scale = "zscore")
 ``` r
 data_df <- ExampleData1
 # Violin plots without grouping
-cyt_violin(data_df[, -c(1:3)], pdf_title = NULL, scale = "zscore")
+cyt_violin(data_df[, -c(1:3)], output_file= NULL, scale = "zscore")
 ```
 
 ![](getting_started_files/figure-html/EDA2-1.png)
@@ -91,7 +93,7 @@ cyt_violin(data_df[, -c(3,5:28)], group_by = "Group",
 ``` r
 data_df <- ExampleData1
 # Histogram of skewness and kurtosis for raw data
-cyt_skku(data_df[, -c(1:3)], pdf_title = NULL, group_cols = NULL)
+cyt_skku(data_df[, -c(1:3)], output_file= NULL, group_cols = NULL)
 ```
 
 ![](getting_started_files/figure-html/EDA3-1.png)
@@ -99,7 +101,7 @@ cyt_skku(data_df[, -c(1:3)], pdf_title = NULL, group_cols = NULL)
 ``` r
 
 # Histogram of skewness and kurtosis with grouping (e.g., "Group")
-cyt_skku(data_df[, -c(2:3)], pdf_title = NULL, group_cols = c("Group"))
+cyt_skku(data_df[, -c(2:3)], output_file= NULL, group_cols = c("Group"))
 ```
 
 ![](getting_started_files/figure-html/EDA3-2.png)

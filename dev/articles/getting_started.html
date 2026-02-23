@@ -120,7 +120,9 @@ CytoProfile.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load in the CytoProfile package</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/saraswatsh/CytoProfile" class="external-link">CytoProfile</a></span><span class="op">)</span></span>
-<span></span>
+<span><span class="co"># dplyr is used below for data subsetting; it is not re-exported by CytoProfile</span></span>
+<span><span class="co"># so we load it explicitly here. All other functions used are from CytoProfile.</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="co"># Loading in data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"ExampleData1"</span><span class="op">)</span></span>
 <span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span></span></code></pre></div>
@@ -134,7 +136,7 @@ CytoProfile.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Boxplots without grouping with log2 scaling</span></span>
 <span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span></span>
-<span><span class="fu"><a href="../reference/cyt_bp.html">cyt_bp</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, pdf_title <span class="op">=</span> <span class="cn">NULL</span>, scale <span class="op">=</span> <span class="st">"log2"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/cyt_bp.html">cyt_bp</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, output_file<span class="op">=</span> <span class="cn">NULL</span>, scale <span class="op">=</span> <span class="st">"log2"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="getting_started_files/figure-html/EDA1-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Boxplots grouped by Group with z-score scaling</span></span>
@@ -143,7 +145,7 @@ CytoProfile.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span></span>
 <span><span class="co"># Violin plots without grouping</span></span>
-<span><span class="fu"><a href="../reference/cyt_violin.html">cyt_violin</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, pdf_title <span class="op">=</span> <span class="cn">NULL</span>, scale <span class="op">=</span> <span class="st">"zscore"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/cyt_violin.html">cyt_violin</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, output_file<span class="op">=</span> <span class="cn">NULL</span>, scale <span class="op">=</span> <span class="st">"zscore"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="getting_started_files/figure-html/EDA2-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Violin plots grouped by Group with boxplot overlay</span></span>
@@ -158,12 +160,12 @@ CytoProfile.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span></span>
 <span><span class="co"># Histogram of skewness and kurtosis for raw data</span></span>
-<span><span class="fu"><a href="../reference/cyt_skku.html">cyt_skku</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, pdf_title <span class="op">=</span> <span class="cn">NULL</span>, group_cols <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/cyt_skku.html">cyt_skku</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, output_file<span class="op">=</span> <span class="cn">NULL</span>, group_cols <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 <p><img src="getting_started_files/figure-html/EDA3-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Histogram of skewness and kurtosis with grouping (e.g., "Group")</span></span>
-<span><span class="fu"><a href="../reference/cyt_skku.html">cyt_skku</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, pdf_title <span class="op">=</span> <span class="cn">NULL</span>, group_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Group"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/cyt_skku.html">cyt_skku</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, output_file<span class="op">=</span> <span class="cn">NULL</span>, group_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Group"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="getting_started_files/figure-html/EDA3-2.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">

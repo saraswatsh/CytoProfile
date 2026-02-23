@@ -73,7 +73,8 @@ row per comparison.</p>
 <span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auto"</span>, <span class="st">"ttest"</span>, <span class="st">"wilcox"</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  format_output <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  custom_fn <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  custom_fn <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  p_adjust_method <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -115,6 +116,13 @@ test objects similar to the original function.</p></dd>
 
 <dt id="arg-custom-fn">custom_fn<a class="anchor" aria-label="anchor" href="#arg-custom-fn"></a></dt>
 <dd><p>A function to apply when <code>scale = "custom"</code>.</p></dd>
+
+
+<dt id="arg-p-adjust-method">p_adjust_method<a class="anchor" aria-label="anchor" href="#arg-p-adjust-method"></a></dt>
+<dd><p>Character or <code>NULL</code>. Method passed to
+<code><a href="https://rdrr.io/r/stats/p.adjust.html" class="external-link">p.adjust()</a></code> for correcting p-values across all comparisons
+(e.g., <code>"BH"</code> for Benjamini-Hochberg). If <code>NULL</code> (default)
+no adjustment is performed.</p></dd>
 
 </dl></div>
     <div class="section level2">

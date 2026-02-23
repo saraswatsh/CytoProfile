@@ -88,7 +88,7 @@ name is provided.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">cyt_skku</span><span class="op">(</span></span>
 <span>  <span class="va">data</span>,</span>
 <span>  group_cols <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  pdf_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  output_file <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  print_res_raw <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  print_res_log <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -112,10 +112,12 @@ variable and the second as the group variable. If not provided, the
 entire data set is treated as one group.</p></dd>
 
 
-<dt id="arg-pdf-title">pdf_title<a class="anchor" aria-label="anchor" href="#arg-pdf-title"></a></dt>
-<dd><p>A character string specifying the file name for the PDF file in
-which the histograms will be saved. If <code>NULL</code>, the histograms are
-displayed on the current graphics device. Default is <code>NULL</code>.</p></dd>
+<dt id="arg-output-file">output_file<a class="anchor" aria-label="anchor" href="#arg-output-file"></a></dt>
+<dd><p>Optional string specifying the name of the file
+to be created.  When <code>NULL</code> (default), plots are drawn on
+the current graphics device. Ensure that the file
+extension matches the desired format (e.g., ".pdf" for PDF output
+or ".png" for PNG output or .tiff for TIFF output).</p></dd>
 
 
 <dt id="arg-print-res-raw">print_res_raw<a class="anchor" aria-label="anchor" href="#arg-print-res-raw"></a></dt>
@@ -156,7 +158,7 @@ entire data set is analyzed as one overall group.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Example with grouping columns (e.g., "Group" and "Treatment")</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ExampleData1</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">cyt_skku</span><span class="op">(</span><span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, pdf_title <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span><span class="fu">cyt_skku</span><span class="op">(</span><span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, output_file <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
 <span class="r-in"><span>  group_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Group"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 2 rows containing non-finite outside the scale range (`stat_bin()`).</span>
@@ -164,7 +166,7 @@ entire data set is analyzed as one overall group.</p>
 <span class="r-plt img"><img src="cyt_skku-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example without grouping columns (analyzes the entire data set)</span></span></span>
-<span class="r-in"><span><span class="fu">cyt_skku</span><span class="op">(</span><span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, pdf_title <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">cyt_skku</span><span class="op">(</span><span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, output_file <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="cyt_skku-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
