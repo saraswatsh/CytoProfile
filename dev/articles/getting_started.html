@@ -246,7 +246,7 @@ CytoProfile.</p>
 <span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span> <span class="op">&amp;</span> <span class="va">Treatment</span> <span class="op">==</span> <span class="st">"CD3/CD28"</span><span class="op">)</span></span>
 <span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cyt_splsda.html">cyt_splsda</a></span><span class="op">(</span></span>
 <span>  <span class="va">data_df</span>,</span>
-<span>  pdf_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  output_file <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"purple"</span><span class="op">)</span>,</span>
 <span>  bg <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  scale <span class="op">=</span> <span class="st">"log2"</span>,</span>
@@ -271,10 +271,6 @@ CytoProfile.</p>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">ExampleData5</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#data_df &lt;- dplyr::filter(data, Group != "ND" &amp; Batch != 3)</span></span>
-<span><span class="co"># # Change levels to 1,2, and 4</span></span>
-<span><span class="co"># data_df$Batch &lt;- droplevels(data_df$Batch)</span></span>
-<span></span>
 <span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cyt_mint_splsda.html">cyt_mint_splsda</a></span><span class="op">(</span></span>
 <span>  <span class="va">data_df</span>,</span>
 <span>  group_col <span class="op">=</span> <span class="st">"Group"</span>,</span>
@@ -296,7 +292,7 @@ CytoProfile.</p>
 <span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span> <span class="op">&amp;</span> <span class="va">Treatment</span> <span class="op">!=</span> <span class="st">"Unstimulated"</span><span class="op">)</span></span>
 <span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cyt_pca.html">cyt_pca</a></span><span class="op">(</span></span>
 <span>  <span class="va">data_df</span>,</span>
-<span>  pdf_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  output_file <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"red2"</span><span class="op">)</span>,</span>
 <span>  scale <span class="op">=</span> <span class="st">"log2"</span>,</span>
 <span>  comp_num <span class="op">=</span> <span class="fl">2</span>,</span>

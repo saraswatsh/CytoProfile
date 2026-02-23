@@ -23,7 +23,7 @@ cyt_splsda(
   batch_col = NULL,
   ind_names = FALSE,
   colors = NULL,
-  pdf_title = NULL,
+  output_file = NULL,
   ellipse = FALSE,
   bg = FALSE,
   conf_mat = FALSE,
@@ -84,10 +84,13 @@ cyt_splsda(
   A vector of colors for the groups or treatments. If `NULL`, a random
   palette (using `rainbow`) is generated based on the number of groups.
 
-- pdf_title:
+- output_file:
 
-  A string specifying the file name for saving the PDF output. Default
-  is `NULL` which generates figures in the current graphics device.
+  Optional string specifying the name of the file to be created. When
+  `NULL` (default), plots are drawn on the current graphics device.
+  Ensure that the file extension matches the desired format (e.g.,
+  ".pdf" for PDF output or ".png" for PNG output or .tiff for TIFF
+  output).
 
 - ellipse:
 
@@ -201,7 +204,7 @@ Xiaohua Douglas Zhang and Shubh Saraswat
 data_df <- ExampleData1[,-c(3)]
 data_df <- dplyr::filter(data_df, Group != "ND", Treatment != "Unstimulated")
 
-cyt_splsda(data_df, pdf_title = NULL,
+cyt_splsda(data_df, output_file = NULL,
 colors = c("black", "purple"), bg = FALSE, scale = "log2",
 conf_mat = FALSE, var_num = 25, cv_opt = NULL, comp_num = 2,
 pch_values = c(16, 4), style = NULL, ellipse = TRUE,

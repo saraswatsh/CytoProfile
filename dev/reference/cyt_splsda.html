@@ -84,7 +84,7 @@ analyzes each treatment level separately.</p>
 <span>  batch_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ind_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  colors <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  pdf_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  output_file <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ellipse <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  bg <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  conf_mat <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -147,9 +147,12 @@ If 'pch' is set this will overwrite the names as shapes. See ?mixOmics::plotIndi
 the number of groups.</p></dd>
 
 
-<dt id="arg-pdf-title">pdf_title<a class="anchor" aria-label="anchor" href="#arg-pdf-title"></a></dt>
-<dd><p>A string specifying the file name for saving the PDF output.
-Default is <code>NULL</code> which generates figures in the current graphics device.</p></dd>
+<dt id="arg-output-file">output_file<a class="anchor" aria-label="anchor" href="#arg-output-file"></a></dt>
+<dd><p>Optional string specifying the name of the file
+to be created.  When <code>NULL</code> (default), plots are drawn on
+the current graphics device. Ensure that the file
+extension matches the desired format (e.g., ".pdf" for PDF output
+or ".png" for PNG output or .tiff for TIFF output).</p></dd>
 
 
 <dt id="arg-ellipse">ellipse<a class="anchor" aria-label="anchor" href="#arg-ellipse"></a></dt>
@@ -267,7 +270,7 @@ and graphical displays for multiclass problems. <em>BMC Bioinformatics</em>
 <span class="r-in"><span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>,<span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data_df</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span>, <span class="va">Treatment</span> <span class="op">!=</span> <span class="st">"Unstimulated"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">cyt_splsda</span><span class="op">(</span><span class="va">data_df</span>, pdf_title <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span><span class="fu">cyt_splsda</span><span class="op">(</span><span class="va">data_df</span>, output_file <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
 <span class="r-in"><span>colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"purple"</span><span class="op">)</span>, bg <span class="op">=</span> <span class="cn">FALSE</span>, scale <span class="op">=</span> <span class="st">"log2"</span>,</span></span>
 <span class="r-in"><span>conf_mat <span class="op">=</span> <span class="cn">FALSE</span>, var_num <span class="op">=</span> <span class="fl">25</span>, cv_opt <span class="op">=</span> <span class="cn">NULL</span>, comp_num <span class="op">=</span> <span class="fl">2</span>,</span></span>
 <span class="r-in"><span>pch_values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">4</span><span class="op">)</span>, style <span class="op">=</span> <span class="cn">NULL</span>, ellipse <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>

@@ -124,6 +124,11 @@ Functions for deeper multivariate insights.
 - [`cyt_xgb()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_xgb.md)
   : Run XGBoost Classification on Cytokine Data.
 
+## Utility Functions
+
+- [`cyt_export()`](https://cytoprofile.cytokineprofile.org/dev/reference/cyt_export.md)
+  : Generic export function for Cytokine plots
+
 ## Datasets
 
 - [`ExampleData1`](https://cytoprofile.cytokineprofile.org/dev/reference/ExampleData1.md)

@@ -4,7 +4,7 @@ generated throughout the CytoProfile package to a user specified
 format.  It is designed to handle objects created with ggplot2
 (or other grid based plots), recorded base plots (see
 grDevices::recordPlot()), or custom drawing functions stored
-as closures.  If a multi‑page PDF is requested, all plots are
+as closures.  If a multi-page PDF is requested, all plots are
 written into a single file; for raster formats (PNG, JPEG and
 TIFF), each element of the plot list is saved to its own file
 with a numbered suffix.  Nothing is returned except invisibly."><meta property="og:description" content="The purpose of this helper is to save a collection of plots
@@ -12,7 +12,7 @@ generated throughout the CytoProfile package to a user specified
 format.  It is designed to handle objects created with ggplot2
 (or other grid based plots), recorded base plots (see
 grDevices::recordPlot()), or custom drawing functions stored
-as closures.  If a multi‑page PDF is requested, all plots are
+as closures.  If a multi-page PDF is requested, all plots are
 written into a single file; for raster formats (PNG, JPEG and
 TIFF), each element of the plot list is saved to its own file
 with a numbered suffix.  Nothing is returned except invisibly."><meta property="og:image" content="https://cytoprofile.cytokineprofile.org/logo.png"><meta name="robots" content="noindex"></head><body>
@@ -65,7 +65,7 @@ generated throughout the CytoProfile package to a user specified
 format.  It is designed to handle objects created with <code>ggplot2</code>
 (or other grid based plots), recorded base plots (see
 <code><a href="https://rdrr.io/r/grDevices/recordplot.html" class="external-link">grDevices::recordPlot()</a></code>), or custom drawing functions stored
-as closures.  If a multi‑page PDF is requested, all plots are
+as closures.  If a multi-page PDF is requested, all plots are
 written into a single file; for raster formats (PNG, JPEG and
 TIFF), each element of the plot list is saved to its own file
 with a numbered suffix.  Nothing is returned except invisibly.</p>
@@ -76,7 +76,7 @@ with a numbered suffix.  Nothing is returned except invisibly.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">cyt_export</span><span class="op">(</span></span>
 <span>  <span class="va">plots</span>,</span>
 <span>  filename <span class="op">=</span> <span class="st">"cyto_output"</span>,</span>
-<span>  format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pdf"</span>, <span class="st">"png"</span>, <span class="st">"jpeg"</span>, <span class="st">"tiff"</span><span class="op">)</span>,</span>
+<span>  format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pdf"</span>, <span class="st">"png"</span>, <span class="st">"jpeg"</span>, <span class="st">"tiff"</span>, <span class="st">"svg"</span><span class="op">)</span>,</span>
 <span>  width <span class="op">=</span> <span class="fl">7</span>,</span>
 <span>  height <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  dpi <span class="op">=</span> <span class="fl">300</span>,</span>

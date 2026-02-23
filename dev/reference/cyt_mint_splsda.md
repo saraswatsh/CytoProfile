@@ -15,7 +15,7 @@ cyt_mint_splsda(
   batch_col,
   group_col2 = NULL,
   colors = NULL,
-  pdf_title = NULL,
+  output_file = NULL,
   ellipse = TRUE,
   bg = FALSE,
   var_num = 20,
@@ -59,10 +59,13 @@ cyt_mint_splsda(
   random palette (using `rainbow`) is generated based on the number of
   groups.
 
-- pdf_title:
+- output_file:
 
-  A string specifying the file name for saving the PDF output. If set to
-  NULL, the function runs in IDE plots pane.
+  Optional string specifying the name of the file to be created. When
+  `NULL` (default), plots are drawn on the current graphics device.
+  Ensure that the file extension matches the desired format (e.g.,
+  ".pdf" for PDF output or ".png" for PNG output or .tiff for TIFF
+  output).
 
 - ellipse:
 
@@ -150,6 +153,10 @@ cyt_mint_splsda(data_df, group_col = "Group",
  batch_col = "Batch", colors = c("black", "purple"),
  ellipse = TRUE, var_num = 25, comp_num = 2,
  scale = "log2", verbose = FALSE)
+
+
+
+
 
 
 

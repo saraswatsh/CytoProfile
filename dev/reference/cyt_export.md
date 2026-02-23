@@ -5,7 +5,7 @@ throughout the CytoProfile package to a user specified format. It is
 designed to handle objects created with `ggplot2` (or other grid based
 plots), recorded base plots (see
 [`grDevices::recordPlot()`](https://rdrr.io/r/grDevices/recordplot.html)),
-or custom drawing functions stored as closures. If a multi‑page PDF is
+or custom drawing functions stored as closures. If a multi-page PDF is
 requested, all plots are written into a single file; for raster formats
 (PNG, JPEG and TIFF), each element of the plot list is saved to its own
 file with a numbered suffix. Nothing is returned except invisibly.
@@ -16,7 +16,7 @@ file with a numbered suffix. Nothing is returned except invisibly.
 cyt_export(
   plots,
   filename = "cyto_output",
-  format = c("pdf", "png", "jpeg", "tiff"),
+  format = c("pdf", "png", "jpeg", "tiff", "svg"),
   width = 7,
   height = 5,
   dpi = 300,

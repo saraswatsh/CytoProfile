@@ -22,7 +22,7 @@ cyt_pca(
   group_col = NULL,
   group_col2 = NULL,
   colors = NULL,
-  pdf_title,
+  output_file,
   ellipse = FALSE,
   comp_num = 2,
   scale = c("none", "log2", "log10", "zscore", "custom"),
@@ -57,11 +57,13 @@ cyt_pca(
   [`rainbow()`](https://rdrr.io/r/grDevices/palettes.html) based on the
   number of unique groups.
 
-- pdf_title:
+- output_file:
 
-  A string specifying the file name of the PDF where the PCA plots will
-  be saved. If `NULL`, the plots are generated on the current graphics
-  device. Default is `NULL`.
+  Optional string specifying the name of the file to be created. When
+  `NULL` (default), plots are drawn on the current graphics device.
+  Ensure that the file extension matches the desired format (e.g.,
+  ".pdf" for PDF output or ".png" for PNG output or .tiff for TIFF
+  output).
 
 - ellipse:
 
@@ -98,7 +100,7 @@ cyt_pca(
 ## Value
 
 A PDF file containing the PCA plots is generated and saved when
-`pdf_title` is provided. Otherwise, plots are displayed on the current
+`output_file` is provided. Otherwise, plots are displayed on the current
 graphics device.
 
 ## Author
@@ -114,7 +116,7 @@ data_df <- dplyr::filter(data, Group != "ND" & Treatment != "Unstimulated")
 # Run PCA analysis and save plots to a PDF file
 cyt_pca(
   data = data_df,
-  pdf_title = NULL,
+  output_file = NULL,
   colors = c("black", "red2"),
   scale = "log2",
   comp_num = 3,
