@@ -434,6 +434,7 @@ cyt_mint_splsda <- function(
     for (lvl in levels_vec) {
       # 1) subset to only those rows where group_col2 == lvl
       df_sub <- data[data[[group_col2]] == lvl, , drop = FALSE]
+      overall_analysis <- as.character(lvl)
 
       # 2) build Y, study, and X *from the subset*
       Y <- df_sub[[group_col]]

@@ -27,7 +27,8 @@ Imports:
     ggrepel,
     gridExtra,
     reshape2,
-    lifecycle
+    lifecycle,
+    data.table
 Suggests:
     spelling,
     BiocManager,

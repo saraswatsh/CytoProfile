@@ -165,12 +165,17 @@ cyt_bp <- function(
       variable.name = "Variable",
       value.name = "Value"
     )
+    y_label <- if (scale == "none") {
+      "Value"
+    } else {
+      paste0("Value (", scale, "-transformed)")
+    }
     p <- ggplot2::ggplot(melted, ggplot2::aes(x = Variable, y = Value)) +
       ggplot2::geom_boxplot() +
       ggplot2::labs(
         title = "Boxplots for Variables:",
         x = "Variable",
-        y = "Value"
+        y = y_label
       ) +
       ggplot2::theme_minimal() +
       ggplot2::theme(

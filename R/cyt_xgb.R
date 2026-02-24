@@ -93,6 +93,7 @@
 #' @importFrom caret createDataPartition confusionMatrix
 #' @import ggplot2
 #' @importFrom pROC roc auc ggroc
+#' @importFrom data.table copy
 #' @export
 cyt_xgb <- function(
   data,
@@ -245,7 +246,7 @@ cyt_xgb <- function(
       ggplot2::theme_minimal()
   } else {
     imp_plot <- xgboost::xgb.ggplot.importance(
-      importance_matrix = top_features,
+      importance_matrix = data.table::copy(top_features),
       top_n = top_n_features
     ) +
       ggplot2::geom_bar(stat = "identity", fill = "red2", show.legend = FALSE) +

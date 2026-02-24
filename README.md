@@ -78,4 +78,4 @@ package.
 For more details on the released build of the package, please visit the
 [CytoProfile website](https://cytoprofile.cytokineprofile.org/). For the
 development version of the package, please visit the [Development
-CytoProfile website](https://cytoprofile.cytokineprofile.org/dev).
+CytoProfile website](https://cytoprofile.cytokineprofile.org/dev/).

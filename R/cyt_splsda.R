@@ -955,7 +955,11 @@ cyt_splsda <- function(
       overall_CV = overall_CV,
       loadings = loadings_list,
       vip_scores = vip_scores,
-      vip_indiv_plot = vip_indiv_plot$graph,
+      vip_indiv_plot = if (!is.null(vip_indiv_plot)) {
+        vip_indiv_plot$graph
+      } else {
+        NULL
+      },
       vip_loadings = vip_loadings,
       vip_3D = vip_3D,
       vip_ROC = vip_ROC,
@@ -1713,7 +1717,11 @@ cyt_splsda <- function(
       overall_CV = overall_CV,
       loadings = loadings_list,
       vip_scores = vip_scores,
-      vip_indiv_plot = vip_indiv_plot$graph,
+      vip_indiv_plot = if (!is.null(vip_indiv_plot)) {
+        vip_indiv_plot$graph
+      } else {
+        NULL
+      },
       vip_indiv_plots = vip_indiv_plots,
       vip_loadings = vip_loadings,
       vip_3D = vip_3D,

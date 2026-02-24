@@ -175,11 +175,16 @@ cyt_violin <- function(
       p <- p +
         ggplot2::geom_boxplot(width = 0.1, alpha = 0.5, outlier.shape = NA)
     }
+    y_label <- if (scale == "none") {
+      "Value"
+    } else {
+      paste0("Value (", scale, "-transformed)")
+    }
     p <- p +
       ggplot2::labs(
         title = "Violin Plots for Variables:",
         x = "Variable",
-        y = "Value"
+        y = y_label
       ) +
       ggplot2::theme_minimal() +
       ggplot2::theme(
