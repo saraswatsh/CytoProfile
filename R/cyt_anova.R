@@ -28,7 +28,7 @@
 
 cyt_anova <- function(data, format_output = FALSE) {
   lifecycle::deprecate_warn(
-    "0.2.3", # version when deprecation begins
+    "0.2.4", # version when deprecation begins
     "CytoProfile::cyt_anova()",
     "CytoProfile::cyt_univariate_multi()"
   )

@@ -35,7 +35,5 @@ This helper function applies a chosen scaling or transformation to
 specified numeric columns in a data frame.  Supported built‑in
 transformations include no transformation ("none"), log2, log10,
 and z‑score scaling.  A custom function can also be supplied to
-perform arbitrary transformations.  When applying log
-transformations a small offset is added automatically to avoid
-taking the logarithm of zero.
+perform arbitrary transformations.
 }

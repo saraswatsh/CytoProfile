@@ -11,10 +11,10 @@ A data frame with 297 rows and 29 columns:
 \item{Treatment}{Treatment received by subjects.}
 \item{Time}{Time point of the measurement.}
 \item{IL-17F}{Observed concentration of IL-17F cytokine.}
-\item{GM-CSF}{Observed concentration of GM-CSF cytokine-}
+\item{GM-CSF}{Observed concentration of GM-CSF cytokine.}
 \item{IFN-G}{Observed concentration of IFN-G cytokine.}
 \item{IL-10}{Observed concentration of IL-10 cytokine.}
-\item{CCL-20/MIP-3A}{Observed concentration of CCL.20-MIP.3A cytokine.}
+\item{CCL-20/MIP-3A}{Observed concentration of CCL-20/MIP-3A cytokine.}
 \item{IL-12/P70}{Observed concentration of IL-12/P70 cytokine.}
 \item{IL-13}{Observed concentration of IL-13 cytokine.}
 \item{IL-15}{Observed concentration of IL-15 cytokine.}

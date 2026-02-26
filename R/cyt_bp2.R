@@ -33,7 +33,7 @@
 
 cyt_bp2 <- function(data, pdf_title, scale = NULL, y_lim = NULL) {
   lifecycle::deprecate_warn(
-    "0.2.3", # version when deprecation begins
+    "0.2.4", # version when deprecation begins
     "CytoProfile::cyt_bp2()",
     "CytoProfile::cyt_bp()"
   )

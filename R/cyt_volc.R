@@ -108,8 +108,8 @@ cyt_volc <- function(
       x1 <- d1[[var]]
       x2 <- d2[[var]]
       # Fold change (ratio of means) and log2FC
-      fc <- mean(x2, na.rm = TRUE) / (mean(x1, na.rm = TRUE) + 1e-12)
-      log2fc <- log2(fc + 1e-12)
+      fc <- mean(x2, na.rm = TRUE) / (mean(x1, na.rm = TRUE))
+      log2fc <- log2(fc)
       # Choose test
       if (method == "ttest") {
         tst <- t.test(x1, x2)

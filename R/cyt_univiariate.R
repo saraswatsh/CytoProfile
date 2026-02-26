@@ -64,27 +64,16 @@ cyt_univariate <- function(
   # Identify categorical predictors and continuous variables
   cat_preds <- sapply(x1_df, is.factor)
   cont_vars <- sapply(x1_df, is.numeric)
-  # Apply scaling to numeric variables
+  # Apply scaling using shared utility for consistency
   if (!is.null(scale)) {
-    if (scale == "log2") {
-      x1_df[cont_vars] <- lapply(x1_df[cont_vars], function(x) log2(x))
-    } else if (scale == "log10") {
-      x1_df[cont_vars] <- lapply(x1_df[cont_vars], function(x) log10(x))
-    } else if (scale == "zscore") {
-      x1_df[cont_vars] <- lapply(x1_df[cont_vars], function(x) {
-        mu <- mean(x, na.rm = TRUE)
-        sdv <- stats::sd(x, na.rm = TRUE)
-        if (sdv == 0) {
-          return(rep(0, length(x)))
-        }
-        (x - mu) / sdv
-      })
-    } else if (scale == "custom") {
-      if (is.null(custom_fn) || !is.function(custom_fn)) {
-        stop("When scale = 'custom', a valid custom_fn must be provided.")
-      }
-      x1_df[cont_vars] <- lapply(x1_df[cont_vars], custom_fn)
-    }
+    x1_df <- apply_scale(
+      data = x1_df,
+      scale = scale,
+      custom_fn = custom_fn
+    )
+    # Recompute predictors and continuous-variable indicators after scaling
+    cat_preds <- sapply(x1_df, is.factor)
+    cont_vars <- sapply(x1_df, is.numeric)
   }
   # Empty list to store test results
   test_results <- list()
