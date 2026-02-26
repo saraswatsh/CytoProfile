@@ -51,7 +51,7 @@ Shubh Saraswat
 data_df <- ExampleData1[, -c(3, 5:28)]
 data_df <- dplyr::filter(data_df, Group == "T2D", Treatment == "Unstimulated")
 cyt_bp2(data_df, pdf_title = NULL, scale = "log2")
-#> Warning: `cyt_bp2()` was deprecated in CytoProfile 0.2.3.
+#> Warning: `cyt_bp2()` was deprecated in CytoProfile 0.2.4.
 #> ℹ Please use `cyt_bp()` instead.
 
 

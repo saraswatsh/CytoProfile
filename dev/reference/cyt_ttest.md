@@ -61,7 +61,7 @@ cyt_ttest(
  verbose = TRUE,
  format_output = TRUE
 )
-#> Warning: `cyt_ttest()` was deprecated in CytoProfile 0.2.3.
+#> Warning: `cyt_ttest()` was deprecated in CytoProfile 0.2.4.
 #> ℹ Please use `cyt_univariate()` instead.
 #> $results
 #>   Outcome Categorical      Comparison

@@ -31,7 +31,7 @@ A data frame with 297 rows and 29 columns:
 
 - GM-CSF:
 
-  Observed concentration of GM-CSF cytokine-
+  Observed concentration of GM-CSF cytokine.
 
 - IFN-G:
 
@@ -43,7 +43,7 @@ A data frame with 297 rows and 29 columns:
 
 - CCL-20/MIP-3A:
 
-  Observed concentration of CCL.20-MIP.3A cytokine.
+  Observed concentration of CCL-20/MIP-3A cytokine.
 
 - IL-12/P70:
 
