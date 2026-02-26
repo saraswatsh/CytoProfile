@@ -24,13 +24,11 @@ grouping column.}
 
 \item{group_col}{Character.  Name of the grouping column.}
 
-\item{cond1}{Character strings specifying the levels of
-\code{group_col} to compare.  If either is \code{NULL}, all pairwise
-combinations of conditions are used.}
+\item{cond1}{Character string specifying the level of \code{group_col}
+for the first condition to compare.}
 
-\item{cond2}{Character strings specifying the levels of
-\code{group_col} to compare.  If either is \code{NULL}, all pairwise
-combinations of conditions are used.}
+\item{cond2}{Character strings specifying the second level of
+\code{group_col} to compare with \code{cond1}.}
 
 \item{fold_change_thresh}{Numeric.  Threshold for absolute fold
 change (in original scale).  Default is 2.}
@@ -70,7 +68,7 @@ changes (as the ratio of means) and associated p-values for each numeric variabl
 between two groups. The results are log2-transformed (for fold change) and
 -log10-transformed (for p-values) to generate a volcano plot. Additionally,
 there is a choice between t‑tests and Wilcoxon rank‑sum tests and adjusting
-p‑values for multiple comparisons
+p‑values for multiple comparisons.
 }
 \note{
 If \code{cond1} and \code{cond2} are not provided, the function

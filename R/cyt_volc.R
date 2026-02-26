@@ -3,12 +3,10 @@
 #' @param data A data frame containing numeric variables and a
 #'   grouping column.
 #' @param group_col Character.  Name of the grouping column.
-#' @param cond1 Character strings specifying the levels of
-#'   `group_col` to compare.  If either is `NULL`, all pairwise
-#'   combinations of conditions are used.
-#' @param cond2 Character strings specifying the levels of
-#'   `group_col` to compare.  If either is `NULL`, all pairwise
-#'   combinations of conditions are used.
+#' @param cond1 Character string specifying the level of `group_col`
+#'  for the first condition to compare.
+#' @param cond2 Character strings specifying the second level of
+#'   `group_col` to compare with `cond1`.
 #' @param fold_change_thresh Numeric.  Threshold for absolute fold
 #'   change (in original scale).  Default is 2.
 #' @param p_value_thresh Numeric.  Threshold for the p‑value (raw or
@@ -34,7 +32,7 @@
 #'   between two groups. The results are log2-transformed (for fold change) and
 #'   -log10-transformed (for p-values) to generate a volcano plot. Additionally,
 #'   there is a choice between t‑tests and Wilcoxon rank‑sum tests and adjusting
-#'   p‑values for multiple comparisons
+#'   p‑values for multiple comparisons.
 #'
 #' @note If \code{cond1} and \code{cond2} are not provided, the function
 #'   automatically generates all possible pairwise combinations of groups from

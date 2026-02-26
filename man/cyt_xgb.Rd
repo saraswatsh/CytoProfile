@@ -84,7 +84,7 @@ instance weight needed in a child.  Default is 1.}
 to display in the importance plot.  Default is 10.}
 
 \item{verbose}{Integer (0, 1 or 2) controlling the verbosity of
-\code{xgb.train}.  Default is 1.  Larger values print more information.}
+\code{xgb.train}.  Default is 0.  Larger values print more information.}
 
 \item{plot_roc}{Logical indicating whether to plot the ROC curve and
 compute the AUC for binary classification.  Default is \code{FALSE}.}

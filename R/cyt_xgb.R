@@ -44,7 +44,7 @@
 #' @param top_n_features Integer specifying the number of top features
 #'   to display in the importance plot.  Default is 10.
 #' @param verbose Integer (0, 1 or 2) controlling the verbosity of
-#'   `xgb.train`.  Default is 1.  Larger values print more information.
+#'   `xgb.train`.  Default is 0.  Larger values print more information.
 #' @param plot_roc Logical indicating whether to plot the ROC curve and
 #'   compute the AUC for binary classification.  Default is `FALSE`.
 #' @param print_results Logical.  If `TRUE`, prints the confusion
@@ -319,6 +319,7 @@ cyt_xgb <- function(
     }
   }
   # ROC curve for binary classification
+  roc_plot <- NULL
   if (plot_roc) {
     if (num_class == 2) {
       # probability of class "1" (label 1)
