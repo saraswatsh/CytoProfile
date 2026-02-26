@@ -5,13 +5,13 @@ changes (as the ratio of means) and associated p-values for each numeric variabl
 between two groups. The results are log2-transformed (for fold change) and
 -log10-transformed (for p-values) to generate a volcano plot. Additionally,
 there is a choice between t‑tests and Wilcoxon rank‑sum tests and adjusting
-p‑values for multiple comparisons"><meta property="og:description" content="This function subsets the numeric columns from the input data
+p‑values for multiple comparisons."><meta property="og:description" content="This function subsets the numeric columns from the input data
 and compares them based on a selected grouping column. It computes the fold
 changes (as the ratio of means) and associated p-values for each numeric variable
 between two groups. The results are log2-transformed (for fold change) and
 -log10-transformed (for p-values) to generate a volcano plot. Additionally,
 there is a choice between t‑tests and Wilcoxon rank‑sum tests and adjusting
-p‑values for multiple comparisons"><meta property="og:image" content="https://cytoprofile.cytokineprofile.org/logo.png"><meta name="robots" content="noindex"></head><body>
+p‑values for multiple comparisons."><meta property="og:image" content="https://cytoprofile.cytokineprofile.org/logo.png"><meta name="robots" content="noindex"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -62,7 +62,7 @@ changes (as the ratio of means) and associated p-values for each numeric variabl
 between two groups. The results are log2-transformed (for fold change) and
 -log10-transformed (for p-values) to generate a volcano plot. Additionally,
 there is a choice between t‑tests and Wilcoxon rank‑sum tests and adjusting
-p‑values for multiple comparisons</p>
+p‑values for multiple comparisons.</p>
     </div>
 
     <div class="section level2">
@@ -96,15 +96,13 @@ grouping column.</p></dd>
 
 
 <dt id="arg-cond-">cond1<a class="anchor" aria-label="anchor" href="#arg-cond-"></a></dt>
-<dd><p>Character strings specifying the levels of
-<code>group_col</code> to compare.  If either is <code>NULL</code>, all pairwise
-combinations of conditions are used.</p></dd>
+<dd><p>Character string specifying the level of <code>group_col</code>
+for the first condition to compare.</p></dd>
 
 
 <dt id="arg-cond-">cond2<a class="anchor" aria-label="anchor" href="#arg-cond-"></a></dt>
-<dd><p>Character strings specifying the levels of
-<code>group_col</code> to compare.  If either is <code>NULL</code>, all pairwise
-combinations of conditions are used.</p></dd>
+<dd><p>Character strings specifying the second level of
+<code>group_col</code> to compare with <code>cond1</code>.</p></dd>
 
 
 <dt id="arg-fold-change-thresh">fold_change_thresh<a class="anchor" aria-label="anchor" href="#arg-fold-change-thresh"></a></dt>

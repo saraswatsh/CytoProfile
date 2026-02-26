@@ -6,7 +6,7 @@ changes (as the ratio of means) and associated p-values for each numeric
 variable between two groups. The results are log2-transformed (for fold
 change) and -log10-transformed (for p-values) to generate a volcano
 plot. Additionally, there is a choice between t‑tests and Wilcoxon
-rank‑sum tests and adjusting p‑values for multiple comparisons
+rank‑sum tests and adjusting p‑values for multiple comparisons.
 
 ## Usage
 
@@ -38,13 +38,13 @@ cyt_volc(
 
 - cond1:
 
-  Character strings specifying the levels of `group_col` to compare. If
-  either is `NULL`, all pairwise combinations of conditions are used.
+  Character string specifying the level of `group_col` for the first
+  condition to compare.
 
 - cond2:
 
-  Character strings specifying the levels of `group_col` to compare. If
-  either is `NULL`, all pairwise combinations of conditions are used.
+  Character strings specifying the second level of `group_col` to
+  compare with `cond1`.
 
 - fold_change_thresh:
 

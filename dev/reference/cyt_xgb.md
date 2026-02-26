@@ -117,7 +117,7 @@ cyt_xgb(
 - verbose:
 
   Integer (0, 1 or 2) controlling the verbosity of `xgb.train`. Default
-  is 1. Larger values print more information.
+  is 0. Larger values print more information.
 
 - plot_roc:
 
