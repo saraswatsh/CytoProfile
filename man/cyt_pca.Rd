@@ -9,10 +9,11 @@ cyt_pca(
   group_col = NULL,
   group_col2 = NULL,
   colors = NULL,
-  pdf_title,
+  output_file,
   ellipse = FALSE,
   comp_num = 2,
-  scale = NULL,
+  scale = c("none", "log2", "log10", "zscore", "custom"),
+  custom_fn = NULL,
   pch_values = NULL,
   style = NULL
 )
@@ -33,9 +34,11 @@ be performed.}
 If set to NULL, a palette is generated using \code{rainbow()} based on the
 number of unique groups.}
 
-\item{pdf_title}{A string specifying the file name of the PDF where the
-PCA plots will be saved. If \code{NULL}, the plots are generated on the current
-graphics device. Default is \code{NULL}.}
+\item{output_file}{Optional string specifying the name of the file
+to be created.  When \code{NULL} (default), plots are drawn on
+the current graphics device. Ensure that the file
+extension matches the desired format (e.g., ".pdf" for PDF output
+or ".png" for PNG output or .tiff for TIFF output).}
 
 \item{ellipse}{Logical. If TRUE, a 95\% confidence ellipse is drawn on the
 PCA individuals plot. Default is FALSE.}
@@ -43,9 +46,15 @@ PCA individuals plot. Default is FALSE.}
 \item{comp_num}{Numeric. The number of principal components to compute and
 display. Default is 2.}
 
-\item{scale}{Character. If set to "log2", a log2 transformation is applied
-to the numeric cytokine measurements (excluding the grouping columns).
-Default is NULL.}
+\item{scale}{Character string specifying a transformation to apply to
+numeric variables before PCA.  Options are "none" (no
+transformation), "log2", "log10", "zscore", or "custom".  When
+"custom" is selected, a user supplied function must be given via
+\code{custom_fn}.  Defaults to "none".}
+
+\item{custom_fn}{A custom function used when \code{scale = "custom"}.
+Should take a numeric vector and return a numeric vector.  Ignored
+otherwise.}
 
 \item{pch_values}{A vector of plotting symbols (pch values) to be used in
 the PCA plots. Default is NULL.}
@@ -54,7 +63,9 @@ the PCA plots. Default is NULL.}
 a 3D scatter plot is generated using the plot3D package. Default is NULL.}
 }
 \value{
-A PDF file containing the PCA plots is generated and saved.
+A PDF file containing the PCA plots is generated and saved when
+\code{output_file} is provided. Otherwise, plots are displayed on the current
+graphics device.
 }
 \description{
 This function performs Principal Component Analysis (PCA) on cytokine data
@@ -69,8 +80,6 @@ explained variance,
 \item Loadings plots, and
 \item Biplots and correlation circle plots.
 }
-The function optionally applies a log2 transformation to the numeric
-data and handles analyses based treatment groups.
 }
 \examples{
 # Load sample data
@@ -79,7 +88,7 @@ data_df <- dplyr::filter(data, Group != "ND" & Treatment != "Unstimulated")
 # Run PCA analysis and save plots to a PDF file
 cyt_pca(
   data = data_df,
-  pdf_title = NULL,
+  output_file = NULL,
   colors = c("black", "red2"),
   scale = "log2",
   comp_num = 3,

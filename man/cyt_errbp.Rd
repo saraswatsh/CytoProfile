@@ -2,53 +2,85 @@
 % Please edit documentation in R/cyt_errbp.R
 \name{cyt_errbp}
 \alias{cyt_errbp}
-\title{Error-bar Plot.}
+\title{Error-bar Plot}
 \usage{
 cyt_errbp(
   data,
   group_col = NULL,
-  p_lab = FALSE,
-  es_lab = FALSE,
-  class_symbol = TRUE,
+  p_lab = TRUE,
+  es_lab = TRUE,
+  class_symbol = FALSE,
   x_lab = "",
   y_lab = "",
   title = "",
-  log2 = FALSE,
-  output_file = NULL
+  stat = c("mean", "median"),
+  error = c("se", "sd", "mad", "ci"),
+  scale = c("none", "log2", "log10", "zscore", "custom"),
+  custom_fn = NULL,
+  method = c("auto", "ttest", "wilcox"),
+  p_adjust_method = NULL,
+  output_file = NULL,
+  label_size = 4
 )
 }
 \arguments{
-\item{data}{A data frame containing the data for each group. It should
-include at least one numeric column for the measurements and a column
-specifying the group membership.}
+\item{data}{A data frame containing at least one numeric column
+and a grouping column.}
 
-\item{group_col}{Character. The name of the column in \code{data} that
-specifies the group membership.}
+\item{group_col}{Character string naming the column that defines
+groups.  This column will be coerced to a factor.}
 
-\item{p_lab}{Logical. If \code{TRUE}, p-values are displayed on the plot.
-Default is \code{FALSE}.}
+\item{p_lab}{Logical.  If \code{TRUE} (default) p‑value labels
+are displayed for group comparisons.}
 
-\item{es_lab}{Logical. If \code{TRUE}, effect sizes (SSMD) are displayed on
-the plot. Default is \code{FALSE}.}
+\item{es_lab}{Logical.  If \code{TRUE} (default) effect‑size
+labels are displayed.}
 
-\item{class_symbol}{Logical. If \code{TRUE}, significance and effect size are
-represented using symbolic notation (e.g., *, **, >, <<). If \code{FALSE},
-numeric values are used. Default is \code{TRUE}.}
+\item{class_symbol}{Logical.  If \code{TRUE}, p‑value and
+effect‑size labels are encoded using symbols (e.g., \code{*}, \verb{>>>}).
+If \code{FALSE}(default), numeric values are shown instead.}
 
-\item{x_lab}{Character. Label for the x-axis. If not provided, defaults
-to the name of the \code{group_col} or "Group" if \code{group_col} is \code{NULL}.}
+\item{x_lab}{Character string for the x-axis label.  If empty a
+default label is generated.}
 
-\item{y_lab}{Character. Label for the y-axis. If not provided, defaults
-to "Value".}
+\item{y_lab}{Character string for the y-axis label.  If empty a
+default label is generated.}
 
-\item{title}{Character. Title of the plot. If not provided, a default
-title is generated based on the measured variables.}
+\item{title}{Character string for the plot title.  If empty a
+default title is generated.}
 
-\item{log2}{Logical. If \code{TRUE}, a log2 transformation (with a +1 offset)
-is applied to all numeric columns before analysis. Default is \code{FALSE}.}
+\item{stat}{Character.  Central tendency statistic to use.  Choices
+are "mean" or "median"; default is "mean".  Added to
+support non‑mean summaries.}
 
-\item{output_file}{Character. The file path to save the plot as a PDF.
-If \code{NULL}, the plot is displayed but not saved. Default is \code{NULL}.}
+\item{error}{Character.  Error measure visualized around the
+statistic.  Options are "se" (standard error; default),
+"sd" (standard deviation), "mad" (median absolute
+deviation) or "ci" (approximate 95 \% confidence interval).}
+
+\item{scale}{Character controlling data transformation before
+analysis.  Accepts "none" (default), "log2", "log10",
+"zscore" or "custom".}
+
+\item{custom_fn}{A user‑supplied function applied to numeric
+columns when \code{scale = "custom"}.}
+
+\item{method}{Character controlling the statistical test used for
+pairwise comparisons.  Options are "auto" (default; choose
+between t‑test and Wilcoxon based on a normality test),
+"ttest" or "wilcox".}
+
+\item{p_adjust_method}{Character.  If non‑NULL, specifies the
+method used by \code{p.adjust()} to correct p‑values across all
+comparisons (e.g., "BH" for Benjamini–Hochberg).  If
+\code{NULL} (default) no adjustment is performed.}
+
+\item{output_file}{Optional file path.  If provided, the plot is
+saved using \code{ggsave()}; otherwise the plot is returned and
+automatically printed.}
+
+\item{label_size}{Numeric.  Font size for p‑value and effect‑size
+labels.  Default is 4.}
 }
 \value{
 An error-bar plot (a \code{ggplot} object) is produced and optionally
@@ -63,30 +95,17 @@ the data's spread (e.g., standard deviation, MAD, or standard error).
 The plot can also include p-value and effect size labels (based on SSMD),
 presented either as symbols or numeric values, to highlight significant
 differences and the magnitude of effects.
-}
-\details{
-The function performs the following steps:
-\enumerate{
-\item Optionally applies a log2 transformation to numeric data.
-\item Determines the baseline group (the first level of \code{group_col}).
-\item Calculates summary statistics (sample size, mean, standard
-deviation) for each group and each numeric variable.
-\item Performs t-tests to compare each group against the baseline
-for each numeric variable.
-\item Computes effect sizes (SSMD) for each group compared to the
-baseline.
-\item Generates a faceted error-bar plot, with one facet per
-numeric variable.
-\item Optionally adds p-value and effect size labels to the plot.
-\item Optionally saves the plot as a PDF.
-}
+When an output filename is provided the plot is saved
+to disk; otherwise the ggplot object is returned and drawn on the
+current graphics device.
 }
 \examples{
-data <- ExampleData1
-
-cyt_errbp(data[,c("Group", "CCL.20.MIP.3A", "IL.10")], group_col = "Group",
-p_lab = TRUE, es_lab = TRUE, class_symbol = TRUE, x_lab = "Cytokines",
-y_lab = "Concentrations in log2 scale", log2 = TRUE)
+# Basic usage with default settings
+df <- ExampleData1[, c("Group", "CCL-20/MIP-3A", "IL-10")]
+cyt_errbp(df, group_col = "Group")
+# Use mean and SD, log2 transform and show significance
+cyt_errbp(df, group_col = "Group", stat = "mean", error = "sd",
+          scale = "log2", class_symbol = TRUE, method = "ttest")
 }
 \author{
 Xiaohua Douglas Zhang and Shubh Saraswat

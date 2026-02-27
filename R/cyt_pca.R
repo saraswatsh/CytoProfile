@@ -11,16 +11,23 @@
 #' @param colors A vector of colors corresponding to the groups.
 #'  If set to NULL, a palette is generated using \code{rainbow()} based on the
 #'   number of unique groups.
-#' @param pdf_title A string specifying the file name of the PDF where the
-#'  PCA plots will be saved. If \code{NULL}, the plots are generated on the current
-#'  graphics device. Default is \code{NULL}.
+#' @param output_file Optional string specifying the name of the file
+#'   to be created.  When `NULL` (default), plots are drawn on
+#'   the current graphics device. Ensure that the file
+#'   extension matches the desired format (e.g., ".pdf" for PDF output
+#'   or ".png" for PNG output or .tiff for TIFF output).
 #' @param ellipse Logical. If TRUE, a 95% confidence ellipse is drawn on the
 #'  PCA individuals plot. Default is FALSE.
 #' @param comp_num Numeric. The number of principal components to compute and
 #'  display. Default is 2.
-#' @param scale Character. If set to "log2", a log2 transformation is applied
-#'  to the numeric cytokine measurements (excluding the grouping columns).
-#'  Default is NULL.
+#' @param scale Character string specifying a transformation to apply to
+#'   numeric variables before PCA.  Options are "none" (no
+#'   transformation), "log2", "log10", "zscore", or "custom".  When
+#'   "custom" is selected, a user supplied function must be given via
+#'   \code{custom_fn}.  Defaults to "none".
+#' @param custom_fn A custom function used when \code{scale = "custom"}.
+#'   Should take a numeric vector and return a numeric vector.  Ignored
+#'   otherwise.
 #' @param pch_values A vector of plotting symbols (pch values) to be used in
 #' the PCA plots. Default is NULL.
 #' @param style Character. If set to "3d" or "3D" and \code{comp_num} equals 3,
@@ -39,10 +46,10 @@
 #'   \item Loadings plots, and
 #'   \item Biplots and correlation circle plots.
 #' }
-#' The function optionally applies a log2 transformation to the numeric
-#' data and handles analyses based treatment groups.
 #'
-#' @return A PDF file containing the PCA plots is generated and saved.
+#' @return A PDF file containing the PCA plots is generated and saved when
+#' \code{output_file} is provided. Otherwise, plots are displayed on the current
+#' graphics device.
 #' @author Shubh Saraswat
 #'
 #' @export
@@ -57,7 +64,7 @@
 #' # Run PCA analysis and save plots to a PDF file
 #' cyt_pca(
 #'   data = data_df,
-#'   pdf_title = NULL,
+#'   output_file = NULL,
 #'   colors = c("black", "red2"),
 #'   scale = "log2",
 #'   comp_num = 3,
@@ -74,13 +81,15 @@ cyt_pca <- function(
   group_col = NULL,
   group_col2 = NULL,
   colors = NULL,
-  pdf_title,
+  output_file,
   ellipse = FALSE,
   comp_num = 2,
-  scale = NULL,
+  scale = c("none", "log2", "log10", "zscore", "custom"),
+  custom_fn = NULL,
   pch_values = NULL,
   style = NULL
 ) {
+  names(data) <- make.names(names(data), unique = TRUE)
   # If one factor is missing, use the provided column for both grouping
   # and treatment.
   if (!is.null(group_col) && is.null(group_col2)) {
@@ -95,24 +104,19 @@ cyt_pca <- function(
   if (is.null(group_col) && is.null(group_col2)) {
     stop("At least one grouping column must be provided.")
   }
-
-  # Optionally apply log2 transformation only to numeric columns
-  if (!is.null(scale) && scale == "log2") {
-    # Identify numeric columns not corresponding to the factor columns
-    numeric_idx <- sapply(data, is.numeric)
-    # Exclude the group and treatment columns (if present, even if numeric)
-    numeric_idx[names(data) %in% unique(c(group_col, group_col2))] <- FALSE
-    if (sum(numeric_idx) == 0) {
-      warning("No numeric columns available for log2 transformation.")
-    }
-    data <- data.frame(
-      data[, unique(c(group_col, group_col2)), drop = FALSE],
-      log2(data[, numeric_idx, drop = FALSE])
+  # Identify numeric columns to transform (exclude grouping columns)
+  scale <- match.arg(scale)
+  id_cols <- if (is.null(group_col2)) group_col else c(group_col, group_col2)
+  numeric_cols <- setdiff(names(data)[sapply(data, is.numeric)], id_cols)
+  if (length(numeric_cols) > 0) {
+    data <- apply_scale(
+      data,
+      columns = numeric_cols,
+      scale = scale,
+      custom_fn = custom_fn
     )
-    message("Results based on log2 transformation:")
-  } else {
-    message("Results based on no transformation:")
   }
+
   # Extract grouping variable(s)
   if (group_col == group_col2) {
     group_vec <- data[[group_col]]
@@ -138,10 +142,6 @@ cyt_pca <- function(
   if (is.null(colors)) {
     num_groups <- length(unique(data[[group_col]]))
     colors <- rainbow(num_groups)
-  }
-
-  if (!is.null(pdf_title)) {
-    pdf(file = pdf_title, width = 8.5, height = 8)
   }
 
   # Case 1: Overall PCA when both factors are the same.
@@ -185,6 +185,7 @@ cyt_pca <- function(
       plot_args$ellipse <- TRUE
     }
     overall_indiv_plot <- do.call(mixOmics::plotIndiv, plot_args)
+    overall_3D <- NULL
     # 3D Plot if requested and exactly three components are used
     if (!is.null(style) && comp_num == 3 && (tolower(style) == "3d")) {
       cytokine_scores <- cytokine_pca$variates$X
@@ -223,11 +224,14 @@ cyt_pca <- function(
     )
 
     scree_plot <- ggplot2::ggplot(scree_data, aes(x = Component)) +
-      ggplot2::geom_line(aes(y = Variance, color = "Individual"), size = 1) +
+      ggplot2::geom_line(
+        aes(y = Variance, color = "Individual"),
+        linewidth = 1
+      ) +
       ggplot2::geom_point(aes(y = Variance, color = "Individual"), size = 2) +
       ggplot2::geom_line(
         aes(y = Cumulative, color = "Cumulative"),
-        size = 1,
+        linewidth = 1,
         linetype = "dashed"
       ) +
       ggplot2::geom_point(aes(y = Cumulative, color = "Cumulative"), size = 2) +
@@ -336,15 +340,38 @@ cyt_pca <- function(
     result_list <- list(
       overall_indiv_plot = overall_indiv_plot$graph,
       loadings = loadings_list,
+      plot_3d = if (!is.null(overall_3D)) overall_3D else NULL,
       biplot = biplot_obj,
       correlation_circle = corr_plot,
       scree_plot = scree_plot
     )
-    return(invisible(result_list))
+    if (!is.null(output_file)) {
+      plot_list <- Filter(
+        Negate(is.null),
+        c(
+          list(overall_indiv_plot$graph),
+          list(scree_plot),
+          unname(loadings_list), # list of closures
+          list(function() print(biplot_obj)),
+          list(corr_plot), # closure
+          if (!is.null(overall_3D)) list(overall_3D)
+        )
+      )
+      cyt_export(
+        plot_list,
+        filename = tools::file_path_sans_ext(output_file),
+        format = tolower(tools::file_ext(output_file)),
+        width = 8.5,
+        height = 8
+      )
+    }
+    invisible(result_list)
   } else {
     # Case 2: When grouping and treatment columns differ
     levels_vec <- unique(data[[group_col2]])
     indiv_plots <- list()
+    all_plots <- list()
+    overall_3D <- NULL
     for (i in seq_along(levels_vec)) {
       current_level <- levels_vec[i]
       title_sub <- current_level
@@ -434,11 +461,14 @@ cyt_pca <- function(
       )
 
       scree_plot <- ggplot2::ggplot(scree_data, aes(x = Component)) +
-        ggplot2::geom_line(aes(y = Variance, color = "Individual"), size = 1) +
+        ggplot2::geom_line(
+          aes(y = Variance, color = "Individual"),
+          linewidth = 1
+        ) +
         ggplot2::geom_point(aes(y = Variance, color = "Individual"), size = 2) +
         ggplot2::geom_line(
           aes(y = Cumulative, color = "Cumulative"),
-          size = 1,
+          linewidth = 1,
           linetype = "dashed"
         ) +
         ggplot2::geom_point(
@@ -545,18 +575,40 @@ cyt_pca <- function(
         )
       }
       corr_plot()
+      # After overall_indiv_plot is created:
+      all_plots <- c(all_plots, list(overall_indiv_plot$graph))
+      # After scree_plot:
+      all_plots <- c(all_plots, list(scree_plot))
+      # After loadings_list is created:
+      all_plots <- c(all_plots, unname(loadings_list))
+      # After biplot_obj:
+      all_plots <- c(all_plots, list(function() print(biplot_obj)))
+      # After corr_plot:
+      all_plots <- c(all_plots, list(corr_plot))
+      # After overall_3D (inside the 3D if block):
+      if (!is.null(overall_3D)) {
+        all_plots <- c(all_plots, list(overall_3D))
+      }
     }
     result_list <- list(
       overall_indiv_plot = overall_indiv_plot,
       all_indiv_plots = indiv_plots,
       loadings = loadings_list,
+      plot_3d = if (!is.null(overall_3D)) overall_3D else NULL,
       biplot = biplot_obj,
       correlation_circle = corr_plot,
       scree_plot = scree_plot
     )
-    return(invisible(result_list))
-  }
-  if (!is.null(pdf_title)) {
-    if (dev.cur() > 1) dev.off()
+    # AFTER the for loop, before return():
+    if (!is.null(output_file)) {
+      cyt_export(
+        Filter(Negate(is.null), all_plots),
+        filename = tools::file_path_sans_ext(output_file),
+        format = tolower(tools::file_ext(output_file)),
+        width = 8.5,
+        height = 8
+      )
+    }
+    invisible(result_list)
   }
 }

@@ -17,19 +17,30 @@
 #' @param colors A vector of splsda_colors for the groups or treatments. If
 #'   \code{NULL}, a random palette (using \code{rainbow}) is generated based on
 #'   the number of groups.
-#' @param pdf_title A string specifying the file name for saving the PDF output.
-#'                If set to NULL, the function runs in IDE plots pane.
+#' @param output_file Optional string specifying the name of the file
+#'   to be created.  When `NULL` (default), plots are drawn on
+#'   the current graphics device. Ensure that the file
+#'   extension matches the desired format (e.g., ".pdf" for PDF output
+#'   or ".png" for PNG output or .tiff for TIFF output).
 #' @param ellipse Logical. Whether to draw a 95\% confidence ellipse on the figures.
 #'   Default is \code{FALSE}.
 #' @param bg Logical. Whether to draw the prediction background in the figures.
 #'   Default is \code{FALSE}.
 #' @param var_num Numeric. The number of variables to be used in the PLS-DA model.
-#' @param scale Character. Option for data transformation; if set to \code{"log2"}, a log2
-#'   transformation is applied to the continuous variables. Default is \code{NULL}.
 #' @param comp_num Numeric. The number of components to calculate in the sPLS-DA model. Default is 2.
 #' @param cim Logical. Whether to compute and plot the Clustered Image Map (CIM) heatmap. Default is \code{FALSE}.
 #' @param roc Logical. Whether to compute and plot the ROC curve for the model.
 #'   Default is \code{FALSE}.
+#' @param tune Logical.  If `TRUE`, performs tuning of `ncomp` and
+#'   `keepX` via cross‑validation.  Default is `FALSE`.
+#' @param scale Character string specifying a transformation to apply to the
+#'   numeric predictor columns prior to model fitting.  Options are
+#'   "none", "log2", "log10", "zscore", or "custom".  When
+#'   "custom" is selected a user defined function must be supplied via
+#'   `custom_fn`.  Defaults to "none".
+#' @param custom_fn A custom transformation function used when
+#'   `scale = "custom"`.  Ignored otherwise.  It should take a numeric
+#'   vector and return a numeric vector of the same length.
 #' @param verbose A logical value indicating whether to print additional
 #'   informational output to the console. When \code{TRUE}, the function will
 #'   display progress messages, and intermediate results when
@@ -44,7 +55,7 @@
 #' MINT: A multivariate integrative approach to identify a reproducible
 #' biomarker signature across multiple experiments and platforms. BMC
 #' Bioinformatics 18:128.
-#' 
+#'
 #' @examples
 #' # Loading ExampleData5 dataset with batch column
 #' data_df <- ExampleData5[,-c(2,4)]
@@ -65,16 +76,19 @@ cyt_mint_splsda <- function(
   batch_col,
   group_col2 = NULL,
   colors = NULL,
-  pdf_title = NULL,
+  output_file = NULL,
   ellipse = TRUE,
   bg = FALSE,
   var_num = 20,
   comp_num = 2,
-  scale = NULL,
+  scale = c("none", "log2", "log10", "zscore", "custom"),
+  custom_fn = NULL,
+  tune = FALSE,
   cim = FALSE,
   roc = FALSE,
   verbose = FALSE
 ) {
+  names(data) <- make.names(names(data), unique = TRUE)
   # If one factor is missing, use the provided column for
   # both grouping and treatment.
   if (!is.null(group_col) && is.null(group_col2)) {
@@ -95,17 +109,6 @@ cyt_mint_splsda <- function(
   id_cols <- c(group_col, group_col2, batch_col)
   id_cols <- id_cols[!is.na(id_cols) & id_cols %in% names(data)]
 
-  # Optionally apply log2 transformation
-  if (!is.null(scale) && scale == "log2") {
-    data <- data.frame(
-      data[, id_cols, drop = FALSE],
-      log2(data[, !(names(data) %in% id_cols), drop = FALSE])
-    )
-    if (verbose) message("Applied log2 transformation.\n")
-  } else if (is.null(scale) && verbose) {
-    if (verbose) message("No data transformation applied.\n")
-  }
-
   if (!is.null(batch_col)) {
     if (!(batch_col %in% names(data))) {
       stop(sprintf("Batch column '%s' not found in your data.", batch_col))
@@ -120,12 +123,16 @@ cyt_mint_splsda <- function(
     num_groups <- length(unique(data[[group_col]]))
     colors <- rainbow(num_groups)
   }
-
-  if (!is.null(pdf_title)) {
-    grDevices::pdf(file = pdf_title, width = 8.5, height = 8)
-    on.exit(grDevices::dev.off(), add = TRUE)
+  scale <- match.arg(scale)
+  num_cols <- setdiff(names(data)[sapply(data, is.numeric)], id_cols)
+  if (length(num_cols) > 0) {
+    data <- apply_scale(
+      data,
+      columns = num_cols,
+      scale = scale,
+      custom_fn = custom_fn
+    )
   }
-
   # Perform MINT sPLS-DA
   # Case 1: If group_col == group_col2, perform overall analysis
 
@@ -140,25 +147,72 @@ cyt_mint_splsda <- function(
     ]
     X <- X[, sapply(X, is.numeric)]
 
+    # Tuning sPLS-DA
+    outcome <- factor(data[[group_col]])
+    if (nlevels(outcome) < 2) {
+      stop("Outcome must have at least two levels.")
+    }
+    predictors <- as.matrix(X)
+
+    tune_res <- NULL
+    if (tune) {
+      tune_res <- mixOmics::tune.mint.splsda(
+        X = predictors,
+        Y = outcome,
+        ncomp = comp_num,
+        test.keepX = c(5, 10, 15, 20, 25),
+        dist = "max.dist",
+        study = study,
+        progressBar = FALSE
+      )
+      # Plot tuning results with proper title and labels
+      p <- plot(tune_res) +
+        ggplot2::ggtitle(paste(
+          "MINT sPLS-DA Tuning Results:",
+          overall_analysis
+        )) +
+        ggplot2::xlab("Number of Variables") +
+        ggplot2::ylab("Balanced Error Rate (BER)")
+      print(p)
+      ncomp_final <- tune_res$choice.ncomp$ncomp
+      keepX_final <- tune_res$choice.keepX[1:ncomp_final]
+    }
+
     # --- 2. Run MINT sPLS-DA Model ---
-    final_model <- mixOmics::mint.splsda(
-      X = X,
-      Y = Y,
-      study = study,
-      ncomp = comp_num,
-      keepX = rep(var_num, comp_num),
-      scale = TRUE
-    )
+    if (tune) {
+      final_model <- mixOmics::mint.splsda(
+        X = X,
+        Y = Y,
+        study = study,
+        ncomp = ncomp_final,
+        keepX = keepX_final,
+        scale = TRUE
+      )
+    } else {
+      final_model <- mixOmics::mint.splsda(
+        X = X,
+        Y = Y,
+        study = study,
+        ncomp = comp_num,
+        keepX = rep(var_num, comp_num),
+        scale = TRUE
+      )
+    }
 
     # --- 3. Calculate Prediction Accuracy ---
-    mint_predict <- stats::predict(
+    ncomp_used <- if (tune) ncomp_final else comp_num
+    comp_plot <- if (ncomp_used >= 2) c(1, 2) else c(1, 1)
+    comp_pred <- min(2, ncomp_used)
+
+    mint_predict <- predict(
       final_model,
       X,
       study.test = study,
-      dist = 'max.dist'
+      dist = "max.dist"
     )
+
     # Get predictions from the final component for the best accuracy
-    final_predictions <- mint_predict$class$max.dist[, comp_num]
+    final_predictions <- mint_predict$class$max.dist[, ncomp_used]
     accuracy <- sum(Y == final_predictions) / length(Y)
     acc_percent <- signif(accuracy * 100, 2)
 
@@ -172,8 +226,11 @@ cyt_mint_splsda <- function(
       try(
         mixOmics::background.predict(
           final_model,
-          comp.predicted = 2,
-          dist = "max.dist"
+          comp.predicted = comp_pred,
+          dist = "max.dist",
+          xlim = c(-15, 15),
+          ylim = c(-15, 15),
+          resolution = 200
         ),
         silent = TRUE
       )
@@ -186,6 +243,7 @@ cyt_mint_splsda <- function(
       study = "global",
       group = Y,
       col = colors,
+      comp = comp_plot,
       legend = TRUE,
       legend.title = group_col,
       subtitle = paste0(title_label, " - Accuracy: ", acc_percent, "%")
@@ -200,7 +258,7 @@ cyt_mint_splsda <- function(
 
     # -- Global loadings plots --
     global_loadings_plots <- setNames(
-      lapply(seq_len(comp_num), function(comp) {
+      lapply(seq_len(ncomp_used), function(comp) {
         force(comp)
         function() {
           mixOmics::plotLoadings(
@@ -209,8 +267,8 @@ cyt_mint_splsda <- function(
             study = "global",
             contrib = "max",
             method = "mean",
-            size.name = 1,
-            size.legend = 1,
+            size.name = 0.7,
+            size.legend = 0.8,
             size.title = 1,
             legend.color = colors,
             legend.title = group_col,
@@ -218,7 +276,7 @@ cyt_mint_splsda <- function(
           )
         }
       }),
-      nm = paste0("Comp", seq_len(comp_num))
+      nm = paste0("Comp", seq_len(ncomp_used))
     )
     invisible(lapply(global_loadings_plots, function(plot_fn) plot_fn()))
 
@@ -227,6 +285,7 @@ cyt_mint_splsda <- function(
       study = "all.partial",
       group = Y,
       col = colors,
+      comp = comp_plot,
       legend = TRUE,
       legend.title = group_col,
       title = paste("Partial Plots:", overall_analysis)
@@ -239,23 +298,39 @@ cyt_mint_splsda <- function(
       plot_args2
     )
 
+    study_levels <- as.character(unique(study))
+
     partial_loadings_plots <- setNames(
-      lapply(seq_len(comp_num), function(comp) {
-        force(comp)
-        function() {
-          mixOmics::plotLoadings(
-            final_model,
-            comp = comp,
-            study = "all.partial",
-            contrib = "max",
-            method = "mean",
-            legend.color = colors,
-            legend.title = group_col,
-            title = paste("Partial Loadings - Comp", comp)
-          )
-        }
-      }),
-      nm = paste0("Comp", seq_len(comp_num))
+      unlist(
+        lapply(seq_len(ncomp_used), function(comp) {
+          lapply(study_levels, function(s) {
+            force(comp)
+            force(s)
+            function() {
+              mixOmics::plotLoadings(
+                final_model,
+                comp = comp,
+                study = s,
+                contrib = "max",
+                method = "mean",
+                size.name = 0.7,
+                size.legend = 0.8,
+                size.title = 1,
+                legend.color = colors,
+                legend.title = group_col,
+                title = paste("Partial Loadings - Comp", comp, "| Study:", s)
+              )
+            }
+          })
+        }),
+        recursive = FALSE
+      ),
+      nm = as.vector(outer(
+        paste0("Comp", seq_len(ncomp_used)),
+        study_levels,
+        paste,
+        sep = "_"
+      ))
     )
     invisible(lapply(partial_loadings_plots, function(plot_fn) plot_fn()))
 
@@ -263,7 +338,7 @@ cyt_mint_splsda <- function(
     cim_plot <- NULL
     if (cim) {
       cim_plot <- function() {
-        for (comp in seq_len(comp_num)) {
+        for (comp in seq_len(ncomp_used)) {
           mixOmics::cim(
             final_model,
             comp = comp,
@@ -283,20 +358,26 @@ cyt_mint_splsda <- function(
 
     # -- Correlation circle --
     correlation_circle_plot <- NULL
-    correlation_circle_plot <- function() {
-      mixOmics::plotVar(
-        final_model,
-        comp = c(1, 2),
-        cex = 4,
-        col = "black",
-        overlap = TRUE,
-        style = "ggplot2",
-        var.names = TRUE,
-        legend = TRUE,
-        title = paste("Correlation Circle:", overall_analysis)
+    if (ncomp_used >= 2) {
+      correlation_circle_plot <- function() {
+        mixOmics::plotVar(
+          final_model,
+          comp = c(1, 2),
+          cex = 4,
+          col = "black",
+          overlap = TRUE,
+          style = "ggplot2",
+          var.names = TRUE,
+          legend = TRUE,
+          title = paste("Correlation Circle:", overall_analysis)
+        )
+      }
+      correlation_circle_plot()
+    } else if (verbose) {
+      message(
+        "Tuning selected ncomp = 1; skipping correlation circle (requires 2 components)."
       )
     }
-    correlation_circle_plot()
 
     # -- ROC curve, if requested --
     roc_plot <- NULL
@@ -312,6 +393,7 @@ cyt_mint_splsda <- function(
       )
     }
     results_list <- list(
+      tune_res = tune_res,
       global_indiv_plot = global_indiv_plot$graph,
       global_loadings_plots = global_loadings_plots,
       partial_indiv_plot = partial_indiv_plot$graph,
@@ -320,15 +402,39 @@ cyt_mint_splsda <- function(
       correlation_circle_plot = correlation_circle_plot,
       roc_plot = roc_plot
     )
-    return(invisible(results_list))
+    if (!is.null(output_file)) {
+      plot_list <- Filter(
+        Negate(is.null),
+        c(
+          if (!is.null(tune_res)) list(function() print(plot(tune_res))),
+          list(global_indiv_plot$graph),
+          unname(global_loadings_plots), # list of closures
+          list(partial_indiv_plot$graph),
+          unname(partial_loadings_plots), # list of closures
+          if (!is.null(cim_plot)) list(cim_plot),
+          if (!is.null(correlation_circle_plot)) list(correlation_circle_plot),
+          if (!is.null(roc_plot)) list(function() print(roc_plot))
+        )
+      )
+      cyt_export(
+        plot_list,
+        filename = tools::file_path_sans_ext(output_file),
+        format = tolower(tools::file_ext(output_file)),
+        width = 8.5,
+        height = 8
+      )
+    }
+    invisible(results_list)
   } else {
     # Case 2: If group_col != group_col2, perform stratified analysis
     levels_vec <- unique(data[[group_col2]])
     indiv_plots <- list()
     results_list <- list()
+    all_plots <- list()
     for (lvl in levels_vec) {
       # 1) subset to only those rows where group_col2 == lvl
       df_sub <- data[data[[group_col2]] == lvl, , drop = FALSE]
+      overall_analysis <- as.character(lvl)
 
       # 2) build Y, study, and X *from the subset*
       Y <- df_sub[[group_col]]
@@ -340,25 +446,70 @@ cyt_mint_splsda <- function(
       # only the numeric predictors:
       X <- X[, sapply(X, is.numeric), drop = FALSE]
 
+      # Tuning sPLS-DA
+      outcome <- factor(df_sub[[group_col]])
+      if (nlevels(outcome) < 2) {
+        stop("Outcome must have at least two levels.")
+      }
+      predictors <- as.matrix(X)
+      tune_res <- NULL
+      if (tune) {
+        tune_res <- mixOmics::tune.mint.splsda(
+          X = predictors,
+          Y = outcome,
+          ncomp = comp_num,
+          test.keepX = c(5, 10, 15, 20, 25),
+          dist = "max.dist",
+          nrepeat = 100,
+          study = study,
+          progressBar = FALSE
+        )
+        # Plot tuning results with proper title and labels
+        p <- plot(tune_res) +
+          ggplot2::ggtitle(paste(
+            "MINT sPLS-DA Tuning Results:",
+            overall_analysis
+          )) +
+          ggplot2::xlab("Number of Variables") +
+          ggplot2::ylab("Balanced Error Rate (BER)")
+        print(p)
+        ncomp_final <- tune_res$choice.ncomp$ncomp
+        keepX_final <- tune_res$choice.keepX[1:ncomp_final]
+      }
       # --- 2. Run MINT sPLS-DA Model ---
-      final_model <- mixOmics::mint.splsda(
-        X = X,
-        Y = Y,
-        study = study,
-        ncomp = comp_num,
-        keepX = rep(var_num, comp_num),
-        scale = TRUE
-      )
-
+      if (tune) {
+        final_model <- mixOmics::mint.splsda(
+          X = X,
+          Y = Y,
+          study = study,
+          ncomp = ncomp_final,
+          keepX = keepX_final,
+          scale = TRUE
+        )
+      } else {
+        final_model <- mixOmics::mint.splsda(
+          X = X,
+          Y = Y,
+          study = study,
+          ncomp = comp_num,
+          keepX = rep(var_num, comp_num),
+          scale = TRUE
+        )
+      }
       # --- 3. Calculate Prediction Accuracy ---
-      mint_predict <- stats::predict(
+      ncomp_used <- if (tune) ncomp_final else comp_num
+      comp_plot <- if (ncomp_used >= 2) c(1, 2) else c(1, 1)
+      comp_pred <- min(2, ncomp_used)
+
+      mint_predict <- predict(
         final_model,
         X,
         study.test = study,
-        dist = 'max.dist'
+        dist = "max.dist"
       )
+
       # Get predictions from the final component for the best accuracy
-      final_predictions <- mint_predict$class$max.dist[, comp_num]
+      final_predictions <- mint_predict$class$max.dist[, ncomp_used]
       accuracy <- sum(Y == final_predictions) / length(Y)
       acc_percent <- signif(accuracy * 100, 2)
 
@@ -372,8 +523,11 @@ cyt_mint_splsda <- function(
         try(
           mixOmics::background.predict(
             final_model,
-            comp.predicted = 2,
-            dist = "max.dist"
+            comp.predicted = comp_pred,
+            dist = "max.dist",
+            xlim = c(-15, 15),
+            ylim = c(-15, 15),
+            resolution = 200
           ),
           silent = TRUE
         )
@@ -385,6 +539,7 @@ cyt_mint_splsda <- function(
         final_model,
         study = "global",
         group = Y,
+        comp = comp_plot,
         col = colors,
         legend = TRUE,
         legend.title = group_col,
@@ -401,7 +556,7 @@ cyt_mint_splsda <- function(
 
       # -- Global loadings plots --
       global_loadings_plots <- setNames(
-        lapply(seq_len(comp_num), function(comp) {
+        lapply(seq_len(ncomp_used), function(comp) {
           force(comp)
           function() {
             mixOmics::plotLoadings(
@@ -410,8 +565,8 @@ cyt_mint_splsda <- function(
               study = "global",
               contrib = "max",
               method = "mean",
-              size.name = 1,
-              size.legend = 1,
+              size.name = 0.7,
+              size.legend = 0.8,
               size.title = 1,
               legend.color = colors,
               legend.title = group_col,
@@ -419,7 +574,7 @@ cyt_mint_splsda <- function(
             )
           }
         }),
-        nm = paste0("Comp", seq_len(comp_num))
+        nm = paste0("Comp", seq_len(ncomp_used))
       )
       invisible(lapply(global_loadings_plots, function(plot_fn) plot_fn()))
 
@@ -427,6 +582,7 @@ cyt_mint_splsda <- function(
         final_model,
         study = "all.partial",
         group = Y,
+        comp = comp_plot,
         col = colors,
         legend = TRUE,
         legend.title = group_col,
@@ -440,23 +596,39 @@ cyt_mint_splsda <- function(
         plot_args2
       )
 
+      study_levels <- as.character(unique(df_sub[[batch_col]]))
+
       partial_loadings_plots <- setNames(
-        lapply(seq_len(comp_num), function(comp) {
-          force(comp)
-          function() {
-            mixOmics::plotLoadings(
-              final_model,
-              comp = comp,
-              study = "all.partial",
-              contrib = "max",
-              method = "mean",
-              legend.color = colors,
-              legend.title = group_col,
-              title = paste("Partial Loadings - Comp", comp)
-            )
-          }
-        }),
-        nm = paste0("Comp", seq_len(comp_num))
+        unlist(
+          lapply(seq_len(ncomp_used), function(comp) {
+            lapply(study_levels, function(s) {
+              force(comp)
+              force(s)
+              function() {
+                mixOmics::plotLoadings(
+                  final_model,
+                  comp = comp,
+                  study = s,
+                  contrib = "max",
+                  method = "mean",
+                  size.name = 0.7,
+                  size.legend = 0.8,
+                  size.title = 1,
+                  legend.color = colors,
+                  legend.title = group_col,
+                  title = paste("Partial Loadings - Comp", comp, "| Study:", s)
+                )
+              }
+            })
+          }),
+          recursive = FALSE
+        ),
+        nm = as.vector(outer(
+          paste0("Comp", seq_len(ncomp_used)),
+          study_levels,
+          paste,
+          sep = "_"
+        ))
       )
       invisible(lapply(partial_loadings_plots, function(plot_fn) plot_fn()))
 
@@ -464,7 +636,7 @@ cyt_mint_splsda <- function(
       cim_plot <- NULL
       if (cim) {
         cim_plot <- function() {
-          for (comp in seq_len(comp_num)) {
+          for (comp in seq_len(ncomp_used)) {
             mixOmics::cim(
               final_model,
               comp = comp,
@@ -484,21 +656,26 @@ cyt_mint_splsda <- function(
 
       # -- Correlation circle --
       correlation_circle_plot <- NULL
-      correlation_circle_plot <- function() {
-        mixOmics::plotVar(
-          final_model,
-          comp = c(1, 2),
-          cex = 4,
-          col = "black",
-          overlap = TRUE,
-          style = "ggplot2",
-          var.names = TRUE,
-          legend = TRUE,
-          title = paste("Correlation Circle:", lvl)
+      if (ncomp_used >= 2) {
+        correlation_circle_plot <- function() {
+          mixOmics::plotVar(
+            final_model,
+            comp = c(1, 2),
+            cex = 4,
+            col = "black",
+            overlap = TRUE,
+            style = "ggplot2",
+            var.names = TRUE,
+            legend = TRUE,
+            title = paste("Correlation Circle:", overall_analysis)
+          )
+        }
+        correlation_circle_plot()
+      } else if (verbose) {
+        message(
+          "Tuning selected ncomp = 1; skipping correlation circle (requires 2 components)."
         )
       }
-      correlation_circle_plot()
-
       # -- ROC curve, if requested --
       roc_plot <- NULL
       if (roc) {
@@ -513,6 +690,7 @@ cyt_mint_splsda <- function(
         )
       }
       results_list[[lvl]] <- list(
+        tune_res = tune_res,
         global_indiv_plot = global_indiv_plot$graph,
         all_indiv_plots = indiv_plots,
         global_loadings_plots = global_loadings_plots,
@@ -522,7 +700,29 @@ cyt_mint_splsda <- function(
         correlation_circle_plot = correlation_circle_plot,
         roc_plot = roc_plot
       )
+      all_plots <- c(all_plots, list(global_indiv_plot$graph))
+      all_plots <- c(all_plots, unname(global_loadings_plots))
+      all_plots <- c(all_plots, list(partial_indiv_plot$graph))
+      all_plots <- c(all_plots, unname(partial_loadings_plots))
+      if (!is.null(cim_plot)) {
+        all_plots <- c(all_plots, list(cim_plot))
+      }
+      if (!is.null(correlation_circle_plot)) {
+        all_plots <- c(all_plots, list(correlation_circle_plot))
+      }
+      if (!is.null(roc_plot)) {
+        all_plots <- c(all_plots, list(function() print(roc_plot)))
+      }
     }
-    return(invisible(results_list))
+    if (!is.null(output_file)) {
+      cyt_export(
+        Filter(Negate(is.null), all_plots),
+        filename = tools::file_path_sans_ext(output_file),
+        format = tolower(tools::file_ext(output_file)),
+        width = 8.5,
+        height = 8
+      )
+    }
+    invisible(results_list)
   }
 }

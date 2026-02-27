@@ -1,4 +1,4 @@
-#' ANOVA Analysis on Continuous Variables.
+#' ANOVA Analysis on Continuous Variables. `r lifecycle::badge("deprecated")`
 #'
 #' This function performs an analysis of variance (ANOVA) for each continuous
 #' variable against every categorical predictor in the input data. Character
@@ -25,7 +25,14 @@
 #' data("ExampleData1")
 #' cyt_anova(ExampleData1[, c(1:2, 5:6)], format_output = TRUE)
 #'
+
 cyt_anova <- function(data, format_output = FALSE) {
+  lifecycle::deprecate_warn(
+    "0.2.4", # version when deprecation begins
+    "CytoProfile::cyt_anova()",
+    "CytoProfile::cyt_univariate_multi()"
+  )
+  names(data) <- make.names(names(data), unique = TRUE)
   # Convert input data to a data frame
   x1_df <- as.data.frame(data)
 
@@ -72,7 +79,7 @@ cyt_anova <- function(data, format_output = FALSE) {
 
   # Return tidy data frame if requested
   if (!format_output) {
-    return(tukey_results)
+    tukey_results
   } else {
     out_df <- data.frame(
       Outcome = character(),
@@ -101,6 +108,6 @@ cyt_anova <- function(data, format_output = FALSE) {
         )
       }
     }
-    return(out_df)
+    out_df
   }
 }

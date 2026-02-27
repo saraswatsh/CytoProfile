@@ -13,14 +13,17 @@ cyt_splsda(
   batch_col = NULL,
   ind_names = FALSE,
   colors = NULL,
-  pdf_title = NULL,
+  output_file = NULL,
   ellipse = FALSE,
   bg = FALSE,
   conf_mat = FALSE,
   var_num,
   cv_opt = NULL,
   fold_num = 5,
-  scale = NULL,
+  scale = c("none", "log2", "log10", "zscore", "custom"),
+  custom_fn = NULL,
+  tune = FALSE,
+  tune_folds = 5,
   comp_num = 2,
   pch_values,
   style = NULL,
@@ -55,8 +58,11 @@ If 'pch' is set this will overwrite the names as shapes. See ?mixOmics::plotIndi
 \code{NULL}, a random palette (using \code{rainbow}) is generated based on
 the number of groups.}
 
-\item{pdf_title}{A string specifying the file name for saving the PDF output.
-Default is \code{NULL} which generates figures in the current graphics device.}
+\item{output_file}{Optional string specifying the name of the file
+to be created.  When \code{NULL} (default), plots are drawn on
+the current graphics device. Ensure that the file
+extension matches the desired format (e.g., ".pdf" for PDF output
+or ".png" for PNG output or .tiff for TIFF output).}
 
 \item{ellipse}{Logical. Whether to draw a 95\\% confidence ellipse on the
 figures. Default is \code{FALSE}.}
@@ -75,9 +81,21 @@ classifications. Default is \code{FALSE}.}
 \item{fold_num}{Numeric. The number of folds to use if \code{cv_opt} is
 "Mfold". Default is 5.}
 
-\item{scale}{Character. Option for data transformation; if set to
-\code{"log2"}, a log2 transformation is applied to the continuous
-variables. Default is \code{NULL}.}
+\item{scale}{Character string specifying a transformation to apply to the
+numeric predictor columns prior to model fitting.  Options are
+"none", "log2", "log10", "zscore", or "custom".  When
+"custom" is selected a user defined function must be supplied via
+\code{custom_fn}.  Defaults to "none".}
+
+\item{custom_fn}{A custom transformation function used when
+\code{scale = "custom"}.  Ignored otherwise.  It should take a numeric
+vector and return a numeric vector of the same length.}
+
+\item{tune}{Logical.  If \code{TRUE}, performs tuning of \code{ncomp} and
+\code{keepX} via cross‑validation.  Default is \code{FALSE}.}
+
+\item{tune_folds}{Integer.  Number of folds in cross‑validation when
+tuning.  Default is 5.}
 
 \item{comp_num}{Numeric. The number of components to calculate in the sPLS-DA
 model. Default is 2.}
@@ -109,8 +127,8 @@ produced if requested.
 This function conducts Sparse Partial Least Squares Discriminant Analysis
 (sPLS-DA) on the provided data. It uses the specified \code{group_col} (and
 optionally \code{group_col2}) to define class labels while assuming the remaining
-columns contain continuous variables. The function supports a log2
-transformation via the \code{scale} parameter and generates a series of plots,
+columns contain continuous variables. The function supports transformations
+via the \code{scale} parameter and generates a series of plots,
 including classification plots, scree plots, loadings plots, and VIP score
 plots. Optionally, ROC curves are produced when \code{roc} is \code{TRUE}.
 Additionally, cross-validation is supported via LOOCV or Mfold methods. When
@@ -126,7 +144,7 @@ are printed to the console. These can be suppressed by keeping \code{verbose = F
 data_df <- ExampleData1[,-c(3)]
 data_df <- dplyr::filter(data_df, Group != "ND", Treatment != "Unstimulated")
 
-cyt_splsda(data_df, pdf_title = NULL,
+cyt_splsda(data_df, output_file = NULL,
 colors = c("black", "purple"), bg = FALSE, scale = "log2",
 conf_mat = FALSE, var_num = 25, cv_opt = NULL, comp_num = 2,
 pch_values = c(16, 4), style = NULL, ellipse = TRUE,

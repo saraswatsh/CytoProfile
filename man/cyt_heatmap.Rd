@@ -2,43 +2,75 @@
 % Please edit documentation in R/cyt_heatmap.R
 \name{cyt_heatmap}
 \alias{cyt_heatmap}
-\title{Heat Map.}
+\title{Heat Map}
 \usage{
 cyt_heatmap(
   data,
-  scale = c(NULL, "log2", "row_zscore", "col_zscore"),
+  scale = c(NULL, "log2", "log10", "row_zscore", "col_zscore", "zscore"),
   annotation_col = NULL,
   annotation_side = c("auto", "row", "col"),
+  show_row_names = FALSE,
+  show_col_names = TRUE,
+  fontsize_row = 10,
+  fontsize_col = 10,
+  cluster_rows = TRUE,
+  cluster_cols = TRUE,
   title = NULL
 )
 }
 \arguments{
-\item{data}{A data frame containing the input data. Only numeric columns
-will be used to generate the heatmap.}
+\item{data}{A data frame.  Only numeric columns are used to
+construct the heat map.}
 
-\item{scale}{Character. An optional scaling option. Options are NULL
-(no scaling), "log2" (log2 transformation), "row_zscore" (z-score scaling by row),
-or "col_zscore" (z-score scaling by column). Default is NULL.}
+\item{scale}{Character specifying an optional scaling.  Accepts
+\code{NULL} (no scaling), "log2", "log10", "row_zscore",
+"col_zscore" or "zscore" (apply both row and column
+z‑scoring).  Default is \code{NULL}.}
 
-\item{annotation_col}{Character. An optional column name from
-\code{data} to be used for generating annotation colors. Default is NULL.}
+\item{annotation_col}{Optional.  Either the name of a column in
+\code{data} or a vector of length equal to the number of rows or
+columns of the numeric matrix.  If a column name is supplied
+the function determines whether it annotates rows or columns based
+on its length or the value of \code{annotation_side}.}
 
-\item{annotation_side}{Character. Specifies whether the annotation should
-be applied to rows or columns. Options are "auto", "row", or "col".}
+\item{annotation_side}{Character.  One of "auto", "row" or
+"col".  When "auto" (default) the side is determined by
+matching the length of \code{annotation_col} to rows or columns.}
 
-\item{title}{Character. The title of the heatmap and the file name for
-saving the plot. The file extension (".pdf" or ".png") determines the
-output format. If \code{NULL}, the plot is generated on the current
-graphics device. Default is \code{NULL}.}
+\item{show_row_names}{Logical. If \code{TRUE} row names are shown
+Default is \code{FALSE}.}
+
+\item{show_col_names}{Logical. If \code{FALSE} column names are
+hidden.  Default is \code{TRUE}.}
+
+\item{fontsize_row}{Numeric. Font size for row names. Default is 10.}
+
+\item{fontsize_col}{Numeric. Font size for column names. Default is 10.}
+
+\item{cluster_rows}{Logical.  If \code{TRUE} (default), rows are
+clustered.}
+
+\item{cluster_cols}{Logical.  If \code{TRUE} (default), columns are
+clustered.}
+
+\item{title}{Character.  The heat map title or file name.  If
+\code{title} ends with ".pdf" or ".png" (case insensitive), the
+heat map is saved to that file and no title is printed on
+screen.  If \code{NULL} (default), the heat map is drawn on the
+active device without saving and without a main title.}
 }
 \value{
-The function does not return a value. It saves the heatmap to a file.
+Invisibly returns the pheatmap object created by
+\code{pheatmap::pheatmap()}.
 }
 \description{
 This function creates a heatmap using the numeric columns from the
-provided data frame. It supports various scaling options and allows for row or
-column annotations. The heatmap is saved as a file,
-with the format determined by the file extension in \code{title}.
+provided data frame. It provides the ability to hide row and
+column names, adjust font sizes and clustering, and apply
+additional transformations such as log10 or combined z‑scoring.  A
+file name with extension may be provided via \code{title} to save the
+heat map to disk; otherwise the plot is drawn on the active
+graphics device.
 }
 \examples{
 # Load sample data

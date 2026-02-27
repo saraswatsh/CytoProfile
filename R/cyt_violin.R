@@ -1,13 +1,15 @@
-#' Boxplots for Continuous Variables with Optional Grouping
+#' Violin Plots for Continuous Variables with Optional Grouping
 #'
 #' @description
-#' This function generates boxplots for numeric variables in a data
-#' frame or matrix.  It supports optional grouping by one or more
-#' categorical variables.  Numeric variables can be scaled using
-#' various transformations before plotting.  When grouping is not
-#' used, boxplots are arranged in pages with a specified maximum
-#' number of plots per page.  Plots can be saved to a PDF file or
-#' displayed on the current graphics device.
+#' `cyt_violin` produces violin plots for each numeric variable in
+#' `data`, optionally grouped by one or more categorical variables.
+#' When grouping is not specified, the function behaves similarly to
+#' `cyt_bp` but uses violins instead of boxplots and supports
+#' pagination via the `bin_size` argument.  When grouping is
+#' provided, a separate violin is drawn for each level (or
+#' interaction of levels) of the grouping variables.  Users may
+#' optionally overlay boxplots within each violin to visualize the
+#' median and interquartile range.
 #'
 #' @param data A matrix or data frame containing numeric and
 #'   categorical variables.
@@ -19,52 +21,57 @@
 #' @param group_by Optional character vector specifying one or more
 #'   columns to use for grouping.  If `NULL` (default) no grouping is
 #'   applied.
-#' @param bin_size Integer.  Maximum number of boxplots per page when
-#'   grouping is not used.  Default is 25, as in the original
-#'   `cyt_bp`.
+#' @param bin_size Integer.  Maximum number of violins per page when
+#'   grouping is not used.  Default is 25, mirroring `cyt_bp`.
 #' @param y_lim Optional numeric vector giving y‑axis limits for the
 #'   plots.  Applies to all plots.
 #' @param scale Character specifying a transformation for numeric
-#'   variables.  Accepts `"none"`, `"log2"`, `"log10"`,
-#'   `"zscore"`, or `"custom"`.  When `"custom"`, supply a
+#'   variables.  Accepts "none", "log2", "log10",
+#'   "zscore", or "custom".  When "custom", supply a
 #'   function via `custom_fn`.
 #' @param custom_fn A user supplied function to transform numeric
 #'   columns when `scale = "custom"`.
+#' @param boxplot_overlay Logical.  When `TRUE`, a narrow boxplot is
+#'   drawn inside each violin to summarize the median and quartiles.
+#'   Default is `FALSE`.
 #' @return Invisibly returns a list of `ggplot` objects.  When
 #'   `output_file` is provided, plots are written to the PDF file.
 #' @examples
-#' data("ExampleData1")
-#' # Boxplots without grouping
-#' cyt_bp(ExampleData1[, -c(1:3)], output_file = NULL, scale = "log2")
-#' # Boxplots grouped by Group
-#' cyt_bp(ExampleData1[, -c(3,5:28)], group_by = "Group", scale = "zscore")
+#' # Violin plots without grouping
+#' cyt_violin(ExampleData1[, -c(1:3)], output_file = NULL, scale = "zscore")
+#' # Violin plots grouped by Group with boxplot overlay
+#' cyt_violin(ExampleData1[, -c(3,5:28)], group_by = "Group",
+#'                         boxplot_overlay = TRUE, scale = "log2")
+#' @author Shubh Saraswat
 #'
 #' @import ggplot2
 #' @importFrom reshape2 melt
 #' @export
-cyt_bp <- function(
+cyt_violin <- function(
   data,
   output_file = NULL,
   group_by = NULL,
   bin_size = 25,
   y_lim = NULL,
   scale = c("none", "log2", "log10", "zscore", "custom"),
-  custom_fn = NULL
+  custom_fn = NULL,
+  boxplot_overlay = FALSE
 ) {
   names(data) <- make.names(names(data), unique = TRUE)
   scale <- match.arg(scale)
   df <- as.data.frame(data)
-  # Identify numeric variables (exclude grouping columns)
+  # Validate grouping columns
   if (!is.null(group_by)) {
     if (!all(group_by %in% names(df))) {
       stop("All group_by columns must exist in data.")
     }
   }
+  # Identify numeric variables excluding grouping columns
   numeric_cols <- names(df)[sapply(df, is.numeric) & !(names(df) %in% group_by)]
   if (length(numeric_cols) == 0) {
     stop("No numeric columns to plot.")
   }
-  # Apply scaling to numeric variables
+  # Apply scaling
   if (scale != "none") {
     df <- apply_scale(
       df,
@@ -80,7 +87,7 @@ cyt_bp <- function(
         df[[g]] <- factor(df[[g]])
       }
     }
-    # If multiple grouping columns, create interaction term
+    # Interaction term for multiple grouping variables
     if (length(group_by) > 1) {
       df$._group <- interaction(df[, group_by], sep = ":")
       grp_col <- "._group"
@@ -90,11 +97,9 @@ cyt_bp <- function(
   } else {
     grp_col <- NULL
   }
-  # List to store plots
   plot_list <- list()
   # Grouping case
   if (!is.null(grp_col)) {
-    # Loop through each numeric variable and create grouped boxplot
     for (var in numeric_cols) {
       p <- ggplot2::ggplot(
         df,
@@ -104,8 +109,12 @@ cyt_bp <- function(
           fill = .data[[grp_col]]
         )
       ) +
-        ggplot2::geom_boxplot(alpha = 0.6) +
-        ggplot2::geom_jitter(width = 0.2, alpha = 0.5, size = 0.8) +
+        ggplot2::geom_violin(trim = FALSE, alpha = 0.6)
+      if (boxplot_overlay) {
+        p <- p +
+          ggplot2::geom_boxplot(width = 0.1, alpha = 0.5, outlier.shape = NA)
+      }
+      p <- p +
         ggplot2::labs(
           title = paste0(var, " by ", paste(group_by, collapse = ":")),
           x = paste(group_by, collapse = ":"),
@@ -121,7 +130,6 @@ cyt_bp <- function(
       }
       plot_list[[var]] <- p
     }
-    # Write to PDF if requested
     if (!is.null(output_file)) {
       ext <- tolower(tools::file_ext(output_file))
       if (ext == "pdf") {
@@ -142,18 +150,14 @@ cyt_bp <- function(
         }
       }
     } else {
-      # Print each plot to the current graphics device
       for (p in plot_list) {
-        print(p) # displays plots on screen
+        print(p)
       }
     }
     return(invisible(plot_list))
   }
-  # No grouping: original cyt_bp logic
+  # No grouping: paginate violins across numeric variables
   n_col <- length(numeric_cols)
-  if (n_col == 0) {
-    stop("No numeric columns to plot in 'data'.")
-  }
   n_chunks <- ceiling(n_col / bin_size)
   for (i in seq_len(n_chunks)) {
     start_idx <- (i - 1) * bin_size + 1
@@ -165,15 +169,20 @@ cyt_bp <- function(
       variable.name = "Variable",
       value.name = "Value"
     )
+    p <- ggplot2::ggplot(melted, ggplot2::aes(x = Variable, y = Value)) +
+      ggplot2::geom_violin(trim = FALSE, fill = "lightblue", alpha = 0.7)
+    if (boxplot_overlay) {
+      p <- p +
+        ggplot2::geom_boxplot(width = 0.1, alpha = 0.5, outlier.shape = NA)
+    }
     y_label <- if (scale == "none") {
       "Value"
     } else {
       paste0("Value (", scale, "-transformed)")
     }
-    p <- ggplot2::ggplot(melted, ggplot2::aes(x = Variable, y = Value)) +
-      ggplot2::geom_boxplot() +
+    p <- p +
       ggplot2::labs(
-        title = "Boxplots for Variables:",
+        title = "Violin Plots for Variables:",
         x = "Variable",
         y = y_label
       ) +

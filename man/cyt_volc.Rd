@@ -2,7 +2,7 @@
 % Please edit documentation in R/cyt_volc.R
 \name{cyt_volc}
 \alias{cyt_volc}
-\title{Volcano Plot.}
+\title{Volcano plot}
 \usage{
 cyt_volc(
   data,
@@ -12,45 +12,63 @@ cyt_volc(
   fold_change_thresh = 2,
   p_value_thresh = 0.05,
   top_labels = 10,
+  method = c("ttest", "wilcox"),
+  p_adjust_method = NULL,
+  add_effect = FALSE,
   verbose = FALSE
 )
 }
 \arguments{
-\item{data}{A matrix or data frame containing the data to be analyzed.}
+\item{data}{A data frame containing numeric variables and a
+grouping column.}
 
-\item{group_col}{A character string specifying the column name used for
-comparisons (e.g., group, treatment, or stimulation).}
+\item{group_col}{Character.  Name of the grouping column.}
 
-\item{cond1}{A character string specifying the name of the first condition
-for comparison. Default is \code{NULL}.}
+\item{cond1}{Character string specifying the level of \code{group_col}
+for the first condition to compare.}
 
-\item{cond2}{A character string specifying the name of the second condition
-for comparison. Default is \code{NULL}.}
+\item{cond2}{Character strings specifying the second level of
+\code{group_col} to compare with \code{cond1}.}
 
-\item{fold_change_thresh}{A numeric threshold for the fold change.
-Default is \code{2}.}
+\item{fold_change_thresh}{Numeric.  Threshold for absolute fold
+change (in original scale).  Default is 2.}
 
-\item{p_value_thresh}{A numeric threshold for the p-value.
-Default is \code{0.05}.}
+\item{p_value_thresh}{Numeric.  Threshold for the p‑value (raw or
+adjusted).  Default is 0.05.}
 
-\item{top_labels}{An integer specifying the number of top variables to label
-on the plot. Default is \code{10}.}
+\item{top_labels}{Integer.  Number of top points to label in each
+plot.  Default is 10.}
 
-\item{verbose}{A logical indicating whether to print the computed statistics
-to the console. Default is \code{FALSE}.}
+\item{method}{Character.  Statistical test to use.  "ttest" (default)
+uses two‑sample t‑tests; "wilcox" uses Wilcoxon rank‑sum tests.}
+
+\item{p_adjust_method}{Character or \code{NULL}.  Method to adjust
+p‑values across variables within each comparison (e.g., "BH").
+If \code{NULL} (default) no adjustment is performed. See \code{\link[stats]{p.adjust}}
+for details.}
+
+\item{add_effect}{Logical.  If \code{TRUE}, effect sizes are computed and
+returned in the results (Cohen's d for t‑tests; rank‑biserial for
+Wilcoxon).  Default is \code{FALSE}.}
+
+\item{verbose}{Logical.  If \code{TRUE}, prints the data frame used for
+the final comparison without the label column.  Default is
+\code{FALSE}.}
 }
 \value{
-A list of volcano plots (as \code{ggplot} objects) for each pairwise
-comparison. Additionally, the function prints the data frame used for
-plotting (excluding the significance column) from the final comparison.
+A list of ggplot objects (one per comparison).  Each plot
+visualizes log2 fold change on the x‑axis and –log10 of the
+(adjusted) p‑value on the y‑axis.  The underlying data used to
+construct the final plot are printed when \code{verbose = TRUE}.
 }
 \description{
 This function subsets the numeric columns from the input data
 and compares them based on a selected grouping column. It computes the fold
-changes (as the ratio of means) and associated p-values (using two-sample
-t-tests) for each numeric variable between two groups. The results are
-log2-transformed (for fold change) and -log10-transformed (for p-values)
-to generate a volcano plot.
+changes (as the ratio of means) and associated p-values for each numeric variable
+between two groups. The results are log2-transformed (for fold change) and
+-log10-transformed (for p-values) to generate a volcano plot. Additionally,
+there is a choice between t‑tests and Wilcoxon rank‑sum tests and adjusting
+p‑values for multiple comparisons.
 }
 \note{
 If \code{cond1} and \code{cond2} are not provided, the function
@@ -61,9 +79,7 @@ the specified \code{group_col} for comparisons.
 # Loading data
 data_df <- ExampleData1[,-c(2:3)]
 
-volc_plot <- cyt_volc(data_df, "Group", cond1 = "T2D", cond2 = "ND",
-fold_change_thresh = 2.0, top_labels= 15)
-print(volc_plot$`T2D vs ND`)
+cyt_volc(data_df, "Group", cond1 = "T2D", cond2 = "ND", fold_change_thresh = 2.0, top_labels= 15)
 }
 \author{
 Xiaohua Douglas Zhang and Shubh Saraswat

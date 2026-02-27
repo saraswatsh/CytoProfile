@@ -1,6 +1,6 @@
 Package: CytoProfile
 Title: Cytokine Profiling Analysis Tool
-Version: 0.2.3
+Version: 0.2.4
 Authors@R: c(
     person("Shubh", "Saraswat", email = "shubh.saraswat00@gmail.com", role = c("cre", "aut", "cph"),
     comment = c(ORCID = "0009-0009-2359-1484")),
@@ -27,16 +27,17 @@ Imports:
     ggrepel,
     gridExtra,
     reshape2,
-    lifecycle
+    lifecycle,
+    data.table
 Suggests:
-    spelling, 
+    spelling,
     BiocManager,
+    Ckmeans.1d.dp,
+    prodlim,
     testthat,
     knitr,
     rmarkdown,
-    devtools,
-    Ckmeans.1d.dp,
-    prodlim
+    devtools
 NeedsCompilation: no
 License: GPL (>= 2)
 LazyData: true

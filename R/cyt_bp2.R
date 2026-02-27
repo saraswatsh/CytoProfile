@@ -1,4 +1,4 @@
-#' Boxplot Function Enhanced for Specific Group Comparisons.
+#' Boxplot Function Enhanced for Specific Group Comparisons. `r lifecycle::badge("deprecated")`
 #'
 #' This function generates a PDF file containing boxplots for each combination
 #' of numeric and factor variables in the provided data. It first converts
@@ -32,6 +32,12 @@
 #' @import ggplot2
 
 cyt_bp2 <- function(data, pdf_title, scale = NULL, y_lim = NULL) {
+  lifecycle::deprecate_warn(
+    "0.2.4", # version when deprecation begins
+    "CytoProfile::cyt_bp2()",
+    "CytoProfile::cyt_bp()"
+  )
+  names(data) <- make.names(names(data), unique = TRUE)
   # Convert any character variables to factors
   cat_vars <- sapply(data, is.character)
   if (any(cat_vars)) {
@@ -68,7 +74,12 @@ cyt_bp2 <- function(data, pdf_title, scale = NULL, y_lim = NULL) {
       # Create the boxplot
       p <- ggplot2::ggplot(
         data,
-        aes_string(x = fac_col, y = num_col, fill = fac_col)
+        # CHANGE HERE: Use aes() with .data[[string_variable]]
+        ggplot2::aes(
+          x = .data[[fac_col]],
+          y = .data[[num_col]],
+          fill = .data[[fac_col]]
+        )
       ) +
         ggplot2::geom_boxplot(alpha = 0.5) +
         ggplot2::geom_jitter(width = 0.2, alpha = 0.5) +

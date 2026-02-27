@@ -9,24 +9,24 @@ A data frame with 66 rows and 20 columns:
 \describe{
 \item{Stimulation}{Stimulation assigned to the subjects.}
 \item{Group}{Group assigned to the subjects.}
-\item{IL.17F}{Observed concentration of IL.17F cytokine.}
-\item{GM.CSF}{Observed concentration of GM.CSF cytokine.}
-\item{IFN.G}{Observed concentration of IFN.G cytokine.}
-\item{IL.10}{Observed concentration of IL.10 cytokine.}
-\item{CCL.20}{Observed concentration of CCL.20 cytokine.}
-\item{IL.12}{Observed concentration of IL.12 cytokine.}
-\item{IL.13}{Observed concentration of IL.13 cytokine.}
-\item{IL.17A}{Observed concentration of IL.17A cytokine.}
-\item{IL.22}{Observed concentration of IL.22 cytokine.}
-\item{IL.9}{Observed concentration of IL.9 cytokine.}
-\item{IL.1B}{Observed concentration of IL.1B cytokine.}
-\item{IL.2}{Observed concentration of IL.2 cytokine.}
-\item{IL.21}{Observed concentration of IL.21 cytokine.}
-\item{IL.4}{Observed concentration of IL.4 cytokine.}
-\item{IL.5}{Observed concentration of IL.5 cytokine.}
-\item{IL.6}{Observed concentration of IL.6 cytokine.}
-\item{TNF.A}{Observed concentration of TNF.A cytokine.}
-\item{TNF.B}{Observed concentration of TNF.B cytokine.}
+\item{IL-17F}{Observed concentration of IL-17F cytokine.}
+\item{GM-CSF}{Observed concentration of GM-CSF cytokine.}
+\item{IFN-G}{Observed concentration of IFN-G cytokine.}
+\item{IL-10}{Observed concentration of IL-10 cytokine.}
+\item{CCL-20}{Observed concentration of CCL-20 cytokine.}
+\item{IL-12}{Observed concentration of IL-12 cytokine.}
+\item{IL-13}{Observed concentration of IL-13 cytokine.}
+\item{IL-17A}{Observed concentration of IL-17A cytokine.}
+\item{IL-22}{Observed concentration of IL-22 cytokine.}
+\item{IL-9}{Observed concentration of IL-9 cytokine.}
+\item{IL-1B}{Observed concentration of IL-1B cytokine.}
+\item{IL-2}{Observed concentration of IL-2 cytokine.}
+\item{IL-21}{Observed concentration of IL-21 cytokine.}
+\item{IL-4}{Observed concentration of IL-4 cytokine.}
+\item{IL-5}{Observed concentration of IL-5 cytokine.}
+\item{IL-6}{Observed concentration of IL-6 cytokine.}
+\item{TNF-A}{Observed concentration of TNF-A cytokine.}
+\item{TNF-B}{Observed concentration of TNF-B cytokine.}
 }
 }
 \source{

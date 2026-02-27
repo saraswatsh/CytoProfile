@@ -21,5 +21,6 @@
 ^vignettes/getting_started_cache/
 ^CRAN-SUBMISSION$
 ^CytoProfile_0\.2\.3\.pdf$
+^CytoProfile_0\.2\.3\.9000\.pdf$
 ^\.vscode$
 ^revdep$

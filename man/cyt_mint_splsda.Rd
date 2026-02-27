@@ -10,12 +10,14 @@ cyt_mint_splsda(
   batch_col,
   group_col2 = NULL,
   colors = NULL,
-  pdf_title = NULL,
+  output_file = NULL,
   ellipse = TRUE,
   bg = FALSE,
   var_num = 20,
   comp_num = 2,
-  scale = NULL,
+  scale = c("none", "log2", "log10", "zscore", "custom"),
+  custom_fn = NULL,
+  tune = FALSE,
   cim = FALSE,
   roc = FALSE,
   verbose = FALSE
@@ -39,8 +41,11 @@ grouping and treatment.}
 \code{NULL}, a random palette (using \code{rainbow}) is generated based on
 the number of groups.}
 
-\item{pdf_title}{A string specifying the file name for saving the PDF output.
-If set to NULL, the function runs in IDE plots pane.}
+\item{output_file}{Optional string specifying the name of the file
+to be created.  When \code{NULL} (default), plots are drawn on
+the current graphics device. Ensure that the file
+extension matches the desired format (e.g., ".pdf" for PDF output
+or ".png" for PNG output or .tiff for TIFF output).}
 
 \item{ellipse}{Logical. Whether to draw a 95\\% confidence ellipse on the figures.
 Default is \code{FALSE}.}
@@ -52,8 +57,18 @@ Default is \code{FALSE}.}
 
 \item{comp_num}{Numeric. The number of components to calculate in the sPLS-DA model. Default is 2.}
 
-\item{scale}{Character. Option for data transformation; if set to \code{"log2"}, a log2
-transformation is applied to the continuous variables. Default is \code{NULL}.}
+\item{scale}{Character string specifying a transformation to apply to the
+numeric predictor columns prior to model fitting.  Options are
+"none", "log2", "log10", "zscore", or "custom".  When
+"custom" is selected a user defined function must be supplied via
+\code{custom_fn}.  Defaults to "none".}
+
+\item{custom_fn}{A custom transformation function used when
+\code{scale = "custom"}.  Ignored otherwise.  It should take a numeric
+vector and return a numeric vector of the same length.}
+
+\item{tune}{Logical.  If \code{TRUE}, performs tuning of \code{ncomp} and
+\code{keepX} via cross‑validation.  Default is \code{FALSE}.}
 
 \item{cim}{Logical. Whether to compute and plot the Clustered Image Map (CIM) heatmap. Default is \code{FALSE}.}
 
