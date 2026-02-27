@@ -1,6 +1,6 @@
 # Changelog
 
-## CytoProfile (development version)
+## CytoProfile 0.2.4
 
 ### Major Changes
 
