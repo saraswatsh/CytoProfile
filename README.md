@@ -18,7 +18,7 @@ Release](https://img.shields.io/github/last-commit/saraswatsh/CytoProfile/main)]
 **Development Build Status:** [![R-CMD-check Dev
 Build](https://github.com/saraswatsh/CytoProfile/actions/workflows/R-CMD-check.yaml/badge.svg?branch=devel)](https://github.com/saraswatsh/CytoProfile/actions/workflows/R-CMD-check.yaml)
 [![Dev
-Version](https://img.shields.io/badge/devel%20version-0.2.3.9000-red)](https://github.com/saraswatsh/CytoProfile/tree/devel)
+Version](https://img.shields.io/badge/devel%20version-0.2.4.9000-red)](https://github.com/saraswatsh/CytoProfile/tree/devel)
 [![Last Commit
 Dev](https://img.shields.io/github/last-commit/saraswatsh/CytoProfile/devel)](https://github.com/saraswatsh/CytoProfile/commits/devel/)
 
