@@ -173,6 +173,6 @@ cyt_ttest <- function(
       })
     )
     res <- list(results = out_df)
-    return(res)
+    res
   }
 }

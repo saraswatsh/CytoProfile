@@ -176,5 +176,5 @@ cyt_univariate <- function(
   if (!is.null(p_adjust_method)) {
     out_df$P_adj <- adjust_p(out_df$P_value, method = p_adjust_method)
   }
-  return(out_df)
+  out_df
 }

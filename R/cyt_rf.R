@@ -364,5 +364,5 @@ cyt_rf <- function(
   if (plot_roc && !is.null(roc_plot)) {
     print(roc_plot)
   }
-  return(invisible(results))
+  invisible(results)
 }

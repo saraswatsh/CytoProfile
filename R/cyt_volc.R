@@ -221,5 +221,5 @@ cyt_volc <- function(
       print(df[, setdiff(names(df), "label")], row.names = FALSE)
     }
   }
-  return(plots)
+  plots
 }

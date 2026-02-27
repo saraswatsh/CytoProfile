@@ -79,7 +79,7 @@ cyt_anova <- function(data, format_output = FALSE) {
 
   # Return tidy data frame if requested
   if (!format_output) {
-    return(tukey_results)
+    tukey_results
   } else {
     out_df <- data.frame(
       Outcome = character(),
@@ -108,6 +108,6 @@ cyt_anova <- function(data, format_output = FALSE) {
         )
       }
     }
-    return(out_df)
+    out_df
   }
 }

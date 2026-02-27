@@ -424,7 +424,7 @@ cyt_mint_splsda <- function(
         height = 8
       )
     }
-    return(invisible(results_list))
+    invisible(results_list)
   } else {
     # Case 2: If group_col != group_col2, perform stratified analysis
     levels_vec <- unique(data[[group_col2]])
@@ -723,6 +723,6 @@ cyt_mint_splsda <- function(
         height = 8
       )
     }
-    return(invisible(results_list))
+    invisible(results_list)
   }
 }

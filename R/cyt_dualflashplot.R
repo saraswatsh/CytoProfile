@@ -187,5 +187,5 @@ cyt_dualflashplot <- function(
   if (verbose) {
     print(as.data.frame(stats_df))
   }
-  return(p)
+  p
 }

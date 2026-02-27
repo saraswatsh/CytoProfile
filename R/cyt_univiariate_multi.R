@@ -160,5 +160,5 @@ cyt_univariate_multi <- function(
       )
     }
   }
-  return(out_df)
+  out_df
 }

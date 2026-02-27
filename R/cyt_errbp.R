@@ -279,7 +279,7 @@ cyt_errbp <- function(
     if (p_value <= 0.05) {
       return("*")
     }
-    return("")
+    ""
   }
   effect_size_mark_fn <- function(es) {
     if (is.na(es)) {
@@ -315,7 +315,7 @@ cyt_errbp <- function(
     if (es > -5) {
       return("<<<<")
     }
-    return("<<<<<")
+    "<<<<<"
   }
   # Compute star-coded significance and arrow-coded effect size symbols
   p_symbol <- sapply(summarised$P_adj, significance_mark_fn)
@@ -364,7 +364,7 @@ cyt_errbp <- function(
           sym
         ))
       }
-      return(NA_character_)
+      NA_character_
     },
     p_symbol,
     p_numeric,
@@ -391,7 +391,7 @@ cyt_errbp <- function(
           sym
         ))
       }
-      return(NA_character_)
+      NA_character_
     },
     es_symbol,
     es_numeric,

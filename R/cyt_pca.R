@@ -365,7 +365,7 @@ cyt_pca <- function(
         height = 8
       )
     }
-    return(invisible(result_list))
+    invisible(result_list)
   } else {
     # Case 2: When grouping and treatment columns differ
     levels_vec <- unique(data[[group_col2]])
@@ -609,6 +609,6 @@ cyt_pca <- function(
         height = 8
       )
     }
-    return(invisible(result_list))
+    invisible(result_list)
   }
 }

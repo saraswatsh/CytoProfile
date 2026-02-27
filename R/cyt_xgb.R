@@ -386,5 +386,5 @@ cyt_xgb <- function(
     importance_plot = imp_plot,
     roc_plot = roc_plot
   )
-  return(invisible(res))
+  invisible(res)
 }

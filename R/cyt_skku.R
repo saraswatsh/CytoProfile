@@ -232,12 +232,12 @@ cyt_skku <- function(
 
   # Return results based on flags.
   if (print_res_raw && print_res_log) {
-    return(list(raw = raw_results, log2 = log_results, plot = combined_plot))
+    list(raw = raw_results, log2 = log_results, plot = combined_plot)
   } else if (print_res_raw) {
-    return(list(data = raw_results, plot = combined_plot))
+    list(data = raw_results, plot = combined_plot)
   } else if (print_res_log) {
-    return(list(data = log_results, plot = combined_plot))
+    list(data = log_results, plot = combined_plot)
   } else {
-    return(invisible(combined_plot)) # always return the plot
+    invisible(combined_plot) # always return the plot
   }
 }

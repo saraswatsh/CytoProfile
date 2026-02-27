@@ -1012,7 +1012,7 @@ cyt_splsda <- function(
         height = 8
       )
     }
-    return(invisible(result_list))
+    invisible(result_list)
   } else {
     # Case 2: Both group and treatment columns are provided and they differ.
     levels_vec <- unique(data[[group_col2]])
@@ -1775,6 +1775,6 @@ cyt_splsda <- function(
         height = 8
       )
     }
-    return(invisible(result_list))
+    invisible(result_list)
   }
 }
