@@ -4,7 +4,7 @@ This function conducts Sparse Partial Least Squares Discriminant
 Analysis (sPLS-DA) on the provided data. It uses the specified
 `group_col` (and optionally `group_col2`) to define class labels while
 assuming the remaining columns contain continuous variables. The
-function supports a log2 transformation via the `scale` parameter and
+function supports transformations via the `scale` parameter and
 generates a series of plots, including classification plots, scree
 plots, loadings plots, and VIP score plots. Optionally, ROC curves are
 produced when `roc` is `TRUE`. Additionally, cross-validation is
@@ -23,14 +23,17 @@ cyt_splsda(
   batch_col = NULL,
   ind_names = FALSE,
   colors = NULL,
-  pdf_title = NULL,
+  output_file = NULL,
   ellipse = FALSE,
   bg = FALSE,
   conf_mat = FALSE,
   var_num,
   cv_opt = NULL,
   fold_num = 5,
-  scale = NULL,
+  scale = c("none", "log2", "log10", "zscore", "custom"),
+  custom_fn = NULL,
+  tune = FALSE,
+  tune_folds = 5,
   comp_num = 2,
   pch_values,
   style = NULL,
@@ -81,10 +84,13 @@ cyt_splsda(
   A vector of colors for the groups or treatments. If `NULL`, a random
   palette (using `rainbow`) is generated based on the number of groups.
 
-- pdf_title:
+- output_file:
 
-  A string specifying the file name for saving the PDF output. Default
-  is `NULL` which generates figures in the current graphics device.
+  Optional string specifying the name of the file to be created. When
+  `NULL` (default), plots are drawn on the current graphics device.
+  Ensure that the file extension matches the desired format (e.g.,
+  ".pdf" for PDF output or ".png" for PNG output or .tiff for TIFF
+  output).
 
 - ellipse:
 
@@ -116,9 +122,26 @@ cyt_splsda(
 
 - scale:
 
-  Character. Option for data transformation; if set to `"log2"`, a log2
-  transformation is applied to the continuous variables. Default is
-  `NULL`.
+  Character string specifying a transformation to apply to the numeric
+  predictor columns prior to model fitting. Options are "none", "log2",
+  "log10", "zscore", or "custom". When "custom" is selected a user
+  defined function must be supplied via `custom_fn`. Defaults to "none".
+
+- custom_fn:
+
+  A custom transformation function used when `scale = "custom"`. Ignored
+  otherwise. It should take a numeric vector and return a numeric vector
+  of the same length.
+
+- tune:
+
+  Logical. If `TRUE`, performs tuning of `ncomp` and `keepX` via
+  cross‑validation. Default is `FALSE`.
+
+- tune_folds:
+
+  Integer. Number of folds in cross‑validation when tuning. Default is
+  5.
 
 - comp_num:
 
@@ -181,7 +204,7 @@ Xiaohua Douglas Zhang and Shubh Saraswat
 data_df <- ExampleData1[,-c(3)]
 data_df <- dplyr::filter(data_df, Group != "ND", Treatment != "Unstimulated")
 
-cyt_splsda(data_df, pdf_title = NULL,
+cyt_splsda(data_df, output_file = NULL,
 colors = c("black", "purple"), bg = FALSE, scale = "log2",
 conf_mat = FALSE, var_num = 25, cv_opt = NULL, comp_num = 2,
 pch_values = c(16, 4), style = NULL, ellipse = TRUE,

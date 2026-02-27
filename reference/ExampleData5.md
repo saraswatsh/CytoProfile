@@ -29,105 +29,105 @@ A data frame with 297 rows and 29 columns:
 
   Time point of the measurement.
 
-- IL.17F:
+- IL-17F:
 
-  Observed concentration of IL.17F cytokine.
+  Observed concentration of IL-17F cytokine.
 
-- GM.CSF:
+- GM-CSF:
 
-  Observed concentration of GM.CSF cytokine.
+  Observed concentration of GM-CSF cytokine.
 
-- IFN.G:
+- IFN-G:
 
-  Observed concentration of IFN.G cytokine.
+  Observed concentration of IFN-G cytokine.
 
-- IL.10:
+- IL-10:
 
-  Observed concentration of IL.10 cytokine.
+  Observed concentration of IL-10 cytokine.
 
-- CCL.20.MIP.3A:
+- CCL-20/MIP-3A:
 
   Observed concentration of CCL.20.MIP.3A cytokine.
 
-- IL.12.P70:
+- IL-12/P70:
 
-  Observed concentration of IL.12.P70 cytokine.
+  Observed concentration of IL-12/P70 cytokine.
 
-- IL.13:
+- IL-13:
 
-  Observed concentration of IL.13 cytokine.
+  Observed concentration of IL-13 cytokine.
 
-- IL.15:
+- IL-15:
 
-  Observed concentration of IL.15 cytokine.
+  Observed concentration of IL-15 cytokine.
 
-- IL.17A:
+- IL-17A:
 
-  Observed concentration of IL.17A cytokine.
+  Observed concentration of IL-17A cytokine.
 
-- IL.22:
+- IL-22:
 
-  Observed concentration of IL.22 cytokine.
+  Observed concentration of IL-22 cytokine.
 
-- IL.9:
+- IL-9:
 
-  Observed concentration of IL.9 cytokine.
+  Observed concentration of IL-9 cytokine.
 
-- IL.1B:
+- IL-1B:
 
-  Observed concentration of IL.1B cytokine.
+  Observed concentration of IL-1B cytokine.
 
-- IL.33:
+- IL-33:
 
-  Observed concentration of IL.33 cytokine.
+  Observed concentration of IL-33 cytokine.
 
-- IL.2:
+- IL-2:
 
-  Observed concentration of IL.2 cytokine.
+  Observed concentration of IL-2 cytokine.
 
-- IL.21:
+- IL-21:
 
-  Observed concentration of IL.21 cytokine.
+  Observed concentration of IL-21 cytokine.
 
-- IL.4:
+- IL-4:
 
-  Observed concentration of IL.4 cytokine.
+  Observed concentration of IL-4 cytokine.
 
-- IL.23:
+- IL-23:
 
-  Observed concentration of IL.23 cytokine.
+  Observed concentration of IL-23 cytokine.
 
-- IL.5:
+- IL-5:
 
-  Observed concentration of IL.5 cytokine.
+  Observed concentration of IL-5 cytokine.
 
-- IL.6:
+- IL-6:
 
-  Observed concentration of IL.6 cytokine.
+  Observed concentration of IL-6 cytokine.
 
-- IL.17E.IL.25:
+- IL-17E/IL-25:
 
-  Observed concentration of IL.17E.IL.25 cytokine.
+  Observed concentration of IL-17E/IL-25 cytokine.
 
-- IL.27:
+- IL-27:
 
-  Observed concentration of IL.27 cytokine.
+  Observed concentration of IL-27 cytokine.
 
-- IL.31:
+- IL-31:
 
-  Observed concentration of IL.31 cytokine.
+  Observed concentration of IL-31 cytokine.
 
-- TNF.A:
+- TNF-A:
 
-  Observed concentration of TNF.A cytokine.
+  Observed concentration of TNF-A cytokine.
 
-- TNF.B:
+- TNF-B:
 
-  Observed concentration of TNF.B cytokine.
+  Observed concentration of TNF-B cytokine.
 
-- IL.28A:
+- IL-28A:
 
-  Observed concentration of IL.28A cytokine.
+  Observed concentration of IL-28A cytokine.
 
 ## Source
 

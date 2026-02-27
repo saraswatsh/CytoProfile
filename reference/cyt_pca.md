@@ -14,9 +14,6 @@ data and generates several types of plots, including:
 
 - Biplots and correlation circle plots.
 
-The function optionally applies a log2 transformation to the numeric
-data and handles analyses based treatment groups.
-
 ## Usage
 
 ``` r
@@ -25,10 +22,11 @@ cyt_pca(
   group_col = NULL,
   group_col2 = NULL,
   colors = NULL,
-  pdf_title,
+  output_file,
   ellipse = FALSE,
   comp_num = 2,
-  scale = NULL,
+  scale = c("none", "log2", "log10", "zscore", "custom"),
+  custom_fn = NULL,
   pch_values = NULL,
   style = NULL
 )
@@ -59,11 +57,13 @@ cyt_pca(
   [`rainbow()`](https://rdrr.io/r/grDevices/palettes.html) based on the
   number of unique groups.
 
-- pdf_title:
+- output_file:
 
-  A string specifying the file name of the PDF where the PCA plots will
-  be saved. If `NULL`, the plots are generated on the current graphics
-  device. Default is `NULL`.
+  Optional string specifying the name of the file to be created. When
+  `NULL` (default), plots are drawn on the current graphics device.
+  Ensure that the file extension matches the desired format (e.g.,
+  ".pdf" for PDF output or ".png" for PNG output or .tiff for TIFF
+  output).
 
 - ellipse:
 
@@ -77,9 +77,15 @@ cyt_pca(
 
 - scale:
 
-  Character. If set to "log2", a log2 transformation is applied to the
-  numeric cytokine measurements (excluding the grouping columns).
-  Default is NULL.
+  Character string specifying a transformation to apply to numeric
+  variables before PCA. Options are "none" (no transformation), "log2",
+  "log10", "zscore", or "custom". When "custom" is selected, a user
+  supplied function must be given via `custom_fn`. Defaults to "none".
+
+- custom_fn:
+
+  A custom function used when `scale = "custom"`. Should take a numeric
+  vector and return a numeric vector. Ignored otherwise.
 
 - pch_values:
 
@@ -93,7 +99,9 @@ cyt_pca(
 
 ## Value
 
-A PDF file containing the PCA plots is generated and saved.
+A PDF file containing the PCA plots is generated and saved when
+`output_file` is provided. Otherwise, plots are displayed on the current
+graphics device.
 
 ## Author
 
@@ -108,7 +116,7 @@ data_df <- dplyr::filter(data, Group != "ND" & Treatment != "Unstimulated")
 # Run PCA analysis and save plots to a PDF file
 cyt_pca(
   data = data_df,
-  pdf_title = NULL,
+  output_file = NULL,
   colors = c("black", "red2"),
   scale = "log2",
   comp_num = 3,
@@ -118,14 +126,8 @@ cyt_pca(
   group_col2 = "Treatment",
   ellipse = FALSE
 )
-#> Results based on log2 transformation:
 
 
-#> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-#> ℹ Please use `linewidth` instead.
-#> ℹ The deprecated feature was likely used in the CytoProfile package.
-#>   Please report the issue at
-#>   <https://github.com/saraswatsh/CytoProfile/issues>.
 
 
 

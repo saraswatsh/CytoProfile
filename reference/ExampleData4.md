@@ -21,77 +21,77 @@ A data frame with 64 rows and 14 columns:
 
   Treatment received by subjects.
 
-- IL.17F:
+- IL-17F:
 
-  Observed concentration of IL.17F cytokine.
+  Observed concentration of IL-17F cytokine.
 
-- GM.CSF:
+- GM-CSF:
 
-  Observed concentration of GM.CSF cytokine.
+  Observed concentration of GM-CSF cytokine.
 
-- IFNg:
+- IFN-G:
 
-  Observed concentration of IFNg cytokine.
+  Observed concentration of IFN-G cytokine.
 
-- IL.10:
+- IL-10:
 
-  Observed concentration of IL.10 cytokine.
+  Observed concentration of IL-10 cytokine.
 
-- CCL.20:
+- CCL-20:
 
-  Observed concentration of CCL.20 cytokine.
+  Observed concentration of CCL-20 cytokine.
 
-- IL.12:
+- IL-12:
 
-  Observed concentration of IL.12 cytokine.
+  Observed concentration of IL-12 cytokine.
 
-- IL.13:
+- IL-13:
 
-  Observed concentration of IL.13 cytokine.
+  Observed concentration of IL-13 cytokine.
 
-- IL.17A:
+- IL-17A:
 
-  Observed concentration of IL.17A cytokine.
+  Observed concentration of IL-17A cytokine.
 
-- IL.22:
+- IL-22:
 
-  Observed concentration of IL.22 cytokine.
+  Observed concentration of IL-22 cytokine.
 
-- IL.9:
+- IL-9:
 
-  Observed concentration of IL.9 cytokine.
+  Observed concentration of IL-9 cytokine.
 
-- IL.2:
+- IL-2:
 
-  Observed concentration of IL.2 cytokine.
+  Observed concentration of IL-2 cytokine.
 
-- IL.21:
+- IL-21:
 
-  Observed concentration of IL.21 cytokine.
+  Observed concentration of IL-21 cytokine.
 
-- IL.4:
+- IL-4:
 
-  Observed concentration of IL.4 cytokine.
+  Observed concentration of IL-4 cytokine.
 
-- IL.23:
+- IL-23:
 
-  Observed concentration of IL.23 cytokine.
+  Observed concentration of IL-23 cytokine.
 
-- IL.5:
+- IL-5:
 
-  Observed concentration of IL.5 cytokine.
+  Observed concentration of IL-5 cytokine.
 
-- IL.6:
+- IL-6:
 
-  Observed concentration of IL.6 cytokine.
+  Observed concentration of IL-6 cytokine.
 
-- TNFa:
+- TNF-A:
 
-  Observed concentration of TNFa cytokine.
+  Observed concentration of TNF-A cytokine.
 
-- TNFb:
+- TNF-B:
 
-  Observed concentration of TNFb cytokine.
+  Observed concentration of TNF-B cytokine.
 
 ## Source
 

@@ -21,7 +21,11 @@ cyt_rf(
   step = 0.5,
   run_rfcv = TRUE,
   verbose = FALSE,
-  seed = 123
+  seed = 123,
+  cv = FALSE,
+  cv_folds = 5,
+  scale = c("none", "log2", "log10", "zscore", "custom"),
+  custom_fn = NULL
 )
 ```
 
@@ -29,101 +33,140 @@ cyt_rf(
 
 - data:
 
-  A data frame containing the cytokine data, with one column as the
-  grouping variable and the rest as numerical features.
+  A data frame containing the cytokine measurements. One column should
+  correspond to the grouping variable (the outcome) and the remaining
+  columns should be numeric predictors.
 
 - group_col:
 
-  A string representing the name of the column with the grouping
-  variable (the target variable for classification).
+  A string naming the column in `data` that contains the grouping
+  variable.
 
 - ntree:
 
-  An integer specifying the number of trees to grow in the forest
-  (default is 500).
+  Integer specifying the number of trees to grow. Default is 500.
 
 - mtry:
 
-  An integer specifying the number of variables randomly selected at
-  each split (default is 5).
+  Integer specifying the number of variables randomly sampled at each
+  split. Default is 5.
 
 - train_fraction:
 
-  A numeric value between 0 and 1 representing the proportion of data to
-  use for training (default is 0.7).
+  Numeric between 0 and 1 giving the proportion of data used for
+  training. The remainder is used for testing. Default is 0.7.
 
 - plot_roc:
 
-  A logical value indicating whether to plot the ROC curve and compute
-  the AUC for binary classification (default is FALSE).
+  Logical. If `TRUE` and the problem is binary, an ROC curve and AUC
+  will be computed and plotted for the test set. Default is `FALSE`.
 
 - k_folds:
 
-  An integer specifying the number of folds for cross-validation
-  (default is 5).
+  Integer specifying the number of folds for `rfcv` when
+  `run_rfcv = TRUE`. Default is 5.
 
 - step:
 
-  A numeric value specifying the fraction of variables to remove at each
-  step during cross-validation for feature selection (default is 0.5).
+  Numeric specifying the fraction of variables removed at each step
+  during `rfcv`. Default is 0.5.
 
 - run_rfcv:
 
-  A logical value indicating whether to run Random Forest
-  cross-validation for feature selection (default is TRUE).
+  Logical indicating whether to run Random Forest cross-validation for
+  feature selection. Default is `TRUE`.
 
 - verbose:
 
-  A logical value indicating whether to print additional informational
-  output to the console. When `TRUE`, the function will display progress
-  messages, and intermediate results when `FALSE` (the default), it runs
-  quietly.
+  Logical indicating whether to print intermediate results. When `TRUE`,
+  training and test performance metrics, confusion matrices and
+  cross-validation details are printed. Default is `FALSE`.
 
 - seed:
 
-  An integer specifying the seed for reproducibility (default is 123).
+  Optional integer seed for reproducibility. Default is 123.
+
+- cv:
+
+  Logical indicating whether to perform a separate k-fold classification
+  cross-validation using `caret`. Default is `FALSE`.
+
+- cv_folds:
+
+  Integer specifying the number of folds for classification
+  cross-validation when `cv = TRUE`. Default is 5.
+
+- scale:
+
+  Character string specifying a transformation to apply to the numeric
+  predictor columns prior to model fitting. Options are "none" (no
+  transformation), "log2", "log10", "zscore", or "custom". When "custom"
+  is selected a user defined function must be supplied via `custom_fn`.
+  Defaults to "none".
+
+- custom_fn:
+
+  A custom transformation function used when `scale = "custom"`. The
+  function should take a numeric vector and return a numeric vector of
+  the same length. Ignored for other values of `scale`.
 
 ## Value
 
-A list containing:
+An invisible list with components:
 
 - model:
 
-  The trained Random Forest model.
+  The fitted `randomForest` model.
 
 - confusion_matrix:
 
-  The confusion matrix of the test set predictions.
+  Confusion matrix on the test set.
 
 - importance_plot:
 
-  A ggplot object showing the variable importance plot based on Mean
-  Decrease Gini.
-
-- rfcv_result:
-
-  Results from Random Forest cross-validation for feature selection (if
-  `run_rfcv` is TRUE).
+  A `ggplot2` object of the variable importance (mean decrease in Gini).
 
 - importance_data:
 
-  A data frame containing the variable importance based on the Gini
-  index.
+  A data frame of variable importance values.
+
+- rfcv_result:
+
+  The `rfcv` object returned when `run_rfcv = TRUE`.
+
+- rfcv_plot:
+
+  A `ggplot2` object of cross-validation error versus number of
+  variables, returned when `run_rfcv = TRUE`.
+
+- rfcv_data:
+
+  A data frame summarizing the `rfcv` error curve.
+
+- roc_plot:
+
+  A `ggplot2` object of the ROC curve for binary classification when
+  `plot_roc = TRUE`.
+
+- cv_results:
+
+  A `caret` train object returned when `cv = TRUE` or `NULL` otherwise.
 
 ## Details
 
-The function fits a Random Forest model to the provided data by
-splitting it into training and test sets. It calculates performance
-metrics such as accuracy, sensitivity, and specificity for both sets.
-For binary classification, it can also plot the ROC curve and compute
-the AUC. If `run_rfcv` is TRUE, cross-validation is performed to select
-the optimal number of features. If `verbose` is TRUE, the function
-prints additional information to the console, including training
-results, test results, and plots.
-
-## Author
-
-Shubh Saraswat
+The function first coerces the grouping variable to a factor and splits
+the dataset into training and test subsets according to
+`train_fraction`. A Random Forest classifier is fit to the training data
+using the specified `ntree` and `mtry` parameters. The model performance
+is assessed on both the training and test sets, and results are printed
+when `verbose = TRUE`. If `plot_roc = TRUE` and the grouping variable
+has exactly two levels, an ROC curve is computed on the test set and a
+plot is returned. Variable importance is extracted and visualized with a
+bar plot. Optionally, cross- validation for feature selection (`rfcv`)
+is performed and the error curve is plotted. A separate k-fold
+classification cross- validation using
+[`caret::train`](https://rdrr.io/pkg/caret/man/train.html) can be
+requested via `cv = TRUE`.
 
 ## Examples
 
@@ -137,7 +180,6 @@ cyt_rf(
   data = data.df, group_col = "Group", k_folds = 5, ntree = 1000,
   mtry = 4, run_rfcv = TRUE, plot_roc = TRUE, verbose = FALSE
 )
-
 
 
 ```

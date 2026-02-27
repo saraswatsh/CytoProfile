@@ -13,23 +13,23 @@ cyt_xgb(
   train_fraction = 0.7,
   nrounds = 500,
   max_depth = 6,
-  eta = lifecycle::deprecated(),
   learning_rate = 0.1,
   nfold = 5,
   cv = FALSE,
   objective = "multi:softprob",
   early_stopping_rounds = NULL,
   eval_metric = "mlogloss",
-  gamma = lifecycle::deprecated(),
   min_split_loss = 0,
   colsample_bytree = 1,
   subsample = 1,
   min_child_weight = 1,
   top_n_features = 10,
-  verbose = 1,
+  verbose = 0,
   plot_roc = FALSE,
   print_results = FALSE,
-  seed = 123
+  seed = 123,
+  scale = c("none", "log2", "log10", "zscore", "custom"),
+  custom_fn = NULL
 )
 ```
 
@@ -37,165 +37,136 @@ cyt_xgb(
 
 - data:
 
-  A data frame containing the cytokine data, with one column as the
-  grouping variable and the rest as numerical features.
+  A data frame containing numeric predictor variables and one grouping
+  column. Non-numeric predictor columns will be coerced to numeric if
+  possible.
 
 - group_col:
 
-  A string representing the name of the column with the grouping
-  variable (i.e., the target variable for classification).
+  Character string naming the column that contains the class labels
+  (target variable). Required.
 
 - train_fraction:
 
-  A numeric value between 0 and 1 representing the proportion of data to
-  use for training (default is 0.7).
+  Numeric between 0 and 1 specifying the proportion of samples used for
+  model training. The remainder is reserved for testing. Default is 0.7.
 
 - nrounds:
 
-  An integer specifying the number of boosting rounds (default is 500).
+  Integer specifying the number of boosting rounds. Default is 500.
 
 - max_depth:
 
-  An integer specifying the maximum depth of the trees (default is 6).
-
-- eta:
-
-  **\[deprecated\]** Deprecated; use `learning_rate` instead.
+  Integer specifying the maximum depth of each tree. Default is 6.
 
 - learning_rate:
 
-  A numeric value representing the learning rate (default is 0.1). This
-  replaces the deprecated `eta` argument.
+  Numeric specifying the learning rate. Default is 0.1.
 
 - nfold:
 
-  An integer specifying the number of folds for cross-validation
-  (default is 5).
+  Integer specifying the number of folds for cross-validation when
+  `cv = TRUE`. Default is 5.
 
 - cv:
 
-  A logical value indicating whether to perform cross-validation
-  (default is FALSE).
+  Logical indicating whether to perform cross-validation using `xgb.cv`.
+  Default is `FALSE`.
 
 - objective:
 
-  A string specifying the XGBoost objective function (default is
-  "multi:softprob" for multi-class classification).
+  Character string specifying the objective function. For multi-class
+  classification use "multi:softprob"; for binary classification use
+  "binary:logistic". Default is "multi:softprob".
 
 - early_stopping_rounds:
 
-  An integer specifying the number of rounds with no improvement to stop
-  training early (default is NULL).
+  Integer specifying the number of rounds without improvement to trigger
+  early stopping. Default is NULL (no early stopping).
 
 - eval_metric:
 
-  A string specifying the evaluation metric (default is "mlogloss").
-
-- gamma:
-
-  **\[deprecated\]** Deprecated; use `min_split_loss` instead.
+  Character specifying the evaluation metric used during training.
+  Default is "mlogloss".
 
 - min_split_loss:
 
-  A numeric value for the minimum loss reduction required to make a
-  further partition (default is 0). This replaces the deprecated `gamma`
-  argument.
+  Numeric specifying the minimum loss reduction required to make a
+  further partition. Default is 0.
 
 - colsample_bytree:
 
-  A numeric value specifying the subsample ratio of columns when
-  constructing each tree (default is 1).
+  Numeric specifying the subsample ratio of columns when constructing
+  each tree. Default is 1.
 
 - subsample:
 
-  A numeric value specifying the subsample ratio of the training
-  instances (default is 1).
+  Numeric specifying the subsample ratio of the training instances.
+  Default is 1.
 
 - min_child_weight:
 
-  A numeric value specifying the minimum sum of instance weight needed
-  in a child (default is 1).
+  Numeric specifying the minimum sum of instance weight needed in a
+  child. Default is 1.
 
 - top_n_features:
 
-  An integer specifying the number of top features to display in the
-  importance plot (default is 10).
+  Integer specifying the number of top features to display in the
+  importance plot. Default is 10.
 
 - verbose:
 
-  An integer specifying the verbosity of the training process (default
-  is 1).
+  Integer (0, 1 or 2) controlling the verbosity of `xgb.train`. Default
+  is 0. Larger values print more information.
 
 - plot_roc:
 
-  A logical value indicating whether to plot the ROC curve and calculate
-  the AUC for binary classification (default is `FALSE`).
+  Logical indicating whether to plot the ROC curve and compute the AUC
+  for binary classification. Default is `FALSE`.
 
 - print_results:
 
-  A logical value indicating whether to print the results of the model
-  training and evaluation (default is `FALSE`). If set to `TRUE`, it
-  will print the confusion matrix, and feature importance.
+  Logical. If `TRUE`, prints the confusion matrix, top features and
+  cross-validation metrics to the console. Default is `FALSE`.
 
 - seed:
 
-  An integer specifying the seed for reproducibility (default is 123).
+  Optional integer seed for reproducibility. Default is 123.
+
+- scale:
+
+  Character string specifying a transformation to apply to numeric
+  predictors prior to model fitting. Possible values are "none", "log2",
+  "log10", "zscore" or "custom". When set to "custom" a user defined
+  function must be supplied via `custom_fn`. Defaults to "none".
+
+- custom_fn:
+
+  A custom transformation function used when `scale = "custom"`. Ignored
+  otherwise. Should take a numeric vector and return a numeric vector of
+  the same length.
 
 ## Value
 
-A list containing:
-
-- model:
-
-  The trained XGBoost model.
-
-- confusion_matrix:
-
-  The confusion matrix of the test set predictions.
-
-- importance:
-
-  The feature importance matrix for the top features.
-
-- class_mapping:
-
-  A named vector showing the mapping from class labels to numeric values
-  used for training.
-
-- cv_results:
-
-  Cross-validation results, if cross-validation was performed (otherwise
-  NULL).
-
-- plot:
-
-  A ggplot object showing the feature importance plot.
-
-## Details
-
-The function allows for training an XGBoost model on cytokine data,
-splitting the data into training and test sets. If cross-validation is
-enabled (`cv = TRUE`), it performs k-fold cross-validation and reports
-the confusion matrix and accuracy. The function also visualizes the top
-N important features using `xgb.ggplot.importance()`.
-
-## Author
-
-Shubh Saraswat
+An invisible list with elements: `model` (the trained xgboost object),
+`confusion_matrix` (test set confusion matrix), `importance` (variable
+importance matrix), `class_mapping` (mapping from class names to numeric
+labels), `cv_results` (cross-validation results when `cv=TRUE`),
+`importance_plot` (a `ggplot2` object of the top feature importance),
+and `roc_plot` (a ROC curve for binary classification when
+`plot_roc=TRUE`). All plots are printed automatically.
 
 ## Examples
 
 ``` r
-# Example usage:
 data_df0 <- ExampleData1
 data_df <- data.frame(data_df0[, 1:3], log2(data_df0[, -c(1:3)]))
 data_df <- data_df[, -c(2:3)]
 data_df <- dplyr::filter(data_df, Group != "ND")
-
 cyt_xgb(
  data = data_df,
  group_col = "Group",
- nrounds = 500,
+ nrounds = 250,
  max_depth = 4,
  min_split_loss = 0,
  learning_rate = 0.05,
@@ -203,9 +174,6 @@ cyt_xgb(
  cv = FALSE,
  objective = "multi:softprob",
  eval_metric = "auc",
- early_stopping_rounds = NULL,
- top_n_features = 10,
- verbose = 0,
  plot_roc = TRUE,
  print_results = FALSE)
 

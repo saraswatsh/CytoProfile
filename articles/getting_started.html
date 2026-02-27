@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">CytoProfile</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,417 +72,1678 @@
       <img src="../logo.png" class="logo" alt=""><h1>Getting Started with CytoProfile</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/saraswatsh/CytoProfile/blob/main/vignettes/getting_started.Rmd" class="external-link"><code>vignettes/getting_started.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/saraswatsh/CytoProfile/blob/devel/vignettes/getting_started.Rmd" class="external-link"><code>vignettes/getting_started.Rmd</code></a></small>
       <div class="d-none name"><code>getting_started.Rmd</code></div>
     </div>
 
     
     
+<p><strong>CytoProfile</strong> is an R package designed for end-to-end
+analysis and visualization of cytokine profiling data from immunological
+and clinical studies. It provides a structured workflow covering:</p>
+<ul>
+<li>Quality control and distributional assessment</li>
+<li>Exploratory visualization (boxplots, violin plots, error bar
+plots)</li>
+<li>Univariate statistical testing (t-test / Wilcoxon, ANOVA /
+Kruskal-Wallis)</li>
+<li>Multivariate methods (PCA, sPLS-DA, MINT sPLS-DA)</li>
+<li>Statistical visualizations (volcano plots, heatmaps, dual-flashlight
+plots)</li>
+<li>Machine learning classification (Random Forest, XGBoost)</li>
+</ul>
+<p>This vignette provides a guided, step-by-step tutorial for each
+function, including input data requirements, key parameters, and
+guidance on interpreting outputs.</p>
+<hr>
 <div class="section level2">
-<h2 id="cytoprofile">CytoProfile<a class="anchor" aria-label="anchor" href="#cytoprofile"></a>
+<h2 id="installation-and-dependencies">Installation and Dependencies<a class="anchor" aria-label="anchor" href="#installation-and-dependencies"></a>
 </h2>
-<p>The goal of CytoProfile is to conduct quality control using
-biological meaningful cutoff on raw measured values of cytokines.
-Specifically, test on distributional symmetry to suggest the adopt of
-transformation. Conduct exploratory analysis including summary
-statistics, generate enriched barplots, and boxplots. Further, conduct
-univariate analysis and multivariate analysis for advance analysis.</p>
 <div class="section level3">
-<h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+<h3 id="required-bioconductor-package">Required Bioconductor package<a class="anchor" aria-label="anchor" href="#required-bioconductor-package"></a>
 </h3>
-<p>Before installation of the CytoProfile package, make sure to install
-BiocManager and mixOmics packages using:</p>
+<p>CytoProfile depends on <strong>mixOmics</strong>, which must be
+installed from Bioconductor before installing CytoProfile:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">## install BiocManager</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span> </span>
-<span><span class="co">## install mixOmics </span></span>
-<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">'mixOmics'</span><span class="op">)</span></span></code></pre></div>
-<p>You can install the development version of CytoProfile from <a href="https://github.com/saraswatsh/CytoProfile" class="external-link">GitHub</a> with:</p>
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"mixOmics"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="installing-cytoprofile">Installing CytoProfile<a class="anchor" aria-label="anchor" href="#installing-cytoprofile"></a>
+</h3>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"saraswatsh/CytoProfile"</span><span class="op">)</span></span></code></pre></div>
-<p>Install CytoProfile from CRAN with:</p>
+<code class="sourceCode R"><span><span class="co"># From CRAN (stable release)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"CytoProfile"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># From GitHub (development version)</span></span>
+<span><span class="co"># install.packages("devtools")</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"saraswatsh/CytoProfile"</span>, ref <span class="op">=</span> <span class="st">"devel"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="package-loading">Package loading<a class="anchor" aria-label="anchor" href="#package-loading"></a>
+</h3>
+<p>CytoProfile imports all necessary packages internally, you do
+<strong>not</strong> need to call <code><a href="https://rdrr.io/r/base/library.html" class="external-link">library()</a></code> for its
+dependencies (e.g., <code>ggplot2</code>, <code>dplyr</code>,
+<code>mixOmics</code>). The only exception in this vignette is
+<code>dplyr</code>, which is used explicitly for data subsetting in the
+examples below and is not re-exported by CytoProfile.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"CytoProfile"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/saraswatsh/CytoProfile" class="external-link">CytoProfile</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>   <span class="co"># used only for filter() in the examples below</span></span></code></pre></div>
+<hr>
 </div>
-<div class="section level3">
-<h3 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
-</h3>
-<p>Below are examples of using the functions provided in CytoProfile.
-Any saved or generated files that are PDF or PNG format will be found at
-in the <a href="https://github.com/saraswatsh/CytoProfile/tree/main/man/figures" class="external-link">Figures
-Folder</a>.</p>
 </div>
+<div class="section level2">
+<h2 id="data-loading-and-format-requirements">1. Data Loading and Format Requirements<a class="anchor" aria-label="anchor" href="#data-loading-and-format-requirements"></a>
+</h2>
 <div class="section level3">
-<h3 id="data-loading-and-set-up">1. Data Loading and set up<a class="anchor" aria-label="anchor" href="#data-loading-and-set-up"></a>
+<h3 id="input-data-format">Input data format<a class="anchor" aria-label="anchor" href="#input-data-format"></a>
 </h3>
+<p>All CytoProfile functions expect a <strong>data frame</strong> (or
+coercible matrix) where:</p>
+<ul>
+<li>
+<strong>Cytokine columns</strong> are numeric (concentrations or
+transformed values).</li>
+<li>
+<strong>Grouping columns</strong> (e.g., disease group, treatment)
+are character or factor.</li>
+<li>There are <strong>no strict naming requirements</strong>, but column
+names must be unique. The functions internally call
+<code><a href="https://rdrr.io/r/base/make.names.html" class="external-link">make.names()</a></code> to sanitize names with special characters
+(e.g., <code>CCL-20/MIP-3A</code> becomes
+<code>CCL.20.MIP.3A</code>).</li>
+<li>Missing values (<code>NA</code>) are handled internally by most
+functions, but rows with all-missing cytokine values should be removed
+prior to analysis.</li>
+</ul>
+<p>CytoProfile ships with five example datasets
+(<code>ExampleData1</code> through <code>ExampleData5</code>).
+Throughout this vignette we use <code>ExampleData1</code>, which
+contains 297 observations of 25 cytokines along with <code>Group</code>,
+<code>Treatment</code>, and <code>Time</code> columns.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Loading all packages required</span></span>
-<span><span class="co"># Data manipulation and reshaping</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span> <span class="co"># For data filtering, grouping, and summarising.</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span> <span class="co"># For reshaping data (e.g., pivot_longer, pivot_wider).</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"ExampleData1"</span><span class="op">)</span></span>
+<span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span></span>
 <span></span>
-<span><span class="co"># Plotting and visualization</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span> <span class="co"># For creating all the ggplot-based visualizations.</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">gridExtra</span><span class="op">)</span> <span class="co"># For arranging multiple plots on a single page.</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggrepel.slowkow.com/" class="external-link">ggrepel</a></span><span class="op">)</span> <span class="co"># For improved label placement in plots (e.g., volcano plots).</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">pheatmap</span><span class="op">)</span> <span class="co"># For heatmap.2, which is used to generate heatmaps.</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">plot3D</span><span class="op">)</span> <span class="co"># For creating 3D scatter plots in PCA and sPLS-DA analyses.</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/hadley/reshape" class="external-link">reshape2</a></span><span class="op">)</span> <span class="co"># For data transformation (e.g., melt) in cross-validation plots.</span></span>
-<span></span>
-<span><span class="co"># Statistical analysis</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://www.mixOmics.org" class="external-link">mixOmics</a></span><span class="op">)</span> <span class="co"># For multivariate analyses (PCA, sPLS-DA, etc.).</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">e1071</span><span class="op">)</span> <span class="co"># For computing skewness and kurtosis.</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://xrobin.github.io/pROC/" class="external-link">pROC</a></span><span class="op">)</span> <span class="co"># For ROC curve generation in machine learning model evaluation.</span></span>
-<span></span>
-<span><span class="co"># Machine learning</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dmlc/xgboost" class="external-link">xgboost</a></span><span class="op">)</span> <span class="co"># For building XGBoost classification models.</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.stat.berkeley.edu/~breiman/RandomForests/" class="external-link">randomForest</a></span><span class="op">)</span> <span class="co"># For building Random Forest classification models.</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/topepo/caret/" class="external-link">caret</a></span><span class="op">)</span> <span class="co"># For cross-validation and other machine learning utilities.</span></span>
-<span></span>
-<span><span class="co"># Package development and document rendering</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/" class="external-link">knitr</a></span><span class="op">)</span> <span class="co"># For knitting RMarkdown files and setting chunk options.</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span> <span class="co"># For installing the development version of the package from GitHub.</span></span>
-<span></span>
-<span><span class="co"># Load in the CytoProfile package</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/saraswatsh/CytoProfile" class="external-link">CytoProfile</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Loading in data</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"ExampleData1"</span><span class="op">)</span></span>
-<span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span></span></code></pre></div>
+<span><span class="co"># Inspect structure</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 297  28</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [1] "Group"     "Treatment" "Time"      "IL-17F"    "GM-CSF"    "IFN-G"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   Group Treatment Time IL-17F GM-CSF</span></span>
+<span><span class="co">#&gt; 1   T2D  CD3/CD28   20   3.31   7.16</span></span>
+<span><span class="co">#&gt; 2   T2D  CD3/CD28   20   0.38   0.87</span></span>
+<span><span class="co">#&gt; 3   T2D  CD3/CD28   20   1.25   2.47</span></span>
+<span><span class="co">#&gt; 4   T2D  CD3/CD28   20   2.24   3.52</span></span>
+<span><span class="co">#&gt; 5   T2D  CD3/CD28   20   0.25   1.58</span></span>
+<span><span class="co">#&gt; 6   T2D  CD3/CD28   20   0.96   1.87</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">$</span><span class="va">Group</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     ND PreT2D    T2D </span></span>
+<span><span class="co">#&gt;     99     99     99</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">$</span><span class="va">Treatment</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     CD3/CD28          LPS Unstimulated </span></span>
+<span><span class="co">#&gt;           99           99           99</span></span></code></pre></div>
+<blockquote>
+<p><strong>Recommended sample size:</strong> Functions perform best with
+at least 10 samples per group. Machine learning functions (Random
+Forest, XGBoost) require larger sample sizes
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>≥</mo><annotation encoding="application/x-tex">\ge</annotation></semantics></math>
+20 per group) to produce reliable cross-validated performance
+estimates.</p>
+</blockquote>
+<hr>
 </div>
+</div>
+<div class="section level2">
+<h2 id="exploratory-data-analysis">2. Exploratory Data Analysis<a class="anchor" aria-label="anchor" href="#exploratory-data-analysis"></a>
+</h2>
 <div class="section level3">
-<h3 id="exploratory-data-analysis">2. Exploratory Data Analysis<a class="anchor" aria-label="anchor" href="#exploratory-data-analysis"></a>
+<h3 id="boxplots---cyt_bp">2.1 Boxplots - <code>cyt_bp()</code><a class="anchor" aria-label="anchor" href="#boxplots---cyt_bp"></a>
 </h3>
-<div class="section level4">
-<h4 id="boxplots">Boxplots<a class="anchor" aria-label="anchor" href="#boxplots"></a>
-</h4>
+<p><strong>Purpose:</strong> Generate boxplots for each numeric
+variable, optionally grouped by one or more categorical variables.</p>
+<p><strong>Key data requirements:</strong> - At least one numeric column
+is required. - If <code>group_by</code> is specified, those columns must
+be character or factor.</p>
+<p><strong>Key parameters:</strong></p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="39%">
+<col width="27%">
+</colgroup>
+<thead><tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>data</code></td>
+<td>Data frame or matrix</td>
+<td>-</td>
+</tr>
+<tr class="even">
+<td><code>group_by</code></td>
+<td>Column name(s) for grouping</td>
+<td><code>NULL</code></td>
+</tr>
+<tr class="odd">
+<td><code>scale</code></td>
+<td>Transformation: <code>"none"</code>, <code>"log2"</code>,
+<code>"log10"</code>, <code>"zscore"</code>, <code>"custom"</code>
+</td>
+<td><code>"none"</code></td>
+</tr>
+<tr class="even">
+<td><code>bin_size</code></td>
+<td>Max plots per page (ungrouped only)</td>
+<td><code>25</code></td>
+</tr>
+<tr class="odd">
+<td><code>y_lim</code></td>
+<td>y-axis limits, e.g. <code>c(0, 20)</code>
+</td>
+<td><code>NULL</code></td>
+</tr>
+<tr class="even">
+<td><code>output_file</code></td>
+<td>File path to save (e.g. <code>"plots.pdf"</code>). <code>NULL</code>
+displays interactively.</td>
+<td><code>NULL</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>When to use which <code>scale</code>:</strong> -
+<code>"log2"</code> or <code>"log10"</code>: when cytokine
+concentrations span several orders of magnitude or show strong
+right-skew (common for raw immunoassay data). - <code>"zscore"</code>:
+when comparing distributions on a standardized scale across cytokines
+with very different concentration ranges. - <code>"none"</code>: when
+data are already transformed.</p>
+<p><strong>Interpreting the output:</strong> - Each boxplot shows the
+median (horizontal line), interquartile range (box), 1.5x IQR whiskers,
+and individual data points (jittered). - Overlapping distributions
+between groups suggest no strong group effect for that cytokine. -
+Outliers far beyond the whiskers warrant attention - consider whether
+they represent biological extremes or measurement artefacts.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Generating boxplots to check for outliers for raw values</span></span>
-<span><span class="fu"><a href="../reference/cyt_bp.html">cyt_bp</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, pdf_title <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
-<span><span class="co"># Removing the first 3 columns to retain only continuous variables.</span></span>
-<span></span>
-<span><span class="co"># Generating boxplots to check for outliers for log2 values</span></span>
-<span><span class="fu"><a href="../reference/cyt_bp.html">cyt_bp</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, pdf_title <span class="op">=</span> <span class="cn">NULL</span>, scale <span class="op">=</span> <span class="st">"log2"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="getting_started_files/figure-html/EDA1-1.png" class="r-plt" alt="" width="42%"><img src="getting_started_files/figure-html/EDA1-2.png" class="r-plt" alt="" width="42%"></p>
-</div>
-<div class="section level4">
-<h4 id="group-specific-boxplots">Group-Specific Boxplots<a class="anchor" aria-label="anchor" href="#group-specific-boxplots"></a>
-</h4>
+<code class="sourceCode R"><span><span class="co"># Ungrouped boxplots with log2 transformation</span></span>
+<span><span class="co"># All numeric columns are plotted; up to bin_size = 25 per page</span></span>
+<span><span class="fu"><a href="../reference/cyt_bp.html">cyt_bp</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, output_file <span class="op">=</span> <span class="cn">NULL</span>, scale <span class="op">=</span> <span class="st">"log2"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="getting_started_files/figure-html/boxplots-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Raw values for group-specific boxplots</span></span>
-<span><span class="fu"><a href="../reference/cyt_bp2.html">cyt_bp2</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">5</span><span class="op">:</span><span class="fl">28</span><span class="op">)</span><span class="op">]</span>, pdf_title <span class="op">=</span> <span class="cn">NULL</span>, scale <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Log2-transformed group-specific boxplots</span></span>
-<span><span class="fu"><a href="../reference/cyt_bp2.html">cyt_bp2</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">5</span><span class="op">:</span><span class="fl">28</span><span class="op">)</span><span class="op">]</span>, pdf_title <span class="op">=</span> <span class="cn">NULL</span>, scale <span class="op">=</span> <span class="st">"log2"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="getting_started_files/figure-html/EDA2-1.png" class="r-plt" alt="" width="42%"><img src="getting_started_files/figure-html/EDA2-2.png" class="r-plt" alt="" width="42%"><img src="getting_started_files/figure-html/EDA2-3.png" class="r-plt" alt="" width="42%"><img src="getting_started_files/figure-html/EDA2-4.png" class="r-plt" alt="" width="42%"></p>
-</div>
+<code class="sourceCode R"><span><span class="co"># Grouped boxplots: one plot per cytokine, colored by Group</span></span>
+<span><span class="co"># Only passing Group and two cytokines for a concise display</span></span>
+<span><span class="fu"><a href="../reference/cyt_bp.html">cyt_bp</a></span><span class="op">(</span></span>
+<span>  <span class="va">data_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Group"</span>, <span class="st">"IL-10"</span>, <span class="st">"CCL-20/MIP-3A"</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>  group_by <span class="op">=</span> <span class="st">"Group"</span>,</span>
+<span>  scale <span class="op">=</span> <span class="st">"zscore"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="getting_started_files/figure-html/boxplots-grouped-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"><img src="getting_started_files/figure-html/boxplots-grouped-2.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<blockquote>
+<p><strong>Note:</strong> <code><a href="../reference/cyt_bp.html">cyt_bp()</a></code> invisibly returns a
+named list of <code>ggplot</code> objects, so you can retrieve and
+further modify any individual plot:
+<code>plots &lt;- cyt_bp(...); plots[["IL-10"]] + ggplot2::ggtitle("Custom title")</code>.</p>
+</blockquote>
+<hr>
 </div>
 <div class="section level3">
-<h3 id="skewness-and-kurtosis">3. Skewness and Kurtosis<a class="anchor" aria-label="anchor" href="#skewness-and-kurtosis"></a>
+<h3 id="violin-plots---cyt_violin">2.2 Violin Plots - <code>cyt_violin()</code><a class="anchor" aria-label="anchor" href="#violin-plots---cyt_violin"></a>
 </h3>
+<p><strong>Purpose:</strong> Similar to <code><a href="../reference/cyt_bp.html">cyt_bp()</a></code> but shows
+the full data distribution shape using kernel density estimation, making
+it especially informative for bimodal or asymmetric cytokine
+distributions.</p>
+<p><strong>Key parameters</strong> (same as <code><a href="../reference/cyt_bp.html">cyt_bp()</a></code>,
+plus):</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="39%">
+<col width="27%">
+</colgroup>
+<thead><tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td><code>boxplot_overlay</code></td>
+<td>Draw a narrow boxplot inside each violin to show median and IQR</td>
+<td><code>FALSE</code></td>
+</tr></tbody>
+</table>
+<p><strong>Interpreting the output:</strong> - A wide violin belly
+indicates many observations at that value. - Bimodal violins (two wide
+regions) suggest subpopulations within a group - worth investigating
+with further stratification. - Setting
+<code>boxplot_overlay = TRUE</code> combines density estimation with
+quartile summaries in one panel.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Histogram for overall raw data</span></span>
-<span><span class="fu"><a href="../reference/cyt_skku.html">cyt_skku</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, pdf_title <span class="op">=</span> <span class="cn">NULL</span>, group_cols <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Histogram with grouping (e.g., "Group")</span></span>
-<span><span class="fu"><a href="../reference/cyt_skku.html">cyt_skku</a></span><span class="op">(</span><span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, pdf_title <span class="op">=</span> <span class="cn">NULL</span>, group_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Group"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="getting_started_files/figure-html/EDA3-1.png" class="r-plt" alt="" width="42%"><img src="getting_started_files/figure-html/EDA3-2.png" class="r-plt" alt="" width="42%"></p>
-</div>
-<div class="section level3">
-<h3 id="error-bar-plots">4. Error Bar Plots<a class="anchor" aria-label="anchor" href="#error-bar-plots"></a>
-</h3>
-<div class="section level4">
-<h4 id="basic-error-bar-plot">Basic Error Bar Plot<a class="anchor" aria-label="anchor" href="#basic-error-bar-plot"></a>
-</h4>
+<code class="sourceCode R"><span><span class="co"># Ungrouped violin plots with z-score scaling</span></span>
+<span><span class="fu"><a href="../reference/cyt_violin.html">cyt_violin</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, output_file <span class="op">=</span> <span class="cn">NULL</span>, scale <span class="op">=</span> <span class="st">"zscore"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="getting_started_files/figure-html/violins-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Generating basic error bar plots</span></span>
-<span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span></span>
-<span><span class="fu"><a href="../reference/cyt_errbp.html">cyt_errbp</a></span><span class="op">(</span></span>
-<span>  <span class="va">data_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Group"</span>, <span class="st">"CCL.20.MIP.3A"</span>, <span class="st">"IL.10"</span><span class="op">)</span><span class="op">]</span>,</span>
-<span>  group_col <span class="op">=</span> <span class="st">"Group"</span>,</span>
-<span>  p_lab <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  es_lab <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  class_symbol <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  x_lab <span class="op">=</span> <span class="st">"Cytokines"</span>,</span>
-<span>  y_lab <span class="op">=</span> <span class="st">"Concentrations in log2 scale"</span>,</span>
-<span>  log2 <span class="op">=</span> <span class="cn">TRUE</span></span>
+<code class="sourceCode R"><span><span class="co"># Grouped violin plots with boxplot overlay and log2 scaling</span></span>
+<span><span class="fu"><a href="../reference/cyt_violin.html">cyt_violin</a></span><span class="op">(</span></span>
+<span>  <span class="va">data_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Group"</span>, <span class="st">"IL-10"</span>, <span class="st">"CCL-20/MIP-3A"</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>  group_by <span class="op">=</span> <span class="st">"Group"</span>,</span>
+<span>  boxplot_overlay <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  scale <span class="op">=</span> <span class="st">"log2"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="getting_started_files/figure-html/EDA4-1.png" class="r-plt" alt="" width="42%"></p>
-</div>
-<div class="section level4">
-<h4 id="enriched-error-bar-plot-with-p-values-and-effect-sizes">Enriched Error Bar Plot with p-values and Effect Sizes<a class="anchor" aria-label="anchor" href="#enriched-error-bar-plot-with-p-values-and-effect-sizes"></a>
-</h4>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Generating Error Bar Plot enriched with p-value and effect size</span></span>
-<span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span></span>
-<span><span class="fu"><a href="../reference/cyt_errbp.html">cyt_errbp</a></span><span class="op">(</span></span>
-<span>  <span class="va">data_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Group"</span>, <span class="st">"CCL.20.MIP.3A"</span>, <span class="st">"IL.10"</span><span class="op">)</span><span class="op">]</span>,</span>
-<span>  group_col <span class="op">=</span> <span class="st">"Group"</span>,</span>
-<span>  p_lab <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  es_lab <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  class_symbol <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  x_lab <span class="op">=</span> <span class="st">"Cytokines"</span>,</span>
-<span>  y_lab <span class="op">=</span> <span class="st">"Concentrations in log2 scale"</span>,</span>
-<span>  log2 <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p><img src="getting_started_files/figure-html/EDA5-1.png" class="r-plt" alt="" width="42%"></p>
-</div>
+<p><img src="getting_started_files/figure-html/violins-grouped-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"><img src="getting_started_files/figure-html/violins-grouped-2.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<hr>
 </div>
 <div class="section level3">
-<h3 id="univariate-analysis">5. Univariate Analysis<a class="anchor" aria-label="anchor" href="#univariate-analysis"></a>
+<h3 id="skewness-and-kurtosis---cyt_skku">2.3 Skewness and Kurtosis - <code>cyt_skku()</code><a class="anchor" aria-label="anchor" href="#skewness-and-kurtosis---cyt_skku"></a>
 </h3>
-<div class="section level4">
-<h4 id="two-sample-t-test-and-mann-whitney-u-test">Two Sample T-test and Mann Whitney U Test<a class="anchor" aria-label="anchor" href="#two-sample-t-test-and-mann-whitney-u-test"></a>
-</h4>
+<p><strong>Purpose:</strong> Assess whether cytokine distributions are
+symmetric (skewness
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>≈</mo><annotation encoding="application/x-tex">\approx</annotation></semantics></math>
+0) and whether they have tails heavier than a normal distribution
+(kurtosis &gt; 0). This is important for deciding whether a log or other
+transformation is appropriate before statistical testing.</p>
+<p><strong>Key data requirements:</strong> - Numeric measurement columns
+only (exclude grouping columns via <code>group_cols</code>). - All
+values should be positive if log2 transformation will be applied
+downstream, since <code><a href="../reference/cyt_skku.html">cyt_skku()</a></code> uses log2 internally for
+comparison.</p>
+<p><strong>Key parameters:</strong></p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="39%">
+<col width="27%">
+</colgroup>
+<thead><tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>group_cols</code></td>
+<td>Character vector of grouping column names</td>
+<td><code>NULL</code></td>
+</tr>
+<tr class="even">
+<td><code>print_res_raw</code></td>
+<td>Return summary stats for raw data</td>
+<td><code>FALSE</code></td>
+</tr>
+<tr class="odd">
+<td><code>print_res_log</code></td>
+<td>Return summary stats for log2-transformed data</td>
+<td><code>FALSE</code></td>
+</tr>
+<tr class="even">
+<td><code>output_file</code></td>
+<td>File path to save plots</td>
+<td><code>NULL</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Interpreting the output:</strong> - Two histograms are
+produced: one for skewness, one for kurtosis, comparing raw data (red)
+and log2-transformed data (blue). - <strong>Skewness:</strong> Values
+far from 0 indicate asymmetry. Positive skewness (right tail) is common
+in raw cytokine data. After log2 transformation, distributions closer to
+0 indicate better symmetry. - <strong>Kurtosis:</strong> Positive excess
+kurtosis indicates heavier-than-normal tails (more outliers expected).
+After log2 transformation, kurtosis values closer to 0 suggest the
+transformation improved normality. - If log2 transformation
+substantially reduces both skewness and kurtosis compared to raw values,
+it is recommended as a pre-processing step.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Overall distributional assessment (no grouping)</span></span>
+<span><span class="fu"><a href="../reference/cyt_skku.html">cyt_skku</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, output_file <span class="op">=</span> <span class="cn">NULL</span>, group_cols <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+<p><img src="getting_started_files/figure-html/skku-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Performing Test</span></span>
-<span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data_df</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span>, <span class="va">Treatment</span> <span class="op">!=</span> <span class="st">"Unstimulated"</span><span class="op">)</span></span>
-<span><span class="co"># Test example</span></span>
-<span><span class="fu"><a href="../reference/cyt_ttest.html">cyt_ttest</a></span><span class="op">(</span></span>
-<span>  <span class="va">data_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">]</span>,</span>
+<code class="sourceCode R"><span><span class="co"># Grouped assessment by "Group"</span></span>
+<span><span class="fu"><a href="../reference/cyt_skku.html">cyt_skku</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, output_file <span class="op">=</span> <span class="cn">NULL</span>, group_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Group"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="getting_started_files/figure-html/skku-grouped-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="error-bar-plots---cyt_errbp">2.4 Error Bar Plots - <code>cyt_errbp()</code><a class="anchor" aria-label="anchor" href="#error-bar-plots---cyt_errbp"></a>
+</h3>
+<p><strong>Purpose:</strong> Visualize the central tendency and spread
+of each cytokine across groups, with optional statistical annotations
+(p-values and effect sizes) comparing each group to the first (baseline)
+group.</p>
+<p><strong>Key data requirements:</strong> - At least one numeric column
+and one grouping column. - The first factor level of
+<code>group_col</code> is used as the baseline for comparisons.</p>
+<p><strong>Key parameters:</strong></p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="39%">
+<col width="27%">
+</colgroup>
+<thead><tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>group_col</code></td>
+<td>Name of the grouping column</td>
+<td>-</td>
+</tr>
+<tr class="even">
+<td><code>stat</code></td>
+<td>Central tendency: <code>"mean"</code> or <code>"median"</code>
+</td>
+<td><code>"mean"</code></td>
+</tr>
+<tr class="odd">
+<td><code>error</code></td>
+<td>Spread: <code>"se"</code> (standard error), <code>"sd"</code>,
+<code>"mad"</code>, <code>"ci"</code> (95% CI)</td>
+<td><code>"se"</code></td>
+</tr>
+<tr class="even">
+<td><code>scale</code></td>
+<td>Data transformation (see <code><a href="../reference/cyt_bp.html">cyt_bp()</a></code>)</td>
+<td><code>"none"</code></td>
+</tr>
+<tr class="odd">
+<td><code>method</code></td>
+<td>Statistical test: <code>"auto"</code>, <code>"ttest"</code>,
+<code>"wilcox"</code>
+</td>
+<td><code>"auto"</code></td>
+</tr>
+<tr class="even">
+<td><code>p_lab</code></td>
+<td>Show p-value annotations</td>
+<td><code>TRUE</code></td>
+</tr>
+<tr class="odd">
+<td><code>es_lab</code></td>
+<td>Show effect size annotations</td>
+<td><code>TRUE</code></td>
+</tr>
+<tr class="even">
+<td><code>class_symbol</code></td>
+<td>Use symbols (<code>*</code>, <code>&gt;&gt;</code>) rather than
+numeric values</td>
+<td><code>FALSE</code></td>
+</tr>
+<tr class="odd">
+<td><code>p_adjust_method</code></td>
+<td>p-value correction method (e.g. <code>"BH"</code>)</td>
+<td><code>NULL</code></td>
+</tr>
+<tr class="even">
+<td><code>output_file</code></td>
+<td>File path to save</td>
+<td><code>NULL</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Interpreting the output:</strong> - Each facet panel
+corresponds to one cytokine. Bars show the central tendency; error bars
+show spread. - P-value labels above bars indicate statistical
+significance versus the baseline group. Values
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>≤</mo><annotation encoding="application/x-tex">\le</annotation></semantics></math>
+0.05 are conventionally significant. - Effect size labels indicate the
+practical magnitude of the difference: larger absolute values denote
+greater differences. For t-test comparisons, this is Cohen’s d; for
+Wilcoxon, the rank-biserial correlation. -
+<code>class_symbol = TRUE</code> renders significance as stars
+(<code>*</code> to <code>*****</code>) and effect size as arrows
+(<code>&gt;</code> to <code>&gt;&gt;&gt;&gt;&gt;</code>), following
+conventions used in the accompanying publication.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Basic error bar plot: default mean +/- SE</span></span>
+<span><span class="va">df_err</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Group"</span>, <span class="st">"CCL-20/MIP-3A"</span>, <span class="st">"IL-10"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="fu"><a href="../reference/cyt_errbp.html">cyt_errbp</a></span><span class="op">(</span></span>
+<span>  <span class="va">df_err</span>,</span>
+<span>  group_col <span class="op">=</span> <span class="st">"Group"</span>,</span>
+<span>  x_lab <span class="op">=</span> <span class="st">"Group"</span>,</span>
+<span>  y_lab <span class="op">=</span> <span class="st">"Concentration"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="getting_started_files/figure-html/errbp-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Mean +/- SD with log2 transformation, symbols, and t-test</span></span>
+<span><span class="fu"><a href="../reference/cyt_errbp.html">cyt_errbp</a></span><span class="op">(</span></span>
+<span>  <span class="va">df_err</span>,</span>
+<span>  group_col <span class="op">=</span> <span class="st">"Group"</span>,</span>
+<span>  stat <span class="op">=</span> <span class="st">"mean"</span>,</span>
+<span>  error <span class="op">=</span> <span class="st">"sd"</span>,</span>
 <span>  scale <span class="op">=</span> <span class="st">"log2"</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  class_symbol <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"ttest"</span>,</span>
+<span>  x_lab <span class="op">=</span> <span class="st">"Group"</span>,</span>
+<span>  y_lab <span class="op">=</span> <span class="st">"Concentration (log2)"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="getting_started_files/figure-html/errbp-symbols-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<blockquote>
+<p><strong>Tip:</strong> Use <code>p_adjust_method = "BH"</code> when
+analysing a large cytokine panel to control the false discovery rate
+across multiple comparisons.</p>
+</blockquote>
+<hr>
+</div>
+</div>
+<div class="section level2">
+<h2 id="univariate-analysis">3. Univariate Analysis<a class="anchor" aria-label="anchor" href="#univariate-analysis"></a>
+</h2>
+<div class="section level3">
+<h3 id="two-group-comparisons---cyt_univariate">3.1 Two-group comparisons - <code>cyt_univariate()</code><a class="anchor" aria-label="anchor" href="#two-group-comparisons---cyt_univariate"></a>
+</h3>
+<p><strong>Purpose:</strong> Perform pairwise statistical tests between
+exactly two groups for each numeric cytokine column. For each
+categorical predictor with exactly two levels, either a Student’s t-test
+or Wilcoxon rank-sum test is applied to each numeric outcome.</p>
+<p><strong>Key data requirements:</strong> - At least one
+factor/character column with <strong>exactly two</strong> levels. - At
+least one numeric column. - Both groups must have
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>≥</mo><annotation encoding="application/x-tex">\ge</annotation></semantics></math>
+2 observations with non-zero variance.</p>
+<p><strong>Automatic test selection
+(<code>method = "auto"</code>):</strong> When
+<code>method = "auto"</code>, a Shapiro-Wilk normality test is applied
+to the pooled values for each cytokine within a comparison. If both
+groups pass normality (p &gt; 0.05), a t-test is used; otherwise, the
+Wilcoxon rank-sum (Mann-Whitney U) test is used. This selection is done
+independently for each cytokine. If you prefer a consistent approach,
+set <code>method = "ttest"</code> or <code>method = "wilcox"</code>
+explicitly.</p>
+<p><strong>Key parameters:</strong></p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="39%">
+<col width="27%">
+</colgroup>
+<thead><tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>scale</code></td>
+<td>Transformation applied before testing</td>
+<td><code>NULL</code></td>
+</tr>
+<tr class="even">
+<td><code>method</code></td>
+<td>
+<code>"auto"</code>, <code>"ttest"</code>, or
+<code>"wilcox"</code>
+</td>
+<td><code>"auto"</code></td>
+</tr>
+<tr class="odd">
+<td><code>format_output</code></td>
+<td>Return as tidy data frame (<code>TRUE</code>) or list of test
+objects (<code>FALSE</code>)</td>
+<td><code>FALSE</code></td>
+</tr>
+<tr class="even">
+<td><code>p_adjust_method</code></td>
+<td>Multiple testing correction (e.g. <code>"BH"</code>)</td>
+<td><code>NULL</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Interpreting the output:</strong> - With
+<code>format_output = TRUE</code>, a data frame is returned with
+columns: <code>Outcome</code> (cytokine), <code>Categorical</code>
+(grouping variable), <code>Comparison</code> (group A vs group B),
+<code>Test</code> (method used), <code>Estimate</code>,
+<code>Statistic</code>, and <code>P_value</code>. - P-values &lt; 0.05
+indicate a statistically significant difference between groups for that
+cytokine. - When testing many cytokines simultaneously, use
+<code>p_adjust_method = "BH"</code> to control the false discovery rate;
+the adjusted column <code>P_adj</code> will be appended.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">data_uni</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">data_uni</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data_uni</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span>, <span class="va">Treatment</span> <span class="op">!=</span> <span class="st">"Unstimulated"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Tidy output with log2 transformation and automatic test selection</span></span>
+<span><span class="fu"><a href="../reference/cyt_univariate.html">cyt_univariate</a></span><span class="op">(</span></span>
+<span>  <span class="va">data_uni</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Group"</span>, <span class="st">"Treatment"</span>, <span class="st">"IL-10"</span>, <span class="st">"CCL-20/MIP-3A"</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>  scale    <span class="op">=</span> <span class="st">"log2"</span>,</span>
+<span>  method   <span class="op">=</span> <span class="st">"auto"</span>,</span>
+<span>  format_output <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  p_adjust_method <span class="op">=</span> <span class="st">"BH"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt;         Outcome Categorical      Comparison</span></span>
+<span><span class="co">#&gt; 1         IL.10       Group   PreT2D vs T2D</span></span>
+<span><span class="co">#&gt; 2 CCL.20.MIP.3A       Group   PreT2D vs T2D</span></span>
+<span><span class="co">#&gt; 3         IL.10   Treatment CD3/CD28 vs LPS</span></span>
+<span><span class="co">#&gt; 4 CCL.20.MIP.3A   Treatment CD3/CD28 vs LPS</span></span>
+<span><span class="co">#&gt;                                                Test Estimate Statistic P_value</span></span>
+<span><span class="co">#&gt; 1 Wilcoxon rank sum test with continuity correction   -0.956    1625.0   0.012</span></span>
+<span><span class="co">#&gt; 2 Wilcoxon rank sum test with continuity correction   -1.575    1050.5   0.000</span></span>
+<span><span class="co">#&gt; 3 Wilcoxon rank sum test with continuity correction    1.690    3091.0   0.000</span></span>
+<span><span class="co">#&gt; 4 Wilcoxon rank sum test with continuity correction    0.488    2509.5   0.132</span></span>
+<span><span class="co">#&gt;   P_adj</span></span>
+<span><span class="co">#&gt; 1 0.016</span></span>
+<span><span class="co">#&gt; 2 0.000</span></span>
+<span><span class="co">#&gt; 3 0.000</span></span>
+<span><span class="co">#&gt; 4 0.132</span></span></code></pre></div>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="multi-group-comparisons---cyt_univariate_multi">3.2 Multi-group comparisons -
+<code>cyt_univariate_multi()</code><a class="anchor" aria-label="anchor" href="#multi-group-comparisons---cyt_univariate_multi"></a>
+</h3>
+<p><strong>Purpose:</strong> Extend univariate testing to categorical
+predictors with <strong>more than two</strong> levels using either ANOVA
+(parametric) or Kruskal-Wallis (non-parametric) global tests, followed
+by pairwise post-hoc comparisons.</p>
+<p><strong>Key data requirements:</strong> - At least one
+factor/character column with <strong>more than two</strong> levels. - At
+least one numeric column. - ANOVA is restricted to predictors with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>≤</mo><annotation encoding="application/x-tex">\le</annotation></semantics></math>
+10 levels.</p>
+<p><strong>Key parameters:</strong></p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="39%">
+<col width="27%">
+</colgroup>
+<thead><tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>method</code></td>
+<td>
+<code>"anova"</code> (Tukey HSD post-hoc) or <code>"kruskal"</code>
+(pairwise Wilcoxon)</td>
+<td><code>"anova"</code></td>
+</tr>
+<tr class="even">
+<td><code>cat_vars</code></td>
+<td>Character vector of categorical column names to test</td>
+<td>
+<code>NULL</code> (auto-detect)</td>
+</tr>
+<tr class="odd">
+<td><code>cont_vars</code></td>
+<td>Character vector of numeric column names to test</td>
+<td>
+<code>NULL</code> (auto-detect)</td>
+</tr>
+<tr class="even">
+<td><code>p_adjust_method</code></td>
+<td>Correction method for pairwise p-values</td>
+<td><code>"BH"</code></td>
+</tr>
+<tr class="odd">
+<td><code>format_output</code></td>
+<td>Return as tidy data frame</td>
+<td><code>FALSE</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Interpreting the output:</strong> - With
+<code>format_output = TRUE</code>, a data frame with columns
+<code>Outcome</code>, <code>Categorical</code>, <code>Comparison</code>,
+and <code>P_adj</code> is returned. - Each row represents one pairwise
+comparison for one cytokine. <code>P_adj</code> values &lt; 0.05
+indicate significant pairwise differences after multiple testing
+correction. - Use <code>method = "kruskal"</code> when cytokine data are
+non-normal or when sample sizes are small.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Kruskal-Wallis with pairwise Wilcoxon for multi-group comparison</span></span>
+<span><span class="fu"><a href="../reference/cyt_univariate_multi.html">cyt_univariate_multi</a></span><span class="op">(</span></span>
+<span>  <span class="va">ExampleData1</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Group"</span>, <span class="st">"IL-10"</span>, <span class="st">"CCL-20/MIP-3A"</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"kruskal"</span>,</span>
 <span>  format_output <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; $results</span></span>
-<span><span class="co">#&gt;   Outcome Categorical      Comparison</span></span>
-<span><span class="co">#&gt; 1   IFN.G       Group   PreT2D vs T2D</span></span>
-<span><span class="co">#&gt; 2   IL.10       Group   PreT2D vs T2D</span></span>
-<span><span class="co">#&gt; 3   IFN.G   Treatment CD3/CD28 vs LPS</span></span>
-<span><span class="co">#&gt; 4   IL.10   Treatment CD3/CD28 vs LPS</span></span>
-<span><span class="co">#&gt;                                                Test Estimate Statistic P_value</span></span>
-<span><span class="co">#&gt; 1 Wilcoxon rank sum test with continuity correction   -2.463    1599.0   0.008</span></span>
-<span><span class="co">#&gt; 2 Wilcoxon rank sum test with continuity correction   -0.956    1625.0   0.012</span></span>
-<span><span class="co">#&gt; 3 Wilcoxon rank sum test with continuity correction    9.024    4132.5   0.000</span></span>
-<span><span class="co">#&gt; 4 Wilcoxon rank sum test with continuity correction    1.690    3091.0   0.000</span></span></code></pre></div>
-</div>
-<div class="section level4">
-<h4 id="anova-comparisons-test">ANOVA Comparisons Test<a class="anchor" aria-label="anchor" href="#anova-comparisons-test"></a>
-</h4>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Perform ANOVA comparisons test (example with 2 cytokines)</span></span>
-<span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="fu"><a href="../reference/cyt_anova.html">cyt_anova</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">]</span>, format_output <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                        Outcome Categorical            Comparison  P_adj</span></span>
-<span><span class="co">#&gt; PreT2D-ND                IFN.G       Group             PreT2D-ND 0.0883</span></span>
-<span><span class="co">#&gt; T2D-ND                   IFN.G       Group                T2D-ND 0.9779</span></span>
-<span><span class="co">#&gt; T2D-PreT2D               IFN.G       Group            T2D-PreT2D 0.0550</span></span>
-<span><span class="co">#&gt; PreT2D-ND1               IL.10       Group             PreT2D-ND 0.7745</span></span>
-<span><span class="co">#&gt; T2D-ND1                  IL.10       Group                T2D-ND 0.1546</span></span>
-<span><span class="co">#&gt; T2D-PreT2D1              IL.10       Group            T2D-PreT2D 0.0316</span></span>
-<span><span class="co">#&gt; LPS-CD3/CD28             IFN.G   Treatment          LPS-CD3/CD28 0.0000</span></span>
-<span><span class="co">#&gt; Unstimulated-CD3/CD28    IFN.G   Treatment Unstimulated-CD3/CD28 0.0000</span></span>
-<span><span class="co">#&gt; Unstimulated-LPS         IFN.G   Treatment      Unstimulated-LPS 0.9988</span></span>
-<span><span class="co">#&gt; LPS-CD3/CD281            IL.10   Treatment          LPS-CD3/CD28 0.0000</span></span>
-<span><span class="co">#&gt; Unstimulated-CD3/CD281   IL.10   Treatment Unstimulated-CD3/CD28 0.0000</span></span>
-<span><span class="co">#&gt; Unstimulated-LPS1        IL.10   Treatment      Unstimulated-LPS 0.0001</span></span></code></pre></div>
+<span><span class="co">#&gt;         Outcome Categorical Comparison  P_adj</span></span>
+<span><span class="co">#&gt; 1         IL.10       Group  PreT2D-ND 0.2995</span></span>
+<span><span class="co">#&gt; 2         IL.10       Group     T2D-ND 0.3181</span></span>
+<span><span class="co">#&gt; 3         IL.10       Group T2D-PreT2D 0.0849</span></span>
+<span><span class="co">#&gt; 4 CCL.20.MIP.3A       Group  PreT2D-ND 0.0518</span></span>
+<span><span class="co">#&gt; 5 CCL.20.MIP.3A       Group     T2D-ND 0.0332</span></span>
+<span><span class="co">#&gt; 6 CCL.20.MIP.3A       Group T2D-PreT2D 0.0001</span></span></code></pre></div>
+<hr>
 </div>
 </div>
+<div class="section level2">
+<h2 id="statistical-visualizations">4. Statistical Visualizations<a class="anchor" aria-label="anchor" href="#statistical-visualizations"></a>
+</h2>
 <div class="section level3">
-<h3 id="multivariate-analysis">6. Multivariate Analysis<a class="anchor" aria-label="anchor" href="#multivariate-analysis"></a>
+<h3 id="volcano-plot---cyt_volc">4.1 Volcano Plot - <code>cyt_volc()</code><a class="anchor" aria-label="anchor" href="#volcano-plot---cyt_volc"></a>
 </h3>
-<div class="section level4">
-<h4 id="partial-least-squares-discriminant-analysis-pls-da">Partial Least Squares Discriminant Analysis (PLS-DA)<a class="anchor" aria-label="anchor" href="#partial-least-squares-discriminant-analysis-pls-da"></a>
-</h4>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># cyt_plsda function.</span></span>
-<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span> <span class="op">&amp;</span> <span class="va">Treatment</span> <span class="op">==</span> <span class="st">"CD3/CD28"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/cyt_splsda.html">cyt_splsda</a></span><span class="op">(</span></span>
-<span>  <span class="va">data_df</span>,</span>
-<span>  pdf_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"purple"</span><span class="op">)</span>,</span>
-<span>  bg <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  scale <span class="op">=</span> <span class="st">"log2"</span>,</span>
-<span>  ellipse <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  conf_mat <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  var_num <span class="op">=</span> <span class="fl">25</span>,</span>
-<span>  cv_opt <span class="op">=</span> <span class="st">"loocv"</span>,</span>
-<span>  comp_num <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  pch_values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">4</span><span class="op">)</span>,</span>
-<span>  group_col <span class="op">=</span> <span class="st">"Group"</span>,</span>
-<span>  group_col2 <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
-<span>  roc <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p><img src="getting_started_files/figure-html/Multivariate1-1.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate1-2.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate1-3.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate1-4.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate1-5.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate1-6.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate1-7.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate1-8.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate1-9.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate1-10.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate1-11.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate1-12.png" class="r-plt" alt="" width="25%"></p>
-</div>
-<div class="section level4">
-<h4 id="multivariate-integration-partial-least-squares-discriminant-analysis-pls-da">Multivariate INTegration Partial Least Squares Discriminant Analysis
-(PLS-DA)<a class="anchor" aria-label="anchor" href="#multivariate-integration-partial-least-squares-discriminant-analysis-pls-da"></a>
-</h4>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># cyt_mint_plsda function.</span></span>
-<span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">ExampleData5</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data_df</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/cyt_mint_splsda.html">cyt_mint_splsda</a></span><span class="op">(</span></span>
-<span>  <span class="va">data_df</span>,</span>
-<span>  group_col <span class="op">=</span> <span class="st">"Group"</span>,</span>
-<span>  batch_col <span class="op">=</span> <span class="st">"Batch"</span>,</span>
-<span>  colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"purple"</span><span class="op">)</span>,</span>
-<span>  ellipse <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  var_num <span class="op">=</span> <span class="fl">25</span>,</span>
-<span>  comp_num <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  scale <span class="op">=</span> <span class="st">"log2"</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p><img src="getting_started_files/figure-html/Multivariate2-1.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate2-2.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate2-3.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate2-4.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate2-5.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate2-6.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate2-7.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate2-8.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate2-9.png" class="r-plt" alt="" width="25%"></p>
-</div>
-<div class="section level4">
-<h4 id="principal-component-analysis-pca">Principal Component Analysis (PCA)<a class="anchor" aria-label="anchor" href="#principal-component-analysis-pca"></a>
-</h4>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">23</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span> <span class="op">&amp;</span> <span class="va">Treatment</span> <span class="op">!=</span> <span class="st">"Unstimulated"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/cyt_pca.html">cyt_pca</a></span><span class="op">(</span></span>
-<span>  <span class="va">data_df</span>,</span>
-<span>  pdf_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"red2"</span><span class="op">)</span>,</span>
-<span>  scale <span class="op">=</span> <span class="st">"log2"</span>,</span>
-<span>  comp_num <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  pch_values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">4</span><span class="op">)</span>,</span>
-<span>  group_col <span class="op">=</span> <span class="st">"Group"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p><img src="getting_started_files/figure-html/Multivariate3-1.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate3-2.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate3-3.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate3-4.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate3-5.png" class="r-plt" alt="" width="25%"><img src="getting_started_files/figure-html/Multivariate3-6.png" class="r-plt" alt="" width="25%"></p>
-</div>
-</div>
-<div class="section level3">
-<h3 id="statistical-visualizations">7. Statistical Visualizations<a class="anchor" aria-label="anchor" href="#statistical-visualizations"></a>
-</h3>
-<div class="section level4">
-<h4 id="volcano-plot">Volcano Plot<a class="anchor" aria-label="anchor" href="#volcano-plot"></a>
-</h4>
+<p><strong>Purpose:</strong> Visualize fold change versus statistical
+significance for all cytokines between two groups simultaneously,
+highlighting cytokines that are both biologically meaningful (large fold
+change) and statistically significant.</p>
+<p><strong>Key data requirements:</strong> - One grouping column and
+multiple numeric columns. - Both conditions specified must exist as
+levels of <code>group_col</code>.</p>
+<p><strong>Key parameters:</strong></p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="39%">
+<col width="27%">
+</colgroup>
+<thead><tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>group_col</code></td>
+<td>Grouping column name</td>
+<td>-</td>
+</tr>
+<tr class="even">
+<td>
+<code>cond1</code>, <code>cond2</code>
+</td>
+<td>The two conditions to compare</td>
+<td>
+<code>NULL</code> (all pairwise)</td>
+</tr>
+<tr class="odd">
+<td><code>fold_change_thresh</code></td>
+<td>Fold change threshold (original scale)</td>
+<td><code>2</code></td>
+</tr>
+<tr class="even">
+<td><code>p_value_thresh</code></td>
+<td>p-value significance threshold</td>
+<td><code>0.05</code></td>
+</tr>
+<tr class="odd">
+<td><code>top_labels</code></td>
+<td>Number of top cytokines to label</td>
+<td><code>10</code></td>
+</tr>
+<tr class="even">
+<td><code>method</code></td>
+<td>
+<code>"ttest"</code> or <code>"wilcox"</code>
+</td>
+<td><code>"ttest"</code></td>
+</tr>
+<tr class="odd">
+<td><code>p_adjust_method</code></td>
+<td>Multiple testing correction</td>
+<td><code>NULL</code></td>
+</tr>
+<tr class="even">
+<td><code>add_effect</code></td>
+<td>Compute and return effect sizes</td>
+<td><code>FALSE</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Interpreting the output:</strong> - <strong>x-axis:</strong>
+log2 fold change (cond2 / cond1). Positive values indicate higher
+expression in <code>cond2</code>; negative values in <code>cond1</code>.
+- <strong>y-axis:</strong> -log10(p-value). Higher values = more
+significant. - <strong>Dashed lines:</strong> Vertical lines mark the
++/-log2 fold change threshold; the horizontal line marks the -log10
+p-value threshold. - <strong>Red points:</strong> Cytokines exceeding
+both thresholds - these are the candidates most likely to be
+biologically relevant between the two conditions. -
+<strong>Labels:</strong> The <code>top_labels</code> cytokines with the
+most significant p-values are labelled.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Generating Volcano Plot</span></span>
-<span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="fu"><a href="../reference/cyt_volc.html">cyt_volc</a></span><span class="op">(</span></span>
-<span>  <span class="va">data_df</span>,</span>
+<code class="sourceCode R"><span><span class="va">data_volc</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span>
+<span></span>
+<span><span class="va">volc_plots</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cyt_volc.html">cyt_volc</a></span><span class="op">(</span></span>
+<span>  <span class="va">data_volc</span>,</span>
 <span>  group_col <span class="op">=</span> <span class="st">"Group"</span>,</span>
 <span>  cond1 <span class="op">=</span> <span class="st">"T2D"</span>,</span>
 <span>  cond2 <span class="op">=</span> <span class="st">"ND"</span>,</span>
 <span>  fold_change_thresh <span class="op">=</span> <span class="fl">2.0</span>,</span>
-<span>  top_labels <span class="op">=</span> <span class="fl">15</span></span>
+<span>  p_value_thresh <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  top_labels <span class="op">=</span> <span class="fl">15</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"ttest"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; $`T2D vs ND`</span></span></code></pre></div>
-<p><img src="getting_started_files/figure-html/EDA6-1.png" class="r-plt" alt="" width="42%"></p>
-</div>
-<div class="section level4">
-<h4 id="heatmap">Heatmap<a class="anchor" aria-label="anchor" href="#heatmap"></a>
-</h4>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Generating Heat map</span></span>
-<span><span class="fu"><a href="../reference/cyt_heatmap.html">cyt_heatmap</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">data_df</span>,</span>
-<span>  scale <span class="op">=</span> <span class="st">"log2"</span>, <span class="co"># Optional scaling</span></span>
-<span>  annotation_col <span class="op">=</span> <span class="st">"Group"</span>,</span>
-<span>  title <span class="op">=</span> <span class="cn">NULL</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p><img src="getting_started_files/figure-html/EDA7-1.png" class="r-plt" alt="" width="42%"></p>
-</div>
-<div class="section level4">
-<h4 id="dual-flashlight-plot">Dual Flashlight Plot<a class="anchor" aria-label="anchor" href="#dual-flashlight-plot"></a>
-</h4>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Generating dual flashlights plot</span></span>
-<span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="va">dfp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cyt_dualflashplot.html">cyt_dualflashplot</a></span><span class="op">(</span></span>
-<span>  <span class="va">data_df</span>,</span>
-<span>  group_var <span class="op">=</span> <span class="st">"Group"</span>,</span>
-<span>  group1 <span class="op">=</span> <span class="st">"T2D"</span>,</span>
-<span>  group2 <span class="op">=</span> <span class="st">"ND"</span>,</span>
-<span>  ssmd_thresh <span class="op">=</span> <span class="op">-</span><span class="fl">0.2</span>,</span>
-<span>  log2fc_thresh <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  top_labels <span class="op">=</span> <span class="fl">10</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co"># Print the plot</span></span>
-<span><span class="va">dfp</span></span>
-<span><span class="co"># Print the table data used for plotting</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">dfp</span><span class="op">$</span><span class="va">data</span>, n <span class="op">=</span> <span class="fl">25</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 25 × 11</span></span></span>
-<span><span class="co">#&gt;    cytokine         mean_ND mean_PreT2D   mean_T2D variance_ND variance_PreT2D</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> CCL.20.MIP.3A   634.        404.       887.        6.72<span style="color: #949494;">e</span>+ 5         2.74<span style="color: #949494;">e</span>+5</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> GM.CSF            2.65        3.11       1.92      2.63<span style="color: #949494;">e</span>+ 1         3.14<span style="color: #949494;">e</span>+1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> IFN.G         <span style="text-decoration: underline;">57</span>730.      <span style="text-decoration: underline;">18</span>303.     <span style="text-decoration: underline;">61</span>484.        2.86<span style="color: #949494;">e</span>+10         2.30<span style="color: #949494;">e</span>+9</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> IL.10           979.        836.      <span style="text-decoration: underline;">1</span>366.        1.99<span style="color: #949494;">e</span>+ 6         1.19<span style="color: #949494;">e</span>+6</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> IL.12.P70        13.0        39.1       78.9       4.15<span style="color: #949494;">e</span>+ 2         2.56<span style="color: #949494;">e</span>+4</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> IL.13          <span style="text-decoration: underline;">1</span>064.       <span style="text-decoration: underline;">1</span>543.      <span style="text-decoration: underline;">1</span>122.        5.60<span style="color: #949494;">e</span>+ 6         1.11<span style="color: #949494;">e</span>+7</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> IL.15             7.92        4.29       8.22      3.54<span style="color: #949494;">e</span>+ 1         2.58<span style="color: #949494;">e</span>+1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> IL.17A          352.        653.       615.        9.40<span style="color: #949494;">e</span>+ 5         2.88<span style="color: #949494;">e</span>+6</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> IL.17E.IL.25      0.010<span style="text-decoration: underline;">1</span>      0.016<span style="text-decoration: underline;">3</span>     0.01      1.01<span style="color: #949494;">e</span><span style="color: #BB0000;">- 6</span>         3.88<span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> IL.17F            1.63        2.35       3.11      1.56<span style="color: #949494;">e</span>+ 1         3.37<span style="color: #949494;">e</span>+1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> IL.1B          <span style="text-decoration: underline;">2</span>806.       <span style="text-decoration: underline;">2</span>977.      <span style="text-decoration: underline;">4</span>299.        6.63<span style="color: #949494;">e</span>+ 7         3.76<span style="color: #949494;">e</span>+7</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> IL.2           <span style="text-decoration: underline;">9</span>227.      <span style="text-decoration: underline;">10</span>718.     <span style="text-decoration: underline;">16</span>129.        2.60<span style="color: #949494;">e</span>+ 8         4.10<span style="color: #949494;">e</span>+8</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span> IL.21           205.        210.       316.        3.15<span style="color: #949494;">e</span>+ 5         2.49<span style="color: #949494;">e</span>+5</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span> IL.22             0.051<span style="text-decoration: underline;">3</span>      0.068<span style="text-decoration: underline;">4</span>     0.063<span style="text-decoration: underline;">3</span>    4.58<span style="color: #949494;">e</span><span style="color: #BB0000;">- 3</span>         4.51<span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">15</span> IL.23             0.147       0.243      0.269     3.13<span style="color: #949494;">e</span><span style="color: #BB0000;">- 2</span>         9.37<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">16</span> IL.27             0.066<span style="text-decoration: underline;">2</span>      0.083<span style="text-decoration: underline;">4</span>     0.106     6.18<span style="color: #949494;">e</span><span style="color: #BB0000;">- 3</span>         5.66<span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">17</span> IL.28A            0.053<span style="text-decoration: underline;">7</span>      0.071<span style="text-decoration: underline;">0</span>     0.066<span style="text-decoration: underline;">6</span>    2.45<span style="color: #949494;">e</span><span style="color: #BB0000;">- 3</span>         5.10<span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">18</span> IL.31             0.040<span style="text-decoration: underline;">9</span>      0.090<span style="text-decoration: underline;">5</span>     0.035<span style="text-decoration: underline;">4</span>    6.62<span style="color: #949494;">e</span><span style="color: #BB0000;">- 3</span>         4.88<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">19</span> IL.33             1.17        1.43       1.16      2.09<span style="color: #949494;">e</span>+ 0         2.71<span style="color: #949494;">e</span>+0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">20</span> IL.4              0.344       0.707      0.297     4.24<span style="color: #949494;">e</span><span style="color: #BB0000;">- 1</span>         2.96<span style="color: #949494;">e</span>+0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">21</span> IL.5            134.        340.       155.        1.09<span style="color: #949494;">e</span>+ 5         9.88<span style="color: #949494;">e</span>+5</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">22</span> IL.6           <span style="text-decoration: underline;">4</span>620.       <span style="text-decoration: underline;">5</span>197.      <span style="text-decoration: underline;">8</span>925.        2.86<span style="color: #949494;">e</span>+ 7         5.72<span style="color: #949494;">e</span>+7</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">23</span> IL.9            203.        256.       254.        1.34<span style="color: #949494;">e</span>+ 5         2.11<span style="color: #949494;">e</span>+5</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">24</span> TNF.A          <span style="text-decoration: underline;">5</span>046.       <span style="text-decoration: underline;">3</span>069.      <span style="text-decoration: underline;">5</span>624.        7.02<span style="color: #949494;">e</span>+ 7         1.63<span style="color: #949494;">e</span>+7</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">25</span> TNF.B             0.641       0.709      0.610     2.37<span style="color: #949494;">e</span>+ 0         2.76<span style="color: #949494;">e</span>+0</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 5 more variables: variance_T2D &lt;dbl&gt;, ssmd &lt;dbl&gt;, log2FC &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   SSMD_Category &lt;chr&gt;, Significant &lt;lgl&gt;</span></span></span></code></pre></div>
-<p><img src="getting_started_files/figure-html/EDA8-1.png" class="r-plt" alt="" width="42%"></p>
-</div>
+<span></span>
+<span><span class="co"># The function returns a named list of ggplot objects; print the comparison</span></span>
+<span><span class="va">volc_plots</span><span class="op">[[</span><span class="st">"T2D vs ND"</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
+<p><img src="getting_started_files/figure-html/volcano-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<hr>
 </div>
 <div class="section level3">
-<h3 id="machine-learning-models">8. Machine Learning Models<a class="anchor" aria-label="anchor" href="#machine-learning-models"></a>
+<h3 id="heatmap---cyt_heatmap">4.2 Heatmap - <code>cyt_heatmap()</code><a class="anchor" aria-label="anchor" href="#heatmap---cyt_heatmap"></a>
 </h3>
-<div class="section level4">
-<h4 id="using-xgboost-for-classification">Using XGBoost for classification<a class="anchor" aria-label="anchor" href="#using-xgboost-for-classification"></a>
-</h4>
+<p><strong>Purpose:</strong> Visualize the expression matrix of all
+cytokines across all samples, with optional annotation and hierarchical
+clustering to reveal sample groupings and cytokine co-expression
+patterns.</p>
+<p><strong>Key data requirements:</strong> - A data frame containing
+numeric cytokine columns. Non-numeric columns are ignored. - The
+annotation column (if used) must have length equal to the number of rows
+in the numeric matrix.</p>
+<p><strong>Key parameters:</strong></p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="39%">
+<col width="27%">
+</colgroup>
+<thead><tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>scale</code></td>
+<td>Transformation: <code>"log2"</code>, <code>"log10"</code>,
+<code>"row_zscore"</code>, <code>"col_zscore"</code>,
+<code>"zscore"</code>
+</td>
+<td><code>NULL</code></td>
+</tr>
+<tr class="even">
+<td><code>annotation_col</code></td>
+<td>Column name or vector for row/column annotation</td>
+<td><code>NULL</code></td>
+</tr>
+<tr class="odd">
+<td><code>annotation_side</code></td>
+<td>
+<code>"auto"</code>, <code>"row"</code>, or <code>"col"</code>
+</td>
+<td><code>"auto"</code></td>
+</tr>
+<tr class="even">
+<td><code>show_row_names</code></td>
+<td>Show sample row labels</td>
+<td><code>FALSE</code></td>
+</tr>
+<tr class="odd">
+<td><code>show_col_names</code></td>
+<td>Show cytokine column labels</td>
+<td><code>TRUE</code></td>
+</tr>
+<tr class="even">
+<td><code>cluster_rows</code></td>
+<td>Cluster samples (rows)</td>
+<td><code>TRUE</code></td>
+</tr>
+<tr class="odd">
+<td><code>cluster_cols</code></td>
+<td>Cluster cytokines (columns)</td>
+<td><code>TRUE</code></td>
+</tr>
+<tr class="even">
+<td><code>title</code></td>
+<td>Plot title, or a file path ending in
+<code>.pdf</code>/<code>.png</code> to save</td>
+<td><code>NULL</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Interpreting the output:</strong> - The color scale
+represents cytokine expression after any transformation: blue = low,
+white = mid, red = high. - Row dendrogram (left) clusters samples by
+their cytokine expression profiles. Samples that cluster together share
+similar cytokine signatures. - Column dendrogram (top) clusters
+cytokines by co-expression. Cytokines close together in the column
+dendrogram are correlated across samples. - The annotation sidebar (if
+provided) color-codes samples by group, making it easy to see whether
+cluster structure aligns with biological groupings. - Hiding row names
+(<code>show_row_names = FALSE</code>) is recommended when there are many
+samples, as individual sample labels become unreadable and clutter the
+plot.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/cyt_heatmap.html">cyt_heatmap</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>  scale <span class="op">=</span> <span class="st">"log2"</span>,</span>
+<span>  annotation_col <span class="op">=</span> <span class="st">"Group"</span>,</span>
+<span>  annotation_side <span class="op">=</span> <span class="st">"auto"</span>,</span>
+<span>  show_row_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  title <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="getting_started_files/figure-html/heatmap-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="dual-flashlight-plot---cyt_dualflashplot">4.3 Dual-Flashlight Plot - <code>cyt_dualflashplot()</code><a class="anchor" aria-label="anchor" href="#dual-flashlight-plot---cyt_dualflashplot"></a>
+</h3>
+<p><strong>Purpose:</strong> Simultaneously visualize effect size (SSMD
+- Strictly Standardized Mean Difference) and fold change for all
+cytokines between two groups. The dual-flashlight plot is particularly
+valuable for identifying cytokines with both a large effect size and
+substantial fold change, which are strong candidates for further
+investigation as biomarkers.</p>
+<p><strong>Why SSMD instead of p-values?</strong> Traditional p-values
+conflate effect size with sample size: a very large study can yield
+significant p-values for biologically trivial differences. SSMD
+quantifies effect size independently of sample size, making it suitable
+for prioritizing cytokines in panels of varying sizes.</p>
+<p><strong>Key data requirements:</strong> - A data frame with numeric
+cytokine columns and one grouping column. - <code>group1</code> and
+<code>group2</code> must be levels present in
+<code>group_var</code>.</p>
+<p><strong>Key parameters:</strong></p>
+<table class="table">
+<thead><tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>group_var</code></td>
+<td>Grouping column name</td>
+<td>-</td>
+</tr>
+<tr class="even">
+<td>
+<code>group1</code>, <code>group2</code>
+</td>
+<td>The two conditions to compare</td>
+<td>-</td>
+</tr>
+<tr class="odd">
+<td><code>ssmd_thresh</code></td>
+<td>SSMD threshold for marking significance</td>
+<td><code>1</code></td>
+</tr>
+<tr class="even">
+<td><code>log2fc_thresh</code></td>
+<td>log2 fold change threshold</td>
+<td><code>1</code></td>
+</tr>
+<tr class="odd">
+<td><code>top_labels</code></td>
+<td>Number of cytokines with largest</td>
+<td>SSMD</td>
+</tr>
+<tr class="even">
+<td><code>verbose</code></td>
+<td>Print the underlying statistics table</td>
+<td><code>FALSE</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Interpreting the output:</strong> - <strong>x-axis:</strong>
+Average log2 fold change. Positive = higher in <code>group1</code>. -
+<strong>y-axis:</strong> SSMD. |SSMD|
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>≥</mo><annotation encoding="application/x-tex">\ge</annotation></semantics></math>
+1 = strong effect; |SSMD|
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>≥</mo><annotation encoding="application/x-tex">\ge</annotation></semantics></math>
+0.5 = moderate. - <strong>Point color:</strong> Effect strength category
+(strong = red, moderate = orange, weak = blue). - <strong>Point
+shape:</strong> Triangles indicate cytokines that exceed both the SSMD
+and log2FC thresholds simultaneously - these are the most compelling
+candidates. - <strong>Dashed lines:</strong> Mark the defined
+thresholds. - Cytokines in the upper-right and lower-left quadrants
+beyond the dashed lines are elevated in <code>group1</code> or
+<code>group2</code> respectively, with strong effect and substantial
+fold change.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">data_dfp</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span>
+<span></span>
+<span><span class="va">dfp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cyt_dualflashplot.html">cyt_dualflashplot</a></span><span class="op">(</span></span>
+<span>  <span class="va">data_dfp</span>,</span>
+<span>  group_var    <span class="op">=</span> <span class="st">"Group"</span>,</span>
+<span>  group1       <span class="op">=</span> <span class="st">"T2D"</span>,</span>
+<span>  group2       <span class="op">=</span> <span class="st">"ND"</span>,</span>
+<span>  ssmd_thresh  <span class="op">=</span> <span class="fl">0.2</span>,</span>
+<span>  log2fc_thresh <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  top_labels   <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  verbose      <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">dfp</span></span></code></pre></div>
+<p><img src="getting_started_files/figure-html/dualflash-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Using XGBoost for classification</span></span>
-<span><span class="va">data_df0</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span></span>
-<span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">data_df0</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log2</a></span><span class="op">(</span><span class="va">data_df0</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="va">data_df</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data_df</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Inspect the underlying statistics</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dfp</span><span class="op">$</span><span class="va">data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">dfp</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">ssmd</span><span class="op">)</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="op">]</span>, <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 11</span></span></span>
+<span><span class="co">#&gt;    cytokine        mean_ND mean_PreT2D   mean_T2D variance_ND variance_PreT2D</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> IL.6          <span style="text-decoration: underline;">4</span>620.       <span style="text-decoration: underline;">5</span>197.      <span style="text-decoration: underline;">8</span>925.         2.86<span style="color: #949494;">e</span>+7         5.72<span style="color: #949494;">e</span>+7</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> IL.27            0.066<span style="text-decoration: underline;">2</span>      0.083<span style="text-decoration: underline;">4</span>     0.106      6.18<span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span>         5.66<span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> IL.12.P70       13.0        39.1       78.9        4.15<span style="color: #949494;">e</span>+2         2.56<span style="color: #949494;">e</span>+4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> IL.23            0.147       0.243      0.269      3.13<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span>         9.37<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> CCL.20.MIP.3A  634.        404.       887.         6.72<span style="color: #949494;">e</span>+5         2.74<span style="color: #949494;">e</span>+5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> IL.2          <span style="text-decoration: underline;">9</span>227.      <span style="text-decoration: underline;">10</span>718.     <span style="text-decoration: underline;">16</span>129.         2.60<span style="color: #949494;">e</span>+8         4.10<span style="color: #949494;">e</span>+8</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> IL.17F           1.63        2.35       3.11       1.56<span style="color: #949494;">e</span>+1         3.37<span style="color: #949494;">e</span>+1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> IL.10          979.        836.      <span style="text-decoration: underline;">1</span>366.         1.99<span style="color: #949494;">e</span>+6         1.19<span style="color: #949494;">e</span>+6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> IL.28A           0.053<span style="text-decoration: underline;">7</span>      0.071<span style="text-decoration: underline;">0</span>     0.066<span style="text-decoration: underline;">6</span>     2.45<span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span>         5.10<span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> IL.17A         352.        653.       615.         9.40<span style="color: #949494;">e</span>+5         2.88<span style="color: #949494;">e</span>+6</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 5 more variables: variance_T2D &lt;dbl&gt;, ssmd &lt;dbl&gt;, log2FC &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   Effect &lt;fct&gt;, Significant &lt;lgl&gt;</span></span></span></code></pre></div>
+<hr>
+</div>
+</div>
+<div class="section level2">
+<h2 id="multivariate-analysis">5. Multivariate Analysis<a class="anchor" aria-label="anchor" href="#multivariate-analysis"></a>
+</h2>
+<div class="section level3">
+<h3 id="principal-component-analysis---cyt_pca">5.1 Principal Component Analysis - <code>cyt_pca()</code><a class="anchor" aria-label="anchor" href="#principal-component-analysis---cyt_pca"></a>
+</h3>
+<p><strong>Purpose:</strong> Reduce the dimensionality of the cytokine
+data and visualize sample-level variation across groups. PCA identifies
+the axes (principal components) of greatest variance in the data without
+using group labels, making it an unsupervised method suitable for
+initial exploration.</p>
+<p><strong>Key data requirements:</strong> - At least one grouping
+column and multiple numeric cytokine columns. - A sufficient number of
+observations relative to the number of cytokines is recommended (at
+least n &gt; p, ideally n &gt; 3p).</p>
+<p><strong>Key parameters:</strong></p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="39%">
+<col width="27%">
+</colgroup>
+<thead><tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>group_col</code></td>
+<td>Primary grouping column</td>
+<td>-</td>
+</tr>
+<tr class="even">
+<td><code>group_col2</code></td>
+<td>Second grouping column (stratifies analysis)</td>
+<td><code>NULL</code></td>
+</tr>
+<tr class="odd">
+<td><code>colors</code></td>
+<td>Vector of colors for groups</td>
+<td>
+<code>NULL</code> (auto)</td>
+</tr>
+<tr class="even">
+<td><code>pch_values</code></td>
+<td>Vector of point shapes, one per group level</td>
+<td><strong>required</strong></td>
+</tr>
+<tr class="odd">
+<td><code>comp_num</code></td>
+<td>Number of principal components to compute</td>
+<td><code>2</code></td>
+</tr>
+<tr class="even">
+<td><code>ellipse</code></td>
+<td>Draw 95% confidence ellipses per group</td>
+<td><code>FALSE</code></td>
+</tr>
+<tr class="odd">
+<td><code>scale</code></td>
+<td>Data transformation</td>
+<td><code>"none"</code></td>
+</tr>
+<tr class="even">
+<td><code>style</code></td>
+<td>Set to <code>"3D"</code> for a 3D scatter if
+<code>comp_num = 3</code>
+</td>
+<td><code>NULL</code></td>
+</tr>
+<tr class="odd">
+<td><code>output_file</code></td>
+<td>File path to save all plots</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Interpreting the output:</strong> - <strong>Individuals
+plot:</strong> Each point is one sample. Points close together have
+similar cytokine profiles. Clear separation between colored groups
+suggests a discriminating cytokine signature exists. - <strong>Scree
+plot:</strong> Shows the percentage of variance explained by each
+component (individual, blue) and cumulatively (dashed green). Choose the
+number of components that capture
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>≥</mo><annotation encoding="application/x-tex">\ge</annotation></semantics></math>
+70-80% of variance. - <strong>Loadings plot:</strong> Shows which
+cytokines contribute most to each component. Long bars = large
+contribution. The sign indicates direction (positive loading = higher
+values push samples in the positive direction along that component). -
+<strong>Biplot:</strong> Overlays sample scores and cytokine loadings.
+Cytokine arrows pointing toward a group cluster indicate those cytokines
+are elevated in that group. - <strong>Correlation circle:</strong>
+Cytokines near the edge of the circle are well represented by the
+selected two components. Cytokines close together are positively
+correlated; those opposite are negatively correlated.</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">data_pca</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">23</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">data_pca</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data_pca</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span> <span class="op">&amp;</span> <span class="va">Treatment</span> <span class="op">!=</span> <span class="st">"Unstimulated"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pca_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cyt_pca.html">cyt_pca</a></span><span class="op">(</span></span>
+<span>  <span class="va">data_pca</span>,</span>
+<span>  output_file  <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  colors       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"red2"</span><span class="op">)</span>,</span>
+<span>  scale        <span class="op">=</span> <span class="st">"log2"</span>,</span>
+<span>  comp_num     <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  pch_values   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">4</span><span class="op">)</span>,</span>
+<span>  group_col    <span class="op">=</span> <span class="st">"Group"</span>,</span>
+<span>  ellipse      <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pca_results</span><span class="op">$</span><span class="va">overall_indiv_plot</span></span>
+<span><span class="va">pca_results</span><span class="op">$</span><span class="va">scree_plot</span></span></code></pre></div>
+<p><img src="getting_started_files/figure-html/pca-plots-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"><img src="getting_started_files/figure-html/pca-plots-2.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pca_results</span><span class="op">$</span><span class="va">loadings</span><span class="op">$</span><span class="fu">Comp1</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">pca_results</span><span class="op">$</span><span class="fu">correlation_circle</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="getting_started_files/figure-html/pca-loadings-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"><img src="getting_started_files/figure-html/pca-loadings-2.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="sparse-pls-da---cyt_splsda">5.2 Sparse PLS-DA - <code>cyt_splsda()</code><a class="anchor" aria-label="anchor" href="#sparse-pls-da---cyt_splsda"></a>
+</h3>
+<p><strong>Purpose:</strong> A supervised multivariate method that finds
+linear combinations of cytokines that maximally discriminate between
+groups, while simultaneously selecting the most discriminating cytokines
+(sparsity). Unlike PCA, sPLS-DA uses group labels to guide the component
+construction.</p>
+<p><strong>Key data requirements:</strong> - At least two groups in
+<code>group_col</code>. - Multiple numeric cytokine columns. - For
+reliable cross-validation,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>≥</mo><annotation encoding="application/x-tex">\ge</annotation></semantics></math>
+10 samples per group is recommended.</p>
+<p><strong>Key parameters:</strong></p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="39%">
+<col width="27%">
+</colgroup>
+<thead><tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>group_col</code></td>
+<td>Primary grouping column</td>
+<td>-</td>
+</tr>
+<tr class="even">
+<td><code>group_col2</code></td>
+<td>Treatment/stratification column (runs analysis per level)</td>
+<td><code>NULL</code></td>
+</tr>
+<tr class="odd">
+<td><code>var_num</code></td>
+<td>Number of cytokines selected per component</td>
+<td><strong>required</strong></td>
+</tr>
+<tr class="even">
+<td><code>comp_num</code></td>
+<td>Number of components</td>
+<td><code>2</code></td>
+</tr>
+<tr class="odd">
+<td><code>pch_values</code></td>
+<td>Point shapes, one per group</td>
+<td><strong>required</strong></td>
+</tr>
+<tr class="even">
+<td><code>cv_opt</code></td>
+<td>Cross-validation: <code>"loocv"</code> or <code>"Mfold"</code>
+</td>
+<td><code>NULL</code></td>
+</tr>
+<tr class="odd">
+<td><code>fold_num</code></td>
+<td>Number of folds for Mfold CV</td>
+<td><code>5</code></td>
+</tr>
+<tr class="even">
+<td><code>tune</code></td>
+<td>Auto-tune <code>var_num</code> and <code>comp_num</code> via CV</td>
+<td><code>FALSE</code></td>
+</tr>
+<tr class="odd">
+<td><code>ellipse</code></td>
+<td>Draw 95% confidence ellipses</td>
+<td><code>FALSE</code></td>
+</tr>
+<tr class="even">
+<td><code>bg</code></td>
+<td>Draw prediction background</td>
+<td><code>FALSE</code></td>
+</tr>
+<tr class="odd">
+<td><code>roc</code></td>
+<td>Plot ROC curves</td>
+<td><code>FALSE</code></td>
+</tr>
+<tr class="even">
+<td><code>scale</code></td>
+<td>Data transformation</td>
+<td><code>"none"</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Interpreting the output:</strong> - <strong>Classification
+plot (individuals plot):</strong> Labelled with accuracy (% training
+samples correctly classified). Clear separation indicates the model
+successfully identified a discriminating cytokine signature. -
+<strong>Loadings plot:</strong> Shows which cytokines load most strongly
+on each component and in which group they are elevated (color of the
+bar). The <code>contrib = "max"</code> setting colors each bar by the
+group with the highest mean for that cytokine. - <strong>VIP scores
+plot:</strong> Variable Importance in Projection scores for each
+component. Cytokines with VIP &gt; 1 are considered important
+discriminators and are used to fit a refined model. - <strong>VIP &gt; 1
+classification plot:</strong> A second model fitted using only VIP &gt;
+1 cytokines. Comparing accuracy between the full and VIP-filtered model
+shows whether the signature can be simplified. -
+<strong>Cross-validation error plot</strong> (if <code>cv_opt</code> is
+set): Error rate across components. The optimal number of components is
+where the error rate plateaus or reaches its minimum.</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">data_spls</span> <span class="op">&lt;-</span> <span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">data_spls</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data_spls</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span> <span class="op">&amp;</span> <span class="va">Treatment</span> <span class="op">==</span> <span class="st">"CD3/CD28"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">spls_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cyt_splsda.html">cyt_splsda</a></span><span class="op">(</span></span>
+<span>  <span class="va">data_spls</span>,</span>
+<span>  output_file  <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  colors       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"purple"</span><span class="op">)</span>,</span>
+<span>  scale        <span class="op">=</span> <span class="st">"log2"</span>,</span>
+<span>  ellipse      <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  var_num      <span class="op">=</span> <span class="fl">25</span>,</span>
+<span>  cv_opt       <span class="op">=</span> <span class="st">"loocv"</span>,</span>
+<span>  comp_num     <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  pch_values   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">4</span><span class="op">)</span>,</span>
+<span>  group_col    <span class="op">=</span> <span class="st">"Group"</span>,</span>
+<span>  group_col2   <span class="op">=</span> <span class="st">"Treatment"</span>,</span>
+<span>  roc          <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  verbose      <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">spls_results</span><span class="op">$</span><span class="va">overall_indiv_plot</span></span>
+<span><span class="va">spls_results</span><span class="op">$</span><span class="va">vip_indiv_plot</span></span></code></pre></div>
+<p><img src="getting_started_files/figure-html/splsda-plots-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"><img src="getting_started_files/figure-html/splsda-plots-2.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">spls_results</span><span class="op">$</span><span class="va">loadings</span><span class="op">$</span><span class="fu">Comp1</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">spls_results</span><span class="op">$</span><span class="va">vip_scores</span><span class="op">$</span><span class="fu">Comp1</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="getting_started_files/figure-html/splsda-loadings-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"><img src="getting_started_files/figure-html/splsda-loadings-2.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="mint-spls-da---cyt_mint_splsda">5.3 MINT sPLS-DA - <code>cyt_mint_splsda()</code><a class="anchor" aria-label="anchor" href="#mint-spls-da---cyt_mint_splsda"></a>
+</h3>
+<p><strong>Purpose:</strong> An extension of sPLS-DA for datasets
+collected across multiple batches or studies. MINT (Multivariate
+INTegration) models a global biological signal while accounting for
+batch-specific variation, making it appropriate when data cannot be
+combined directly due to technical differences between collection sites
+or time points.</p>
+<p><strong>Key data requirements:</strong> - Same as
+<code><a href="../reference/cyt_splsda.html">cyt_splsda()</a></code>, plus a <code>batch_col</code> column
+identifying which batch/study each sample belongs to. - At least two
+batches are required; each batch should contain samples from all groups
+if possible.</p>
+<p><strong>Key parameters:</strong> Same as <code><a href="../reference/cyt_splsda.html">cyt_splsda()</a></code>,
+plus:</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="39%">
+<col width="27%">
+</colgroup>
+<thead><tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td><code>batch_col</code></td>
+<td>Column identifying batch/study membership</td>
+<td><strong>required</strong></td>
+</tr></tbody>
+</table>
+<p><strong>Interpreting the output:</strong> - Identical to
+<code><a href="../reference/cyt_splsda.html">cyt_splsda()</a></code> outputs, with the addition of <strong>partial
+plots</strong> (one per batch), which show how well the global model
+fits within each individual batch. - The global individuals plot should
+show separation between groups even when batch effects are present - if
+groups overlap only in the global plot but separate in partial plots,
+the batch effect is dominating the signal.</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">data_mint</span> <span class="op">&lt;-</span> <span class="va">ExampleData5</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">data_mint</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data_mint</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">mint_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cyt_mint_splsda.html">cyt_mint_splsda</a></span><span class="op">(</span></span>
+<span>  <span class="va">data_mint</span>,</span>
+<span>  group_col  <span class="op">=</span> <span class="st">"Group"</span>,</span>
+<span>  batch_col  <span class="op">=</span> <span class="st">"Batch"</span>,</span>
+<span>  colors     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"purple"</span><span class="op">)</span>,</span>
+<span>  ellipse    <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  var_num    <span class="op">=</span> <span class="fl">25</span>,</span>
+<span>  comp_num   <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  scale      <span class="op">=</span> <span class="st">"log2"</span>,</span>
+<span>  verbose    <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mint_results</span><span class="op">$</span><span class="va">global_indiv_plot</span></span>
+<span><span class="va">mint_results</span><span class="op">$</span><span class="va">partial_indiv_plot</span></span></code></pre></div>
+<p><img src="getting_started_files/figure-html/mint-plots-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"><img src="getting_started_files/figure-html/mint-plots-2.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mint_results</span><span class="op">$</span><span class="va">global_loadings_plots</span><span class="op">$</span><span class="fu">Comp1</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="getting_started_files/figure-html/mint-loadings-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<hr>
+</div>
+</div>
+<div class="section level2">
+<h2 id="machine-learning-models">6. Machine Learning Models<a class="anchor" aria-label="anchor" href="#machine-learning-models"></a>
+</h2>
+<blockquote>
+<p><strong>Recommended sample size:</strong> For reliable performance
+estimates, machine learning methods require larger datasets. A minimum
+of 20 samples per class is recommended; cross-validation estimates
+become stable with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>≥</mo><annotation encoding="application/x-tex">\ge</annotation></semantics></math>
+50 samples per class.</p>
+</blockquote>
+<div class="section level3">
+<h3 id="xgboost-classification---cyt_xgb">6.1 XGBoost Classification - <code>cyt_xgb()</code><a class="anchor" aria-label="anchor" href="#xgboost-classification---cyt_xgb"></a>
+</h3>
+<p><strong>Purpose:</strong> Train a gradient-boosted tree classifier on
+cytokine data for multi-class or binary group classification. XGBoost is
+well suited to high-dimensional cytokine panels and provides feature
+importance as a by-product.</p>
+<p><strong>Key data requirements:</strong> - One grouping column (the
+outcome) and multiple numeric cytokine predictors. - Grouping column
+will be encoded to numeric labels internally (0-indexed).</p>
+<p><strong>Key parameters:</strong></p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="39%">
+<col width="27%">
+</colgroup>
+<thead><tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>group_col</code></td>
+<td>Outcome column name</td>
+<td>-</td>
+</tr>
+<tr class="even">
+<td><code>train_fraction</code></td>
+<td>Proportion used for training</td>
+<td><code>0.7</code></td>
+</tr>
+<tr class="odd">
+<td><code>nrounds</code></td>
+<td>Number of boosting rounds</td>
+<td><code>500</code></td>
+</tr>
+<tr class="even">
+<td><code>max_depth</code></td>
+<td>Maximum tree depth</td>
+<td><code>6</code></td>
+</tr>
+<tr class="odd">
+<td><code>learning_rate</code></td>
+<td>Step size shrinkage</td>
+<td><code>0.1</code></td>
+</tr>
+<tr class="even">
+<td><code>cv</code></td>
+<td>Run k-fold cross-validation</td>
+<td><code>FALSE</code></td>
+</tr>
+<tr class="odd">
+<td><code>nfold</code></td>
+<td>Number of CV folds</td>
+<td><code>5</code></td>
+</tr>
+<tr class="even">
+<td><code>objective</code></td>
+<td>Loss function: <code>"multi:softprob"</code> or
+<code>"binary:logistic"</code>
+</td>
+<td><code>"multi:softprob"</code></td>
+</tr>
+<tr class="odd">
+<td><code>eval_metric</code></td>
+<td>Evaluation metric during training</td>
+<td><code>"mlogloss"</code></td>
+</tr>
+<tr class="even">
+<td><code>plot_roc</code></td>
+<td>Plot ROC curve (binary only)</td>
+<td><code>FALSE</code></td>
+</tr>
+<tr class="odd">
+<td><code>top_n_features</code></td>
+<td>Number of features shown in importance plot</td>
+<td><code>10</code></td>
+</tr>
+<tr class="even">
+<td><code>scale</code></td>
+<td>Data transformation</td>
+<td><code>"none"</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note on <code>Ckmeans.1d.dp</code>:</strong> The
+<code>xgb.ggplot.importance()</code> function optionally uses the
+<code>Ckmeans.1d.dp</code> package for a clustered importance plot. If
+this package is not installed, <code><a href="../reference/cyt_xgb.html">cyt_xgb()</a></code> will automatically
+fall back to a standard bar chart. Install it with
+<code>install.packages("Ckmeans.1d.dp")</code> for the enhanced
+plot.</p>
+<p><strong>Interpreting the output:</strong> - <strong>Confusion
+matrix:</strong> Rows = actual classes; columns = predicted classes. The
+diagonal shows correct classifications. Off-diagonal values are
+misclassifications. - <strong>Feature importance plot:</strong> Shows
+the top <code>top_n_features</code> cytokines ranked by Gain (the
+improvement in the loss function attributable to each feature).
+Cytokines with higher Gain are more important for classification. -
+<strong>Cross-validation accuracy</strong> (if <code>cv = TRUE</code>):
+Provides an estimate of out-of-sample performance less susceptible to
+overfitting than training accuracy alone. - <strong>ROC curve</strong>
+(binary only): Area Under the Curve (AUC) summarizes classifier
+performance across all thresholds. AUC = 1 is perfect; AUC = 0.5 is no
+better than chance.</p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">data_ml</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">ExampleData1</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log2</a></span><span class="op">(</span><span class="va">ExampleData1</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">data_ml</span> <span class="op">&lt;-</span> <span class="va">data_ml</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">data_ml</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data_ml</span>, <span class="va">Group</span> <span class="op">!=</span> <span class="st">"ND"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/cyt_xgb.html">cyt_xgb</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">data_df</span>,</span>
-<span>  group_col <span class="op">=</span> <span class="st">"Group"</span>,</span>
-<span>  nrounds <span class="op">=</span> <span class="fl">500</span>,</span>
-<span>  max_depth <span class="op">=</span> <span class="fl">4</span>,</span>
-<span>  min_split_loss <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  data          <span class="op">=</span> <span class="va">data_ml</span>,</span>
+<span>  group_col     <span class="op">=</span> <span class="st">"Group"</span>,</span>
+<span>  nrounds       <span class="op">=</span> <span class="fl">250</span>,</span>
+<span>  max_depth     <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  learning_rate <span class="op">=</span> <span class="fl">0.05</span>,</span>
-<span>  nfold <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  cv <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  objective <span class="op">=</span> <span class="st">"multi:softprob"</span>,</span>
-<span>  eval_metric <span class="op">=</span> <span class="st">"auc"</span>,</span>
-<span>  early_stopping_rounds <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  nfold         <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  cv            <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  objective     <span class="op">=</span> <span class="st">"multi:softprob"</span>,</span>
+<span>  eval_metric   <span class="op">=</span> <span class="st">"mlogloss"</span>,</span>
 <span>  top_n_features <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  plot_roc <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  print_results <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  verbose       <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  plot_roc      <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  print_results <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  seed          <span class="op">=</span> <span class="fl">123</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="getting_started_files/figure-html/ML1-1.png" class="r-plt" alt="" width="42%"><img src="getting_started_files/figure-html/ML1-2.png" class="r-plt" alt="" width="42%"></p>
+<p><img src="getting_started_files/figure-html/xgb-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<hr>
 </div>
-<div class="section level4">
-<h4 id="using-random-forest-for-classification">Using Random Forest for classification<a class="anchor" aria-label="anchor" href="#using-random-forest-for-classification"></a>
-</h4>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Using Random Forest for classification</span></span>
-<span><span class="fu"><a href="../reference/cyt_rf.html">cyt_rf</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">data_df</span>,</span>
-<span>  group_col <span class="op">=</span> <span class="st">"Group"</span>,</span>
-<span>  k_folds <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  ntree <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  mtry <span class="op">=</span> <span class="fl">4</span>,</span>
-<span>  run_rfcv <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  plot_roc <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<div class="section level3">
+<h3 id="random-forest-classification---cyt_rf">6.2 Random Forest Classification - <code>cyt_rf()</code><a class="anchor" aria-label="anchor" href="#random-forest-classification---cyt_rf"></a>
+</h3>
+<p><strong>Purpose:</strong> Train a random forest ensemble classifier
+on cytokine data. Random forests are robust to outliers and correlated
+predictors, and naturally provide variable importance through the mean
+decrease in Gini impurity.</p>
+<p><strong>Key parameters:</strong></p>
+<table class="table">
+<thead><tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>group_col</code></td>
+<td>Outcome column name</td>
+<td>-</td>
+</tr>
+<tr class="even">
+<td><code>ntree</code></td>
+<td>Number of trees</td>
+<td><code>500</code></td>
+</tr>
+<tr class="odd">
+<td><code>mtry</code></td>
+<td>Variables tried at each split</td>
+<td><code>5</code></td>
+</tr>
+<tr class="even">
+<td><code>train_fraction</code></td>
+<td>Training proportion</td>
+<td><code>0.7</code></td>
+</tr>
+<tr class="odd">
+<td><code>run_rfcv</code></td>
+<td>Run cross-validation for feature selection</td>
+<td><code>TRUE</code></td>
+</tr>
+<tr class="even">
+<td><code>k_folds</code></td>
+<td>Folds for <code>rfcv</code>
+</td>
+<td><code>5</code></td>
+</tr>
+<tr class="odd">
+<td><code>plot_roc</code></td>
+<td>Plot ROC curve (binary only)</td>
+<td><code>FALSE</code></td>
+</tr>
+<tr class="even">
+<td><code>cv</code></td>
+<td>Run caret k-fold CV</td>
+<td><code>FALSE</code></td>
+</tr>
+<tr class="odd">
+<td><code>scale</code></td>
+<td>Data transformation</td>
+<td><code>"none"</code></td>
+</tr>
+<tr class="even">
+<td><code>verbose</code></td>
+<td>Print performance metrics</td>
+<td><code>FALSE</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Interpreting the output:</strong> - <strong>Variable
+importance plot:</strong> Cytokines ordered by Mean Decrease in Gini.
+Higher values indicate greater discrimination ability. This complements
+sPLS-DA loadings as a non-linear importance measure. -
+<strong>Cross-validation error curve</strong> (if
+<code>run_rfcv = TRUE</code>): Error rate versus number of variables.
+The elbow of this curve (where error stabilizes) suggests the minimum
+number of cytokines needed for good classification. This is useful for
+building parsimonious panels. - <strong>ROC curve</strong> (binary
+only): Same interpretation as in <code><a href="../reference/cyt_xgb.html">cyt_xgb()</a></code>.</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/cyt_rf.html">cyt_rf</a></span><span class="op">(</span></span>
+<span>  data       <span class="op">=</span> <span class="va">data_ml</span>,</span>
+<span>  group_col  <span class="op">=</span> <span class="st">"Group"</span>,</span>
+<span>  ntree      <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  mtry       <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  k_folds    <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  run_rfcv   <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  plot_roc   <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  verbose    <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  seed       <span class="op">=</span> <span class="fl">123</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="getting_started_files/figure-html/ML2-1.png" class="r-plt" alt="" width="42%"><img src="getting_started_files/figure-html/ML2-2.png" class="r-plt" alt="" width="42%"><img src="getting_started_files/figure-html/ML2-3.png" class="r-plt" alt="" width="42%"></p>
+<p><img src="getting_started_files/figure-html/rf-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"><img src="getting_started_files/figure-html/rf-2.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<hr>
 </div>
 </div>
+<div class="section level2">
+<h2 id="saving-plots-and-exporting-results">7. Saving Plots and Exporting Results<a class="anchor" aria-label="anchor" href="#saving-plots-and-exporting-results"></a>
+</h2>
+<div class="section level3">
+<h3 id="saving-plots-from-individual-functions">Saving plots from individual functions<a class="anchor" aria-label="anchor" href="#saving-plots-from-individual-functions"></a>
+</h3>
+<p>All plotting functions accept an <code>output_file</code> argument.
+The file extension determines the format:</p>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Save all boxplots to a multi-page PDF</span></span>
+<span><span class="fu"><a href="../reference/cyt_bp.html">cyt_bp</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, output_file <span class="op">=</span> <span class="st">"boxplots.pdf"</span>, scale <span class="op">=</span> <span class="st">"log2"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Save grouped violin plots to PNG</span></span>
+<span><span class="fu"><a href="../reference/cyt_violin.html">cyt_violin</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">5</span><span class="op">:</span><span class="fl">28</span><span class="op">)</span><span class="op">]</span>, group_by <span class="op">=</span> <span class="st">"Group"</span>,</span>
+<span>           output_file <span class="op">=</span> <span class="st">"violins.png"</span><span class="op">)</span></span></code></pre></div>
+<p>Supported formats: <code>.pdf</code>, <code>.png</code>,
+<code>.tiff</code>, <code>.svg</code>.</p>
+</div>
+<div class="section level3">
+<h3 id="saving-plots-from-multivariate-functions-using-cyt_export">Saving plots from multivariate functions using
+<code>cyt_export()</code><a class="anchor" aria-label="anchor" href="#saving-plots-from-multivariate-functions-using-cyt_export"></a>
+</h3>
+<p>Multivariate functions return lists of <code>ggplot</code> objects
+and plot-generating closures. Use <code><a href="../reference/cyt_export.html">cyt_export()</a></code> to save them
+in bulk:</p>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Save all sPLS-DA plots to a PDF</span></span>
+<span><span class="fu"><a href="../reference/cyt_export.html">cyt_export</a></span><span class="op">(</span></span>
+<span>  plots    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="va">spls_results</span><span class="op">$</span><span class="va">overall_indiv_plot</span>,</span>
+<span>    <span class="va">spls_results</span><span class="op">$</span><span class="va">loadings</span><span class="op">$</span><span class="va">Comp1</span>,</span>
+<span>    <span class="va">spls_results</span><span class="op">$</span><span class="va">vip_indiv_plot</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  filename <span class="op">=</span> <span class="st">"splsda_results"</span>,</span>
+<span>  format   <span class="op">=</span> <span class="st">"pdf"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Or pass output_file directly to the function</span></span>
+<span><span class="fu"><a href="../reference/cyt_splsda.html">cyt_splsda</a></span><span class="op">(</span><span class="va">...</span>, output_file <span class="op">=</span> <span class="st">"splsda_results.pdf"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="modifying-returned-plots">Modifying returned plots<a class="anchor" aria-label="anchor" href="#modifying-returned-plots"></a>
+</h3>
+<p>All functions return <code>ggplot</code> objects invisibly, enabling
+further customization:</p>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cyt_bp.html">cyt_bp</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, scale <span class="op">=</span> <span class="st">"log2"</span><span class="op">)</span></span>
+<span><span class="co"># Add a custom title to the first page</span></span>
+<span><span class="va">p</span><span class="op">[[</span><span class="st">"page1"</span><span class="op">]</span><span class="op">]</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"My Custom Title"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">16</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<hr>
+</div>
+</div>
+<div class="section level2">
+<h2 id="recommended-analysis-workflow">8. Recommended Analysis Workflow<a class="anchor" aria-label="anchor" href="#recommended-analysis-workflow"></a>
+</h2>
+<p>The following workflow is recommended for a typical cytokine
+profiling study:</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>Load and inspect data</strong> - check dimensions, column
+types, and missingness.</li>
+<li>
+<strong>Assess distributions</strong> (<code><a href="../reference/cyt_skku.html">cyt_skku()</a></code>) -
+determine whether log2 transformation is warranted.</li>
+<li>
+<strong>Exploratory visualization</strong> (<code><a href="../reference/cyt_bp.html">cyt_bp()</a></code> or
+<code><a href="../reference/cyt_violin.html">cyt_violin()</a></code>, <code><a href="../reference/cyt_errbp.html">cyt_errbp()</a></code>) - identify obvious
+group differences and data quality issues.</li>
+<li>
+<strong>Univariate testing</strong> (<code><a href="../reference/cyt_univariate.html">cyt_univariate()</a></code>,
+<code><a href="../reference/cyt_univariate_multi.html">cyt_univariate_multi()</a></code>) - with FDR correction for panels
+&gt; 10 cytokines.</li>
+<li>
+<strong>Multivariate exploration</strong> (<code><a href="../reference/cyt_pca.html">cyt_pca()</a></code>) -
+visualize global structure and assess whether groups separate.</li>
+<li>
+<strong>Supervised discrimination</strong>
+(<code><a href="../reference/cyt_splsda.html">cyt_splsda()</a></code>) - identify the minimal cytokine signature
+that discriminates groups; validate with cross-validation.</li>
+<li>
+<strong>Visualization of key findings</strong>
+(<code><a href="../reference/cyt_volc.html">cyt_volc()</a></code>, <code><a href="../reference/cyt_dualflashplot.html">cyt_dualflashplot()</a></code>,
+<code><a href="../reference/cyt_heatmap.html">cyt_heatmap()</a></code>) - summarize significant and high-effect
+cytokines for reporting.</li>
+<li>
+<strong>Machine learning validation</strong> (<code><a href="../reference/cyt_rf.html">cyt_rf()</a></code>,
+<code><a href="../reference/cyt_xgb.html">cyt_xgb()</a></code>) - obtain independent importance rankings and
+classification performance estimates.</li>
+</ol>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="session-information">Session Information<a class="anchor" aria-label="anchor" href="#session-information"></a>
+</h2>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; R version 4.5.2 (2025-10-31)</span></span>
+<span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
+<span><span class="co">#&gt; Running under: Ubuntu 24.04.3 LTS</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Matrix products: default</span></span>
+<span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
+<span><span class="co">#&gt; LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; locale:</span></span>
+<span><span class="co">#&gt;  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       </span></span>
+<span><span class="co">#&gt;  [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8   </span></span>
+<span><span class="co">#&gt;  [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C          </span></span>
+<span><span class="co">#&gt; [10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C   </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; time zone: UTC</span></span>
+<span><span class="co">#&gt; tzcode source: system (glibc)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; attached base packages:</span></span>
+<span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; other attached packages:</span></span>
+<span><span class="co">#&gt; [1] dplyr_1.2.0       CytoProfile_0.2.4</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
+<span><span class="co">#&gt;   [1] Rdpack_2.6.6         pROC_1.19.0.1        gridExtra_2.3       </span></span>
+<span><span class="co">#&gt;   [4] tcltk_4.5.2          rlang_1.1.7          magrittr_2.0.4      </span></span>
+<span><span class="co">#&gt;   [7] otel_0.2.0           matrixStats_1.5.0    e1071_1.7-17        </span></span>
+<span><span class="co">#&gt;  [10] compiler_4.5.2       systemfonts_1.3.1    vctrs_0.7.1         </span></span>
+<span><span class="co">#&gt;  [13] reshape2_1.4.5       stringr_1.6.0        pkgconfig_2.0.3     </span></span>
+<span><span class="co">#&gt;  [16] fastmap_1.2.0        Ckmeans.1d.dp_4.3.5  labeling_0.4.3      </span></span>
+<span><span class="co">#&gt;  [19] utf8_1.2.6           rmarkdown_2.30       prodlim_2025.04.28  </span></span>
+<span><span class="co">#&gt;  [22] ragg_1.5.0           purrr_1.2.1          xfun_0.56           </span></span>
+<span><span class="co">#&gt;  [25] randomForest_4.7-1.2 cachem_1.1.0         jsonlite_2.0.0      </span></span>
+<span><span class="co">#&gt;  [28] recipes_1.3.1        BiocParallel_1.44.0  parallel_4.5.2      </span></span>
+<span><span class="co">#&gt;  [31] R6_2.6.1             bslib_0.10.0         stringi_1.8.7       </span></span>
+<span><span class="co">#&gt;  [34] RColorBrewer_1.1-3   parallelly_1.46.1    rpart_4.1.24        </span></span>
+<span><span class="co">#&gt;  [37] lubridate_1.9.5      jquerylib_0.1.4      xgboost_3.2.0.1     </span></span>
+<span><span class="co">#&gt;  [40] Rcpp_1.1.1           iterators_1.0.14     knitr_1.51          </span></span>
+<span><span class="co">#&gt;  [43] future.apply_1.20.2  Matrix_1.7-4         splines_4.5.2       </span></span>
+<span><span class="co">#&gt;  [46] nnet_7.3-20          igraph_2.2.2         timechange_0.4.0    </span></span>
+<span><span class="co">#&gt;  [49] tidyselect_1.2.1     yaml_2.3.12          timeDate_4052.112   </span></span>
+<span><span class="co">#&gt;  [52] codetools_0.2-20     misc3d_0.9-2         listenv_0.10.0      </span></span>
+<span><span class="co">#&gt;  [55] lattice_0.22-7       tibble_3.3.1         plyr_1.8.9          </span></span>
+<span><span class="co">#&gt;  [58] withr_3.0.2          rARPACK_0.11-0       S7_0.2.1            </span></span>
+<span><span class="co">#&gt;  [61] evaluate_1.0.5       future_1.69.0        desc_1.4.3          </span></span>
+<span><span class="co">#&gt;  [64] survival_3.8-3       proxy_0.4-29         pillar_1.11.1       </span></span>
+<span><span class="co">#&gt;  [67] foreach_1.5.2        stats4_4.5.2         ellipse_0.5.0       </span></span>
+<span><span class="co">#&gt;  [70] generics_0.1.4       ggplot2_4.0.2        scales_1.4.0        </span></span>
+<span><span class="co">#&gt;  [73] globals_0.19.0       class_7.3-23         glue_1.8.0          </span></span>
+<span><span class="co">#&gt;  [76] pheatmap_1.0.13      tools_4.5.2          data.table_1.18.2.1 </span></span>
+<span><span class="co">#&gt;  [79] RSpectra_0.16-2      ModelMetrics_1.2.2.2 gower_1.0.2         </span></span>
+<span><span class="co">#&gt;  [82] fs_1.6.6             grid_4.5.2           tidyr_1.3.2         </span></span>
+<span><span class="co">#&gt;  [85] rbibutils_2.4.1      ipred_0.9-15         nlme_3.1-168        </span></span>
+<span><span class="co">#&gt;  [88] cli_3.6.5            textshaping_1.0.4    mixOmics_6.34.0     </span></span>
+<span><span class="co">#&gt;  [91] plot3D_1.4.2         lava_1.8.2           corpcor_1.6.10      </span></span>
+<span><span class="co">#&gt;  [94] gtable_0.3.6         sass_0.4.10          digest_0.6.39       </span></span>
+<span><span class="co">#&gt;  [97] caret_7.0-1          ggrepel_0.9.7        htmlwidgets_1.6.4   </span></span>
+<span><span class="co">#&gt; [100] farver_2.1.2         htmltools_0.5.9      pkgdown_2.2.0       </span></span>
+<span><span class="co">#&gt; [103] lifecycle_1.0.5      hardhat_1.4.2        MASS_7.3-65</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
