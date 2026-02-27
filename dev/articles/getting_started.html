@@ -281,7 +281,7 @@ they represent biological extremes or measurement artefacts.</p>
 <span><span class="fu"><a href="../reference/cyt_bp.html">cyt_bp</a></span><span class="op">(</span><span class="va">data_df</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span><span class="op">]</span>, output_file <span class="op">=</span> <span class="cn">NULL</span>, scale <span class="op">=</span> <span class="st">"log2"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="getting_started_files/figure-html/boxplots-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Grouped boxplots: one plot per cytokine, coloured by Group</span></span>
+<code class="sourceCode R"><span><span class="co"># Grouped boxplots: one plot per cytokine, colored by Group</span></span>
 <span><span class="co"># Only passing Group and two cytokines for a concise display</span></span>
 <span><span class="fu"><a href="../reference/cyt_bp.html">cyt_bp</a></span><span class="op">(</span></span>
 <span>  <span class="va">data_df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Group"</span>, <span class="st">"IL-10"</span>, <span class="st">"CCL-20/MIP-3A"</span><span class="op">)</span><span class="op">]</span>,</span>
@@ -898,14 +898,14 @@ in the numeric matrix.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Interpreting the output:</strong> - The colour scale
+<p><strong>Interpreting the output:</strong> - The color scale
 represents cytokine expression after any transformation: blue = low,
 white = mid, red = high. - Row dendrogram (left) clusters samples by
 their cytokine expression profiles. Samples that cluster together share
 similar cytokine signatures. - Column dendrogram (top) clusters
 cytokines by co-expression. Cytokines close together in the column
 dendrogram are correlated across samples. - The annotation sidebar (if
-provided) colour-codes samples by group, making it easy to see whether
+provided) color-codes samples by group, making it easy to see whether
 cluster structure aligns with biological groupings. - Hiding row names
 (<code>show_row_names = FALSE</code>) is recommended when there are many
 samples, as individual sample labels become unreadable and clutter the
@@ -988,8 +988,8 @@ Average log2 fold change. Positive = higher in <code>group1</code>. -
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>≥</mo><annotation encoding="application/x-tex">\ge</annotation></semantics></math>
 1 = strong effect; |SSMD|
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>≥</mo><annotation encoding="application/x-tex">\ge</annotation></semantics></math>
-0.5 = moderate. - <strong>Point colour:</strong> Effect strength
-category (strong = red, moderate = orange, weak = blue). - <strong>Point
+0.5 = moderate. - <strong>Point color:</strong> Effect strength category
+(strong = red, moderate = orange, weak = blue). - <strong>Point
 shape:</strong> Triangles indicate cytokines that exceed both the SSMD
 and log2FC thresholds simultaneously - these are the most compelling
 candidates. - <strong>Dashed lines:</strong> Mark the defined
@@ -1073,7 +1073,7 @@ least n &gt; p, ideally n &gt; 3p).</p>
 </tr>
 <tr class="odd">
 <td><code>colors</code></td>
-<td>Vector of colours for groups</td>
+<td>Vector of colors for groups</td>
 <td>
 <code>NULL</code> (auto)</td>
 </tr>
@@ -1113,7 +1113,7 @@ least n &gt; p, ideally n &gt; 3p).</p>
 </table>
 <p><strong>Interpreting the output:</strong> - <strong>Individuals
 plot:</strong> Each point is one sample. Points close together have
-similar cytokine profiles. Clear separation between coloured groups
+similar cytokine profiles. Clear separation between colored groups
 suggests a discriminating cytokine signature exists. - <strong>Scree
 plot:</strong> Shows the percentage of variance explained by each
 component (individual, blue) and cumulatively (dashed green). Choose the
@@ -1247,8 +1247,8 @@ plot (individuals plot):</strong> Labelled with accuracy (% training
 samples correctly classified). Clear separation indicates the model
 successfully identified a discriminating cytokine signature. -
 <strong>Loadings plot:</strong> Shows which cytokines load most strongly
-on each component and in which group they are elevated (colour of the
-bar). The <code>contrib = "max"</code> setting colours each bar by the
+on each component and in which group they are elevated (color of the
+bar). The <code>contrib = "max"</code> setting colors each bar by the
 group with the highest mean for that cytokine. - <strong>VIP scores
 plot:</strong> Variable Importance in Projection scores for each
 component. Cytokines with VIP &gt; 1 are considered important

@@ -162,7 +162,7 @@ cyt_bp(data_df[, -c(1:3)], output_file = NULL, scale = "log2")
 ![](getting_started_files/figure-html/boxplots-1.png)
 
 ``` r
-# Grouped boxplots: one plot per cytokine, coloured by Group
+# Grouped boxplots: one plot per cytokine, colored by Group
 # Only passing Group and two cytokines for a concise display
 cyt_bp(
   data_df[, c("Group", "IL-10", "CCL-20/MIP-3A")],
@@ -544,14 +544,14 @@ matrix.
 | `cluster_cols`    | Cluster cytokines (columns)                                                     | `TRUE`   |
 | `title`           | Plot title, or a file path ending in `.pdf`/`.png` to save                      | `NULL`   |
 
-**Interpreting the output:** - The colour scale represents cytokine
+**Interpreting the output:** - The color scale represents cytokine
 expression after any transformation: blue = low, white = mid, red =
 high. - Row dendrogram (left) clusters samples by their cytokine
 expression profiles. Samples that cluster together share similar
 cytokine signatures. - Column dendrogram (top) clusters cytokines by
 co-expression. Cytokines close together in the column dendrogram are
 correlated across samples. - The annotation sidebar (if provided)
-colour-codes samples by group, making it easy to see whether cluster
+color-codes samples by group, making it easy to see whether cluster
 structure aligns with biological groupings. - Hiding row names
 (`show_row_names = FALSE`) is recommended when there are many samples,
 as individual sample labels become unreadable and clutter the plot.
@@ -603,14 +603,14 @@ in `group_var`.
 
 **Interpreting the output:** - **x-axis:** Average log2 fold change.
 Positive = higher in `group1`. - **y-axis:** SSMD. \|SSMD\| $\geq$ 1 =
-strong effect; \|SSMD\| $\geq$ 0.5 = moderate. - **Point colour:**
-Effect strength category (strong = red, moderate = orange, weak =
-blue). - **Point shape:** Triangles indicate cytokines that exceed both
-the SSMD and log2FC thresholds simultaneously - these are the most
-compelling candidates. - **Dashed lines:** Mark the defined
-thresholds. - Cytokines in the upper-right and lower-left quadrants
-beyond the dashed lines are elevated in `group1` or `group2`
-respectively, with strong effect and substantial fold change.
+strong effect; \|SSMD\| $\geq$ 0.5 = moderate. - **Point color:** Effect
+strength category (strong = red, moderate = orange, weak = blue). -
+**Point shape:** Triangles indicate cytokines that exceed both the SSMD
+and log2FC thresholds simultaneously - these are the most compelling
+candidates. - **Dashed lines:** Mark the defined thresholds. - Cytokines
+in the upper-right and lower-left quadrants beyond the dashed lines are
+elevated in `group1` or `group2` respectively, with strong effect and
+substantial fold change.
 
 ``` r
 data_dfp <- ExampleData1[, -c(2:3)]
@@ -673,7 +673,7 @@ to the number of cytokines is recommended (at least n \> p, ideally n \>
 |---------------|--------------------------------------------------|---------------|
 | `group_col`   | Primary grouping column                          | \-            |
 | `group_col2`  | Second grouping column (stratifies analysis)     | `NULL`        |
-| `colors`      | Vector of colours for groups                     | `NULL` (auto) |
+| `colors`      | Vector of colors for groups                      | `NULL` (auto) |
 | `pch_values`  | Vector of point shapes, one per group level      | **required**  |
 | `comp_num`    | Number of principal components to compute        | `2`           |
 | `ellipse`     | Draw 95% confidence ellipses per group           | `FALSE`       |
@@ -683,7 +683,7 @@ to the number of cytokines is recommended (at least n \> p, ideally n \>
 
 **Interpreting the output:** - **Individuals plot:** Each point is one
 sample. Points close together have similar cytokine profiles. Clear
-separation between coloured groups suggests a discriminating cytokine
+separation between colored groups suggests a discriminating cytokine
 signature exists. - **Scree plot:** Shows the percentage of variance
 explained by each component (individual, blue) and cumulatively (dashed
 green). Choose the number of components that capture $\geq$ 70-80% of
@@ -763,8 +763,8 @@ plot):** Labelled with accuracy (% training samples correctly
 classified). Clear separation indicates the model successfully
 identified a discriminating cytokine signature. - **Loadings plot:**
 Shows which cytokines load most strongly on each component and in which
-group they are elevated (colour of the bar). The `contrib = "max"`
-setting colours each bar by the group with the highest mean for that
+group they are elevated (color of the bar). The `contrib = "max"`
+setting colors each bar by the group with the highest mean for that
 cytokine. - **VIP scores plot:** Variable Importance in Projection
 scores for each component. Cytokines with VIP \> 1 are considered
 important discriminators and are used to fit a refined model. - **VIP \>
