@@ -11,7 +11,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/saraswatsh/CytoProfile/blob/v0.2.4/inst/CITATION)
+[`inst/CITATION`](https://github.com/saraswatsh/CytoProfile/blob/devel/inst/CITATION)
 
 Saraswat S, Zhang D (2025). *CytoProfile: Comprehensive Statistical
 Analysis of Cytokine Profiling Data*. Package version 0.2.1,

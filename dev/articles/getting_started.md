@@ -1127,7 +1127,7 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] dplyr_1.2.0            CytoProfile_0.2.3.9000
+#> [1] dplyr_1.2.0            CytoProfile_0.2.4.9000
 #> 
 #> loaded via a namespace (and not attached):
 #>   [1] Rdpack_2.6.6         pROC_1.19.0.1        gridExtra_2.3       
