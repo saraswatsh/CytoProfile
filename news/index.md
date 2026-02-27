@@ -2,6 +2,8 @@
 
 ## CytoProfile 0.2.4
 
+CRAN release: 2026-02-27
+
 ### Major Changes
 
 - New functions ‘cyt_univariate’ for t-test and wilcoxon rank sum test
